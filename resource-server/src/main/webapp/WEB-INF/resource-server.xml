@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) 2013 tarent AG
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining
+  ~ a copy of this software and associated documentation files (the
+  ~ "Software"), to deal in the Software without restriction, including
+  ~ without limitation the rights to use, copy, modify, merge, publish,
+  ~ distribute, sublicense, and/or sell copies of the Software, and to
+  ~ permit persons to whom the Software is furnished to do so, subject to
+  ~ the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be
+  ~ included in all copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  ~ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  ~ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+  ~ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+  ~ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+  ~ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+  ~ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
+       xmlns:sec="http://www.springframework.org/schema/security"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-1.0.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+    <!--<bean id="scimUserProvisioning" class="org.osiam.ng.resourceserver.dao.ScimUserProvisioningBean"/>-->
+
+    <!-- Resource Service interface secured via OAuth2 -->
+    <http pattern="/" create-session="never" entry-point-ref="oauthAuthenticationEntryPoint"
+          access-decision-manager-ref="accessDecisionManager" xmlns="http://www.springframework.org/schema/security">
+
+        <!-- resources below /secured/get/resource/ are accessed via scope "READ" -->
+        <intercept-url pattern="/**" access="SCOPE_DYNAMIC"/>
+
+        <!-- validates the delivered access token -->
+        <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
+
+        <!-- uses general oauthAccessDeniedHandler -->
+        <access-denied-handler ref="oauthAccessDeniedHandler"/>
+    </http>
+
+    <http pattern="/Client/**" create-session="never" entry-point-ref="oauthAuthenticationEntryPoint"
+          access-decision-manager-ref="accessDecisionManager" xmlns="http://www.springframework.org/schema/security">
+
+        <!-- resources below /secured/get/resource/ are accessed via scope "READ" -->
+        <intercept-url pattern="/**" access="SCOPE_DYNAMIC"/>
+
+        <!-- validates the delivered access token -->
+        <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
+
+        <!-- uses general oauthAccessDeniedHandler -->
+        <access-denied-handler ref="oauthAccessDeniedHandler"/>
+    </http>
+
+    <http pattern="/Users/**" create-session="never" entry-point-ref="oauthAuthenticationEntryPoint"
+          access-decision-manager-ref="accessDecisionManager" xmlns="http://www.springframework.org/schema/security">
+
+        <!-- resources below /secured/get/resource/ are accessed via scope "READ" -->
+        <intercept-url pattern="/Users/**" access="SCOPE_DYNAMIC"/>
+
+        <!-- validates the delivered access token -->
+        <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
+
+        <!-- uses general oauthAccessDeniedHandler -->
+        <access-denied-handler ref="oauthAccessDeniedHandler"/>
+    </http>
+
+    <http pattern="/Groups/**" create-session="never" entry-point-ref="oauthAuthenticationEntryPoint"
+          access-decision-manager-ref="accessDecisionManager" xmlns="http://www.springframework.org/schema/security">
+
+        <!-- resources below /secured/get/resource/ are accessed via scope "READ" -->
+        <intercept-url pattern="/Groups/**" access="SCOPE_DYNAMIC"/>
+
+        <!-- validates the delivered access token -->
+        <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
+
+        <!-- uses general oauthAccessDeniedHandler -->
+        <access-denied-handler ref="oauthAccessDeniedHandler"/>
+    </http>
+
+    <!-- entry point for OAuth2 secured resources -->
+    <bean id="oauthAuthenticationEntryPoint"
+          class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
+        <property name="realmName" value="oauth2-authorization-server"/>
+    </bean>
+
+    <!-- general access decision manager for OAuth2 secured resources -->
+    <bean id="accessDecisionManager" class="org.springframework.security.access.vote.UnanimousBased"
+          xmlns="http://www.springframework.org/schema/beans">
+        <constructor-arg>
+            <list>
+                <bean class="org.osiam.security.authorization.DynamicHTTPMethodScopeEnhancer">
+                    <constructor-arg>
+                        <bean class="org.springframework.security.oauth2.provider.vote.ScopeVoter"/>
+                    </constructor-arg>
+                </bean>
+            </list>
+        </constructor-arg>
+    </bean>
+
+
+    <!-- filter to validate the delivered access token -->
+    <oauth:resource-server id="resourceServerFilter" resource-id="oauth2res" token-services-ref="tokenServices"/>
+</beans>
