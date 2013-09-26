@@ -134,7 +134,7 @@
                     <execution>
                         <phase>generate-sources</phase>
                         <goals>
-                            <goal>setup</goal>
+                            <goal>instrumentInternal</goal>
                         </goals>
                     </execution>
                 </executions>
