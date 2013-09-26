@@ -36,12 +36,6 @@
 
     <name>OSIAM Auth Server</name>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.7</java.version>
-        <clover.version>3.1.11</clover.version>
-    </properties>
-
     <build>
         <plugins>
             <!-- Configure the compiler plugin for Groovy -->
@@ -120,26 +114,26 @@
                 </configuration>
             </plugin>
             <!-- Instrument classes with setup goal in submodules for sub module report. -->
-            <!--<plugin>-->
-                <!--<groupId>com.atlassian.maven.plugins</groupId>-->
-                <!--<artifactId>maven-clover2-plugin</artifactId>-->
-                <!--<version>${clover.version}</version>-->
-                <!--<configuration>-->
-                    <!--<generatePdf>true</generatePdf>-->
-                    <!--<generateXml>true</generateXml>-->
-                    <!--<generateJson>false</generateJson>-->
-                    <!--<generateHtml>true</generateHtml>-->
-                    <!--<jdk>${java.version}</jdk>-->
-                <!--</configuration>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<phase>generate-sources</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>instrumentInternal</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
+            <plugin>
+                <groupId>com.atlassian.maven.plugins</groupId>
+                <artifactId>maven-clover2-plugin</artifactId>
+                <version>${sonar.clover.version}</version>
+                <configuration>
+                    <generatePdf>true</generatePdf>
+                    <generateXml>true</generateXml>
+                    <generateJson>false</generateJson>
+                    <generateHtml>true</generateHtml>
+                    <jdk>${java.version}</jdk>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>instrumentInternal</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
