@@ -12,7 +12,7 @@ import java.util.*;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
 @Entity(name = "osiam_client")
 @NamedQueries({@NamedQuery(name = "getClientById", query = "SELECT i FROM osiam_client i WHERE i.id= :id")})
-public class ClientEntity implements ClientDetails {
+public class ClientEntity {
 
     private static final long serialVersionUID = 7389428857079701157L;
     private static final int LENGTH = 32;
@@ -64,6 +64,26 @@ public class ClientEntity implements ClientDetails {
 
     public ClientEntity(){}
 
+    public int getAccessTokenValiditySeconds() {
+        return accessTokenValiditySeconds;
+    }
+
+    public int getRefreshTokenValiditySeconds() {
+        return refreshTokenValiditySeconds;
+    }
+
+    public String getClientSecret() {
+        return clientSecret;
+    }
+
+    public Set<String> getScope() {
+        return scope;
+    }
+
+    public Set<String> getGrants() {
+        return grants;
+    }
+
     /* Used to Map Json to ClientEntity, because some Fields are generated. */
     public ClientEntity(ClientEntity entity) {
         if (entity.getId() != null) {
@@ -72,6 +92,7 @@ public class ClientEntity implements ClientDetails {
 
         if(entity.getClientSecret() !=null) {
             clientSecret = entity.getClientSecret();
+
         }
 
         accessTokenValiditySeconds = entity.getAccessTokenValiditySeconds();
@@ -80,7 +101,7 @@ public class ClientEntity implements ClientDetails {
         scope = entity.getScope();
         implicit = entity.isImplicit();
         validityInSeconds = entity.getValidityInSeconds();
-        grants = !entity.getAuthorizedGrantTypes().isEmpty() ? entity.getAuthorizedGrantTypes() : generateGrants();
+        grants = !entity.getGrants().isEmpty() ? entity.getGrants() : generateGrants();
     }
 
     private Set<String> generateGrants() {
@@ -97,69 +118,6 @@ public class ClientEntity implements ClientDetails {
     public void setGrants(Set<String> grants) {
         this.grants = grants;
     }
-
-    @Override
-    public String getClientId() {
-        return id;
-    }
-
-    @Override
-    public Set<String> getResourceIds() {
-        return Collections.emptySet();
-    }
-
-    @Override
-    public boolean isSecretRequired() {
-        return true;
-    }
-
-    @Override
-    public String getClientSecret() {
-        return clientSecret;
-    }
-
-    @Override
-    public boolean isScoped() {
-        return true;
-    }
-
-    @Override
-    public Set<String> getScope() {
-        return scope;
-    }
-
-    @Override
-    public Set<String> getAuthorizedGrantTypes() {
-        return grants;
-    }
-
-    @Override
-    public Set<String> getRegisteredRedirectUri() {
-        Set<String> result = new HashSet<>();
-        result.add(redirectUri);
-        return result;
-    }
-
-    @Override
-    public Collection<GrantedAuthority> getAuthorities() {
-        return Collections.EMPTY_SET;
-    }
-
-    @Override
-    public Integer getAccessTokenValiditySeconds() {
-        return accessTokenValiditySeconds;
-    }
-
-    @Override
-    public Integer getRefreshTokenValiditySeconds() {
-        return refreshTokenValiditySeconds;
-    }
-
-    @Override
-    public Map<String, Object> getAdditionalInformation() {
-        return Collections.emptyMap();
-    }
-
 
     public void setId(String id) {
         this.id = id;

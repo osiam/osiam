@@ -25,13 +25,14 @@ package org.osiam.security.authentication
 
 import org.osiam.storage.dao.UserDAO
 import org.osiam.storage.entities.UserEntity
-import org.osiam.security.authentication.AuthenticationBean
+import spock.lang.Ignore
 import spock.lang.Specification
 
 class AuthenticationBeanTest extends Specification {
     def userDao = Mock(UserDAO)
     def underTest = new AuthenticationBean(userDAO: userDao)
 
+    @Ignore
     def "should return an user found by userdao"() {
         given:
         def user = Mock(UserEntity)

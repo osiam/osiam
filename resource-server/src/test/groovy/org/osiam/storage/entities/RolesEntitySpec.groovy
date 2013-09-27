@@ -47,16 +47,6 @@ class RolesEntitySpec extends Specification {
         rolesEntity.getValue() == "someValue"
     }
 
-    def "a role should implemented grantedAuthority from Spring for authorization purposes"(){
-        given:
-        rolesEntity.setValue("USER")
-        when:
-        def authority = rolesEntity.authority;
-        then:
-        authority == "ROLE_USER"
-        rolesEntity instanceof GrantedAuthority
-    }
-
     def "mapping to scim should be present"() {
         when:
         def multivalue = rolesEntity.toScim()

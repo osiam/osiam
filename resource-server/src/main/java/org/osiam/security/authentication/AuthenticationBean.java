@@ -42,6 +42,7 @@ public class AuthenticationBean implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(final String username) {
-        return userDAO.getByUsername(username);
+        //return userDAO.getByUsername(username);
+        return null;
     }
 }

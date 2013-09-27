@@ -83,7 +83,7 @@ class UserControllerTest extends Specification {
     NameEntity nameEntity = new NameEntity(familyName: "Prefect", givenName: "Fnord", formatted: "Fnord Prefect")
     UserEntity userEntity = new UserEntity(active: true, emails: [new EmailEntity(primary: true, value: "test@test.de")],
 	    name: nameEntity, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
-	    locale: "de_DE", username: "fpref")
+	    locale: "de_DE", userName: "fpref")
 
     def setup() {
         underTest.setScimUserProvisioning(provisioning)
@@ -351,7 +351,7 @@ class UserControllerTest extends Specification {
 	1 * userAuthentication.getPrincipal() >> userEntity
 
 	result.id == userEntity.id.toString()
-	result.userName == userEntity.getUsername()
+	result.userName == userEntity.getUserName()
 
 	result.name.familyName == userEntity.name.familyName
 	result.name.givenName == userEntity.name.givenName

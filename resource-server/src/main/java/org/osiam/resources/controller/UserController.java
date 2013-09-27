@@ -57,7 +57,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping(value = "/Users")
-public class UserController {
+public class  UserController {
 
     @Inject
     private InMemoryTokenStore inMemoryTokenStore;

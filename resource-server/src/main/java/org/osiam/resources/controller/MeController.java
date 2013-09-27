@@ -104,7 +104,7 @@ public class MeController {
             this.email = lookForEmail(userEntity.getEmails());
             this.locale = userEntity.getLocale();
             this.updated_time = dateTimeFormatter.print(userEntity.getMeta().getLastModified().getTime());
-            this.userName = userEntity.getUsername();
+            this.userName = userEntity.getUserName();
         }
 
         private String lookForEmail(Set<EmailEntity> emails) {

@@ -43,7 +43,7 @@ public class ClientDetailsLoadingBean implements ClientDetailsService {
 
     @Override
     public ClientDetails loadClientByClientId(final String clientId) {
-
-        return clientDao.getClient(clientId);
+        //return clientDao.getClient(clientId);
+        return null;
     }
 }

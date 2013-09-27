@@ -106,7 +106,7 @@ class GenericSCIMToEntityWrapperTest extends Specification {
         scimUser.timezone == entity.timezone
         scimUser.title == entity.title
         scimUser.userType == entity.userType
-        scimUser.userName == entity.username
+        scimUser.userName == entity.userName
         scimUser.externalId == entity.externalId
 
         scimUser.x509Certificates.x509Certificate.size() == entity.x509Certificates.size()
@@ -127,13 +127,13 @@ class GenericSCIMToEntityWrapperTest extends Specification {
         def user = new User.Builder("Harald").setMeta(meta).build()
 
         UserEntity entity = createEntityWithInternalId()
-        entity.setUsername("hach")
+        entity.setUserName("hach")
         entity.setDisplayName("display it")
         def underTest = new GenericSCIMToEntityWrapper(userTarget, user, entity, GenericSCIMToEntityWrapper.Mode.PATCH, FakeSCIMEntities.ENTITIES)
         when:
         underTest.setFields()
         then:
-        entity.username == "Harald"
+        entity.userName == "Harald"
         entity.displayName == null
     }
 
@@ -151,13 +151,13 @@ class GenericSCIMToEntityWrapperTest extends Specification {
         def user = new User.Builder().setMeta(meta).build()
 
         UserEntity entity = createEntityWithInternalId()
-        entity.setUsername("hach")
+        entity.setUserName("hach")
         entity.setDisplayName("display it")
         def underTest = new GenericSCIMToEntityWrapper(userTarget, user, entity, GenericSCIMToEntityWrapper.Mode.PATCH, FakeSCIMEntities.ENTITIES)
         when:
         underTest.setFields()
         then:
-        entity.username == "hach"
+        entity.userName == "hach"
     }
 
     def "should delete single attribute of a multi-value-attribute list in PATCH"() {
@@ -220,7 +220,7 @@ class GenericSCIMToEntityWrapperTest extends Specification {
         name.honorificSuffix = "b"
         name.setMiddleName('(")(°v°)(")')
         entity.setName(name)
-        entity.setUsername("username")
+        entity.setUserName("username")
         def underTest = new GenericSCIMToEntityWrapper(userTarget, user, entity, GenericSCIMToEntityWrapper.Mode.PATCH, FakeSCIMEntities.ENTITIES)
 
         when:
@@ -247,7 +247,7 @@ class GenericSCIMToEntityWrapperTest extends Specification {
         name.honorificSuffix = "b"
         name.setMiddleName('(")(°v°)(")')
         entity.setName(name)
-        entity.setUsername("username")
+        entity.setUserName("username")
         def underTest = new GenericSCIMToEntityWrapper(userTarget, user, entity, GenericSCIMToEntityWrapper.Mode.PATCH, FakeSCIMEntities.ENTITIES)
         when:
         underTest.setFields()
@@ -265,7 +265,7 @@ class GenericSCIMToEntityWrapperTest extends Specification {
         def meta = new Meta.Builder(null, null).setAttributes(["id.test"] as Set).build()
         def user = new User.Builder().setMeta(meta).build()
         UserEntity entity = createEntityWithInternalId()
-        entity.setUsername("haha")
+        entity.setUserName("haha")
         def underTest = new GenericSCIMToEntityWrapper(userTarget, user, entity, GenericSCIMToEntityWrapper.Mode.PATCH, FakeSCIMEntities.ENTITIES)
 
         when:
@@ -281,7 +281,7 @@ class GenericSCIMToEntityWrapperTest extends Specification {
         def meta = new Meta.Builder(null, null).setAttributes(["familyName"] as Set).build()
         def user = new User.Builder().setMeta(meta).build()
         UserEntity entity = createEntityWithInternalId()
-        entity.setUsername("haha")
+        entity.setUserName("haha")
         def underTest = new GenericSCIMToEntityWrapper(userTarget, user, entity, GenericSCIMToEntityWrapper.Mode.PATCH, FakeSCIMEntities.ENTITIES)
 
         when:
@@ -297,7 +297,7 @@ class GenericSCIMToEntityWrapperTest extends Specification {
         def meta = new Meta.Builder(null, null).setAttributes(["name.familyName"] as Set).build()
         def user = new User.Builder().setMeta(meta).build()
         UserEntity entity = createEntityWithInternalId()
-        entity.setUsername("haha")
+        entity.setUserName("haha")
         def underTest = new GenericSCIMToEntityWrapper(userTarget, user, entity, GenericSCIMToEntityWrapper.Mode.PATCH, FakeSCIMEntities.ENTITIES)
 
         when:
@@ -321,7 +321,7 @@ class GenericSCIMToEntityWrapperTest extends Specification {
         name.honorificSuffix = "I"
         name.setMiddleName('Two-Face')
         entity.setName(name)
-        entity.setUsername("haha")
+        entity.setUserName("haha")
         def underTest = new GenericSCIMToEntityWrapper(userTarget, user, entity, GenericSCIMToEntityWrapper.Mode.PATCH, FakeSCIMEntities.ENTITIES)
 
         when:
