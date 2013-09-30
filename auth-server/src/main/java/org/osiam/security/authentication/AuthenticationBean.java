@@ -23,9 +23,14 @@
 
 package org.osiam.security.authentication;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.osiam.resources.UserSpring;
+import org.osiam.security.helper.HttpClientHelper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
 
 @Component("userDetailsService")
 /**
@@ -34,10 +39,22 @@ import org.springframework.stereotype.Component;
  */
 public class AuthenticationBean implements UserDetailsService {
 
+    private static final String URL = "http://localhost:8080/osiam-resource-server/authentication/user/";
+
+    private final ObjectMapper mapper = new ObjectMapper();
+
     @Override
     public UserDetails loadUserByUsername(final String username) {
-        return null;
-        //TODO: call /authentication/User on resource server side
-        //return userDAO.getByUsername(username);
+        final HttpClientHelper httpClientHelper = new HttpClientHelper();
+        final String result = httpClientHelper.executeHttpGet(URL+username);
+
+        final UserSpring userSpring;
+        try {
+            userSpring = mapper.readValue(result, UserSpring.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return userSpring;
     }
 }

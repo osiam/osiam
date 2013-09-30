@@ -23,9 +23,14 @@
 
 package org.osiam.security.authentication;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.osiam.resources.ClientSpring;
+import org.osiam.security.helper.HttpClientHelper;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
 
 
 /**
@@ -35,10 +40,36 @@ import org.springframework.stereotype.Component;
 @Component("clientDetails")
 public class ClientDetailsLoadingBean implements ClientDetailsService {
 
+    private static final String URL = "http://localhost:8080/osiam-resource-server/authentication/client/";
+
+    private final ObjectMapper mapper = new ObjectMapper();
+
+    private ClientSpring clientSpring;
+
+    private final HttpClientHelper httpClientHelper;
+
+    public ClientDetailsLoadingBean() {
+        httpClientHelper = new HttpClientHelper();
+    }
+
     @Override
     public ClientDetails loadClientByClientId(final String clientId) {
-        return null;
-        //TODO: call /authentication/Client on resource server side
-        //return clientDao.getClient(clientId);
+        final String response = httpClientHelper.executeHttpGet(URL+clientId);
+
+        try {
+            clientSpring = mapper.readValue(response, ClientSpring.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return clientSpring;
+    }
+
+    public ClientSpring getClientSpring() {
+        return clientSpring;
+    }
+
+    public void updateClient(ClientSpring client, String clientId) {
+        httpClientHelper.executeHttpPut(URL+clientId, "expiry", client.getExpiry().toString());
     }
 }
