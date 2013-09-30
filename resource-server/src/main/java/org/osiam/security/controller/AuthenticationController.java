@@ -21,9 +21,8 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.resources.controller;
+package org.osiam.security.controller;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.osiam.resources.ClientSpring;
 import org.osiam.resources.RoleSpring;
 import org.osiam.resources.UserSpring;
@@ -38,13 +37,15 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * This Controller is used to manage client authentication.
-    TODO
+ * This Controller is used to manage client and user authentication for spring security OAuth.
  */
 @Controller
 @RequestMapping(value = "/authentication")
@@ -56,24 +57,27 @@ public class AuthenticationController {
     @Inject
     private ClientDao clientDao;
 
-    private ObjectMapper mapper = new ObjectMapper();
-
     @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
     @ResponseBody
     public UserSpring getUser(@PathVariable final String id) {
 
         UserEntity dbUser = userDAO.getByUsername(id);
+        return getUserSpring(dbUser);
+    }
+
+    private UserSpring getUserSpring(UserEntity dbUser) {
+
         Set<RoleSpring> springRoles = new HashSet<>();
         for (RolesEntity role : dbUser.getRoles()) {
             RoleSpring springRole = new RoleSpring();
             springRole.setValue(role.getValue());
             springRoles.add(springRole);
         }
+
         UserSpring springUser = new UserSpring();
         springUser.setUserName(dbUser.getUserName());
         springUser.setPassword(dbUser.getPassword());
         springUser.setRoles(springRoles);
-
         return springUser;
     }
 
@@ -82,6 +86,10 @@ public class AuthenticationController {
     public ClientSpring getClient(@PathVariable final String id) {
 
         ClientEntity dbClient = clientDao.getClient(id);
+        return getClientSpring(dbClient);
+    }
+
+    private ClientSpring getClientSpring(ClientEntity dbClient) {
         ClientSpring springClient = new ClientSpring();
         springClient.setId(dbClient.getId());
         springClient.setClientSecret(dbClient.getClientSecret());
@@ -89,18 +97,20 @@ public class AuthenticationController {
         springClient.setGrants(dbClient.getGrants());
         springClient.setRedirectUri(dbClient.getRedirectUri());
         springClient.setAccessTokenValiditySeconds(dbClient.getAccessTokenValiditySeconds());
-
+        springClient.setImplicit(dbClient.isImplicit());
+        springClient.setExpiry(dbClient.getExpiry());
+        springClient.setValidityInSeconds(dbClient.getValidityInSeconds());
         return springClient;
     }
 
     @RequestMapping(value = "/client/{id}", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
-    public void updateClientExpiry(@PathVariable final String id, @RequestBody Date expiry) throws IOException {
+    public void updateClientExpiry(@PathVariable final String id, @RequestBody String expiry) throws IOException, ParseException {
+
+        final DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
         ClientEntity dbClient = clientDao.getClient(id);
-        dbClient.setExpiry(expiry);
-
+        dbClient.setExpiry(format.parse(expiry));
         clientDao.update(dbClient, id);
     }
-
 }
