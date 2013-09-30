@@ -22,7 +22,7 @@ public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
     private static final int MILLISECONDS = 1000;
 
     @Inject
-    ClientDetailsLoadingBean clientDetailsLoadingBean;
+    private ClientDetailsLoadingBean clientDetailsLoadingBean;
 
 
     /**
