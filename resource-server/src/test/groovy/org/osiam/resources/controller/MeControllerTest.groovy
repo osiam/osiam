@@ -22,7 +22,7 @@ class   MeControllerTest extends Specification {
     def name = new NameEntity(familyName: "Prefect", givenName: "Fnord", formatted: "Fnord Prefect")
     def user = new UserEntity(active: true, emails: [new EmailEntity(primary: true, value: "test@test.de")],
             name: name, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
-            locale: "de_DE", username: "fpref")
+            locale: "de_DE", userName: "fpref")
     DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTime()
 
     def setup() {
@@ -54,7 +54,7 @@ class   MeControllerTest extends Specification {
     def "should not provide an email address if no primary email exists"() {
         given:
         def user = new UserEntity(active: true, name: name, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
-                emails: [new EmailEntity(primary: false, value: "test@test.de")], locale: "de_DE", username: "fpref")
+                emails: [new EmailEntity(primary: false, value: "test@test.de")], locale: "de_DE", userName: "fpref")
         request.getParameter("access_token") >> "access_token"
         tokenStore.readAuthentication("access_token") >> authentication
         userAuthentication.getPrincipal() >> user
@@ -106,7 +106,7 @@ class   MeControllerTest extends Specification {
         given:
         def user = new UserEntity(active: true, emails: null,
                 name: name, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
-                locale: "de_DE", username: "fpref")
+                locale: "de_DE", userName: "fpref")
         when:
         def result = underTest.getInformation(request)
         then:
@@ -121,7 +121,7 @@ class   MeControllerTest extends Specification {
         given:
         def user = new UserEntity(active: true, emails: [new EmailEntity(primary: true, value: "test@test.de")],
                 name: null, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
-                locale: "de_DE", username: "fpref")
+                locale: "de_DE", userName: "fpref")
 
         when:
         def result = underTest.getInformation(request)

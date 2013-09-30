@@ -16,8 +16,8 @@ class ClientEntityTest extends Specification {
         when:
         def b = new ClientEntity()
         then:
-        b.getAuthorizedGrantTypes() == under_test.getAuthorizedGrantTypes()
-        b.getAuthorizedGrantTypes() == ["authorization_code", "refresh-token"] as Set
+        b.getGrants() == under_test.getGrants()
+        b.getGrants() == ["authorization_code", "refresh-token"] as Set
     }
 
     def "should be able to set access_token length"() {
@@ -67,51 +67,6 @@ class ClientEntityTest extends Specification {
         then:
         b.clientSecret
         b.clientSecret != under_test.clientSecret
-    }
-
-    def "resource ids should be empty"() {
-        when:
-        def ids = under_test.getResourceIds()
-        then:
-        ids.empty
-    }
-
-    def "isSecretRequired should be true"() {
-        when:
-        def result = under_test.isSecretRequired()
-        then:
-        result
-    }
-
-    def "isScoped should be true"() {
-        when:
-        def result = under_test.isScoped()
-        then:
-        result
-    }
-
-    def "getRegisteredRedirectUri should return a set which contains redirect_uri"() {
-        given:
-        under_test.setRedirectUri("should_i_stay_or_should_i_go_now")
-        when:
-        def result = under_test.getRegisteredRedirectUri()
-        then:
-        result == [under_test.getRedirectUri()] as Set
-    }
-
-    def "getAuthorities should be empty"() {
-        when:
-        def result = under_test.getAuthorities()
-        then:
-        result.empty
-    }
-
-
-    def "getAdditionalInformation should be empty"() {
-        when:
-        def result = under_test.getAdditionalInformation()
-        then:
-        !result
     }
 
     def "should be possible to set secret"() {
@@ -164,7 +119,7 @@ class ClientEntityTest extends Specification {
         clientEntity.getScope() == ["scope1","scope2"] as Set
         clientEntity.isImplicit()
         clientEntity.getValidityInSeconds() == 123
-        clientEntity.getAuthorizedGrantTypes() == ["client_credentials", "password"] as Set
+        clientEntity.getGrants() == ["client_credentials", "password"] as Set
     }
 
     def "parametrized constructor should work with null id and secret"() {
@@ -192,7 +147,7 @@ class ClientEntityTest extends Specification {
         clientEntity.getScope() == ["scope1","scope2"] as Set
         clientEntity.isImplicit()
         clientEntity.getValidityInSeconds() == 123
-        clientEntity.getAuthorizedGrantTypes() == ["client_credentials", "password"] as Set
+        clientEntity.getGrants() == ["client_credentials", "password"] as Set
     }
 
     def "parametrized constructor should work with empty list of grants and generate the default"() {
@@ -220,6 +175,6 @@ class ClientEntityTest extends Specification {
         clientEntity.getScope() == ["scope1","scope2"] as Set
         clientEntity.isImplicit()
         clientEntity.getValidityInSeconds() == 123
-        clientEntity.getAuthorizedGrantTypes() == ["authorization_code", "refresh-token"] as Set
+        clientEntity.getGrants() == ["authorization_code", "refresh-token"] as Set
     }
 }

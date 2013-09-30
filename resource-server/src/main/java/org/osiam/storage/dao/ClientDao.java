@@ -45,7 +45,7 @@ public class ClientDao {
         clientEntity.setImplicit(client.isImplicit());
         clientEntity.setValidityInSeconds(client.getValidityInSeconds());
         clientEntity.setId(client.getId());
-        clientEntity.setGrants(client.getAuthorizedGrantTypes());
+        clientEntity.setGrants(client.getGrants());
 
         return clientEntity;
     }

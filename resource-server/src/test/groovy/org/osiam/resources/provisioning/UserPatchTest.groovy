@@ -1,6 +1,5 @@
 package org.osiam.resources.provisioning
 
-import org.osiam.resources.provisioning.SCIMUserProvisioningBean
 import org.osiam.storage.dao.UserDAO
 import org.osiam.storage.entities.AddressEntity
 import org.osiam.storage.entities.EmailEntity
@@ -233,7 +232,7 @@ class UserPatchTest extends Specification {
 
         then:
         1 * userDao.getById(id) >> entity
-        entity.username == "username"
+        entity.userName == "username"
         entity.displayName == "hallo"
         1 * userDao.update(entity) >> entity
     }
@@ -251,13 +250,13 @@ class UserPatchTest extends Specification {
         def meta = new Meta.Builder(null, null).setAttributes(["displayName"] as Set).build()
         def user = new User.Builder().setMeta(meta).build()
 
-        entity.setUsername("username")
+        entity.setUserName("username")
         entity.setDisplayName("display it")
         when:
         bean.update(id, user)
         then:
         1 * userDao.getById(id) >> entity
-        entity.username == "username"
+        entity.userName == "username"
         entity.displayName == null
         1 * userDao.update(entity) >> entity
 
@@ -268,12 +267,12 @@ class UserPatchTest extends Specification {
         def meta = new Meta.Builder(null, null).setAttributes(["userName"] as Set).build()
         def user = new User.Builder().setMeta(meta).build()
 
-        entity.setUsername("username")
+        entity.setUserName("username")
         when:
         bean.update(id, user)
         then:
         1 * userDao.getById(id) >> entity
-        entity.username == "username"
+        entity.userName == "username"
     }
 
     def "should delete and update simple attributes"() {
@@ -282,13 +281,13 @@ class UserPatchTest extends Specification {
 
         def user = new User.Builder("Harald").setMeta(meta).build()
 
-        entity.setUsername("hach")
+        entity.setUserName("hach")
         entity.setDisplayName("display it")
         when:
         bean.update(id, user)
         then:
         1 * userDao.getById(id) >> entity
-        entity.username == "Harald"
+        entity.userName == "Harald"
         entity.displayName == null
         1 * userDao.update(entity) >> entity
 
@@ -300,13 +299,13 @@ class UserPatchTest extends Specification {
 
         def user = new User.Builder().setDisplayName("don't display that").setMeta(meta).build()
 
-        entity.setUsername("Harald")
+        entity.setUserName("Harald")
         entity.setDisplayName("display it")
         when:
         bean.update(id, user)
         then:
         1 * userDao.getById(id) >> entity
-        entity.username == "Harald"
+        entity.userName == "Harald"
         entity.displayName == null
         1 * userDao.update(entity) >> entity
     }
@@ -323,7 +322,7 @@ class UserPatchTest extends Specification {
         name.honorificSuffix = "b"
         name.setMiddleName('(")(°v°)(")')
         entity.setName(name)
-        entity.setUsername("username")
+        entity.setUserName("username")
 
         when:
         bean.update(id, user)
@@ -350,7 +349,7 @@ class UserPatchTest extends Specification {
         name.honorificSuffix = "b"
         name.setMiddleName('(")(°v°)(")')
         entity.setName(name)
-        entity.setUsername("username")
+        entity.setUserName("username")
 
         when:
         bean.update(id, user)
@@ -369,7 +368,7 @@ class UserPatchTest extends Specification {
         def meta = new Meta.Builder(null, null).setAttributes(["id.test"] as Set).build()
         def user = new User.Builder().setMeta(meta).build()
 
-        entity.setUsername("haha")
+        entity.setUserName("haha")
 
         when:
         bean.update(id, user)
@@ -385,7 +384,7 @@ class UserPatchTest extends Specification {
         def user = new User.Builder().setGroups(new ArrayList()).build()
         user.getGroups().add(new MultiValuedAttribute.Builder().build())
 
-        entity.setUsername("username")
+        entity.setUserName("username")
 
 
         when:
@@ -402,7 +401,7 @@ class UserPatchTest extends Specification {
         def user = new User.Builder().setMeta(meta).build()
 
 
-        entity.setUsername("username")
+        entity.setUserName("username")
         entity.groups.add(new GroupEntity(id: UUID.randomUUID()))
 
         when:

@@ -315,6 +315,13 @@
             <groupId>org.glassfish.web</groupId>
             <artifactId>jstl-impl</artifactId>
         </dependency>
+
+        <!-- OSIAM Interaction Model -->
+        <dependency>
+            <groupId>org.osiam</groupId>
+            <artifactId>interaction-model</artifactId>
+            <version>0.9-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 </project>
