@@ -24,8 +24,8 @@
 package org.osiam.security.authentication;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.osiam.helper.HttpClientHelper;
 import org.osiam.resources.UserSpring;
-import org.osiam.security.helper.HttpClientHelper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;

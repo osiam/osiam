@@ -24,8 +24,8 @@
 package org.osiam.security.authentication;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.osiam.helper.HttpClientHelper;
 import org.osiam.resources.ClientSpring;
-import org.osiam.security.helper.HttpClientHelper;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.stereotype.Component;
@@ -54,7 +54,7 @@ public class ClientDetailsLoadingBean implements ClientDetailsService {
 
     @Override
     public ClientDetails loadClientByClientId(final String clientId) {
-        final String response = httpClientHelper.executeHttpGet(URL+clientId);
+        final String response = httpClientHelper.executeHttpGet(URL + clientId);
 
         try {
             clientSpring = mapper.readValue(response, ClientSpring.class);
@@ -70,6 +70,6 @@ public class ClientDetailsLoadingBean implements ClientDetailsService {
     }
 
     public void updateClient(ClientSpring client, String clientId) {
-        httpClientHelper.executeHttpPut(URL+clientId, "expiry", client.getExpiry().toString());
+        httpClientHelper.executeHttpPut(URL + clientId, "expiry", client.getExpiry().toString());
     }
 }

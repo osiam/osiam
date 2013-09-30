@@ -294,12 +294,6 @@
             <artifactId>jstl-impl</artifactId>
         </dependency>
 
-        <!-- Http client for the OAuth client and user endpoints -->
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-        </dependency>
-
         <!-- OSIAM Interaction Model -->
         <dependency>
             <groupId>org.osiam</groupId>
