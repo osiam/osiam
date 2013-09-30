@@ -38,5 +38,6 @@ class ClientDetailsLoadingBeanTest extends Specification {
 
         then:
         //1 * clientDaoMock.getClient("hanz")
+        true
     }
 }
