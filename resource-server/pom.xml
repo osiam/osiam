@@ -319,7 +319,7 @@
         <!-- OSIAM Interaction Model -->
         <dependency>
             <groupId>org.osiam</groupId>
-            <artifactId>interaction-model</artifactId>
+            <artifactId>osiam-interaction-model</artifactId>
             <version>0.9-SNAPSHOT</version>
         </dependency>
     </dependencies>
