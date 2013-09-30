@@ -40,61 +40,11 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
 
-
-    <!-- needed for exchanging the authorization_code to an access_token -->
-    <import resource="client-authentication.xml"/>
     <!-- needed to get oauth2 secured resources -->
     <import resource="resource-server.xml"/>
-    <!-- needed for getting an authorization-code -->
-    <import resource="user-authentication.xml"/>
     <!-- JPA -->
     <import resource="jpa-configuration.xml"/>
 
-    <!-- configures the OAuth2 authorization server -->
-    <oauth:authorization-server client-details-service-ref="clientDetails"
-                                token-services-ref="tokenServices"
-                                token-granter-ref="customCompositeTokenGranter"
-                                user-approval-handler-ref="userApprovalHandler">
-        <oauth:authorization-code/>
-        <oauth:refresh-token/>
-        <oauth:client-credentials/>
-        <oauth:password/>
-    </oauth:authorization-server>
-
-    <beans:bean id="customCompositeTokenGranter"
-                class="org.springframework.security.oauth2.provider.CompositeTokenGranter">
-        <beans:constructor-arg>
-            <util:list>
-                <beans:bean class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenGranter">
-                    <constructor-arg ref="tokenServices"/>
-                    <constructor-arg ref="clientDetails"/>
-                </beans:bean>
-                <beans:bean class="org.springframework.security.oauth2.provider.password.ResourceOwnerPasswordTokenGranter">
-                    <constructor-arg ref="authenticationManager"/>
-                    <constructor-arg ref="tokenServices"/>
-                    <constructor-arg ref="clientDetails"/>
-                </beans:bean>
-                <beans:bean class="org.springframework.security.oauth2.provider.refresh.RefreshTokenGranter">
-                    <constructor-arg ref="tokenServices"/>
-                    <constructor-arg ref="clientDetails"/>
-                </beans:bean>
-                <beans:bean class="org.osiam.security.helper.LessStrictRedirectUriAuthorizationCodeTokenGranter">
-                    <constructor-arg ref="tokenServices"/>
-                    <constructor-arg ref="clientDetails"/>
-                </beans:bean>
-            </util:list>
-        </beans:constructor-arg>
-    </beans:bean>
-
-    <!-- access token services -->
-    <bean id="tokenServices" class="org.springframework.security.oauth2.provider.token.DefaultTokenServices">
-        <property name="tokenStore" ref="tokenStore"/>
-        <property name="supportRefreshToken" value="true"/>
-        <property name="clientDetailsService" ref="clientDetails"/>
-    </bean>
-
-    <!-- the token storage managing all access tokens -->
-    <bean id="tokenStore" class="org.springframework.security.oauth2.provider.token.InMemoryTokenStore"/>
 
     <!-- Enabled @Secured annotation -->
     <sec:global-method-security pre-post-annotations="enabled" proxy-target-class="true">
@@ -107,12 +57,6 @@
 
     <!-- view resolver to find JSP's -->
     <bean id="viewResolver" class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
-        <property name="viewResolvers">
-            <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-                <property name="prefix" value="/WEB-INF/jsp/"/>
-                <property name="suffix" value=".jsp"/>
-            </bean>
-        </property>
         <property name="defaultViews">
             <bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView">
                 <property name="extractValueFromSingleKeyModel" value="true"/>

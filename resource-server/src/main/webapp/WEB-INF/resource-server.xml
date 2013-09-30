@@ -110,5 +110,6 @@
 
 
     <!-- filter to validate the delivered access token -->
+    <!-- TODO: add class for token validation which calls the validation endpoint on auth server side-->
     <oauth:resource-server id="resourceServerFilter" resource-id="oauth2res" token-services-ref="tokenServices"/>
 </beans>
