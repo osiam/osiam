@@ -33,7 +33,6 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
-    <!--<bean id="scimUserProvisioning" class="org.osiam.ng.resourceserver.dao.ScimUserProvisioningBean"/>-->
 
     <!-- Resource Service interface secured via OAuth2 -->
     <http pattern="/" create-session="never" entry-point-ref="oauthAuthenticationEntryPoint"
