@@ -21,7 +21,7 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
     private HttpClientHelper httpClient = new HttpClientHelper();
 
     @Override
-    public OAuth2Authentication loadAuthentication(String accessToken) throws AuthenticationException {
+    public OAuth2Authentication loadAuthentication(String accessToken) {
 
         String result = httpClient.executeHttpGet("http://localhost:8080/osiam-auth-server/token/validate/" + accessToken);
 

@@ -3,8 +3,6 @@ package org.osiam.storage.entities;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.oauth2.provider.ClientDetails;
 
 import javax.persistence.*;
 import java.util.*;
@@ -20,7 +18,7 @@ public class ClientEntity {
     @Id
     @GeneratedValue
     @JsonIgnore
-    @Column(name="internal_id")
+    @Column(name = "internal_id")
     private long internalId;
 
     @JsonProperty
@@ -31,7 +29,7 @@ public class ClientEntity {
     @JsonProperty
     private int refreshTokenValiditySeconds;
     @JsonProperty
-    @Column(name="redirect_uri", unique = true, nullable = false)
+    @Column(name = "redirect_uri", unique = true, nullable = false)
     private String redirectUri;
 
     @JsonProperty("client_secret")
@@ -51,7 +49,7 @@ public class ClientEntity {
     private Set<String> grants = generateGrants();
 
     @JsonProperty
-    @Column(name="implicit_approval", nullable = false)
+    @Column(name = "implicit_approval", nullable = false)
     private boolean implicit;
 
     @JsonProperty
@@ -62,7 +60,8 @@ public class ClientEntity {
     @Column
     private Date expiry;
 
-    public ClientEntity(){}
+    public ClientEntity() {
+    }
 
     public int getAccessTokenValiditySeconds() {
         return accessTokenValiditySeconds;
@@ -90,7 +89,7 @@ public class ClientEntity {
             id = entity.getId();
         }
 
-        if(entity.getClientSecret() !=null) {
+        if (entity.getClientSecret() != null) {
             clientSecret = entity.getClientSecret();
 
         }
@@ -181,6 +180,6 @@ public class ClientEntity {
     }
 
     public void setExpiry(Date expiry) {
-        this.expiry = expiry!= null ? (Date) expiry.clone() : null;
+        this.expiry = expiry != null ? (Date) expiry.clone() : null;
     }
 }
