@@ -114,7 +114,7 @@
                 </configuration>
             </plugin>
             <!-- Instrument classes with setup goal in submodules for sub module report. -->
-            <plugin>
+<!--            <plugin>
                 <groupId>com.atlassian.maven.plugins</groupId>
                 <artifactId>maven-clover2-plugin</artifactId>
                 <version>${sonar.clover.version}</version>
@@ -133,7 +133,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
         </plugins>
     </build>
 

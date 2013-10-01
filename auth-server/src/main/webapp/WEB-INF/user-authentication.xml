@@ -49,7 +49,6 @@
 
 
     <authentication-manager alias="authenticationManager" xmlns="http://www.springframework.org/schema/security">
-
         <authentication-provider user-service-ref="userDetailsService">
             <password-encoder ref="passwordEncoder">
                 <salt-source ref="saltSource"/>
