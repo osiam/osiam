@@ -301,6 +301,7 @@
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.osiam</groupId>
             <artifactId>scim-schema</artifactId>

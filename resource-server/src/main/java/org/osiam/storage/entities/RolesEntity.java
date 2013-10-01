@@ -23,7 +23,6 @@
 
 package org.osiam.storage.entities;
 
-import org.springframework.security.core.GrantedAuthority;
 import org.osiam.resources.scim.MultiValuedAttribute;
 
 import javax.persistence.Entity;
