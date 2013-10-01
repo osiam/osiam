@@ -46,7 +46,7 @@ public class AuthenticationBean implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(final String username) {
         final HttpClientHelper httpClientHelper = new HttpClientHelper();
-        final String result = httpClientHelper.executeHttpGet(URL+username);
+        final String result = httpClientHelper.executeHttpGet(URL + username);
 
         final UserSpring userSpring;
         try {
