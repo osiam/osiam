@@ -16,9 +16,9 @@ import java.io.IOException;
  */
 public class AccessTokenValidationService implements ResourceServerTokenServices {
 
-    ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper = new ObjectMapper();
 
-    HttpClientHelper httpClient = new HttpClientHelper();
+    private HttpClientHelper httpClient = new HttpClientHelper();
 
     @Override
     public OAuth2Authentication loadAuthentication(String accessToken) throws AuthenticationException {
