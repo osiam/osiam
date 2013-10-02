@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.osiam</groupId>
         <artifactId>osiam-server-parent</artifactId>
-        <version>0.9-SNAPSHOT</version>
+        <version>0.10-SNAPSHOT</version>
     </parent>
 
     <artifactId>osiam-auth-server</artifactId>
@@ -298,7 +298,7 @@
         <dependency>
             <groupId>org.osiam</groupId>
             <artifactId>osiam-interaction-model</artifactId>
-            <version>0.9-SNAPSHOT</version>
+            <version>0.10-SNAPSHOT</version>
         </dependency>
 
         <dependency>
