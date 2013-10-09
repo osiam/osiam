@@ -3,11 +3,11 @@ package org.osiam.resources.controller;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.osiam.security.authorization.AccessTokenValidationService;
 import org.osiam.storage.entities.EmailEntity;
 import org.osiam.storage.entities.NameEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.provider.token.InMemoryTokenStore;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,7 +26,7 @@ import java.util.Set;
 public class MeController {
 
     @Inject
-    private InMemoryTokenStore inMemoryTokenStore;
+    private AccessTokenValidationService accessTokenValidationService;
 
     /**
      * This method is used to get information about the user who initialised the authorization process.
@@ -56,7 +56,8 @@ public class MeController {
     @ResponseBody
     public FacebookInformationConstruct getInformation(HttpServletRequest request) {
         String accessToken = getAccessToken(request);
-        Authentication userAuthentication = inMemoryTokenStore.readAuthentication(accessToken).getUserAuthentication();
+        Authentication userAuthentication = accessTokenValidationService.loadAuthentication(accessToken)
+                .getUserAuthentication();
         Object o = userAuthentication.getPrincipal();
         if (o instanceof UserEntity) {
             UserEntity userEntity = (UserEntity) o;

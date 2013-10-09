@@ -2,6 +2,7 @@ package org.osiam.resources.controller
 
 import org.joda.time.format.DateTimeFormatter
 import org.joda.time.format.ISODateTimeFormat
+import org.osiam.security.authorization.AccessTokenValidationService
 import org.osiam.storage.entities.EmailEntity
 import org.osiam.storage.entities.MetaEntity
 import org.osiam.storage.entities.NameEntity
@@ -14,8 +15,8 @@ import spock.lang.Specification
 import javax.servlet.http.HttpServletRequest
 
 class   MeControllerTest extends Specification {
-    InMemoryTokenStore tokenStore = Mock(InMemoryTokenStore)
-    def underTest = new MeController(inMemoryTokenStore: tokenStore)
+    def accessTokenValidationService = Mock(AccessTokenValidationService)
+    def underTest = new MeController(accessTokenValidationService: accessTokenValidationService)
     OAuth2Authentication authentication = Mock(OAuth2Authentication)
     HttpServletRequest request = Mock(HttpServletRequest)
     Authentication userAuthentication = Mock(Authentication)
@@ -35,7 +36,7 @@ class   MeControllerTest extends Specification {
 
         then:
         1 * request.getParameter("access_token") >> "access_token"
-        1 * tokenStore.readAuthentication("access_token") >> authentication
+        1 * accessTokenValidationService.loadAuthentication("access_token") >> authentication
         1 * userAuthentication.getPrincipal() >> user
         result.email == "test@test.de"
         result.first_name == user.getName().getGivenName()
@@ -56,7 +57,7 @@ class   MeControllerTest extends Specification {
         def user = new UserEntity(active: true, name: name, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
                 emails: [new EmailEntity(primary: false, value: "test@test.de")], locale: "de_DE", userName: "fpref")
         request.getParameter("access_token") >> "access_token"
-        tokenStore.readAuthentication("access_token") >> authentication
+        accessTokenValidationService.loadAuthentication("access_token") >> authentication
         userAuthentication.getPrincipal() >> user
 
         when:
@@ -83,7 +84,7 @@ class   MeControllerTest extends Specification {
         then:
         1 * request.getParameter("access_token") >> null
         1 * request.getHeader("Authorization") >> "Bearer access_token"
-        1 * tokenStore.readAuthentication("access_token") >> authentication
+        1 * accessTokenValidationService.loadAuthentication("access_token") >> authentication
         1 * userAuthentication.getPrincipal() >> user
         result
 
@@ -96,7 +97,7 @@ class   MeControllerTest extends Specification {
         then:
         1 * request.getParameter("access_token") >> null
         1 * request.getHeader("Authorization") >> "Bearer access_token"
-        1 * tokenStore.readAuthentication("access_token") >> authentication
+        1 * accessTokenValidationService.loadAuthentication("access_token") >> authentication
         1 * userAuthentication.getPrincipal() >> new Object()
         def e = thrown(IllegalArgumentException)
         e.message == "User was not authenticated with OSIAM."
@@ -112,7 +113,7 @@ class   MeControllerTest extends Specification {
         then:
         1 * request.getParameter("access_token") >> null
         1 * request.getHeader("Authorization") >> "Bearer access_token"
-        1 * tokenStore.readAuthentication("access_token") >> authentication
+        1 * accessTokenValidationService.loadAuthentication("access_token") >> authentication
         1 * userAuthentication.getPrincipal() >> user
         result.getEmail() == null
     }
@@ -128,7 +129,7 @@ class   MeControllerTest extends Specification {
         then:
         1 * request.getParameter("access_token") >> null
         1 * request.getHeader("Authorization") >> "Bearer access_token"
-        1 * tokenStore.readAuthentication("access_token") >> authentication
+        1 * accessTokenValidationService.loadAuthentication("access_token") >> authentication
         1 * userAuthentication.getPrincipal() >> user
         result.getName() == null
         result.getFirst_name() == null

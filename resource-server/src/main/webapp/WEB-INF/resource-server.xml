@@ -107,8 +107,14 @@
         </constructor-arg>
     </bean>
 
+    <authentication-manager xmlns="http://www.springframework.org/schema/security" />
+
+    <bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
+        <constructor-arg value="512"/>
+        <property name="iterations" value="1000"/>
+    </bean>
+
     <!-- filter to validate the delivered access token -->
     <oauth:resource-server id="resourceServerFilter" resource-id="oauth2res" token-services-ref="accessTokenValidationService"/>
 
-    <bean id="accessTokenValidationService" class="org.osiam.security.authorization.AccessTokenValidationService"/>
 </beans>
