@@ -94,16 +94,6 @@
     <bean id="tokenStore" class="org.springframework.security.oauth2.provider.token.InMemoryTokenStore"/>
 
 
-    <!-- TODO: do we need this and does it affect the Login/Grant Access with ROLE_USER ??-->
-    <!-- Enabled @Secured annotation -->
-    <sec:global-method-security pre-post-annotations="enabled" proxy-target-class="true">
-        <!--you could also wire in the expression handler up at the layer of the http filters. See https://jira.springsource.org/browse/SEC-1452 -->
-        <sec:expression-handler ref="oauthExpressionHandler"/>
-    </sec:global-method-security>
-    <!-- handles denied accesses of @secured methods -->
-    <oauth:expression-handler id="oauthExpressionHandler"/>
-
-
     <!-- view resolver to find JSP's -->
     <bean id="viewResolver" class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
         <property name="viewResolvers">
