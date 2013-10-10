@@ -28,8 +28,8 @@ import org.osiam.helper.HttpClientHelper;
 import org.osiam.resources.ClientSpring;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
-import org.springframework.stereotype.Component;
 
+import javax.inject.Named;
 import java.io.IOException;
 
 
@@ -37,7 +37,7 @@ import java.io.IOException;
  * This class is used by clientAuthenticationManager in Spring to authenticate a client when trading an auth_code to an
  * access_token.
  */
-@Component("clientDetails")
+@Named("clientDetails")
 public class ClientDetailsLoadingBean implements ClientDetailsService {
 
     private static final String URL = "http://localhost:8080/osiam-resource-server/authentication/client/";

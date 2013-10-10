@@ -28,15 +28,15 @@ import org.osiam.helper.HttpClientHelper;
 import org.osiam.resources.UserSpring;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.stereotype.Component;
 
+import javax.inject.Named;
 import java.io.IOException;
 
-@Component("userDetailsService")
 /**
  * Mainly used for demonstration, it is used to validate the user login, before he grants or denies the client access
  * to a resource.
  */
+@Named("userDetailsService")
 public class AuthenticationBean implements UserDetailsService {
 
     private static final String URL = "http://localhost:8080/osiam-resource-server/authentication/user/";

@@ -5,9 +5,9 @@ import org.osiam.security.authentication.ClientDetailsLoadingBean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.approval.DefaultUserApprovalHandler;
-import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.Date;
 
 /**
@@ -16,7 +16,7 @@ import java.util.Date;
  * Additionally an expiry period can be configured if the implicit is not desired and the user need to approve once.
  * After that he will be asked again only if the period expires
  */
-@Component("userApprovalHandler")
+@Named("userApprovalHandler")
 public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
 
     private static final int MILLISECONDS = 1000;
