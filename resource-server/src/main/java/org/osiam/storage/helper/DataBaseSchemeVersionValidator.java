@@ -24,8 +24,6 @@
 package org.osiam.storage.helper;
 
 import org.osiam.storage.entities.DBVersion;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +33,6 @@ import javax.persistence.PersistenceContext;
 
 @Repository
 @Transactional
-@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class DataBaseSchemeVersionValidator {
 
     @PersistenceContext

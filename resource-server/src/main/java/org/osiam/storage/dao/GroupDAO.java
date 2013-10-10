@@ -29,8 +29,6 @@ import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.InternalIdSkeleton;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +39,6 @@ import java.util.logging.Level;
 
 @Repository
 @Transactional
-@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class GroupDAO extends GetInternalIdSkeleton implements GenericDAO<GroupEntity> {
 
     @Override
