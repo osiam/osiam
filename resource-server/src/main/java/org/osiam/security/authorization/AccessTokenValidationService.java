@@ -3,11 +3,10 @@ package org.osiam.security.authorization;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.osiam.helper.HttpClientHelper;
 import org.osiam.security.OAuth2AuthenticationSpring;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
@@ -15,7 +14,7 @@ import java.io.IOException;
  * @author: Andreas Grau, tarent solutions GmbH, 30.09.13
  * @version: 1.0
  */
-@Component("accessTokenValidationService")
+@Service
 public class AccessTokenValidationService implements ResourceServerTokenServices {
 
     private ObjectMapper mapper = new ObjectMapper();

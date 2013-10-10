@@ -2,6 +2,8 @@ package org.osiam.storage.dao;
 
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.storage.entities.ClientEntity;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +14,7 @@ import java.util.List;
 
 @Repository
 @Transactional
+@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ClientDao {
 
     @PersistenceContext
