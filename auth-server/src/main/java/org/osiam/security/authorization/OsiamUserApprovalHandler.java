@@ -69,8 +69,7 @@ public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
     }
 
     private ClientSpring getClientDetails(AuthorizationRequest authorizationRequest) {
-        clientDetailsLoadingBean.loadClientByClientId(authorizationRequest.getClientId());
-        return clientDetailsLoadingBean.getClientSpring();
+        return (ClientSpring) clientDetailsLoadingBean.loadClientByClientId(authorizationRequest.getClientId());
     }
 
 }

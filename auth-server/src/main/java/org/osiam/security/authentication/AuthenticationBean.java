@@ -41,11 +41,16 @@ public class AuthenticationBean implements UserDetailsService {
 
     private static final String URL = "http://localhost:8080/osiam-resource-server/authentication/user/";
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper; //NOSONAR : need to mock the dependency therefor the final identifier was removed
+    private HttpClientHelper httpClientHelper; //NOSONAR : need to mock the dependency therefor the final identifier was removed
+
+    public AuthenticationBean() {
+        mapper = new ObjectMapper();
+        httpClientHelper = new HttpClientHelper();
+    }
 
     @Override
     public UserDetails loadUserByUsername(final String username) {
-        final HttpClientHelper httpClientHelper = new HttpClientHelper();
         final String result = httpClientHelper.executeHttpGet(URL + username);
 
         final UserSpring userSpring;

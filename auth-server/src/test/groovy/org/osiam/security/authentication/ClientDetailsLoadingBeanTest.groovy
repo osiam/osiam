@@ -23,21 +23,54 @@
 
 package org.osiam.security.authentication
 
-import spock.lang.Ignore
+import org.codehaus.jackson.map.ObjectMapper
+import org.osiam.helper.HttpClientHelper
+import org.osiam.resources.ClientSpring
 import spock.lang.Specification
 
 class ClientDetailsLoadingBeanTest extends Specification {
 
-    def clientDaoMock = Mock()
-    def underTest = new ClientDetailsLoadingBean(clientDao: clientDaoMock)
+    def jacksonMapperMock = Mock(ObjectMapper)
+    def httpClientHelperMock = Mock(HttpClientHelper)
+    def clientDetailsLoadingBean = new ClientDetailsLoadingBean(mapper: jacksonMapperMock, httpClientHelper: httpClientHelperMock)
 
-    @Ignore
-    def "should return a client"(){
+    def "ClientDetailsLoadingBean should implement springs ClientDetailsService and therefore returning a client found by client ID as ClientSpring representation"(){
+        given:
+        def resultingClient = "the resulting client as JSON string"
+        def clientSpringMock = Mock(ClientSpring)
+
         when:
-        underTest.loadClientByClientId("hanz")
+        def result = clientDetailsLoadingBean.loadClientByClientId("ClientId")
 
         then:
-        //1 * clientDaoMock.getClient("hanz")
-        true
+        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-resource-server/authentication/client/ClientId") >> resultingClient
+        1 * jacksonMapperMock.readValue(resultingClient, ClientSpring.class) >> clientSpringMock
+        result instanceof ClientSpring
+    }
+
+    def "If jackson throws an IOException it should be mapped to an RuntimeException"(){
+        given:
+        def resultingClient = "the resulting client as JSON string"
+
+        when:
+        clientDetailsLoadingBean.loadClientByClientId("ClientId")
+
+        then:
+        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-resource-server/authentication/client/ClientId") >> resultingClient
+        1 * jacksonMapperMock.readValue(resultingClient, ClientSpring.class) >> {throw new IOException()}
+        thrown(RuntimeException)
+    }
+
+    def "An update of the client to set the expiry date should be possible"() {
+        given:
+        def clientSpringMock = Mock(ClientSpring)
+        def oldClientExpiryDate = new Date()
+
+        when:
+        clientDetailsLoadingBean.updateClient(clientSpringMock, "ClientId")
+
+        then:
+        1 * clientSpringMock.getExpiry() >> oldClientExpiryDate
+        1 * httpClientHelperMock.executeHttpPut("http://localhost:8080/osiam-resource-server/authentication/client/ClientId", "expiry", oldClientExpiryDate.toString())
     }
 }

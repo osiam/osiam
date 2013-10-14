@@ -14,7 +14,6 @@ import org.springframework.security.oauth2.provider.code.AuthorizationRequestHol
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,12 +29,13 @@ public class LessStrictRedirectUriAuthorizationCodeTokenGranter extends Abstract
 
 
     private static final String GRANT_TYPE = "authorization_code";
-    @Inject
+
     private AuthorizationCodeServices authorizationCodeServices;
 
     public LessStrictRedirectUriAuthorizationCodeTokenGranter(AuthorizationServerTokenServices tokenServices,
-                                                              ClientDetailsService clientDetailsService) {
+                        AuthorizationCodeServices authorizationCodeServices, ClientDetailsService clientDetailsService) {
         super(tokenServices, clientDetailsService, GRANT_TYPE);
+        this.authorizationCodeServices = authorizationCodeServices;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class LessStrictRedirectUriAuthorizationCodeTokenGranter extends Abstract
         // in the pendingAuthorizationRequest. We do want to check that a secret is provided
         // in the token request, but that happens elsewhere.
         Map<String, String> combinedParameters =
-                new HashMap<String, String>(storedAuth.getAuthenticationRequest().getAuthorizationParameters());
+                new HashMap<>(storedAuth.getAuthenticationRequest().getAuthorizationParameters());
         // Combine the parameters adding the new ones last so they override if there are any clashes
         combinedParameters.putAll(parameters);
         // Similarly scopes are not required in the token request, so we don't make a comparison here, just

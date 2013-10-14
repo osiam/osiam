@@ -23,24 +23,41 @@
 
 package org.osiam.security.authentication
 
-import spock.lang.Ignore
+import org.codehaus.jackson.map.ObjectMapper
+import org.osiam.helper.HttpClientHelper
+import org.osiam.resources.UserSpring
 import spock.lang.Specification
 
 class AuthenticationBeanTest extends Specification {
-    def userDao = Mock()
-    def underTest = new AuthenticationBean(userDAO: userDao)
 
-    @Ignore
-    def "should return an user found by userdao"() {
+    def jacksonMapperMock = Mock(ObjectMapper)
+    def httpClientHelperMock = Mock(HttpClientHelper)
+    def authenticationBean = new AuthenticationBean(mapper: jacksonMapperMock, httpClientHelper: httpClientHelperMock)
+
+    def "AuthenticationBean should implement springs UserDetailsService and therefore returning a user found by user name as UserSpring representation"() {
         given:
-        def user = Mock()
-        when:
-        def result = underTest.loadUserByUsername("hui")
-        then:
-        //1 * userDao.getByUsername("hui") >> user
-        result == user
+        def userSpringMock = Mock(UserSpring)
+        def resultingUser = "the resulting user as JSON string"
 
+        when:
+        def result = authenticationBean.loadUserByUsername("UserName")
+
+        then:
+        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-resource-server/authentication/user/UserName") >> resultingUser
+        1 * jacksonMapperMock.readValue(resultingUser, UserSpring.class) >> userSpringMock
+        result instanceof UserSpring
     }
 
+    def "If jackson throws an IOException it should be mapped to an RuntimeException"() {
+        given:
+        def resultingUser = "the resulting user as JSON string"
 
+        when:
+        authenticationBean.loadUserByUsername("UserName")
+
+        then:
+        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-resource-server/authentication/user/UserName") >> resultingUser
+        1 * jacksonMapperMock.readValue(resultingUser, UserSpring.class) >> {throw new IOException()}
+        thrown(RuntimeException.class)
+    }
 }

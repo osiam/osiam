@@ -42,30 +42,24 @@ public class ClientDetailsLoadingBean implements ClientDetailsService {
 
     private static final String URL = "http://localhost:8080/osiam-resource-server/authentication/client/";
 
-    private final ObjectMapper mapper = new ObjectMapper();
-
-    private ClientSpring clientSpring;
-
-    private final HttpClientHelper httpClientHelper;
+    private ObjectMapper mapper; //NOSONAR : need to mock the dependency therefor the final identifier was removed
+    private HttpClientHelper httpClientHelper; //NOSONAR : need to mock the dependency therefor the final identifier was removed
 
     public ClientDetailsLoadingBean() {
+        mapper = new ObjectMapper();
         httpClientHelper = new HttpClientHelper();
     }
 
     @Override
     public ClientDetails loadClientByClientId(final String clientId) {
         final String response = httpClientHelper.executeHttpGet(URL + clientId);
-
+        ClientSpring clientSpring;
         try {
             clientSpring = mapper.readValue(response, ClientSpring.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        return clientSpring;
-    }
-
-    public ClientSpring getClientSpring() {
         return clientSpring;
     }
 
