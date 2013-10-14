@@ -13,9 +13,13 @@ import java.io.IOException;
 @Service
 public class AccessTokenValidationService implements ResourceServerTokenServices {
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
+    private HttpClientHelper httpClient;
 
-    private HttpClientHelper httpClient = new HttpClientHelper();
+    public AccessTokenValidationService() {
+        mapper = new ObjectMapper();
+        httpClient = new HttpClientHelper();
+    }
 
     @Override
     public OAuth2Authentication loadAuthentication(String accessToken) {

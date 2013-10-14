@@ -37,10 +37,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -106,10 +106,10 @@ public class AuthenticationController {
     @ResponseStatus(HttpStatus.OK)
     public void updateClientExpiry(@PathVariable final String id, @RequestBody String expiry) throws IOException, ParseException {
 
-        final DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        final SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
 
         ClientEntity dbClient = clientDao.getClient(id);
-        dbClient.setExpiry(format.parse(expiry));
+        dbClient.setExpiry(sdf.parse(expiry));
         clientDao.update(dbClient, id);
     }
 }
