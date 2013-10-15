@@ -57,7 +57,7 @@ public class AuthenticationBean implements UserDetailsService {
         try {
             userSpring = mapper.readValue(result, UserSpring.class);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
         }
 
         return userSpring;

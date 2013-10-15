@@ -57,7 +57,7 @@ public class ClientDetailsLoadingBean implements ClientDetailsService {
         try {
             clientSpring = mapper.readValue(response, ClientSpring.class);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
         }
 
         return clientSpring;
