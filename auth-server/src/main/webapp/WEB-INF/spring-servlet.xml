@@ -84,7 +84,8 @@
     <!-- the token storage managing all access tokens -->
     <bean id="tokenStore" class="org.springframework.security.oauth2.provider.token.InMemoryTokenStore"/>
 
-    <bean id="authorizationCodeServices" class="org.springframework.security.oauth2.provider.code.InMemoryAuthorizationCodeServices"/>
+    <bean id="authorizationCodeServices"
+          class="org.springframework.security.oauth2.provider.code.InMemoryAuthorizationCodeServices"/>
 
     <!-- view resolver to find JSP's -->
     <bean id="viewResolver" class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
@@ -108,6 +109,8 @@
     <mvc:annotation-driven/>
 
     <mvc:default-servlet-handler/>
+
+    <context:property-placeholder location="classpath:osiam.properties"/>
 
     <context:component-scan base-package="org.osiam"/>
     <context:annotation-config/>
