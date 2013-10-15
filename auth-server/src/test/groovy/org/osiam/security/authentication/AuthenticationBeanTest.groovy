@@ -32,7 +32,8 @@ class AuthenticationBeanTest extends Specification {
 
     def jacksonMapperMock = Mock(ObjectMapper)
     def httpClientHelperMock = Mock(HttpClientHelper)
-    def authenticationBean = new AuthenticationBean(mapper: jacksonMapperMock, httpClientHelper: httpClientHelperMock)
+    def authenticationBean = new AuthenticationBean(mapper: jacksonMapperMock, httpClientHelper: httpClientHelperMock,
+            httpScheme: "http", serverHost: "localhost", serverPort: 8080)
 
     def "AuthenticationBean should implement springs UserDetailsService and therefore returning a user found by user name as UserSpring representation"() {
         given:

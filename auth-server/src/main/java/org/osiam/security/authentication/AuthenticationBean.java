@@ -26,6 +26,7 @@ package org.osiam.security.authentication;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.osiam.helper.HttpClientHelper;
 import org.osiam.resources.UserSpring;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -39,7 +40,12 @@ import java.io.IOException;
 @Named("userDetailsService")
 public class AuthenticationBean implements UserDetailsService {
 
-    private static final String URL = "http://localhost:8080/osiam-resource-server/authentication/user/";
+    @Value("${osiam.server.port}")
+    private int serverPort;
+    @Value("${osiam.server.host}")
+    private String serverHost;
+    @Value("${osiam.server.http.scheme}")
+    private String httpScheme;
 
     private ObjectMapper mapper; //NOSONAR : need to mock the dependency therefor the final identifier was removed
     private HttpClientHelper httpClientHelper; //NOSONAR : need to mock the dependency therefor the final identifier was removed
@@ -51,7 +57,9 @@ public class AuthenticationBean implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(final String username) {
-        final String result = httpClientHelper.executeHttpGet(URL + username);
+        final String serverUri = httpScheme + "://" + serverHost + ":"+ serverPort + "/osiam-resource-server/authentication/user/";
+
+        final String result = httpClientHelper.executeHttpGet(serverUri + username);
 
         final UserSpring userSpring;
         try {

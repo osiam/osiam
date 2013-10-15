@@ -26,6 +26,7 @@ package org.osiam.security.authentication;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.osiam.helper.HttpClientHelper;
 import org.osiam.resources.ClientSpring;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 
@@ -40,7 +41,12 @@ import java.io.IOException;
 @Named("clientDetails")
 public class ClientDetailsLoadingBean implements ClientDetailsService {
 
-    private static final String URL = "http://localhost:8080/osiam-resource-server/authentication/client/";
+    @Value("${osiam.server.port}")
+    private int serverPort;
+    @Value("${osiam.server.host}")
+    private String serverHost;
+    @Value("${osiam.server.http.scheme}")
+    private String httpScheme;
 
     private ObjectMapper mapper; //NOSONAR : need to mock the dependency therefor the final identifier was removed
     private HttpClientHelper httpClientHelper; //NOSONAR : need to mock the dependency therefor the final identifier was removed
@@ -52,7 +58,9 @@ public class ClientDetailsLoadingBean implements ClientDetailsService {
 
     @Override
     public ClientDetails loadClientByClientId(final String clientId) {
-        final String response = httpClientHelper.executeHttpGet(URL + clientId);
+        final String serverUri = httpScheme + "://" + serverHost + ":"+ serverPort + "/osiam-resource-server/authentication/client/";
+
+        final String response = httpClientHelper.executeHttpGet(serverUri + clientId);
         ClientSpring clientSpring;
         try {
             clientSpring = mapper.readValue(response, ClientSpring.class);
@@ -64,6 +72,7 @@ public class ClientDetailsLoadingBean implements ClientDetailsService {
     }
 
     public void updateClient(ClientSpring client, String clientId) {
-        httpClientHelper.executeHttpPut(URL + clientId, "expiry", client.getExpiry().toString());
+        final String serverUri = httpScheme + "://" + serverHost + ":"+ serverPort + "/osiam-resource-server/authentication/client/";
+        httpClientHelper.executeHttpPut(serverUri + clientId, "expiry", client.getExpiry().toString());
     }
 }

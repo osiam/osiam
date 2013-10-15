@@ -32,7 +32,8 @@ class ClientDetailsLoadingBeanTest extends Specification {
 
     def jacksonMapperMock = Mock(ObjectMapper)
     def httpClientHelperMock = Mock(HttpClientHelper)
-    def clientDetailsLoadingBean = new ClientDetailsLoadingBean(mapper: jacksonMapperMock, httpClientHelper: httpClientHelperMock)
+    def clientDetailsLoadingBean = new ClientDetailsLoadingBean(mapper: jacksonMapperMock, httpClientHelper: httpClientHelperMock,
+        httpScheme: "http", serverHost: "localhost", serverPort: 8080)
 
     def "ClientDetailsLoadingBean should implement springs ClientDetailsService and therefore returning a client found by client ID as ClientSpring representation"(){
         given:
