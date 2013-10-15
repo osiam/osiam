@@ -30,7 +30,7 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
         try {
             oAuth2AuthenticationSpring = mapper.readValue(result, OAuth2AuthenticationSpring.class);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
         }
 
         return new OAuth2Authentication(oAuth2AuthenticationSpring.getAuthorizationRequestSpring(), oAuth2AuthenticationSpring.getAuthenticationSpring());
@@ -45,7 +45,7 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
         try {
             oAuth2AccessToken = mapper.readValue(response, OAuth2AccessToken.class);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
         }
         return oAuth2AccessToken;
     }

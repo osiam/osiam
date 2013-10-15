@@ -79,7 +79,7 @@ public class MetaEntity {
     }
 
     public Date getCreated() {
-        return created;
+        return (Date) created.clone();
     }
 
     public void setCreated(Date created) {
@@ -87,7 +87,7 @@ public class MetaEntity {
     }
 
     public Date getLastModified() {
-        return lastModified;
+        return (Date) lastModified.clone();
     }
 
     public void setLastModified(Date lastModified) {
