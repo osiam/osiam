@@ -3,6 +3,7 @@ package org.osiam.security.authorization;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.osiam.helper.HttpClientHelper;
 import org.osiam.security.OAuth2AuthenticationSpring;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
@@ -16,6 +17,13 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
     private ObjectMapper mapper;
     private HttpClientHelper httpClient;
 
+    @Value("${osiam.server.port}")
+    private int serverPort;
+    @Value("${osiam.server.host}")
+    private String serverHost;
+    @Value("${osiam.server.http.scheme}")
+    private String httpScheme;
+
     public AccessTokenValidationService() {
         mapper = new ObjectMapper();
         httpClient = new HttpClientHelper();
@@ -23,8 +31,9 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
 
     @Override
     public OAuth2Authentication loadAuthentication(String accessToken) {
+        final String serverUri = httpScheme + "://" + serverHost + ":"+ serverPort + "/osiam-auth-server";
 
-        String result = httpClient.executeHttpGet("http://localhost:8080/osiam-auth-server/token/validate/" + accessToken);
+        String result = httpClient.executeHttpGet(serverUri + "/token/validate/" + accessToken);
 
         OAuth2AuthenticationSpring oAuth2AuthenticationSpring;
         try {
@@ -38,8 +47,9 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
 
     @Override
     public OAuth2AccessToken readAccessToken(String accessToken) {
+        final String serverUri = httpScheme + "://" + serverHost + ":"+ serverPort + "/osiam-auth-server";
 
-        String response = httpClient.executeHttpGet("http://localhost:8080/osiam-auth-server/token/" + accessToken);
+        String response = httpClient.executeHttpGet(serverUri + "/token/" + accessToken);
 
         OAuth2AccessToken oAuth2AccessToken;
         try {
