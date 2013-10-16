@@ -37,7 +37,7 @@ class GroupGetTest extends Specification {
     EntityManager em = Mock(EntityManager)
     GroupDAO dao = new GroupDAO(em: em)
     def underTest = new SCIMGroupProvisioningBean(groupDAO: dao)
-    def internalId = UUID.randomUUID()
+    def internalId = UUID.randomUUID().toString()
     def query = Mock(Query)
 
 
@@ -50,13 +50,13 @@ class GroupGetTest extends Specification {
         def queryResults = []
 
         when:
-        underTest.getById(internalId.toString())
+        underTest.getById(internalId)
         then:
         1 * em.createNamedQuery("getById") >> query
         1 * query.setParameter("id", internalId);
         1 * query.getResultList() >> queryResults
         def e = thrown(ResourceNotFoundException)
-        e.message == "Resource " + internalId.toString() + " not found."
+        e.message == "Resource " + internalId + " not found."
 
     }
 
@@ -64,10 +64,10 @@ class GroupGetTest extends Specification {
     def "should get a group"() {
         given:
 
-        def group = new Group.Builder().setId(internalId.toString()).build()
+        def group = new Group.Builder().setId(internalId).build()
         def queryResults = [GroupEntity.fromScim(group)]
         when:
-        def result = underTest.getById(internalId.toString())
+        def result = underTest.getById(internalId)
         then:
         1 * em.createNamedQuery("getById") >> query
         1 * query.setParameter("id", internalId);

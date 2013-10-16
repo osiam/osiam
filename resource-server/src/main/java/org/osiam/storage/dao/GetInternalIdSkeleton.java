@@ -64,7 +64,7 @@ public abstract class GetInternalIdSkeleton {
 
     protected <T extends InternalIdSkeleton> T getInternalIdSkeleton(String id) {
         Query query = em.createNamedQuery("getById");
-        query.setParameter("id", UUID.fromString(id));
+        query.setParameter("id", id);
         return getSingleInternalIdSkeleton(query, id);
     }
 
