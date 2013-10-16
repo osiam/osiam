@@ -38,7 +38,7 @@ class TokenControllerTest extends Specification {
         value == ['/token']
     }
 
-    def "The validateToken method annotations should be present with appropriate configuration for RequestMapping and Response Body"(){
+    def "The validateToken method annotations should be present with appropriate configuration for RequestMapping and Response Body"() {
         given:
         Method method = TokenController.class.getDeclaredMethod("validateToken", String)
 
@@ -52,7 +52,7 @@ class TokenControllerTest extends Specification {
         body
     }
 
-    def "The getToken method annotations should be present with appropriate configuration for RequestMapping and Response Body"(){
+    def "The getToken method annotations should be present with appropriate configuration for RequestMapping and Response Body"() {
         given:
         Method method = TokenController.class.getDeclaredMethod("getToken", String)
 
@@ -66,7 +66,7 @@ class TokenControllerTest extends Specification {
         body
     }
 
-    def "The TokenController should implement springs token service for token validation and returning OAuth2AuthenticationSpring"() {
+    def "The TokenController should implement spring's token service for token validation and returning OAuth2AuthenticationSpring"() {
         given:
         def oAuth2AuthenticationMock = Mock(OAuth2Authentication)
 
@@ -74,7 +74,7 @@ class TokenControllerTest extends Specification {
         def result = tokenController.validateToken("theToken")
 
         then:
-        1 * defaultTokenServicesMock.loadAuthentication("theToken") >>oAuth2AuthenticationMock
+        1 * defaultTokenServicesMock.loadAuthentication("theToken") >> oAuth2AuthenticationMock
         1 * oAuth2AuthenticationMock.getUserAuthentication() >> Mock(AuthenticationSpring)
         1 * oAuth2AuthenticationMock.getAuthorizationRequest() >> Mock(AuthorizationRequestSpring)
         result instanceof OAuth2AuthenticationSpring
