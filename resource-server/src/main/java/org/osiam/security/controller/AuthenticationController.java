@@ -75,6 +75,7 @@ public class AuthenticationController {
 
         UserSpring springUser = new UserSpring();
         springUser.setUserName(dbUser.getUserName());
+        springUser.setId(dbUser.getId().toString());
         springUser.setPassword(dbUser.getPassword());
         springUser.setRoles(springRoles);
         return springUser;
