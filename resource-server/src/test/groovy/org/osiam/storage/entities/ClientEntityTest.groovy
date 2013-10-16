@@ -61,6 +61,19 @@ class ClientEntityTest extends Specification {
         under_test.getExpiry() == date
     }
 
+
+    def "should not throw null pointer exception if expiry is null"() {
+        given:
+        under_test.setExpiry(null)
+
+        when:
+        def result = under_test.getExpiry()
+
+        then:
+        notThrown(NullPointerException)
+        result == null
+    }
+
     def "should generate a secret"() {
         when:
         def b = new ClientEntity()
