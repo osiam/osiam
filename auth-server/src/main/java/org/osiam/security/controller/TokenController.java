@@ -57,21 +57,14 @@ public class TokenController {
         OAuth2Authentication oAuth2Authentication = tokenServices.loadAuthentication(token);
 
         OAuth2AuthenticationSpring oAuth2AuthenticationSpring = new OAuth2AuthenticationSpring();
+        oAuth2AuthenticationSpring.setAuthenticationSpring(mappingFrom(oAuth2Authentication.getUserAuthentication()));
+        oAuth2AuthenticationSpring.setAuthorizationRequestSpring(mappingFrom(oAuth2Authentication.getAuthorizationRequest()));
 
-        Authentication userAuthentication = oAuth2Authentication.getUserAuthentication();
+        return oAuth2AuthenticationSpring;
+    }
 
-        AuthenticationSpring authenticationSpring = new AuthenticationSpring();
-        authenticationSpring.setPrincipal(userAuthentication.getPrincipal());
-        authenticationSpring.setName(userAuthentication.getName());
-        authenticationSpring.setAuthorities((Collection<? extends RoleSpring>) userAuthentication.getAuthorities());
-        authenticationSpring.setCredentials(userAuthentication.getCredentials());
-        authenticationSpring.setDetails(userAuthentication.getDetails());
-        authenticationSpring.setAuthenticated(userAuthentication.isAuthenticated());
-
+    private AuthorizationRequestSpring mappingFrom(AuthorizationRequest authorizationRequest) {
         AuthorizationRequestSpring authorizationRequestSpring = new AuthorizationRequestSpring();
-
-        AuthorizationRequest authorizationRequest = oAuth2Authentication.getAuthorizationRequest();
-
         authorizationRequestSpring.setApprovalParameters(authorizationRequest.getApprovalParameters());
         authorizationRequestSpring.setApproved(authorizationRequest.isApproved());
         authorizationRequestSpring.setAuthorities(authorizationRequest.getAuthorities());
@@ -83,11 +76,18 @@ public class TokenController {
         authorizationRequestSpring.setResponseTypes(authorizationRequest.getResponseTypes());
         authorizationRequestSpring.setScope(authorizationRequest.getScope());
         authorizationRequestSpring.setState(authorizationRequest.getState());
+        return authorizationRequestSpring;
+    }
 
-        oAuth2AuthenticationSpring.setAuthenticationSpring(authenticationSpring);
-        oAuth2AuthenticationSpring.setAuthorizationRequestSpring(authorizationRequestSpring);
-
-        return oAuth2AuthenticationSpring;
+    private AuthenticationSpring mappingFrom(Authentication userAuthentication) {
+        AuthenticationSpring authenticationSpring = new AuthenticationSpring();
+        authenticationSpring.setPrincipal(userAuthentication.getPrincipal());
+        authenticationSpring.setName(userAuthentication.getName());
+        authenticationSpring.setAuthorities((Collection<? extends RoleSpring>) userAuthentication.getAuthorities());
+        authenticationSpring.setCredentials(userAuthentication.getCredentials());
+        authenticationSpring.setDetails(userAuthentication.getDetails());
+        authenticationSpring.setAuthenticated(userAuthentication.isAuthenticated());
+        return authenticationSpring;
     }
 
     @RequestMapping(value = "/{token}", method = RequestMethod.GET)
