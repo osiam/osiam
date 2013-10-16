@@ -23,6 +23,7 @@
 
 package org.osiam.security.controller;
 
+import org.osiam.resources.RoleSpring;
 import org.osiam.security.AuthenticationSpring;
 import org.osiam.security.AuthorizationRequestSpring;
 import org.osiam.security.OAuth2AuthenticationSpring;
@@ -36,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.inject.Inject;
+import java.util.Collection;
 
 /**
  * This Controller is used to handle OAuth2 access tokens with Spring Security.
@@ -53,8 +55,30 @@ public class TokenController {
         OAuth2Authentication oAuth2Authentication = tokenServices.loadAuthentication(token);
 
         OAuth2AuthenticationSpring oAuth2AuthenticationSpring = new OAuth2AuthenticationSpring();
-        oAuth2AuthenticationSpring.setAuthenticationSpring((AuthenticationSpring) oAuth2Authentication.getUserAuthentication());
-        oAuth2AuthenticationSpring.setAuthorizationRequestSpring((AuthorizationRequestSpring) oAuth2Authentication.getAuthorizationRequest());
+
+        AuthenticationSpring authenticationSpring = new AuthenticationSpring();
+        authenticationSpring.setPrincipal(oAuth2Authentication.getUserAuthentication().getPrincipal());
+        authenticationSpring.setName(oAuth2Authentication.getUserAuthentication().getName());
+        authenticationSpring.setAuthorities((Collection<? extends RoleSpring>) oAuth2Authentication.getUserAuthentication().getAuthorities());
+        authenticationSpring.setCredentials(oAuth2Authentication.getUserAuthentication().getCredentials());
+        authenticationSpring.setDetails(oAuth2Authentication.getUserAuthentication().getDetails());
+        authenticationSpring.setAuthenticated(oAuth2Authentication.getUserAuthentication().isAuthenticated());
+
+        AuthorizationRequestSpring authorizationRequestSpring = new AuthorizationRequestSpring();
+        authorizationRequestSpring.setApprovalParameters(oAuth2Authentication.getAuthorizationRequest().getApprovalParameters());
+        authorizationRequestSpring.setApproved(oAuth2Authentication.getAuthorizationRequest().isApproved());
+        authorizationRequestSpring.setAuthorities(oAuth2Authentication.getAuthorizationRequest().getAuthorities());
+        authorizationRequestSpring.setAuthorizationParameters(oAuth2Authentication.getAuthorizationRequest().getAuthorizationParameters());
+        authorizationRequestSpring.setClientId(oAuth2Authentication.getAuthorizationRequest().getClientId());
+        authorizationRequestSpring.setDenied(oAuth2Authentication.getAuthorizationRequest().isDenied());
+        authorizationRequestSpring.setRedirectUri(oAuth2Authentication.getAuthorizationRequest().getRedirectUri());
+        authorizationRequestSpring.setResourceIds(oAuth2Authentication.getAuthorizationRequest().getResourceIds());
+        authorizationRequestSpring.setResponseTypes(oAuth2Authentication.getAuthorizationRequest().getResponseTypes());
+        authorizationRequestSpring.setScope(oAuth2Authentication.getAuthorizationRequest().getScope());
+        authorizationRequestSpring.setState(oAuth2Authentication.getAuthorizationRequest().getState());
+
+        oAuth2AuthenticationSpring.setAuthenticationSpring(authenticationSpring);
+        oAuth2AuthenticationSpring.setAuthorizationRequestSpring(authorizationRequestSpring);
 
         return oAuth2AuthenticationSpring;
     }
