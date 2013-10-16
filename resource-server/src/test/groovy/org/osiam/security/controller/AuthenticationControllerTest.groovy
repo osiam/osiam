@@ -63,6 +63,7 @@ class AuthenticationControllerTest extends Specification {
         def role = new RolesEntity()
         role.setValue("TestRole")
         def roles = [role] as Set
+        def userId = UUID.randomUUID()
 
         when:
         def result = authenticationController.getUser("userName")
@@ -72,9 +73,11 @@ class AuthenticationControllerTest extends Specification {
         1 * userEntityMock.getRoles() >> roles
         1 * userEntityMock.getUserName() >> "userName"
         1 * userEntityMock.getPassword() >> "password"
+        1 * userEntityMock.getId() >> userId
         result instanceof UserSpring
         result.getUserName() == "userName"
         result.getPassword() == "password"
+        result.getId() == userId.toString()
     }
 
     def "The getClient method annotations should be present with appropriate configuration for RequestMapping and Response Body"(){
