@@ -27,7 +27,9 @@ import org.osiam.resources.RoleSpring;
 import org.osiam.security.AuthenticationSpring;
 import org.osiam.security.AuthorizationRequestSpring;
 import org.osiam.security.OAuth2AuthenticationSpring;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.stereotype.Controller;
@@ -56,26 +58,31 @@ public class TokenController {
 
         OAuth2AuthenticationSpring oAuth2AuthenticationSpring = new OAuth2AuthenticationSpring();
 
+        Authentication userAuthentication = oAuth2Authentication.getUserAuthentication();
+
         AuthenticationSpring authenticationSpring = new AuthenticationSpring();
-        authenticationSpring.setPrincipal(oAuth2Authentication.getUserAuthentication().getPrincipal());
-        authenticationSpring.setName(oAuth2Authentication.getUserAuthentication().getName());
-        authenticationSpring.setAuthorities((Collection<? extends RoleSpring>) oAuth2Authentication.getUserAuthentication().getAuthorities());
-        authenticationSpring.setCredentials(oAuth2Authentication.getUserAuthentication().getCredentials());
-        authenticationSpring.setDetails(oAuth2Authentication.getUserAuthentication().getDetails());
-        authenticationSpring.setAuthenticated(oAuth2Authentication.getUserAuthentication().isAuthenticated());
+        authenticationSpring.setPrincipal(userAuthentication.getPrincipal());
+        authenticationSpring.setName(userAuthentication.getName());
+        authenticationSpring.setAuthorities((Collection<? extends RoleSpring>) userAuthentication.getAuthorities());
+        authenticationSpring.setCredentials(userAuthentication.getCredentials());
+        authenticationSpring.setDetails(userAuthentication.getDetails());
+        authenticationSpring.setAuthenticated(userAuthentication.isAuthenticated());
 
         AuthorizationRequestSpring authorizationRequestSpring = new AuthorizationRequestSpring();
-        authorizationRequestSpring.setApprovalParameters(oAuth2Authentication.getAuthorizationRequest().getApprovalParameters());
-        authorizationRequestSpring.setApproved(oAuth2Authentication.getAuthorizationRequest().isApproved());
-        authorizationRequestSpring.setAuthorities(oAuth2Authentication.getAuthorizationRequest().getAuthorities());
-        authorizationRequestSpring.setAuthorizationParameters(oAuth2Authentication.getAuthorizationRequest().getAuthorizationParameters());
-        authorizationRequestSpring.setClientId(oAuth2Authentication.getAuthorizationRequest().getClientId());
-        authorizationRequestSpring.setDenied(oAuth2Authentication.getAuthorizationRequest().isDenied());
-        authorizationRequestSpring.setRedirectUri(oAuth2Authentication.getAuthorizationRequest().getRedirectUri());
-        authorizationRequestSpring.setResourceIds(oAuth2Authentication.getAuthorizationRequest().getResourceIds());
-        authorizationRequestSpring.setResponseTypes(oAuth2Authentication.getAuthorizationRequest().getResponseTypes());
-        authorizationRequestSpring.setScope(oAuth2Authentication.getAuthorizationRequest().getScope());
-        authorizationRequestSpring.setState(oAuth2Authentication.getAuthorizationRequest().getState());
+
+        AuthorizationRequest authorizationRequest = oAuth2Authentication.getAuthorizationRequest();
+
+        authorizationRequestSpring.setApprovalParameters(authorizationRequest.getApprovalParameters());
+        authorizationRequestSpring.setApproved(authorizationRequest.isApproved());
+        authorizationRequestSpring.setAuthorities(authorizationRequest.getAuthorities());
+        authorizationRequestSpring.setAuthorizationParameters(authorizationRequest.getAuthorizationParameters());
+        authorizationRequestSpring.setClientId(authorizationRequest.getClientId());
+        authorizationRequestSpring.setDenied(authorizationRequest.isDenied());
+        authorizationRequestSpring.setRedirectUri(authorizationRequest.getRedirectUri());
+        authorizationRequestSpring.setResourceIds(authorizationRequest.getResourceIds());
+        authorizationRequestSpring.setResponseTypes(authorizationRequest.getResponseTypes());
+        authorizationRequestSpring.setScope(authorizationRequest.getScope());
+        authorizationRequestSpring.setState(authorizationRequest.getState());
 
         oAuth2AuthenticationSpring.setAuthenticationSpring(authenticationSpring);
         oAuth2AuthenticationSpring.setAuthorizationRequestSpring(authorizationRequestSpring);
