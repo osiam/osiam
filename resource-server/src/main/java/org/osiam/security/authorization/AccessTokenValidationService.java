@@ -1,10 +1,12 @@
 package org.osiam.security.authorization;
 
+import org.apache.http.HttpStatus;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.osiam.helper.HttpClientHelper;
 import org.osiam.security.OAuth2AuthenticationSpring;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.stereotype.Service;
@@ -31,9 +33,13 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
 
     @Override
     public OAuth2Authentication loadAuthentication(String accessToken) {
-        final String serverUri = httpScheme + "://" + serverHost + ":"+ serverPort + "/osiam-auth-server";
+        final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort + "/osiam-auth-server";
 
         String result = httpClient.executeHttpGet(serverUri + "/token/validate/" + accessToken);
+
+        if (httpClient.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+            throw new InvalidTokenException("invalid_token");
+        }
 
         OAuth2AuthenticationSpring oAuth2AuthenticationSpring;
         try {
@@ -47,7 +53,7 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
 
     @Override
     public OAuth2AccessToken readAccessToken(String accessToken) {
-        final String serverUri = httpScheme + "://" + serverHost + ":"+ serverPort + "/osiam-auth-server";
+        final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort + "/osiam-auth-server";
 
         String response = httpClient.executeHttpGet(serverUri + "/token/" + accessToken);
 
