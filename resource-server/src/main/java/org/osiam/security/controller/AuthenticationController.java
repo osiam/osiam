@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
@@ -105,9 +106,12 @@ public class AuthenticationController {
 
     @RequestMapping(value = "/client/{id}", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
-    public void updateClientExpiry(@PathVariable final String id, @RequestParam String expiry) throws IOException, ParseException {
+    public void updateClientExpiry(@PathVariable final String id, @RequestBody String body) throws IOException, ParseException {
 
         final SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
+
+        String theDate = body.split("=")[1];
+        String expiry = URLDecoder.decode(theDate, "UTF-8");
 
         ClientEntity dbClient = clientDao.getClient(id);
         dbClient.setExpiry(sdf.parse(expiry));

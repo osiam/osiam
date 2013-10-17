@@ -144,10 +144,11 @@ class AuthenticationControllerTest extends Specification {
     def "Should be able to update the client expiry date"() {
         given:
         def dateAsString = new Date(System.currentTimeMillis()).toString()
+        def expiryBody = "expiry=" + URLEncoder.encode(dateAsString, "UTF-8")
         def clientEntityMock = Mock(ClientEntity)
 
         when:
-        authenticationController.updateClientExpiry("clientId" , dateAsString)
+        authenticationController.updateClientExpiry("clientId" , expiryBody)
 
         then:
         1 * clientDaoMock.getClient("clientId") >> clientEntityMock
