@@ -105,7 +105,7 @@ public class AuthenticationController {
 
     @RequestMapping(value = "/client/{id}", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
-    public void updateClientExpiry(@PathVariable final String id, @RequestBody String expiry) throws IOException, ParseException {
+    public void updateClientExpiry(@PathVariable final String id, @RequestParam String expiry) throws IOException, ParseException {
 
         final SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
 
