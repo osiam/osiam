@@ -9,7 +9,6 @@ import org.osiam.storage.entities.NameEntity
 import org.osiam.storage.entities.UserEntity
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.provider.OAuth2Authentication
-import org.springframework.security.oauth2.provider.token.InMemoryTokenStore
 import spock.lang.Specification
 
 import javax.servlet.http.HttpServletRequest
