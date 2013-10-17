@@ -48,6 +48,10 @@
         <oauth:password/>
     </oauth:authorization-server>
 
+    <bean id="authorizationRequestManager" class="org.springframework.security.oauth2.provider.DefaultAuthorizationRequestManager">
+        <constructor-arg ref="clientDetails"/>
+    </bean>
+
     <bean id="customCompositeTokenGranter"
           class="org.springframework.security.oauth2.provider.CompositeTokenGranter">
         <constructor-arg>
