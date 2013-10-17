@@ -27,18 +27,19 @@ import org.osiam.resources.RoleSpring;
 import org.osiam.security.AuthenticationSpring;
 import org.osiam.security.AuthorizationRequestSpring;
 import org.osiam.security.OAuth2AuthenticationSpring;
+import org.osiam.security.authentication.AuthenticationError;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 
 /**
@@ -94,5 +95,12 @@ public class TokenController {
     @ResponseBody
     public OAuth2AccessToken getToken(@PathVariable final String token) {
         return tokenServices.readAccessToken(token);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseBody
+    public AuthenticationError handleClientAuthenticationException(InvalidTokenException ex, HttpServletRequest request) {
+        return new AuthenticationError("invalid_token", ex.getMessage());
     }
 }
