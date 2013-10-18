@@ -15,7 +15,7 @@ class LessStrictRedirectUriAuthorizationCodeTokenGranterTest extends Specificati
     def tokenService = Mock(AuthorizationServerTokenServices)
     def clientDetailsService = Mock(ClientDetailsService)
     def authzCodeServices = Mock(AuthorizationCodeServices)
-    def underTest = new LessStrictRedirectUriAuthorizationCodeTokenGranter(tokenService, authzCodeServices, clientDetailsService)
+    def underTest = new LessStrictRedirectUriAuthorizationCodeTokenGranter(tokenService, clientDetailsService)
     AuthorizationRequest authzRequest = Mock(AuthorizationRequest)
     AuthorizationRequestHolder storedAuth = Mock(AuthorizationRequestHolder)
     AuthorizationRequest authNRequest = Mock(AuthorizationRequest)
@@ -26,6 +26,7 @@ class LessStrictRedirectUriAuthorizationCodeTokenGranterTest extends Specificati
         authzCodeServices.consumeAuthorizationCode("12345") >> storedAuth
         storedAuth.getAuthenticationRequest() >> authNRequest
         authNRequest.getAuthorizationParameters() >> [redirect_uri: pendingRedirectUri]
+        underTest.authorizationCodeServices = authzCodeServices
         authNRequest.getRedirectUri() >> pendingRedirectUri
 
     }
