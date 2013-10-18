@@ -2,6 +2,7 @@ package org.osiam.security.authorization
 
 import org.codehaus.jackson.map.ObjectMapper
 import org.osiam.helper.HttpClientHelper
+import org.osiam.helper.HttpClientRequestResult
 import org.osiam.security.AuthenticationSpring
 import org.osiam.security.AuthorizationRequestSpring
 import org.osiam.security.OAuth2AuthenticationSpring
@@ -27,13 +28,14 @@ class AccessTokenValidationServiceTest extends Specification {
         given:
         def resultAsString = "the result"
         def oAuth2AuthenticationSpringMock = Mock(OAuth2AuthenticationSpring)
+        def response = new HttpClientRequestResult(resultAsString, 200)
 
         when:
         def result = accessTokenValidationService.loadAuthentication("accessToken")
 
         then:
-        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/validate/accessToken") >> resultAsString
-        1 * jacksonMapperMock.readValue(resultAsString, OAuth2AuthenticationSpring.class) >> oAuth2AuthenticationSpringMock
+        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/validate/accessToken") >> response
+        1 * jacksonMapperMock.readValue(response.body, OAuth2AuthenticationSpring.class) >> oAuth2AuthenticationSpringMock
         1 * oAuth2AuthenticationSpringMock.getAuthenticationSpring() >> Mock(AuthenticationSpring)
         1 * oAuth2AuthenticationSpringMock.getAuthorizationRequestSpring() >> Mock(AuthorizationRequestSpring)
         result instanceof OAuth2Authentication
@@ -42,13 +44,14 @@ class AccessTokenValidationServiceTest extends Specification {
     def "Should wrap the IOException from JacksonMapper to RuntimeException for loadAuthentication method"() {
         given:
         def resultAsString = "the result"
+        def response = new HttpClientRequestResult(resultAsString, 200)
 
         when:
         accessTokenValidationService.loadAuthentication("accessToken")
 
         then:
-        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/validate/accessToken") >> resultAsString
-        1 * jacksonMapperMock.readValue(resultAsString, OAuth2AuthenticationSpring.class) >> {throw new IOException()}
+        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/validate/accessToken") >> response
+        1 * jacksonMapperMock.readValue(response.body, OAuth2AuthenticationSpring.class) >> {throw new IOException()}
         thrown(RuntimeException)
     }
 
@@ -56,26 +59,28 @@ class AccessTokenValidationServiceTest extends Specification {
         given:
         def resultAsString = "the result"
         def oAuth2AccessTokenMock = Mock(OAuth2AccessToken)
+        def response = new HttpClientRequestResult(resultAsString, 200)
 
         when:
         def result = accessTokenValidationService.readAccessToken("accessToken")
 
         then:
-        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/accessToken") >> resultAsString
-        1 * jacksonMapperMock.readValue(resultAsString, OAuth2AccessToken.class) >> oAuth2AccessTokenMock
+        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/accessToken") >> response
+        1 * jacksonMapperMock.readValue(response.body, OAuth2AccessToken.class) >> oAuth2AccessTokenMock
         result instanceof OAuth2AccessToken
     }
 
     def "Should wrap the IOException from JacksonMapper to RuntimeException for readAccessToken method"() {
         given:
         def resultAsString = "the result"
+        def response = new HttpClientRequestResult(resultAsString, 200)
 
         when:
         accessTokenValidationService.readAccessToken("accessToken")
 
         then:
-        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/accessToken") >> resultAsString
-        1 * jacksonMapperMock.readValue(resultAsString, OAuth2AccessToken.class) >> {throw new IOException()}
+        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/accessToken") >> response
+        1 * jacksonMapperMock.readValue(response.body, OAuth2AccessToken.class) >> {throw new IOException()}
         thrown(RuntimeException)
     }
 }
