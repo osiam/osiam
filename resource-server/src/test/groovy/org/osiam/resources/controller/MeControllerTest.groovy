@@ -3,6 +3,7 @@ package org.osiam.resources.controller
 import org.joda.time.format.DateTimeFormatter
 import org.joda.time.format.ISODateTimeFormat
 import org.osiam.security.authorization.AccessTokenValidationService
+import org.osiam.storage.dao.UserDAO
 import org.osiam.storage.entities.EmailEntity
 import org.osiam.storage.entities.MetaEntity
 import org.osiam.storage.entities.NameEntity
@@ -15,7 +16,8 @@ import javax.servlet.http.HttpServletRequest
 
 class   MeControllerTest extends Specification {
     def accessTokenValidationService = Mock(AccessTokenValidationService)
-    def underTest = new MeController(accessTokenValidationService: accessTokenValidationService)
+    def userDao = Mock(UserDAO)
+    def underTest = new MeController(accessTokenValidationService: accessTokenValidationService, userDAO: userDao)
     OAuth2Authentication authentication = Mock(OAuth2Authentication)
     HttpServletRequest request = Mock(HttpServletRequest)
     Authentication userAuthentication = Mock(Authentication)
@@ -30,13 +32,19 @@ class   MeControllerTest extends Specification {
     }
 
     def "should return correct facebook representation"() {
+        given:
+        def principal = Mock(LinkedHashMap)
+        def userId = "theUserId"
+
         when:
         def result = underTest.getInformation(request)
 
         then:
         1 * request.getParameter("access_token") >> "access_token"
         1 * accessTokenValidationService.loadAuthentication("access_token") >> authentication
-        1 * userAuthentication.getPrincipal() >> user
+        1 * userAuthentication.getPrincipal() >> principal
+        1 * principal.get("id") >> userId
+        1 * userDao.getById(userId) >> user
         result.email == "test@test.de"
         result.first_name == user.getName().getGivenName()
         result.last_name == user.getName().getFamilyName()
@@ -55,14 +63,18 @@ class   MeControllerTest extends Specification {
         given:
         def user = new UserEntity(active: true, name: name, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
                 emails: [new EmailEntity(primary: false, value: "test@test.de")], locale: "de_DE", userName: "fpref")
-        request.getParameter("access_token") >> "access_token"
-        accessTokenValidationService.loadAuthentication("access_token") >> authentication
-        userAuthentication.getPrincipal() >> user
+        def principal = Mock(LinkedHashMap)
+        def userId = "theUserId"
 
         when:
         def result = underTest.getInformation(request)
 
         then:
+        1 * request.getParameter("access_token") >> "access_token"
+        1 * accessTokenValidationService.loadAuthentication("access_token") >> authentication
+        1 * userAuthentication.getPrincipal() >> principal
+        1 * principal.get("id") >> userId
+        1 * userDao.getById(userId) >> user
         result.getEmail() == null
     }
 
@@ -78,17 +90,22 @@ class   MeControllerTest extends Specification {
     }
 
     def "should get access_token in bearer format"() {
+        given:
+        def principal = Mock(LinkedHashMap)
+        def userId = "theUserId"
+
         when:
         def result = underTest.getInformation(request)
+
         then:
         1 * request.getParameter("access_token") >> null
         1 * request.getHeader("Authorization") >> "Bearer access_token"
         1 * accessTokenValidationService.loadAuthentication("access_token") >> authentication
-        1 * userAuthentication.getPrincipal() >> user
+        1 * userAuthentication.getPrincipal() >> principal
+        1 * principal.get("id") >> userId
+        1 * userDao.getById(userId) >> user
         result
-
     }
-
 
     def "should throw exception if principal is not an UserEntity"() {
         when:
@@ -107,13 +124,19 @@ class   MeControllerTest extends Specification {
         def user = new UserEntity(active: true, emails: null,
                 name: name, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
                 locale: "de_DE", userName: "fpref")
+        def principal = Mock(LinkedHashMap)
+        def userId = "theUserId"
+
         when:
         def result = underTest.getInformation(request)
+
         then:
         1 * request.getParameter("access_token") >> null
         1 * request.getHeader("Authorization") >> "Bearer access_token"
         1 * accessTokenValidationService.loadAuthentication("access_token") >> authentication
-        1 * userAuthentication.getPrincipal() >> user
+        1 * userAuthentication.getPrincipal() >> principal
+        1 * principal.get("id") >> userId
+        1 * userDao.getById(userId) >> user
         result.getEmail() == null
     }
 
@@ -122,14 +145,19 @@ class   MeControllerTest extends Specification {
         def user = new UserEntity(active: true, emails: [new EmailEntity(primary: true, value: "test@test.de")],
                 name: null, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
                 locale: "de_DE", userName: "fpref")
+        def principal = Mock(LinkedHashMap)
+        def userId = "theUserId"
 
         when:
         def result = underTest.getInformation(request)
+
         then:
         1 * request.getParameter("access_token") >> null
         1 * request.getHeader("Authorization") >> "Bearer access_token"
         1 * accessTokenValidationService.loadAuthentication("access_token") >> authentication
-        1 * userAuthentication.getPrincipal() >> user
+        1 * userAuthentication.getPrincipal() >> principal
+        1 * principal.get("id") >> userId
+        1 * userDao.getById(userId) >> user
         result.getName() == null
         result.getFirst_name() == null
         result.getLast_name() == null

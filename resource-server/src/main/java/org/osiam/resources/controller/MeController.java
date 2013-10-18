@@ -4,6 +4,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.osiam.security.authorization.AccessTokenValidationService;
+import org.osiam.storage.dao.UserDAO;
 import org.osiam.storage.entities.EmailEntity;
 import org.osiam.storage.entities.NameEntity;
 import org.osiam.storage.entities.UserEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import java.util.LinkedHashMap;
 import java.util.Set;
 
 @Controller
@@ -27,6 +29,9 @@ public class MeController {
 
     @Inject
     private AccessTokenValidationService accessTokenValidationService;
+
+    @Inject
+    private UserDAO userDAO;
 
     /**
      * This method is used to get information about the user who initialised the authorization process.
@@ -59,8 +64,9 @@ public class MeController {
         Authentication userAuthentication = accessTokenValidationService.loadAuthentication(accessToken)
                 .getUserAuthentication();
         Object o = userAuthentication.getPrincipal();
-        if (o instanceof UserEntity) {
-            UserEntity userEntity = (UserEntity) o;
+        if (o instanceof LinkedHashMap) {
+            String principalId = (String) ((LinkedHashMap) o).get("id");
+            UserEntity userEntity = userDAO.getById(principalId);
             return new FacebookInformationConstruct(userEntity);
         } else {
             throw new IllegalArgumentException("User was not authenticated with OSIAM.");
