@@ -56,11 +56,15 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
     public OAuth2AccessToken readAccessToken(String accessToken) {
         final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort + "/osiam-auth-server";
 
-        HttpClientRequestResult response = httpClient.executeHttpGet(serverUri + "/token/" + accessToken);
+        HttpClientRequestResult result = httpClient.executeHttpGet(serverUri + "/token/" + accessToken);
+
+        if (result.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+            throw new InvalidTokenException("invalid_token");
+        }
 
         OAuth2AccessToken oAuth2AccessToken;
         try {
-            oAuth2AccessToken = mapper.readValue(response.getBody(), OAuth2AccessToken.class);
+            oAuth2AccessToken = mapper.readValue(result.getBody(), OAuth2AccessToken.class);
         } catch (IOException e) {
             throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
         }

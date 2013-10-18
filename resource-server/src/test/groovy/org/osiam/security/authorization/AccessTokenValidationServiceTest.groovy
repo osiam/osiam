@@ -7,6 +7,7 @@ import org.osiam.security.AuthenticationSpring
 import org.osiam.security.AuthorizationRequestSpring
 import org.osiam.security.OAuth2AuthenticationSpring
 import org.springframework.security.oauth2.common.OAuth2AccessToken
+import org.springframework.security.oauth2.common.exceptions.InvalidTokenException
 import org.springframework.security.oauth2.provider.OAuth2Authentication
 import spock.lang.Specification
 
@@ -18,6 +19,8 @@ import spock.lang.Specification
  * To change this template use File | Settings | File Templates.
  */
 class AccessTokenValidationServiceTest extends Specification {
+
+    static final String ACCESS_TOKEN = "accessToken"
 
     def jacksonMapperMock = Mock(ObjectMapper)
     def httpClientHelperMock = Mock(HttpClientHelper)
@@ -31,7 +34,7 @@ class AccessTokenValidationServiceTest extends Specification {
         def response = new HttpClientRequestResult(resultAsString, 200)
 
         when:
-        def result = accessTokenValidationService.loadAuthentication("accessToken")
+        def result = accessTokenValidationService.loadAuthentication(ACCESS_TOKEN)
 
         then:
         1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/validate/accessToken") >> response
@@ -47,12 +50,24 @@ class AccessTokenValidationServiceTest extends Specification {
         def response = new HttpClientRequestResult(resultAsString, 200)
 
         when:
-        accessTokenValidationService.loadAuthentication("accessToken")
+        accessTokenValidationService.loadAuthentication(ACCESS_TOKEN)
 
         then:
         1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/validate/accessToken") >> response
         1 * jacksonMapperMock.readValue(response.body, OAuth2AuthenticationSpring.class) >> {throw new IOException()}
         thrown(RuntimeException)
+    }
+
+    def "Should throw InvalidTokenException if a token can't be validated"(){
+
+        given:
+        def response = new HttpClientRequestResult("Irrelevant", 401)
+
+        when:
+        accessTokenValidationService.loadAuthentication(ACCESS_TOKEN)
+        then:
+        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/validate/$ACCESS_TOKEN") >> response
+        thrown(InvalidTokenException)
     }
 
     def "Inherit from springs ResourceServerTokenServices and override the method read the OAuth2AccessToken depending on the given accessToken as String"() {
@@ -62,10 +77,10 @@ class AccessTokenValidationServiceTest extends Specification {
         def response = new HttpClientRequestResult(resultAsString, 200)
 
         when:
-        def result = accessTokenValidationService.readAccessToken("accessToken")
+        def result = accessTokenValidationService.readAccessToken(ACCESS_TOKEN)
 
         then:
-        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/accessToken") >> response
+        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/$ACCESS_TOKEN") >> response
         1 * jacksonMapperMock.readValue(response.body, OAuth2AccessToken.class) >> oAuth2AccessTokenMock
         result instanceof OAuth2AccessToken
     }
@@ -76,11 +91,23 @@ class AccessTokenValidationServiceTest extends Specification {
         def response = new HttpClientRequestResult(resultAsString, 200)
 
         when:
-        accessTokenValidationService.readAccessToken("accessToken")
+        accessTokenValidationService.readAccessToken(ACCESS_TOKEN)
 
         then:
-        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/accessToken") >> response
+        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/$ACCESS_TOKEN") >> response
         1 * jacksonMapperMock.readValue(response.body, OAuth2AccessToken.class) >> {throw new IOException()}
         thrown(RuntimeException)
+    }
+
+    def "Should throw InvalidTokenException if a token can't be read"(){
+
+        given:
+        def response = new HttpClientRequestResult("Irrelevant", 401)
+
+        when:
+        accessTokenValidationService.readAccessToken(ACCESS_TOKEN)
+        then:
+        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/$ACCESS_TOKEN") >> response
+        thrown(InvalidTokenException)
     }
 }
