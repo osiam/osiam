@@ -176,7 +176,7 @@ public class ClientEntity {
     }
 
     public Date getExpiry() {
-        return expiry !=null ? (Date) expiry.clone() : expiry;
+        return expiry !=null ? (Date) expiry.clone() : null;
     }
 
     public void setExpiry(Date expiry) {
