@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.provider.code.AuthorizationRequestHol
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 
+import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,12 +31,15 @@ public class LessStrictRedirectUriAuthorizationCodeTokenGranter extends Abstract
 
     private static final String GRANT_TYPE = "authorization_code";
 
+    /*Do not add a bean definition to spring xml. It will cause the problem, that two instances are used to serve
+    * the "change auth code to access token" request. This will end up with a fault because the code is stored in
+    * one instance and will be read from another where it does not exist.*/
+    @Inject
     private AuthorizationCodeServices authorizationCodeServices;
 
     public LessStrictRedirectUriAuthorizationCodeTokenGranter(AuthorizationServerTokenServices tokenServices,
-                        AuthorizationCodeServices authorizationCodeServices, ClientDetailsService clientDetailsService) {
+                        ClientDetailsService clientDetailsService) {
         super(tokenServices, clientDetailsService, GRANT_TYPE);
-        this.authorizationCodeServices = authorizationCodeServices;
     }
 
     @Override
