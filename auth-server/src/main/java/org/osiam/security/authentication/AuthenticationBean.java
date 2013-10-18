@@ -25,11 +25,13 @@ package org.osiam.security.authentication;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.osiam.helper.HttpClientHelper;
+import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.resources.UserSpring;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
 
@@ -46,24 +48,24 @@ public class AuthenticationBean implements UserDetailsService {
     private String serverHost;
     @Value("${osiam.server.http.scheme}")
     private String httpScheme;
+    @Inject
+    private HttpClientHelper httpClientHelper;
 
     private ObjectMapper mapper; //NOSONAR : need to mock the dependency therefor the final identifier was removed
-    private HttpClientHelper httpClientHelper; //NOSONAR : need to mock the dependency therefor the final identifier was removed
 
     public AuthenticationBean() {
         mapper = new ObjectMapper();
-        httpClientHelper = new HttpClientHelper();
     }
 
     @Override
     public UserDetails loadUserByUsername(final String username) {
         final String serverUri = httpScheme + "://" + serverHost + ":"+ serverPort + "/osiam-resource-server/authentication/user/";
 
-        final String result = httpClientHelper.executeHttpGet(serverUri + username);
+        final HttpClientRequestResult result = httpClientHelper.executeHttpGet(serverUri + username);
 
         final UserSpring userSpring;
         try {
-            userSpring = mapper.readValue(result, UserSpring.class);
+            userSpring = mapper.readValue(result.getBody(), UserSpring.class);
         } catch (IOException e) {
             throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
         }

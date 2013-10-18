@@ -25,6 +25,7 @@ package org.osiam.security.authentication
 
 import org.codehaus.jackson.map.ObjectMapper
 import org.osiam.helper.HttpClientHelper
+import org.osiam.helper.HttpClientRequestResult
 import org.osiam.resources.UserSpring
 import spock.lang.Specification
 
@@ -39,26 +40,28 @@ class AuthenticationBeanTest extends Specification {
         given:
         def userSpringMock = Mock(UserSpring)
         def resultingUser = "the resulting user as JSON string"
+        def response = new HttpClientRequestResult(resultingUser, 200)
 
         when:
         def result = authenticationBean.loadUserByUsername("UserName")
 
         then:
-        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-resource-server/authentication/user/UserName") >> resultingUser
-        1 * jacksonMapperMock.readValue(resultingUser, UserSpring.class) >> userSpringMock
+        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-resource-server/authentication/user/UserName") >> response
+        1 * jacksonMapperMock.readValue(response.body, UserSpring.class) >> userSpringMock
         result instanceof UserSpring
     }
 
     def "If jackson throws an IOException it should be mapped to an RuntimeException"() {
         given:
         def resultingUser = "the resulting user as JSON string"
+        def response = new HttpClientRequestResult(resultingUser, 200)
 
         when:
         authenticationBean.loadUserByUsername("UserName")
 
         then:
-        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-resource-server/authentication/user/UserName") >> resultingUser
-        1 * jacksonMapperMock.readValue(resultingUser, UserSpring.class) >> {throw new IOException()}
+        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-resource-server/authentication/user/UserName") >> response
+        1 * jacksonMapperMock.readValue(response.getBody(), UserSpring.class) >> {throw new IOException()}
         thrown(RuntimeException.class)
     }
 }

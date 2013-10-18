@@ -25,6 +25,7 @@ package org.osiam.security.authentication;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.osiam.helper.HttpClientHelper;
+import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.resources.ClientSpring;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.provider.ClientDetails;
@@ -60,10 +61,10 @@ public class ClientDetailsLoadingBean implements ClientDetailsService {
     public ClientDetails loadClientByClientId(final String clientId) {
         final String serverUri = httpScheme + "://" + serverHost + ":"+ serverPort + "/osiam-resource-server/authentication/client/";
 
-        final String response = httpClientHelper.executeHttpGet(serverUri + clientId);
+        final HttpClientRequestResult response = httpClientHelper.executeHttpGet(serverUri + clientId);
         ClientSpring clientSpring;
         try {
-            clientSpring = mapper.readValue(response, ClientSpring.class);
+            clientSpring = mapper.readValue(response.getBody(), ClientSpring.class);
         } catch (IOException e) {
             throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
         }

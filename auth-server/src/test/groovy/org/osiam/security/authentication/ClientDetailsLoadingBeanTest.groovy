@@ -25,6 +25,7 @@ package org.osiam.security.authentication
 
 import org.codehaus.jackson.map.ObjectMapper
 import org.osiam.helper.HttpClientHelper
+import org.osiam.helper.HttpClientRequestResult
 import org.osiam.resources.ClientSpring
 import spock.lang.Specification
 
@@ -39,26 +40,28 @@ class ClientDetailsLoadingBeanTest extends Specification {
         given:
         def resultingClient = "the resulting client as JSON string"
         def clientSpringMock = Mock(ClientSpring)
+        def requestResult = new HttpClientRequestResult(resultingClient, 200)
 
         when:
         def result = clientDetailsLoadingBean.loadClientByClientId("ClientId")
 
         then:
-        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-resource-server/authentication/client/ClientId") >> resultingClient
-        1 * jacksonMapperMock.readValue(resultingClient, ClientSpring.class) >> clientSpringMock
+        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-resource-server/authentication/client/ClientId") >> requestResult
+        1 * jacksonMapperMock.readValue(requestResult.body, ClientSpring.class) >> clientSpringMock
         result instanceof ClientSpring
     }
 
     def "If jackson throws an IOException it should be mapped to an RuntimeException"(){
         given:
         def resultingClient = "the resulting client as JSON string"
+        def requestResult = new HttpClientRequestResult(resultingClient, 200)
 
         when:
         clientDetailsLoadingBean.loadClientByClientId("ClientId")
 
         then:
-        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-resource-server/authentication/client/ClientId") >> resultingClient
-        1 * jacksonMapperMock.readValue(resultingClient, ClientSpring.class) >> {throw new IOException()}
+        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-resource-server/authentication/client/ClientId") >> requestResult
+        1 * jacksonMapperMock.readValue(requestResult.body, ClientSpring.class) >> {throw new IOException()}
         thrown(RuntimeException)
     }
 
