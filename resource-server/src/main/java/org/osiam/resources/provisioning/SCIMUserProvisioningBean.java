@@ -23,16 +23,18 @@
 
 package org.osiam.resources.provisioning;
 
+import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.scim.SCIMSearchResult;
+import org.osiam.resources.scim.User;
 import org.osiam.storage.dao.GenericDAO;
 import org.osiam.storage.dao.UserDAO;
 import org.osiam.storage.entities.UserEntity;
-import org.osiam.resources.exceptions.ResourceExistsException;
 import org.springframework.stereotype.Service;
-import org.osiam.resources.scim.User;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created with IntelliJ IDEA.

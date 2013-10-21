@@ -33,7 +33,6 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
-    <!--<bean id="scimUserProvisioning" class="org.osiam.ng.resourceserver.dao.ScimUserProvisioningBean"/>-->
 
     <!-- Resource Service interface secured via OAuth2 -->
     <http pattern="/" create-session="never" entry-point-ref="oauthAuthenticationEntryPoint"
@@ -108,7 +107,14 @@
         </constructor-arg>
     </bean>
 
+    <authentication-manager xmlns="http://www.springframework.org/schema/security" />
+
+    <bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
+        <constructor-arg value="512"/>
+        <property name="iterations" value="1000"/>
+    </bean>
 
     <!-- filter to validate the delivered access token -->
-    <oauth:resource-server id="resourceServerFilter" resource-id="oauth2res" token-services-ref="tokenServices"/>
+    <oauth:resource-server id="resourceServerFilter" resource-id="oauth2res" token-services-ref="accessTokenValidationService"/>
+
 </beans>

@@ -121,22 +121,6 @@ class UserEntitySpec extends Specification {
                 build())
     }
 
-    def "should inherit UserDetails"(){
-        given:
-        def roles = [new RolesEntity()] as Set
-        when:
-        userEntity.setUsername("username")
-        userEntity.setRoles(roles)
-        then:
-        userEntity instanceof UserDetails
-        userEntity.getAuthorities() == roles
-        //not correctly set yet
-        userEntity.isAccountNonExpired()
-        userEntity.isAccountNonLocked()
-        userEntity.isCredentialsNonExpired()
-        userEntity.isEnabled()
-    }
-
     def "should be able to insert meta"(){
         given:
         def meta = new MetaEntity()
@@ -165,10 +149,10 @@ class UserEntitySpec extends Specification {
 
     def "setter and getter for the username should be present"() {
         when:
-        userEntity.setUsername("bjensen@example.com")
+        userEntity.setUserName("bjensen@example.com")
 
         then:
-        userEntity.getUsername() == "bjensen@example.com"
+        userEntity.getUserName() == "bjensen@example.com"
     }
 
     def "setter and getter for the name should be present"() {
@@ -396,7 +380,7 @@ class UserEntitySpec extends Specification {
         userEntity.setRoles([Mock(RolesEntity)] as Set<RolesEntity>)
         userEntity.setTimezone("timeZone")
         userEntity.setTitle("title")
-        userEntity.setUsername("userName")
+        userEntity.setUserName("userName")
         userEntity.setUserType("userType")
         userEntity.setX509Certificates([Mock(X509CertificateEntity)] as Set<X509CertificateEntity>)
         userEntity.setExternalId("externalId")
@@ -454,7 +438,7 @@ class UserEntitySpec extends Specification {
         userEntity.setRoles([Mock(RolesEntity)] as Set<RolesEntity>)
         userEntity.setTimezone("timeZone")
         userEntity.setTitle("title")
-        userEntity.setUsername("userName")
+        userEntity.setUserName("userName")
         userEntity.setUserType("userType")
         userEntity.setX509Certificates([Mock(X509CertificateEntity)] as Set<X509CertificateEntity>)
         userEntity.setExternalId("externalId")
@@ -522,7 +506,7 @@ class UserEntitySpec extends Specification {
         def userEntity = UserEntity.fromScim(user)
 
         then:
-        userEntity.getUsername() == "username"
+        userEntity.getUserName() == "username"
         userEntity.getDisplayName() == "displayname"
         userEntity.getLocale() == "locale"
         userEntity.getNickName() == "nickname"
@@ -545,7 +529,7 @@ class UserEntitySpec extends Specification {
         def userEntity = UserEntity.fromScim(user)
 
         then:
-        userEntity.getUsername() == "username"
+        userEntity.getUserName() == "username"
         userEntity.getExternalId() == null
     }
 
@@ -558,7 +542,7 @@ class UserEntitySpec extends Specification {
 
     def "User entity should set resourceType to User"(){
         when:
-        def result = new UserEntity(username: "blubb", id: UUID.randomUUID())
+        def result = new UserEntity(userName: "blubb", id: UUID.randomUUID())
 
         then:
         result.meta.resourceType == "User"

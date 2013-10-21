@@ -41,7 +41,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.List;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 public abstract class GetInternalIdSkeleton {
@@ -64,7 +63,7 @@ public abstract class GetInternalIdSkeleton {
 
     protected <T extends InternalIdSkeleton> T getInternalIdSkeleton(String id) {
         Query query = em.createNamedQuery("getById");
-        query.setParameter("id", UUID.fromString(id));
+        query.setParameter("id", id);
         return getSingleInternalIdSkeleton(query, id);
     }
 

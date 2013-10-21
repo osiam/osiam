@@ -1,6 +1,5 @@
 package org.osiam.resources.exceptions
 
-import org.junit.Ignore
 import spock.lang.Specification
 
 /**
@@ -27,7 +26,6 @@ class ClientManagementErrorMessageTransformerTest extends Specification {
         result == "The client with the Id ClientID already exists."
     }
 
-    @Ignore
     def "should return expected error message for client redirect uri uniqueness injury"() {
         given:
         def message = "FEHLER: doppelter Schlüsselwert verletzt Unique-Constraint »osiam_client_redirect_uri_key«\n " +
@@ -41,7 +39,6 @@ class ClientManagementErrorMessageTransformerTest extends Specification {
         result == "Another client already defines the redirect URI http://localhost:5000/stuff"
     }
 
-    @Ignore
     def "should return null if message is null"() {
         when:
         def result = clientManagementErrorMessageTransformer.transform(null)
@@ -49,7 +46,6 @@ class ClientManagementErrorMessageTransformerTest extends Specification {
         result == null
     }
 
-    @Ignore
     def "should return original message if nothing matches"() {
         when:
         def result = clientManagementErrorMessageTransformer.transform("nothing to match here")

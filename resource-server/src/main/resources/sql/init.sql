@@ -165,7 +165,7 @@ CREATE TABLE scim_id (
     internal_id bigint NOT NULL,
     externalid text unique ,
     meta_id bigint references scim_meta(id),
-    id uuid NOT NULL
+    id text NOT NULL
 );
 
 

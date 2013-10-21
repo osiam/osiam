@@ -23,7 +23,6 @@
 
 package org.osiam.storage.entities;
 
-import org.hibernate.annotations.Type;
 import org.osiam.resources.scim.MultiValuedAttribute;
 
 import javax.persistence.*;
@@ -38,9 +37,8 @@ public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute, 
 
     private static final long serialVersionUID = -5890750191971717942L;
 
-    @Type(type = "org.osiam.storage.helper.UUIDCustomType")
     @Column(unique = true, nullable = false)
-    private UUID id;
+    private String id;
 
     @Id
     @GeneratedValue
@@ -55,12 +53,12 @@ public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute, 
 
 
     public UUID getId() {
-        return id;
+        return UUID.fromString(id);
     }
 
 
     public void setId(UUID id) {
-        this.id = id;
+        this.id = id.toString();
     }
 
     public long getInternalId() {
@@ -88,18 +86,18 @@ public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute, 
     public abstract String getDisplayName();
 
     public MultiValuedAttribute toMultiValueScim() {
-        return new MultiValuedAttribute.Builder().setDisplay(getDisplayName()).setValue(id.toString()).build();
+        return new MultiValuedAttribute.Builder().setDisplay(getDisplayName()).setValue(id).build();
     }
 
     @Override
     @Transient
     public String getValue() {
-        return id.toString();
+        return id;
     }
 
     @Override
     public void setValue(String value) {
-        id = UUID.fromString(value);
+        id = value;
     }
 
     public MetaEntity getMeta() {

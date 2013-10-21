@@ -23,8 +23,6 @@
 
 package org.osiam.storage.entities;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.osiam.resources.scim.Address;
 import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.resources.scim.Name;
@@ -38,91 +36,90 @@ import java.util.*;
  */
 @Entity(name = "scim_user")
 @NamedQueries({@NamedQuery(name = "getUserByUsername", query = "SELECT u FROM scim_user u WHERE u.userName = :username")})
-public class UserEntity extends InternalIdSkeleton implements UserDetails {
+public class UserEntity extends InternalIdSkeleton {
 
     private static final String MAPPING_NAME = "user";
     private static final long serialVersionUID = -6535056565639057058L;
 
-    
+
     @Column(nullable = false, unique = true)
     private String userName;
 
-    
+
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private NameEntity name;
 
-    
+
     @Column
     private String nickName;
 
-    
+
     @Column
     private String profileUrl;
 
-    
+
     @Column
     private String title;
 
-    
+
     @Column
     private String userType;
 
-    
+
     @Column
     private String preferredLanguage;
 
-    
+
     @Column
     private String locale;
 
-    
+
     @Column
     private String timezone;
 
-    
+
     @Column
     private Boolean active;
 
     @Column(nullable = false)
     private String password;
 
-    
+
     @Column
     private String displayName;
 
-    
+
     @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EmailEntity> emails;
 
-    
+
     @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PhoneNumberEntity> phoneNumbers;
 
-    
+
     @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ImEntity> ims;
 
     @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PhotoEntity> photos;
 
-    
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<AddressEntity> addresses;
 
-    
+
     @OneToMany(fetch = FetchType.EAGER)
     private Set<GroupEntity> groups;
 
-    
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EntitlementsEntity> entitlements;
 
     //needs to be eager fetched due to authorization decisions
-    
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<RolesEntity> roles;
 
-    @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<X509CertificateEntity> x509Certificates;
 
     public UserEntity() {
@@ -149,7 +146,7 @@ public class UserEntity extends InternalIdSkeleton implements UserDetails {
         userEntity.setRoles(scimUserRolesToEntity(user.getRoles()));
         userEntity.setTimezone(user.getTimezone());
         userEntity.setTitle(user.getTitle());
-        userEntity.setUsername(user.getUserName());
+        userEntity.setUserName(user.getUserName());
         userEntity.setUserType(user.getUserType());
         userEntity.setX509Certificates(scimCertificatesToEntity(user.getX509Certificates()));
         return userEntity;
@@ -366,11 +363,6 @@ public class UserEntity extends InternalIdSkeleton implements UserDetails {
         this.active = active;
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles;
-    }
-
     /**
      * @return the password
      */
@@ -385,11 +377,6 @@ public class UserEntity extends InternalIdSkeleton implements UserDetails {
         this.password = password;
     }
 
-    @Override
-    public String getUsername() {
-        return userName;
-    }
-
     public String getDisplayName() {
         return displayName;
     }
@@ -398,31 +385,16 @@ public class UserEntity extends InternalIdSkeleton implements UserDetails {
         this.displayName = displayName;
     }
 
+
+    public String getUserName() {
+        return userName;
+    }
+
     /**
      * @param userName the user name
      */
-    public void setUsername(String userName) {
+    public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
     }
 
     /**
@@ -609,7 +581,7 @@ public class UserEntity extends InternalIdSkeleton implements UserDetails {
     }
 
     public User toScim() {
-        return new User.Builder(getUsername()).
+        return new User.Builder(getUserName()).
                 setActive(getActive()).
                 setAddresses(entityAddressToScim(getAddresses())).
                 setDisplayName(getDisplayName()).
@@ -707,6 +679,4 @@ public class UserEntity extends InternalIdSkeleton implements UserDetails {
         }
         return addressesForMapping;
     }
-
-
 }

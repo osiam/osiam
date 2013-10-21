@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.osiam</groupId>
         <artifactId>osiam-server-parent</artifactId>
-        <version>0.9</version>
+        <version>0.10</version>
     </parent>
 
     <artifactId>osiam-resource-server</artifactId>
@@ -41,6 +41,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
             </plugin>
 
             <!-- Surefire: will execute all unit tests including Spock specs and will ignore system tests -->
@@ -111,27 +116,6 @@
                 <configuration>
                     <warName>osiam-resource-server</warName>
                 </configuration>
-            </plugin>
-            <!-- Instrument classes with setup goal in submodules for sub module report. -->
-            <plugin>
-                <groupId>com.atlassian.maven.plugins</groupId>
-                <artifactId>maven-clover2-plugin</artifactId>
-                <version>${sonar.clover.version}</version>
-                <configuration>
-                    <generatePdf>true</generatePdf>
-                    <generateXml>true</generateXml>
-                    <generateJson>false</generateJson>
-                    <generateHtml>true</generateHtml>
-                    <jdk>${java.version}</jdk>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>setup</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
@@ -301,6 +285,7 @@
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.osiam</groupId>
             <artifactId>scim-schema</artifactId>
@@ -314,6 +299,13 @@
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>jstl-impl</artifactId>
+        </dependency>
+
+        <!-- OSIAM Interaction Model -->
+        <dependency>
+            <groupId>org.osiam</groupId>
+            <artifactId>osiam-interaction-model</artifactId>
+            <version>0.10</version>
         </dependency>
     </dependencies>
 

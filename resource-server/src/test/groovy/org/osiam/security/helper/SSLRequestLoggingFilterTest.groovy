@@ -1,6 +1,7 @@
 package org.osiam.security.helper
 
 import org.apache.log4j.Logger
+import org.osiam.security.helper.SSLRequestLoggingFilter
 import spock.lang.Specification
 
 import javax.servlet.FilterChain

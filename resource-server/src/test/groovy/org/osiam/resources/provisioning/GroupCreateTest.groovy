@@ -23,10 +23,10 @@ class GroupCreateTest extends Specification {
 
     def "should abort when a member in group is not findable"() {
         given:
-        def internalId = UUID.randomUUID()
+        def internalId = UUID.randomUUID().toString()
         def query = Mock(Query)
         def queryResults = []
-        members.add(new MultiValuedAttribute.Builder().setValue(internalId.toString()).build())
+        members.add(new MultiValuedAttribute.Builder().setValue(internalId).build())
         def group = new Group.Builder().setMembers(members).build()
         when:
         underTest.create(group)
@@ -35,16 +35,16 @@ class GroupCreateTest extends Specification {
         1 * query.setParameter("id", internalId);
         1 * query.getResultList() >> queryResults
         def e = thrown(ResourceNotFoundException)
-        e.message == "Resource " + internalId.toString() + " not found."
+        e.message == "Resource " + internalId + " not found."
 
     }
 
 
     def "should abort when a group already exists"() {
         given:
-        def internalId = UUID.randomUUID()
+        def internalId = UUID.randomUUID().toString()
         def query = Mock(Query)
-        members.add(new MultiValuedAttribute.Builder().setValue(internalId.toString()).build())
+        members.add(new MultiValuedAttribute.Builder().setValue(internalId).build())
         def group = new Group.Builder().setDisplayName("displayName").setMembers(members).build()
         when:
         underTest.create(group)
@@ -59,9 +59,9 @@ class GroupCreateTest extends Specification {
 
     def "should create a group with known member"() {
         given:
-        def internalId = UUID.randomUUID()
+        def internalId = UUID.randomUUID().toString()
         def query = Mock(Query)
-        members.add(new MultiValuedAttribute.Builder().setValue(internalId.toString()).build())
+        members.add(new MultiValuedAttribute.Builder().setValue(internalId).build())
         def group = new Group.Builder().setMembers(members).build()
         def queryResults = [GroupEntity.fromScim(group)]
         when:
@@ -81,6 +81,4 @@ class GroupCreateTest extends Specification {
         then:
         result.members.size() == 0
     }
-
-
 }

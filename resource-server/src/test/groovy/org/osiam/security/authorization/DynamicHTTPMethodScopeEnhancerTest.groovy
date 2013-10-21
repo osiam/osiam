@@ -23,13 +23,11 @@
 
 package org.osiam.security.authorization
 
-import org.osiam.security.authorization.DynamicHTTPMethodScopeEnhancer
 import org.springframework.security.access.ConfigAttribute
 import org.springframework.security.access.SecurityConfig
 import org.springframework.security.oauth2.provider.vote.ScopeVoter
 import org.springframework.security.web.FilterInvocation
 import spock.lang.Specification
-
 
 import javax.servlet.http.HttpServletRequest
 
