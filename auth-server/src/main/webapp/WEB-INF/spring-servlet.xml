@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (C) 2013 tarent AG
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining
+  ~ a copy of this software and associated documentation files (the
+  ~ "Software"), to deal in the Software without restriction, including
+  ~ without limitation the rights to use, copy, modify, merge, publish,
+  ~ distribute, sublicense, and/or sell copies of the Software, and to
+  ~ permit persons to whom the Software is furnished to do so, subject to
+  ~ the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be
+  ~ included in all copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  ~ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  ~ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+  ~ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+  ~ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+  ~ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+  ~ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
+       xmlns:util="http://www.springframework.org/schema/util" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-1.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+
+    <!-- needed for exchanging the authorization_code to an access_token -->
+    <import resource="client-authentication.xml"/>
+    <!-- needed for getting an authorization-code -->
+    <import resource="user-authentication.xml"/>
+
+
+    <!-- configures the OAuth2 authorization server -->
+    <oauth:authorization-server client-details-service-ref="clientDetails"
+                                token-services-ref="tokenServices"
+                                token-granter-ref="customCompositeTokenGranter"
+                                user-approval-handler-ref="userApprovalHandler">
+        <oauth:authorization-code/>
+        <oauth:refresh-token/>
+        <oauth:client-credentials/>
+        <oauth:password/>
+    </oauth:authorization-server>
+
+    <bean id="authorizationRequestManager" class="org.springframework.security.oauth2.provider.DefaultAuthorizationRequestManager">
+        <constructor-arg ref="clientDetails"/>
+    </bean>
+
+    <bean id="customCompositeTokenGranter"
+          class="org.springframework.security.oauth2.provider.CompositeTokenGranter">
+        <constructor-arg>
+            <util:list>
+                <bean class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenGranter">
+                    <constructor-arg ref="tokenServices"/>
+                    <constructor-arg ref="clientDetails"/>
+                </bean>
+                <bean class="org.springframework.security.oauth2.provider.password.ResourceOwnerPasswordTokenGranter">
+                    <constructor-arg ref="authenticationManager"/>
+                    <constructor-arg ref="tokenServices"/>
+                    <constructor-arg ref="clientDetails"/>
+                </bean>
+                <bean class="org.springframework.security.oauth2.provider.refresh.RefreshTokenGranter">
+                    <constructor-arg ref="tokenServices"/>
+                    <constructor-arg ref="clientDetails"/>
+                </bean>
+                <bean class="org.osiam.security.helper.LessStrictRedirectUriAuthorizationCodeTokenGranter">
+                    <constructor-arg ref="tokenServices"/>
+                    <constructor-arg ref="clientDetails"/>
+<!--
+                    <constructor-arg ref="authorizationCodeServices"/>
+-->
+                </bean>
+            </util:list>
+        </constructor-arg>
+    </bean>
+
+    <!-- access token services -->
+    <bean id="tokenServices" class="org.springframework.security.oauth2.provider.token.DefaultTokenServices">
+        <property name="tokenStore" ref="tokenStore"/>
+        <property name="supportRefreshToken" value="true"/>
+        <property name="clientDetailsService" ref="clientDetails"/>
+    </bean>
+
+    <!-- the token storage managing all access tokens -->
+    <bean id="tokenStore" class="org.springframework.security.oauth2.provider.token.InMemoryTokenStore"/>
+
+    <!-- view resolver to find JSP's -->
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <property name="viewResolvers">
+            <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+                <property name="prefix" value="/WEB-INF/jsp/"/>
+                <property name="suffix" value=".jsp"/>
+            </bean>
+        </property>
+        <property name="defaultViews">
+            <bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView">
+                <property name="extractValueFromSingleKeyModel" value="true"/>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- general access denied handler -->
+    <bean id="oauthAccessDeniedHandler"
+          class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler"/>
+
+    <mvc:annotation-driven/>
+
+    <mvc:default-servlet-handler/>
+
+    <context:property-placeholder location="classpath:osiam.properties"/>
+
+    <context:component-scan base-package="org.osiam"/>
+    <context:annotation-config/>
+</beans>
