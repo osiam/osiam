@@ -75,9 +75,25 @@ class TokenControllerTest extends Specification {
 
         then:
         1 * defaultTokenServicesMock.loadAuthentication("theToken") >> oAuth2AuthenticationMock
-        1 * oAuth2AuthenticationMock.getUserAuthentication() >> Mock(AuthenticationSpring)
+        2 * oAuth2AuthenticationMock.getUserAuthentication() >> Mock(AuthenticationSpring)
         1 * oAuth2AuthenticationMock.getAuthorizationRequest() >> Mock(AuthorizationRequestSpring)
         result instanceof OAuth2AuthenticationSpring
+    }
+
+    def "The user authentication should not be set if it is null due to the OAuth2 client credentials grant"() {
+        given:
+        def oAuth2AuthenticationMock = Mock(OAuth2Authentication)
+
+        when:
+        def result = tokenController.validateToken("theToken")
+
+        then:
+        1 * defaultTokenServicesMock.loadAuthentication("theToken") >> oAuth2AuthenticationMock
+        1 * oAuth2AuthenticationMock.getUserAuthentication() >> null
+        1 * oAuth2AuthenticationMock.getAuthorizationRequest() >> Mock(AuthorizationRequestSpring)
+        result instanceof OAuth2AuthenticationSpring
+        result.getAuthenticationSpring() == null
+        result.getAuthorizationRequestSpring() != null
     }
 
     def "The TokenController should implement springs token service and returning OAuth2AccessToken"() {

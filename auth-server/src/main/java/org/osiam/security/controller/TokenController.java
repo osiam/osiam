@@ -58,7 +58,10 @@ public class TokenController {
         OAuth2Authentication oAuth2Authentication = tokenServices.loadAuthentication(token);
 
         OAuth2AuthenticationSpring oAuth2AuthenticationSpring = new OAuth2AuthenticationSpring();
-        oAuth2AuthenticationSpring.setAuthenticationSpring(mappingFrom(oAuth2Authentication.getUserAuthentication()));
+        //In case of OAuth2 client credentials grant there is no user authentication
+        if (oAuth2Authentication.getUserAuthentication() != null) {
+            oAuth2AuthenticationSpring.setAuthenticationSpring(mappingFrom(oAuth2Authentication.getUserAuthentication()));
+        }
         oAuth2AuthenticationSpring.setAuthorizationRequestSpring(mappingFrom(oAuth2Authentication.getAuthorizationRequest()));
 
         return oAuth2AuthenticationSpring;
