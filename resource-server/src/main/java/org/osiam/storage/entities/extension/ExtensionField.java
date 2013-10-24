@@ -26,7 +26,7 @@ public class ExtensionField implements Serializable {
     @Column
     private ExtensionFieldType type;
 
-    @Column(name = "is_required")
+    @Column
     private boolean isRequired;
 
     public long getInternalId() {

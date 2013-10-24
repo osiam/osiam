@@ -19,11 +19,9 @@ public class ExtensionFieldValue implements Serializable {
     private long internalId;
 
     @ManyToOne
-    @Column(name = "extension_field")
     private ExtensionField extensionField;
 
     @ManyToOne
-    @Column(name = "user_entity")
     private UserEntity userEntity;
 
     @Column
