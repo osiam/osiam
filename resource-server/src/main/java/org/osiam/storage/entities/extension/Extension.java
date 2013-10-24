@@ -22,7 +22,7 @@ public class Extension implements Serializable {
     private String extensionUrn;
 
     @OneToMany
-    @JoinColumn(name="internal_id")
+    @JoinColumn(name="extension")
     private Set<ExtensionField> extensionFields;
 
     public long getInternalId() {
