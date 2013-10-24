@@ -18,11 +18,15 @@ DROP TABLE IF EXISTS scim_enterprise CASCADE;
 DROP TABLE IF EXISTS scim_email CASCADE;
 DROP TABLE IF EXISTS scim_certificate CASCADE;
 DROP TABLE IF EXISTS scim_address CASCADE;
-DROP SEQUENCE IF EXISTS hibernate_sequence CASCADE;
 DROP TABLE IF EXISTS database_scheme_version CASCADE;
 DROP TABLE IF EXISTS osiam_client_scopes CASCADE;
 DROP TABLE IF EXISTS osiam_client_grants CASCADE;
 DROP TABLE IF EXISTS osiam_client CASCADE;
+DROP TABLE IF EXISTS scim_extension_field_value CASCADE;
+DROP TABLE IF EXISTS scim_extension_field CASCADE;
+DROP TABLE IF EXISTS scim_extension CASCADE;
+DROP SEQUENCE IF EXISTS hibernate_sequence CASCADE;
+
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
@@ -261,6 +265,13 @@ CREATE TABLE scim_user (
     name_id bigint
 );
 
+--
+-- Name: scim_user_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+--
+
+ALTER TABLE ONLY scim_user
+    ADD CONSTRAINT scim_user_pkey PRIMARY KEY (internal_id);
+
 
 --
 -- Name: scim_user_scim_address; Type: TABLE; Schema: public; Owner: -; Tablespace: 
@@ -303,26 +314,74 @@ CREATE TABLE scim_user_scim_roles (
 
 
 --
--- Data for Name: database_scheme_version; Type: TABLE DATA; Schema: public; Owner: -
+-- Extension section: table, constraints, indexes
 --
+CREATE TABLE scim_extension (
+  internal_id bigint NOT NULL,
+  urn text NOT NULL
+);
 
-INSERT INTO database_scheme_version VALUES (0.04);
+ALTER TABLE ONLY scim_extension
+ADD CONSTRAINT scim_extension_pkey PRIMARY KEY (internal_id);
+
+CREATE UNIQUE INDEX urn_index_extension ON scim_extension (urn);
+
+--
+-- Extension field section: table, constraints, indexes
+--
+CREATE TABLE scim_extension_field (
+  internal_id bigint NOT NULL,
+  is_required boolean,
+  name text,
+  type int,
+  extension_internal_id bigint
+);
+
+ALTER TABLE ONLY scim_extension_field
+ADD CONSTRAINT scim_extension_field_pkey PRIMARY KEY (internal_id);
+
+ALTER TABLE ONLY scim_extension_field
+ADD CONSTRAINT FKA8AD6A2FA75B3B1A FOREIGN KEY (extension_internal_id) REFERENCES scim_extension (internal_id);
+
+CREATE INDEX FKA8AD6A2FA75B3B1A_index_3 ON scim_extension_field (extension_internal_id);
+
+--
+-- Extension field value section: table, constraints, indexes
+--
+CREATE TABLE  scim_extension_field_value (
+  internal_id bigint NOT NULL,
+  value text,
+  extension_field_internal_id bigint,
+  user_entity_internal_id bigint
+);
+
+ALTER TABLE ONLY scim_extension_field_value
+ADD CONSTRAINT scim_extension_field_value_pkey PRIMARY KEY (internal_id);
+
+ALTER TABLE scim_extension_field_value
+ADD CONSTRAINT FK6683BF61C9574176 FOREIGN KEY (extension_field_internal_id) REFERENCES scim_extension_field (internal_id);
+
+ALTER TABLE scim_extension_field_value
+ADD CONSTRAINT FK6683BF61F6C96F8D FOREIGN KEY (user_entity_internal_id) REFERENCES scim_user (internal_id);
+
+CREATE INDEX FK6683BF61F6C96F8D_index_3 ON scim_extension_field_value (user_entity_internal_id);
+
+CREATE INDEX FK6683BF61C9574176_index_3 ON scim_extension_field_value (extension_field_internal_id);
 
 
+--
+-- Updating hibernate sequence start value
+--
 SELECT pg_catalog.setval('hibernate_sequence', 6, false);
 
 
-
-INSERT INTO scim_group VALUES ('testGroup2', 2);
-
-
 --
--- Data for Name: scim_id; Type: TABLE DATA; Schema: public; Owner: -
+-- Default data for user, role, meta and client
 --
+INSERT INTO database_scheme_version VALUES (0.05);
 
 Insert INTO scim_meta VALUES (4, '2011-10-10', '2011-10-10', NULL, NULL, 'User');
 INSERT INTO scim_id VALUES (1, NULL, 4, 'cef9452e-00a9-4cec-a086-d171374ffbef');
-INSERT INTO scim_id VALUES (2, NULL, NULL, '2a820312-67b3-4275-963d-b235c6525207');
 INSERT INTO osiam_client VALUES(3, 'example-client', 'http://localhost:5000/oauth2', 'secret', 2342, 2342, 1337, false, null);
 INSERT INTO osiam_client_scopes VALUES(3, 'GET');
 INSERT INTO osiam_client_scopes VALUES(3, 'POST');
@@ -463,14 +522,6 @@ ALTER TABLE ONLY scim_photo
 
 ALTER TABLE ONLY scim_roles
     ADD CONSTRAINT scim_roles_pkey PRIMARY KEY (multiValueId);
-
-
---
--- Name: scim_user_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
---
-
-ALTER TABLE ONLY scim_user
-    ADD CONSTRAINT scim_user_pkey PRIMARY KEY (internal_id);
 
 
 --
@@ -663,9 +714,3 @@ ALTER TABLE ONLY scim_photo
 
 ALTER TABLE ONLY scim_enterprise
     ADD CONSTRAINT fke1bc510cae52e63f FOREIGN KEY (manager_id) REFERENCES scim_manager(id);
-
-
---
--- PostgreSQL database dump complete
---
-

@@ -29,7 +29,7 @@ import javax.persistence.Id;
 @Entity(name = "database_scheme_version")
 public class DBVersion {
 
-    public static final double DB_VERSION = 0.04;
+    public static final double DB_VERSION = 0.05;
 
     @Id
     private double version = DB_VERSION;
