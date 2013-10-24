@@ -92,7 +92,7 @@ public abstract class GetInternalIdSkeleton {
 
         int newStartIndex = startIndex <1 ? 1 :startIndex;
         
-        return new SCIMSearchResult(results, totalResult, count, newStartIndex, Constants.CORE_SCHEMAS);
+        return new SCIMSearchResult(results, totalResult, count, newStartIndex, Constants.CORE_SCHEMA);
     }
 
     
