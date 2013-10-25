@@ -10,8 +10,8 @@ import spock.lang.Specification
  * Time: 13:34
  * To change this template use File | Settings | File Templates.
  */
-class ExtensionFieldValueSpec extends Specification {
-    ExtensionFieldValue extFieldValue = new ExtensionFieldValue();
+class ExtensionFieldValueEntitySpec extends Specification {
+    ExtensionFieldValueEntity extFieldValue = new ExtensionFieldValueEntity();
 
     def "setter and getter for the Id should be present"(){
         def id = 42
@@ -23,7 +23,7 @@ class ExtensionFieldValueSpec extends Specification {
     }
 
     def "setter and getter for the extensionField should be present"(){
-        def extensionField = Mock(ExtensionField.class)
+        def extensionField = Mock(ExtensionFieldEntity.class)
         when:
         extFieldValue.setExtensionField(extensionField)
 

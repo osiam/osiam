@@ -2,9 +2,9 @@ package org.osiam.storage.entities.extension
 
 import spock.lang.Specification
 
-class ExtensionSpec extends Specification {
+class ExtensionEntitySpec extends Specification {
 
-    Extension extension = new Extension();
+    ExtensionEntity extension = new ExtensionEntity();
 
     def "setter and getter for the Id should be present"(){
         def id = 42
@@ -26,12 +26,23 @@ class ExtensionSpec extends Specification {
     }
 
     def "setter and getter for the ExtensionFields should be present"(){
-        def fields = new HashSet<ExtensionField>()
-        when:
+        given:
+        def fields = [new ExtensionFieldEntity()] as Set
         extension.setExtensionFields(fields)
 
+        when:
+        def result = extension.getExtensionFields()
+
         then:
-        extension.getExtensionFields() == fields
+        result == fields
+        result[0].getExtension() == extension
     }
 
+    def "should return empty set if extensionFields is empty"() {
+        when:
+        def result = extension.getExtensionFields()
+
+        then:
+        result != null
+    }
 }

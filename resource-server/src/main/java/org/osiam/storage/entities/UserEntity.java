@@ -24,7 +24,9 @@
 package org.osiam.storage.entities;
 
 import org.osiam.resources.scim.*;
-import org.osiam.storage.entities.extension.ExtensionFieldValue;
+import org.osiam.storage.entities.extension.ExtensionEntity;
+import org.osiam.storage.entities.extension.ExtensionFieldEntity;
+import org.osiam.storage.entities.extension.ExtensionFieldValueEntity;
 
 import javax.persistence.*;
 import java.util.*;
@@ -122,7 +124,7 @@ public class UserEntity extends InternalIdSkeleton {
 
 
     @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ExtensionFieldValue> userExtensions;
+    private Set<ExtensionFieldValueEntity> userExtensions;
 
 
     public UserEntity() {
@@ -152,7 +154,58 @@ public class UserEntity extends InternalIdSkeleton {
         userEntity.setUserName(user.getUserName());
         userEntity.setUserType(user.getUserType());
         userEntity.setX509Certificates(scimCertificatesToEntity(user.getX509Certificates()));
+        userEntity.setUserExtensions(scimExtensionsToEntity(user));
         return userEntity;
+    }
+
+    private static Set<ExtensionFieldValueEntity> scimExtensionsToEntity(User scimUser) {
+        Set<ExtensionFieldValueEntity> extensionFieldValueEntities = new HashSet<>();
+
+        Set<String> userExtensionUris = scimUser.getAllExtensions().keySet();
+        for (String urn : userExtensionUris) {
+            Set<ExtensionFieldValueEntity> tmp = mappingScimUserExtensionToEntity(scimUser.getExtension(urn));
+            addExtensionUrnToExtensionFields(tmp, urn);
+            extensionFieldValueEntities.addAll(tmp);
+        }
+        return extensionFieldValueEntities;
+    }
+
+    private static Set<ExtensionFieldValueEntity> mappingScimUserExtensionToEntity(Extension scimExtension) {
+        Set<ExtensionFieldValueEntity> extensionFieldValueEntities = new HashSet<>();
+
+        Set<String> scimExtensionFields = scimExtension.getAllFields().keySet();
+        for (String field : scimExtensionFields) {
+            String fieldValue = scimExtension.getField(field);
+
+            extensionFieldValueEntities.add(createExtensionFieldsAndValues(field, fieldValue));
+        }
+
+        return extensionFieldValueEntities;
+    }
+
+    private static ExtensionFieldValueEntity createExtensionFieldsAndValues(String field, String fieldValue) {
+
+        ExtensionFieldEntity extensionFieldEntity = new ExtensionFieldEntity();
+        extensionFieldEntity.setName(field);
+
+        ExtensionFieldValueEntity extensionFieldValueEntity = new ExtensionFieldValueEntity();
+        extensionFieldValueEntity.setValue(fieldValue);
+        extensionFieldValueEntity.setExtensionField(extensionFieldEntity);
+
+        return extensionFieldValueEntity;
+    }
+
+    private static void addExtensionUrnToExtensionFields(Set<ExtensionFieldValueEntity> extensionFieldValueEntities, String urn) {
+        Set<ExtensionFieldEntity>  extensionFieldEntitySet = new HashSet<>();
+
+        for (ExtensionFieldValueEntity extensionFieldValueEntity :extensionFieldValueEntities) {
+            extensionFieldEntitySet.add(extensionFieldValueEntity.getExtensionField());
+        }
+
+        ExtensionEntity extensionEntity = new ExtensionEntity();
+        extensionEntity.setExtensionUrn(urn);
+        extensionEntity.setExtensionFields(extensionFieldEntitySet);
+
     }
 
     private static Set<X509CertificateEntity> scimCertificatesToEntity(List<MultiValuedAttribute> x509Certificates) {
@@ -426,7 +479,7 @@ public class UserEntity extends InternalIdSkeleton {
     /**
      * @return the extensions data of the user
      */
-    public Set<ExtensionFieldValue> getUserExtensions() {
+    public Set<ExtensionFieldValueEntity> getUserExtensions() {
         if (userExtensions == null) {
             userExtensions = new HashSet<>();
         }
@@ -436,9 +489,9 @@ public class UserEntity extends InternalIdSkeleton {
     /**
      * @param userExtensions the extension data of the user
      */
-    public void setUserExtensions(Set<ExtensionFieldValue> userExtensions) {
+    public void setUserExtensions(Set<ExtensionFieldValueEntity> userExtensions) {
         if (userExtensions != null) {
-            for (ExtensionFieldValue extensionValue : userExtensions) {
+            for (ExtensionFieldValueEntity extensionValue : userExtensions) {
                 extensionValue.setUser(this);
             }
         }

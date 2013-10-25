@@ -4,13 +4,14 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Defines a SCIM-Extension.
  */
 @Entity(name = "scim_extension")
-public class Extension implements Serializable {
+public class ExtensionEntity implements Serializable {
 
     @Id
     @GeneratedValue
@@ -21,9 +22,8 @@ public class Extension implements Serializable {
     @Column(name = "urn", nullable = false, unique = true)
     private String extensionUrn;
 
-    @OneToMany
-    @JoinColumn(name="extension")
-    private Set<ExtensionField> extensionFields;
+    @OneToMany(mappedBy = "extension")
+    private Set<ExtensionFieldEntity> extensionFields;
 
     public long getInternalId() {
         return internalId;
@@ -41,11 +41,19 @@ public class Extension implements Serializable {
         this.extensionUrn = extensionUrn;
     }
 
-    public Set<ExtensionField> getExtensionFields() {
+    public Set<ExtensionFieldEntity> getExtensionFields() {
+        if (extensionFields == null) {
+            extensionFields = new HashSet<>();
+        }
         return extensionFields;
     }
 
-    public void setExtensionFields(Set<ExtensionField> extensionFields) {
+    public void setExtensionFields(Set<ExtensionFieldEntity> extensionFields) {
+        if (extensionFields != null) {
+            for (ExtensionFieldEntity extensionFieldEntity : extensionFields) {
+                extensionFieldEntity.setExtension(this);
+            }
+        }
         this.extensionFields = extensionFields;
     }
 }

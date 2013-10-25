@@ -10,7 +10,7 @@ import java.io.Serializable;
  * Defines a value of a field of a scim-extension. It's user-dependent!
  */
 @Entity(name = "scim_extension_field_value")
-public class ExtensionFieldValue implements Serializable {
+public class ExtensionFieldValueEntity implements Serializable {
 
     @Id
     @GeneratedValue
@@ -18,12 +18,10 @@ public class ExtensionFieldValue implements Serializable {
     @Column(name = "internal_id")
     private long internalId;
 
-    @ManyToOne
     @Column(name = "extension_field")
-    private ExtensionField extensionField;
+    private ExtensionFieldEntity extensionField;
 
     @ManyToOne
-    @Column
     private UserEntity user;
 
     @Column
@@ -37,11 +35,11 @@ public class ExtensionFieldValue implements Serializable {
         this.internalId = internalId;
     }
 
-    public ExtensionField getExtensionField() {
+    public ExtensionFieldEntity getExtensionField() {
         return extensionField;
     }
 
-    public void setExtensionField(ExtensionField extensionField) {
+    public void setExtensionField(ExtensionFieldEntity extensionField) {
         this.extensionField = extensionField;
     }
 

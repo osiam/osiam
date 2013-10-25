@@ -1,5 +1,6 @@
 package org.osiam.resources.provisioning
 
+import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.SCIMSearchResult
 import org.osiam.storage.entities.UserEntity
 import org.osiam.resources.exceptions.ResourceExistsException
@@ -54,10 +55,19 @@ class ScimUserProvisioningBeanSpec extends Specification {
         scimUser.getUserName() >> "Bäm"
         exception.getMessage() >> "scim_user_username_key"
 
+        def mapMock = Mock(Map)
+        def keys = ["urn"] as Set
+        def fields = ["field" : "value"]
+        def extensionMock = Mock(Extension)
+
         when:
         scimUserProvisioningBean.create(scimUser)
 
         then:
+        1 * scimUser.getAllExtensions() >> mapMock
+        1 * mapMock.keySet() >> keys
+        1 * scimUser.getExtension("urn") >> extensionMock
+        1 * extensionMock.getAllFields() >> fields
         def e = thrown(ResourceExistsException)
         e.getMessage() == "The user with name Bäm already exists."
     }
@@ -69,10 +79,19 @@ class ScimUserProvisioningBeanSpec extends Specification {
         scimUser.getExternalId() >> "Boom"
         exception.getMessage() >> "scim_id_externalid_key"
 
+        def mapMock = Mock(Map)
+        def keys = ["urn"] as Set
+        def fields = ["field" : "value"]
+        def extensionMock = Mock(Extension)
+
         when:
         scimUserProvisioningBean.create(scimUser)
 
         then:
+        1 * scimUser.getAllExtensions() >> mapMock
+        1 * mapMock.keySet() >> keys
+        1 * scimUser.getExtension("urn") >> extensionMock
+        1 * extensionMock.getAllFields() >> fields
         def e = thrown(ResourceExistsException)
         e.getMessage() == "The user with the externalId Boom already exists."
     }

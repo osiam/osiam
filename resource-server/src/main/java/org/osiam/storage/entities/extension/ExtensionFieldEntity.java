@@ -12,7 +12,7 @@ import java.io.Serializable;
  * Defines a field in a scim-extension.
  */
 @Entity(name = "scim_extension_field")
-public class ExtensionField implements Serializable {
+public class ExtensionFieldEntity implements Serializable {
 
     @Id
     @GeneratedValue
@@ -28,6 +28,17 @@ public class ExtensionField implements Serializable {
 
     @Column(name = "is_required")
     private boolean isRequired;
+
+    @Column
+    private ExtensionEntity extension;
+
+    public ExtensionEntity getExtension() {
+        return extension;
+    }
+
+    public void setExtension(ExtensionEntity extension) {
+        this.extension = extension;
+    }
 
     public long getInternalId() {
         return internalId;
