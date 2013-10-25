@@ -23,7 +23,7 @@
 
 package org.osiam.storage.entities
 
-import org.springframework.security.core.userdetails.UserDetails
+import org.osiam.storage.entities.extension.ExtensionFieldValue
 import org.osiam.resources.scim.Address
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.Name
@@ -548,5 +548,26 @@ class UserEntitySpec extends Specification {
         result.meta.resourceType == "User"
         result.toScim().meta.resourceType == "User"
 
+    }
+
+    def "adding extensions to a user should result in setting the user also to the extension"(){
+        given:
+        def extensions = [new ExtensionFieldValue()] as Set
+        userEntity.setUserExtensions(extensions)
+
+        when:
+        def result = userEntity.getUserExtensions()
+
+        then:
+        result == extensions
+        result[0].getUser() == userEntity
+    }
+
+    def "If extensions are null empty set should be returned"(){
+        when:
+        def emptySet = userEntity.getUserExtensions()
+
+        then:
+        emptySet != null
     }
 }

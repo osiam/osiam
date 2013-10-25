@@ -23,10 +23,8 @@
 
 package org.osiam.storage.entities;
 
-import org.osiam.resources.scim.Address;
-import org.osiam.resources.scim.MultiValuedAttribute;
-import org.osiam.resources.scim.Name;
-import org.osiam.resources.scim.User;
+import org.osiam.resources.scim.*;
+import org.osiam.storage.entities.extension.ExtensionFieldValue;
 
 import javax.persistence.*;
 import java.util.*;
@@ -121,6 +119,11 @@ public class UserEntity extends InternalIdSkeleton {
 
     @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<X509CertificateEntity> x509Certificates;
+
+
+    @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ExtensionFieldValue> userExtensions;
+
 
     public UserEntity() {
         getMeta().setResourceType("User");
@@ -412,12 +415,34 @@ public class UserEntity extends InternalIdSkeleton {
      */
     public void setEmails(Set<EmailEntity> emails) {
         //Setting Foreign key in child entity because hibernate did it not automatically
-        if(emails != null) {
+        if (emails != null) {
             for (EmailEntity emailEntity : emails) {
                 emailEntity.setUser(this);
             }
         }
         this.emails = emails;
+    }
+
+    /**
+     * @return the extensions data of the user
+     */
+    public Set<ExtensionFieldValue> getUserExtensions() {
+        if (userExtensions == null) {
+            userExtensions = new HashSet<>();
+        }
+        return userExtensions;
+    }
+
+    /**
+     * @param userExtensions the extension data of the user
+     */
+    public void setUserExtensions(Set<ExtensionFieldValue> userExtensions) {
+        if (userExtensions != null) {
+            for (ExtensionFieldValue extensionValue : userExtensions) {
+                extensionValue.setUser(this);
+            }
+        }
+        this.userExtensions = userExtensions;
     }
 
     /**

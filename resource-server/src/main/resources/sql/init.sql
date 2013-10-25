@@ -352,7 +352,7 @@ CREATE TABLE  scim_extension_field_value (
   internal_id bigint NOT NULL,
   value text,
   extension_field_internal_id bigint,
-  user_entity_internal_id bigint
+  user_internal_id bigint
 );
 
 ALTER TABLE ONLY scim_extension_field_value
@@ -362,9 +362,9 @@ ALTER TABLE scim_extension_field_value
 ADD CONSTRAINT FK6683BF61C9574176 FOREIGN KEY (extension_field_internal_id) REFERENCES scim_extension_field (internal_id);
 
 ALTER TABLE scim_extension_field_value
-ADD CONSTRAINT FK6683BF61F6C96F8D FOREIGN KEY (user_entity_internal_id) REFERENCES scim_user (internal_id);
+ADD CONSTRAINT FK6683BF61F6C96F8D FOREIGN KEY (user_internal_id) REFERENCES scim_user (internal_id);
 
-CREATE INDEX FK6683BF61F6C96F8D_index_3 ON scim_extension_field_value (user_entity_internal_id);
+CREATE INDEX FK6683BF61F6C96F8D_index_3 ON scim_extension_field_value (user_internal_id);
 
 CREATE INDEX FK6683BF61C9574176_index_3 ON scim_extension_field_value (extension_field_internal_id);
 

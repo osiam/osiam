@@ -34,10 +34,10 @@ class ExtensionFieldValueSpec extends Specification {
     def "setter and getter for the userEntity should be present"(){
         def userEntity = Mock(UserEntity.class)
         when:
-        extFieldValue.setUserEntity(userEntity)
+        extFieldValue.setUser(userEntity)
 
         then:
-        extFieldValue.getUserEntity() == userEntity
+        extFieldValue.getUser() == userEntity
     }
 
     def "setter and getter for the value should be present"(){

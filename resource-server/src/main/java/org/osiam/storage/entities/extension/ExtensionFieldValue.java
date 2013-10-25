@@ -23,8 +23,8 @@ public class ExtensionFieldValue implements Serializable {
     private ExtensionField extensionField;
 
     @ManyToOne
-    @Column(name = "user_entity")
-    private UserEntity userEntity;
+    @Column
+    private UserEntity user;
 
     @Column
     private String value;
@@ -45,12 +45,12 @@ public class ExtensionFieldValue implements Serializable {
         this.extensionField = extensionField;
     }
 
-    public UserEntity getUserEntity() {
-        return userEntity;
+    public UserEntity getUser() {
+        return user;
     }
 
-    public void setUserEntity(UserEntity userEntity) {
-        this.userEntity = userEntity;
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
 
     public String getValue() {
