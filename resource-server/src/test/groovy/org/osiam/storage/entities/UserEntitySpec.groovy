@@ -24,11 +24,10 @@
 package org.osiam.storage.entities
 
 import org.osiam.resources.scim.Address
-import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.Name
 import org.osiam.resources.scim.User
-import org.osiam.storage.entities.extension.ExtensionFieldValueEntity
+
 import spock.lang.Specification
 
 /**
@@ -40,6 +39,8 @@ import spock.lang.Specification
  */
 class UserEntitySpec extends Specification {
 
+    private static final VALUE = 'irrelevant'
+    
     UserEntity userEntity = new UserEntity()
 
     def name = new NameEntity()
@@ -86,11 +87,11 @@ class UserEntitySpec extends Specification {
         emails.add(new MultiValuedAttribute.Builder().
                 setPrimary(true).
                 setType("home").
-                setValue("value").
+                setValue(VALUE).
                 build())
 
         entitlements.add(new MultiValuedAttribute.Builder().
-                setValue("value").
+                setValue(VALUE).
                 build())
 
         groups.add(new MultiValuedAttribute.Builder().
@@ -99,12 +100,12 @@ class UserEntitySpec extends Specification {
                 build())
 
         ims.add(new MultiValuedAttribute.Builder().
-                setValue("blaaaa").
+                setValue(VALUE).
                 setType("icq").
                 build())
 
         phoneNumbers.add(new MultiValuedAttribute.Builder().
-                setValue("blaaaa").
+                setValue(VALUE).
                 setType("home").
                 build())
 
@@ -114,11 +115,11 @@ class UserEntitySpec extends Specification {
                 build())
 
         roles.add(new MultiValuedAttribute.Builder().
-                setValue("blaaaa").
+                setValue("").
                 build())
 
         certificates.add(new MultiValuedAttribute.Builder().
-                setValue("blaaaa").
+                setValue(VALUE).
                 build())
     }
 
@@ -549,63 +550,6 @@ class UserEntitySpec extends Specification {
         result.meta.resourceType == "User"
         result.toScim().meta.resourceType == "User"
 
-    }
-
-    def "adding extensions to a user should result in setting the user also to the extension"(){
-        given:
-        def extensions = [new ExtensionFieldValueEntity()] as Set
-        userEntity.setUserExtensions(extensions)
-
-        when:
-        def result = userEntity.getUserExtensions()
-
-        then:
-        result == extensions
-        result[0].getUser() == userEntity
-    }
-
-    def "If extensions are null empty set should be returned"(){
-        when:
-        def emptySet = userEntity.getUserExtensions()
-
-        then:
-        emptySet != null
-    }
-
-    def "mapping of user extensions from scim to entity"() {
-        given:
-        def user = new User.Builder("userName").
-                addExtension("urn1", new Extension(["gender":"male","age":"30"])).
-                addExtension("urn2", new Extension(["newsletter":"true","size":"180"]))
-                .build()
-
-        when:
-        def userEntity = UserEntity.fromScim(user)
-
-        then:
-        def sortedExtensionList = userEntity.getUserExtensions().sort{it.extensionField.name}
-
-        userEntity.getUserExtensions().size() == 4
-
-        sortedExtensionList[0].getUser() == userEntity
-        sortedExtensionList[0].getValue() == "30"
-        sortedExtensionList[0].getExtensionField().getName() == "age"
-        sortedExtensionList[0].getExtensionField().getExtension().getExtensionUrn() == "urn1"
-
-        sortedExtensionList[1].getUser() == userEntity
-        sortedExtensionList[1].getValue() == "male"
-        sortedExtensionList[1].getExtensionField().getName() == "gender"
-        sortedExtensionList[1].getExtensionField().getExtension().getExtensionUrn() == "urn1"
-
-        sortedExtensionList[2].getUser() == userEntity
-        sortedExtensionList[2].getValue() == "true"
-        sortedExtensionList[2].getExtensionField().getName() == "newsletter"
-        sortedExtensionList[2].getExtensionField().getExtension().getExtensionUrn() == "urn2"
-
-        sortedExtensionList[3].getUser() == userEntity
-        sortedExtensionList[3].getValue() == "180"
-        sortedExtensionList[3].getExtensionField().getName() == "size"
-        sortedExtensionList[3].getExtensionField().getExtension().getExtensionUrn() == "urn2"
     }
 
 }
