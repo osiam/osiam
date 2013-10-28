@@ -4,6 +4,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.osiam.storage.entities.UserEntity;
 
 import javax.persistence.*;
+
 import java.io.Serializable;
 
 /**
@@ -58,6 +59,32 @@ public class ExtensionFieldValueEntity implements Serializable {
     public void setValue(String value) {
         this.value = value;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((extensionField == null) ? 0 : extensionField.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ExtensionFieldValueEntity other = (ExtensionFieldValueEntity) obj;
+        if (extensionField == null) {
+            if (other.extensionField != null)
+                return false;
+        } else if (!extensionField.equals(other.extensionField))
+            return false;
+        return true;
+    }
+    
 }
 
 
