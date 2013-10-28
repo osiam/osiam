@@ -23,13 +23,28 @@
 
 package org.osiam.storage.entities;
 
-import org.osiam.resources.scim.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+
+import org.osiam.resources.scim.Address;
+import org.osiam.resources.scim.Extension;
+import org.osiam.resources.scim.MultiValuedAttribute;
+import org.osiam.resources.scim.Name;
+import org.osiam.resources.scim.User;
 import org.osiam.storage.entities.extension.ExtensionEntity;
 import org.osiam.storage.entities.extension.ExtensionFieldEntity;
 import org.osiam.storage.entities.extension.ExtensionFieldValueEntity;
-
-import javax.persistence.*;
-import java.util.*;
 
 /**
  * User Entity
@@ -92,10 +107,8 @@ public class UserEntity extends InternalIdSkeleton {
     @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EmailEntity> emails;
 
-
     @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PhoneNumberEntity> phoneNumbers;
-
 
     @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ImEntity> ims;
@@ -103,14 +116,11 @@ public class UserEntity extends InternalIdSkeleton {
     @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PhotoEntity> photos;
 
-
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<AddressEntity> addresses;
 
-
     @OneToMany(fetch = FetchType.EAGER)
     private Set<GroupEntity> groups;
-
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EntitlementsEntity> entitlements;
@@ -122,10 +132,11 @@ public class UserEntity extends InternalIdSkeleton {
     @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<X509CertificateEntity> x509Certificates;
 
+    @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ExtensionEntity> registeredExtensions = new HashSet<>();
 
     @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ExtensionFieldValueEntity> userExtensions;
-
+    private Set<ExtensionFieldValueEntity> extensionFieldValues = new HashSet<>();
 
     public UserEntity() {
         getMeta().setResourceType("User");
@@ -480,10 +491,10 @@ public class UserEntity extends InternalIdSkeleton {
      * @return the extensions data of the user
      */
     public Set<ExtensionFieldValueEntity> getUserExtensions() {
-        if (userExtensions == null) {
-            userExtensions = new HashSet<>();
+        if (extensionFieldValues == null) {
+            extensionFieldValues = new HashSet<>();
         }
-        return userExtensions;
+        return extensionFieldValues;
     }
 
     /**
@@ -495,7 +506,7 @@ public class UserEntity extends InternalIdSkeleton {
                 extensionValue.setUser(this);
             }
         }
-        this.userExtensions = userExtensions;
+        this.extensionFieldValues = userExtensions;
     }
 
     /**
@@ -657,6 +668,40 @@ public class UserEntity extends InternalIdSkeleton {
         }
         this.x509Certificates = x509Certificates;
     }
+    
+    /**
+     * Registers a new extension for this User. If the given extension is already registered, it will be ignored.
+     * @param extension The extension to register
+     */
+    public void registerExtension(ExtensionEntity extension) {
+        if(extension == null) {
+            throw new IllegalArgumentException("extension must not be null");
+        }
+        
+        registeredExtensions.add(extension);
+    }
+    
+    /**
+     * Adds or updates an extension field value for this User. When updating, the
+     * old value of the extension field is removed from this user and the new
+     * one will be added.
+     * 
+     * @param extension
+     *            The extension this field value belongs to
+     * @param extensionValue
+     *            The extension field value to add or update
+     */
+    public void addOrUpdateExtensionValue(ExtensionEntity extension, ExtensionFieldValueEntity extensionValue) {
+        if(extensionValue == null) {
+            throw new IllegalArgumentException("extensionValue must not be null");
+        }
+        
+        if(extensionFieldValues.contains(extensionValue)) {
+            extensionFieldValues.remove(extensionValue);
+        }
+        
+        extensionFieldValues.add(extensionValue);
+    }
 
     public User toScim() {
         return new User.Builder(getUserName()).
@@ -757,4 +802,30 @@ public class UserEntity extends InternalIdSkeleton {
         }
         return addressesForMapping;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((userName == null) ? 0 : userName.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        UserEntity other = (UserEntity) obj;
+        if (userName == null) {
+            if (other.userName != null)
+                return false;
+        } else if (!userName.equals(other.userName))
+            return false;
+        return true;
+    }
+    
 }
