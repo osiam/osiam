@@ -28,6 +28,8 @@ import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.Name
 import org.osiam.resources.scim.User
+import org.osiam.storage.entities.extension.ExtensionEntity
+import org.osiam.storage.entities.extension.ExtensionFieldEntity
 import org.osiam.storage.entities.extension.ExtensionFieldValueEntity
 import spock.lang.Specification
 
@@ -534,6 +536,11 @@ class UserEntitySpec extends Specification {
         userEntity.getExternalId() == null
     }
 
+
+
+
+
+
     def "should contain internal_id for jpa"(){
         when:
         userEntity.setInternalId(23)
@@ -583,6 +590,47 @@ class UserEntitySpec extends Specification {
         def userEntity = UserEntity.fromScim(user)
 
         then:
+        def sortedExtensionList = userEntity.getUserExtensions().sort{it.extensionField.name}
+
+        userEntity.getUserExtensions().size() == 4
+
+        sortedExtensionList[0].getUser() == userEntity
+        sortedExtensionList[0].getValue() == "30"
+        sortedExtensionList[0].getExtensionField().getName() == "age"
+        sortedExtensionList[0].getExtensionField().getExtension().getExtensionUrn() == "urn1"
+
+        sortedExtensionList[1].getUser() == userEntity
+        sortedExtensionList[1].getValue() == "male"
+        sortedExtensionList[1].getExtensionField().getName() == "gender"
+        sortedExtensionList[1].getExtensionField().getExtension().getExtensionUrn() == "urn1"
+
+        sortedExtensionList[2].getUser() == userEntity
+        sortedExtensionList[2].getValue() == "true"
+        sortedExtensionList[2].getExtensionField().getName() == "newsletter"
+        sortedExtensionList[2].getExtensionField().getExtension().getExtensionUrn() == "urn2"
+
+        sortedExtensionList[3].getUser() == userEntity
+        sortedExtensionList[3].getValue() == "180"
+        sortedExtensionList[3].getExtensionField().getName() == "size"
+        sortedExtensionList[3].getExtensionField().getExtension().getExtensionUrn() == "urn2"
+    }
+
+
+
+    def "mapping of user extensions from entity to scim"() {
+        given:
+        def extField1 = new ExtensionFieldEntity(name: "field1")
+        def extField2 = new ExtensionFieldEntity(name: "field2")
+        def ext1 = new ExtensionEntity(extensionUrn: "urn1", extensionFields: [extField1, extField2])
+        def userEntity = new UserEntity()
+        def extFieldValue1 = new ExtensionFieldValueEntity(extensionField: extField1, user: userEntity, value: "value1")
+        def extFieldValue2 = new ExtensionFieldValueEntity(extensionField: extField2, user: userEntity, value: "value2")
+
+        when:
+        User scimUser = userEntity.toScim()
+
+        then:
+        scimUser.ge
         def sortedExtensionList = userEntity.getUserExtensions().sort{it.extensionField.name}
 
         userEntity.getUserExtensions().size() == 4
