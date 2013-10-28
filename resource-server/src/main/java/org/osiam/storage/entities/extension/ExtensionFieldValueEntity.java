@@ -1,11 +1,15 @@
 package org.osiam.storage.entities.extension;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.osiam.storage.entities.UserEntity;
-
-import javax.persistence.*;
-
 import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+
+import org.osiam.storage.entities.UserEntity;
 
 /**
  * Defines a value of a field of a scim-extension. It's user-dependent!
@@ -15,17 +19,16 @@ public class ExtensionFieldValueEntity implements Serializable {
 
     @Id
     @GeneratedValue
-    @JsonIgnore
     @Column(name = "internal_id")
     private long internalId;
 
-    @Column(name = "extension_field")
+    @ManyToOne(optional=false)
     private ExtensionFieldEntity extensionField;
 
-    @ManyToOne
+    @ManyToOne(optional=false)
     private UserEntity user;
 
-    @Column
+    @Lob
     private String value;
 
     public long getInternalId() {

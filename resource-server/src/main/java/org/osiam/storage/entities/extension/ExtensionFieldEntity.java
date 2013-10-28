@@ -1,6 +1,6 @@
 package org.osiam.storage.entities.extension;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,8 +8,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-
-import java.io.Serializable;
+import javax.persistence.ManyToOne;
 
 /**
  * Defines a field in a scim-extension.
@@ -19,7 +18,6 @@ public class ExtensionFieldEntity implements Serializable {
 
     @Id
     @GeneratedValue
-    @JsonIgnore
     @Column(name = "internal_id")
     private long internalId;
 
@@ -33,7 +31,7 @@ public class ExtensionFieldEntity implements Serializable {
     @Column(name = "is_required")
     private boolean isRequired;
 
-    @Column
+    @ManyToOne
     private ExtensionEntity extension;
 
     public ExtensionEntity getExtension() {

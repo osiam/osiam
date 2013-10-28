@@ -1,12 +1,14 @@
 package org.osiam.storage.entities.extension;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-
-import javax.persistence.*;
-
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 /**
  * Defines a SCIM-Extension.
@@ -16,7 +18,6 @@ public class ExtensionEntity implements Serializable {
 
     @Id
     @GeneratedValue
-    @JsonIgnore
     @Column(name = "internal_id")
     private long internalId;
 
