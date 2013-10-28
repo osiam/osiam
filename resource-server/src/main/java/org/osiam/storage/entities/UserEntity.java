@@ -56,42 +56,32 @@ public class UserEntity extends InternalIdSkeleton {
     private static final String MAPPING_NAME = "user";
     private static final long serialVersionUID = -6535056565639057058L;
 
-
     @Column(nullable = false, unique = true)
     private String userName;
-
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private NameEntity name;
 
-
     @Column
     private String nickName;
-
 
     @Column
     private String profileUrl;
 
-
     @Column
     private String title;
-
 
     @Column
     private String userType;
 
-
     @Column
     private String preferredLanguage;
-
 
     @Column
     private String locale;
 
-
     @Column
     private String timezone;
-
 
     @Column
     private Boolean active;
@@ -99,10 +89,8 @@ public class UserEntity extends InternalIdSkeleton {
     @Column(nullable = false)
     private String password;
 
-
     @Column
     private String displayName;
-
 
     @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EmailEntity> emails;
@@ -691,7 +679,7 @@ public class UserEntity extends InternalIdSkeleton {
      * @param extensionValue
      *            The extension field value to add or update
      */
-    public void addOrUpdateExtensionValue(ExtensionEntity extension, ExtensionFieldValueEntity extensionValue) {
+    public void addOrUpdateExtensionValue(ExtensionFieldEntity extensionField, ExtensionFieldValueEntity extensionValue) {
         if(extensionValue == null) {
             throw new IllegalArgumentException("extensionValue must not be null");
         }
@@ -699,6 +687,9 @@ public class UserEntity extends InternalIdSkeleton {
         if(extensionFieldValues.contains(extensionValue)) {
             extensionFieldValues.remove(extensionValue);
         }
+        
+        extensionValue.setUser(this);
+        extensionValue.setExtensionField(extensionField);
         
         extensionFieldValues.add(extensionValue);
     }

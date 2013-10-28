@@ -93,10 +93,15 @@ class UserExtensionSpec extends Specification {
     def 'adding a field value works'() {
         given:
         def extension = new ExtensionEntity()
+        
+        def extensionField = new ExtensionFieldEntity()
+        extensionField.extension = extension
+        extensionField.name = "testField"
+        
         def fieldValue = new ExtensionFieldValueEntity()
 
         when:
-        userEntity.addOrUpdateExtensionValue(extension, fieldValue)
+        userEntity.addOrUpdateExtensionValue(extensionField, fieldValue)
 
         then:
         userEntity.extensionFieldValues.contains(fieldValue)
@@ -107,7 +112,7 @@ class UserExtensionSpec extends Specification {
         def extension = new ExtensionEntity()
 
         when:
-        userEntity.addOrUpdateExtensionValue(extension, null)
+        userEntity.addOrUpdateExtensionValue(new ExtensionFieldEntity(), null)
 
         then:
         thrown(IllegalArgumentException)
@@ -116,23 +121,43 @@ class UserExtensionSpec extends Specification {
     def 'updating an extension value works'() {
         given:
         def extension = new ExtensionEntity()
+        
         def extensionField = new ExtensionFieldEntity()
         extensionField.extension = extension
         extensionField.name = "testField"
+        
         def fieldValue = new ExtensionFieldValueEntity()
-        fieldValue.extensionField = extensionField
         fieldValue.value = "fieldValue"
+        
         def fieldValueUpdated = new ExtensionFieldValueEntity()
-        fieldValueUpdated.extensionField = extensionField
         fieldValueUpdated.value = "fieldValueUpdated"
-        userEntity.addOrUpdateExtensionValue(extension, fieldValue)
+        
+        userEntity.addOrUpdateExtensionValue(extensionField, fieldValue)
 
         when:
-        userEntity.addOrUpdateExtensionValue(extension, fieldValueUpdated)
+        userEntity.addOrUpdateExtensionValue(extensionField, fieldValueUpdated)
 
         then:
-        
         extensionValuesOnlyContains(fieldValueUpdated, extensionField) == true
+    }
+    
+    def 'updating/adding an extension value sets references to extension field and user'() {
+        given:
+        def extension = new ExtensionEntity()
+        
+        def extensionField = new ExtensionFieldEntity()
+        extensionField.extension = extension
+        extensionField.name = "testField"
+        
+        def fieldValue = new ExtensionFieldValueEntity()
+        fieldValue.value = "fieldValue"
+
+        when:
+        userEntity.addOrUpdateExtensionValue(extensionField, fieldValue)
+        
+        then:
+        fieldValue.user == userEntity
+        fieldValue.extensionField == extensionField
     }
     
     def extensionValuesOnlyContains(fieldValue, extensionField) {
