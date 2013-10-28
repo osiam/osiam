@@ -684,12 +684,13 @@ public class UserEntity extends InternalIdSkeleton {
             throw new IllegalArgumentException("extensionValue must not be null");
         }
         
+        extensionValue.setExtensionField(extensionField);
+        
         if(extensionFieldValues.contains(extensionValue)) {
             extensionFieldValues.remove(extensionValue);
         }
         
         extensionValue.setUser(this);
-        extensionValue.setExtensionField(extensionField);
         
         extensionFieldValues.add(extensionValue);
     }
