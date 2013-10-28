@@ -27,6 +27,7 @@ public class ExtensionFieldEntity implements Serializable {
     private String name;
 
     @Column
+    @Enumerated(EnumType.STRING)
     private ExtensionFieldType type;
 
     @Column(name = "is_required")
