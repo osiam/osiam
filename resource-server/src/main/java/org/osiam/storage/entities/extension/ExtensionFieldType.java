@@ -8,10 +8,5 @@ package org.osiam.storage.entities.extension;
 public enum ExtensionFieldType {
 
     STRING,
-    BOOLEAN,
-    DECIMAL,
-    INTEGER,
-    DATETIME,
-    BINARY
 
 }

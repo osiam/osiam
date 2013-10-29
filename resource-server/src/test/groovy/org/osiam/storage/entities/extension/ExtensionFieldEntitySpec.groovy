@@ -32,7 +32,7 @@ class ExtensionFieldEntitySpec extends Specification {
     }
 
     def "setter and getter for the type should be present"(){
-        def type = ExtensionFieldType.DECIMAL
+        def type = ExtensionFieldType.STRING
         when:
         extField.setType(type)
 
