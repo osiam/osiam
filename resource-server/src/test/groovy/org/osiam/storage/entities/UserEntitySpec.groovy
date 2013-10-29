@@ -612,45 +612,28 @@ class UserEntitySpec extends Specification {
         sortedExtensionList[3].getExtensionField().getExtension().getExtensionUrn() == "urn2"
     }
 
-
-
     def "mapping of user extensions from entity to scim"() {
         given:
         def extField1 = new ExtensionFieldEntity(name: "field1")
         def extField2 = new ExtensionFieldEntity(name: "field2")
         def ext1 = new ExtensionEntity(extensionUrn: "urn1", extensionFields: [extField1, extField2])
-        def userEntity = new UserEntity()
+        def userEntity = new UserEntity(id: UUID.randomUUID(), userName: new NameEntity(familyName: "McDuck"))
+
         def extFieldValue1 = new ExtensionFieldValueEntity(extensionField: extField1, user: userEntity, value: "value1")
+        userEntity.getUserExtensions().add(extFieldValue1)
         def extFieldValue2 = new ExtensionFieldValueEntity(extensionField: extField2, user: userEntity, value: "value2")
+        userEntity.getUserExtensions().add(extFieldValue2)
 
         when:
         User scimUser = userEntity.toScim()
 
         then:
-        scimUser.ge
-        def sortedExtensionList = userEntity.getUserExtensions().sort{it.extensionField.name}
+        scimUser.getAllExtensions().size() == 1
+        def scimExt1 = scimUser.getAllExtensions().get("urn1")
+        scimExt1.getAllFields().size() == 2
+        scimExt1.getField("field1") == "value1"
+        scimExt1.getField("field2") == "value2"
 
-        userEntity.getUserExtensions().size() == 4
-
-        sortedExtensionList[0].getUser() == userEntity
-        sortedExtensionList[0].getValue() == "30"
-        sortedExtensionList[0].getExtensionField().getName() == "age"
-        sortedExtensionList[0].getExtensionField().getExtension().getExtensionUrn() == "urn1"
-
-        sortedExtensionList[1].getUser() == userEntity
-        sortedExtensionList[1].getValue() == "male"
-        sortedExtensionList[1].getExtensionField().getName() == "gender"
-        sortedExtensionList[1].getExtensionField().getExtension().getExtensionUrn() == "urn1"
-
-        sortedExtensionList[2].getUser() == userEntity
-        sortedExtensionList[2].getValue() == "true"
-        sortedExtensionList[2].getExtensionField().getName() == "newsletter"
-        sortedExtensionList[2].getExtensionField().getExtension().getExtensionUrn() == "urn2"
-
-        sortedExtensionList[3].getUser() == userEntity
-        sortedExtensionList[3].getValue() == "180"
-        sortedExtensionList[3].getExtensionField().getName() == "size"
-        sortedExtensionList[3].getExtensionField().getExtension().getExtensionUrn() == "urn2"
     }
 
 }

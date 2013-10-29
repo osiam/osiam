@@ -1,7 +1,12 @@
 package org.osiam.storage.entities.extension;
 
+import org.osiam.resources.scim.Extension;
+import org.osiam.storage.entities.UserEntity;
+
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -85,4 +90,38 @@ public class ExtensionEntity implements Serializable {
     }
     
     
+
+
+    /**
+     * Konvertiert alle ExtensionFields des Users zu Scim-Extensions.
+
+     *
+     * @param userEntity
+     * @return never null
+     */
+    public static Map<String, Extension> toScim(UserEntity userEntity) {
+        // Alle Felder nach Extensions sortieren
+        Map<String, Map<String, String>> sortedValues = new HashMap<>();
+        for (ExtensionFieldValueEntity extFieldValue : userEntity.getUserExtensions()) {
+            String urn = extFieldValue.getExtensionField().getExtension().getExtensionUrn();
+            String fieldName = extFieldValue.getExtensionField().getName();
+            String value = extFieldValue.getValue();
+
+            Map<String, String> extMap = sortedValues.get(urn);
+            if (extMap == null) {
+                extMap = new HashMap<String, String>();
+                sortedValues.put(urn, extMap);
+            }
+            extMap.put(fieldName, value);
+        }
+
+        // Extensions in ScimExtensions umwandeln
+        Map<String, Extension> res = new HashMap<>();
+        for(Map.Entry<String, Map<String, String>> extensionEntry : sortedValues.entrySet()) {
+            Extension ext = new Extension(extensionEntry.getValue());
+            String urn = extensionEntry.getKey();
+            res.put(urn, ext);
+        }
+        return res;
+    }   
 }

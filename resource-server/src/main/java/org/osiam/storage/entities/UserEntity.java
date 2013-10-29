@@ -725,6 +725,8 @@ public class UserEntity extends InternalIdSkeleton {
                 setTitle(getTitle()).
                 setUserType(getUserType()).
                 setX509Certificates(entityX509CertificatesToScim(getX509Certificates())).
+                addExtensions(ExtensionEntity.toScim(this)).
+                //
                 setExternalId(getExternalId()).
                 setId(getId().toString()).
                 setMeta(getMeta().toScim()).
