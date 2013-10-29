@@ -23,7 +23,7 @@
 
 package org.osiam.security.authentication;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.osiam.helper.HttpClientHelper;
 import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.resources.ClientSpring;
@@ -59,7 +59,7 @@ public class ClientDetailsLoadingBean implements ClientDetailsService {
 
     @Override
     public ClientDetails loadClientByClientId(final String clientId) {
-        final String serverUri = httpScheme + "://" + serverHost + ":"+ serverPort + "/osiam-resource-server/authentication/client/";
+        final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort + "/osiam-resource-server/authentication/client/";
 
         final HttpClientRequestResult response = httpClientHelper.executeHttpGet(serverUri + clientId);
         ClientSpring clientSpring;
@@ -73,7 +73,7 @@ public class ClientDetailsLoadingBean implements ClientDetailsService {
     }
 
     public void updateClient(ClientSpring client, String clientId) {
-        final String serverUri = httpScheme + "://" + serverHost + ":"+ serverPort + "/osiam-resource-server/authentication/client/";
+        final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort + "/osiam-resource-server/authentication/client/";
         httpClientHelper.executeHttpPut(serverUri + clientId, "expiry", client.getExpiry().toString());
     }
 }

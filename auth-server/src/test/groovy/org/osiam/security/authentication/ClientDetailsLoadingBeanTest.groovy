@@ -23,7 +23,7 @@
 
 package org.osiam.security.authentication
 
-import org.codehaus.jackson.map.ObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.osiam.helper.HttpClientHelper
 import org.osiam.helper.HttpClientRequestResult
 import org.osiam.resources.ClientSpring
@@ -34,9 +34,9 @@ class ClientDetailsLoadingBeanTest extends Specification {
     def jacksonMapperMock = Mock(ObjectMapper)
     def httpClientHelperMock = Mock(HttpClientHelper)
     def clientDetailsLoadingBean = new ClientDetailsLoadingBean(mapper: jacksonMapperMock, httpClientHelper: httpClientHelperMock,
-        httpScheme: "http", serverHost: "localhost", serverPort: 8080)
+            httpScheme: "http", serverHost: "localhost", serverPort: 8080)
 
-    def "ClientDetailsLoadingBean should implement springs ClientDetailsService and therefore returning a client found by client ID as ClientSpring representation"(){
+    def "ClientDetailsLoadingBean should implement springs ClientDetailsService and therefore returning a client found by client ID as ClientSpring representation"() {
         given:
         def resultingClient = "the resulting client as JSON string"
         def clientSpringMock = Mock(ClientSpring)
@@ -51,7 +51,7 @@ class ClientDetailsLoadingBeanTest extends Specification {
         result instanceof ClientSpring
     }
 
-    def "If jackson throws an IOException it should be mapped to an RuntimeException"(){
+    def "If jackson throws an IOException it should be mapped to an RuntimeException"() {
         given:
         def resultingClient = "the resulting client as JSON string"
         def requestResult = new HttpClientRequestResult(resultingClient, 200)
@@ -61,7 +61,7 @@ class ClientDetailsLoadingBeanTest extends Specification {
 
         then:
         1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-resource-server/authentication/client/ClientId") >> requestResult
-        1 * jacksonMapperMock.readValue(requestResult.body, ClientSpring.class) >> {throw new IOException()}
+        1 * jacksonMapperMock.readValue(requestResult.body, ClientSpring.class) >> { throw new IOException() }
         thrown(RuntimeException)
     }
 
