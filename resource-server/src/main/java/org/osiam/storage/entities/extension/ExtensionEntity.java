@@ -1,11 +1,14 @@
 package org.osiam.storage.entities.extension;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 /**
  * Defines a SCIM-Extension.
@@ -15,7 +18,6 @@ public class ExtensionEntity implements Serializable {
 
     @Id
     @GeneratedValue
-    @JsonIgnore
     @Column(name = "internal_id")
     private long internalId;
 
@@ -56,4 +58,31 @@ public class ExtensionEntity implements Serializable {
         }
         this.extensionFields = extensionFields;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((extensionUrn == null) ? 0 : extensionUrn.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ExtensionEntity other = (ExtensionEntity) obj;
+        if (extensionUrn == null) {
+            if (other.extensionUrn != null)
+                return false;
+        } else if (!extensionUrn.equals(other.extensionUrn))
+            return false;
+        return true;
+    }
+    
+    
 }

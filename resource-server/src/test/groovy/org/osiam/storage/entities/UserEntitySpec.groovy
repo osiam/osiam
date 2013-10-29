@@ -42,6 +42,8 @@ import spock.lang.Specification
  */
 class UserEntitySpec extends Specification {
 
+    private static final VALUE = 'irrelevant'
+    
     UserEntity userEntity = new UserEntity()
 
     def name = new NameEntity()
@@ -88,11 +90,11 @@ class UserEntitySpec extends Specification {
         emails.add(new MultiValuedAttribute.Builder().
                 setPrimary(true).
                 setType("home").
-                setValue("value").
+                setValue(VALUE).
                 build())
 
         entitlements.add(new MultiValuedAttribute.Builder().
-                setValue("value").
+                setValue(VALUE).
                 build())
 
         groups.add(new MultiValuedAttribute.Builder().
@@ -101,12 +103,12 @@ class UserEntitySpec extends Specification {
                 build())
 
         ims.add(new MultiValuedAttribute.Builder().
-                setValue("blaaaa").
+                setValue(VALUE).
                 setType("icq").
                 build())
 
         phoneNumbers.add(new MultiValuedAttribute.Builder().
-                setValue("blaaaa").
+                setValue(VALUE).
                 setType("home").
                 build())
 
@@ -116,11 +118,11 @@ class UserEntitySpec extends Specification {
                 build())
 
         roles.add(new MultiValuedAttribute.Builder().
-                setValue("blaaaa").
+                setValue("").
                 build())
 
         certificates.add(new MultiValuedAttribute.Builder().
-                setValue("blaaaa").
+                setValue(VALUE).
                 build())
     }
 
@@ -535,11 +537,6 @@ class UserEntitySpec extends Specification {
         userEntity.getUserName() == "username"
         userEntity.getExternalId() == null
     }
-
-
-
-
-
 
     def "should contain internal_id for jpa"(){
         when:

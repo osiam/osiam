@@ -1,12 +1,14 @@
 package org.osiam.storage.entities.extension;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import java.io.Serializable;
+import javax.persistence.ManyToOne;
 
 /**
  * Defines a field in a scim-extension.
@@ -16,7 +18,6 @@ public class ExtensionFieldEntity implements Serializable {
 
     @Id
     @GeneratedValue
-    @JsonIgnore
     @Column(name = "internal_id")
     private long internalId;
 
@@ -24,12 +25,13 @@ public class ExtensionFieldEntity implements Serializable {
     private String name;
 
     @Column
+    @Enumerated(EnumType.STRING)
     private ExtensionFieldType type;
 
     @Column(name = "is_required")
     private boolean isRequired;
 
-    @Column
+    @ManyToOne
     private ExtensionEntity extension;
 
     public ExtensionEntity getExtension() {
@@ -71,4 +73,37 @@ public class ExtensionFieldEntity implements Serializable {
     public void setRequired(boolean required) {
         isRequired = required;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((extension == null) ? 0 : extension.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ExtensionFieldEntity other = (ExtensionFieldEntity) obj;
+        if (extension == null) {
+            if (other.extension != null)
+                return false;
+        } else if (!extension.equals(other.extension))
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        return true;
+    }
+    
+    
 }

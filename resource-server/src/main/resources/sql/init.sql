@@ -316,35 +316,31 @@ CREATE TABLE scim_user_scim_roles (
 --
 -- Extension section: table, constraints, indexes
 --
-CREATE TABLE scim_extension (
+
+CREATE TABLE scim_extension
+(
   internal_id bigint NOT NULL,
-  urn text NOT NULL
+  urn character varying(255) NOT NULL,
+  CONSTRAINT scim_extension_pkey PRIMARY KEY (internal_id ),
+  CONSTRAINT urn_ UNIQUE (urn )
 );
-
-ALTER TABLE ONLY scim_extension
-ADD CONSTRAINT scim_extension_pkey PRIMARY KEY (internal_id);
-
-CREATE UNIQUE INDEX urn_index_extension ON scim_extension (urn);
 
 --
 -- Extension field section: table, constraints, indexes
 --
-CREATE TABLE scim_extension_field (
+
+CREATE TABLE scim_extension_field
+(
   internal_id bigint NOT NULL,
   is_required boolean,
-  name text,
-  type int,
-  extension_internal_id bigint
+  name character varying(255),
+  type character varying(255),
+  extension_internal_id bigint,
+  CONSTRAINT scim_extension_field_pkey PRIMARY KEY (internal_id ),
+  CONSTRAINT fka8ad6a2f30b87d5d FOREIGN KEY (extension_internal_id)
+      REFERENCES scim_extension (internal_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
 );
-
-ALTER TABLE ONLY scim_extension_field
-ADD CONSTRAINT scim_extension_field_pkey PRIMARY KEY (internal_id);
-
-ALTER TABLE ONLY scim_extension_field
-ADD CONSTRAINT FKA8AD6A2FA75B3B1A FOREIGN KEY (extension_internal_id) REFERENCES scim_extension (internal_id);
-
-CREATE INDEX FKA8AD6A2FA75B3B1A_index_3 ON scim_extension_field (extension_internal_id);
-
 --
 -- Extension field value section: table, constraints, indexes
 --
@@ -355,19 +351,34 @@ CREATE TABLE  scim_extension_field_value (
   user_internal_id bigint
 );
 
-ALTER TABLE ONLY scim_extension_field_value
-ADD CONSTRAINT scim_extension_field_value_pkey PRIMARY KEY (internal_id);
+CREATE TABLE scim_extension_field_value
+(
+  internal_id bigint NOT NULL,
+  value text,
+  extensionfield_internal_id bigint NOT NULL,
+  user_internal_id bigint NOT NULL,
+  CONSTRAINT scim_extension_field_value_pkey PRIMARY KEY (internal_id ),
+  CONSTRAINT fk6683bf6124a90fb9 FOREIGN KEY (extensionfield_internal_id)
+      REFERENCES scim_extension_field (internal_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk6683bf6146402c6a FOREIGN KEY (user_internal_id)
+      REFERENCES scim_user (internal_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
 
-ALTER TABLE scim_extension_field_value
-ADD CONSTRAINT FK6683BF61C9574176 FOREIGN KEY (extension_field_internal_id) REFERENCES scim_extension_field (internal_id);
-
-ALTER TABLE scim_extension_field_value
-ADD CONSTRAINT FK6683BF61F6C96F8D FOREIGN KEY (user_internal_id) REFERENCES scim_user (internal_id);
-
-CREATE INDEX FK6683BF61F6C96F8D_index_3 ON scim_extension_field_value (user_internal_id);
-
-CREATE INDEX FK6683BF61C9574176_index_3 ON scim_extension_field_value (extension_field_internal_id);
-
+CREATE TABLE scim_user_scim_extension
+(
+  scim_user_internal_id bigint NOT NULL,
+  registeredextensions_internal_id bigint NOT NULL,
+  CONSTRAINT scim_user_scim_extension_pkey PRIMARY KEY (scim_user_internal_id , registeredextensions_internal_id ),
+  CONSTRAINT fk12ff42dd595826b4 FOREIGN KEY (registeredextensions_internal_id)
+      REFERENCES scim_extension (internal_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk12ff42dd7e951dd5 FOREIGN KEY (scim_user_internal_id)
+      REFERENCES scim_user (internal_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT uk12ff42dd16779334 UNIQUE (registeredextensions_internal_id )
+);
 
 --
 -- Updating hibernate sequence start value
