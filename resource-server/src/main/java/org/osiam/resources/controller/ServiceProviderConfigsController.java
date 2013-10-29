@@ -1,11 +1,11 @@
 package org.osiam.resources.controller;
 
 
-import org.codehaus.jackson.map.annotate.JsonSerialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.osiam.resources.scim.Constants;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.osiam.resources.scim.Constants;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,7 +24,7 @@ public class ServiceProviderConfigsController {
 
         public static final ServiceProviderConfig INSTANCE = new ServiceProviderConfig(); // NOSONAR - Needed public due to json serializing
 
-        public  Set<String> schemas = new HashSet<>(); // NOSONAR - Needed public due to json serializing
+        public Set<String> schemas = new HashSet<>(); // NOSONAR - Needed public due to json serializing
         public final Supported patch = new Supported(true); // NOSONAR - Needed public due to json serializing
         public final Supported bulk = new BulkSupported(false); // NOSONAR - Needed public due to json serializing
         public final Supported filter = new FilterSupported(true, Constants.MAX_RESULT); // NOSONAR - Needed public due to json serializing
@@ -60,7 +60,7 @@ public class ServiceProviderConfigsController {
         }
 
         @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
-        public static class FilterSupported extends Supported{
+        public static class FilterSupported extends Supported {
             public final Integer maxResults; // NOSONAR - Needed public due to json serializing
 
             public FilterSupported(boolean b, Integer maxresults) {

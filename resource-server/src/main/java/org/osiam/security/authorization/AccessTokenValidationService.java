@@ -1,7 +1,7 @@
 package org.osiam.security.authorization;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpStatus;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.osiam.helper.HttpClientHelper;
 import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.security.OAuth2AuthenticationSpring;

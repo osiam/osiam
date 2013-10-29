@@ -1,6 +1,6 @@
 package org.osiam.resources.controller;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.osiam.storage.dao.ClientDao;
 import org.osiam.storage.entities.ClientEntity;
 import org.springframework.http.HttpStatus;

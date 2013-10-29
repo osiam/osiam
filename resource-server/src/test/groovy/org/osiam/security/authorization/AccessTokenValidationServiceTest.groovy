@@ -1,6 +1,6 @@
 package org.osiam.security.authorization
 
-import org.codehaus.jackson.map.ObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.osiam.helper.HttpClientHelper
 import org.osiam.helper.HttpClientRequestResult
 import org.osiam.security.AuthenticationSpring
@@ -25,7 +25,7 @@ class AccessTokenValidationServiceTest extends Specification {
     def jacksonMapperMock = Mock(ObjectMapper)
     def httpClientHelperMock = Mock(HttpClientHelper)
     def accessTokenValidationService = new AccessTokenValidationService(mapper: jacksonMapperMock, httpClient: httpClientHelperMock,
-        httpScheme: "http", serverHost: "localhost", serverPort: 8080)
+            httpScheme: "http", serverHost: "localhost", serverPort: 8080)
 
     def "Inherit from springs ResourceServerTokenServices and override the method to load the Authentication depending on the given accessToken as String"() {
         given:
@@ -54,11 +54,11 @@ class AccessTokenValidationServiceTest extends Specification {
 
         then:
         1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/validate/accessToken") >> response
-        1 * jacksonMapperMock.readValue(response.body, OAuth2AuthenticationSpring.class) >> {throw new IOException()}
+        1 * jacksonMapperMock.readValue(response.body, OAuth2AuthenticationSpring.class) >> { throw new IOException() }
         thrown(RuntimeException)
     }
 
-    def "Should throw InvalidTokenException if a token can't be validated"(){
+    def "Should throw InvalidTokenException if a token can't be validated"() {
 
         given:
         def response = new HttpClientRequestResult("Irrelevant", 401)
@@ -95,11 +95,11 @@ class AccessTokenValidationServiceTest extends Specification {
 
         then:
         1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-auth-server/token/$ACCESS_TOKEN") >> response
-        1 * jacksonMapperMock.readValue(response.body, OAuth2AccessToken.class) >> {throw new IOException()}
+        1 * jacksonMapperMock.readValue(response.body, OAuth2AccessToken.class) >> { throw new IOException() }
         thrown(RuntimeException)
     }
 
-    def "Should throw InvalidTokenException if a token can't be read"(){
+    def "Should throw InvalidTokenException if a token can't be read"() {
 
         given:
         def response = new HttpClientRequestResult("Irrelevant", 401)

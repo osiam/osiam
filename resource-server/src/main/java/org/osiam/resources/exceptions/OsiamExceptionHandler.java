@@ -23,7 +23,7 @@
 
 package org.osiam.resources.exceptions;
 
-import org.codehaus.jackson.map.annotate.JsonSerialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +41,7 @@ public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
     //Contains all known ErrorMessageTransformer to validate and manipulate error messages
     private static final ErrorMessageTransformer[] KNOWN_ERROR_MSG_TRANSFORMER =
             {new TypeErrorMessageTransformer(), new JsonPropertyMessageTransformer(), new JsonMappingMessageTransformer(),
-            new ClientManagementErrorMessageTransformer()};
+                    new ClientManagementErrorMessageTransformer()};
 
     @ExceptionHandler(value = {Exception.class})
     protected ResponseEntity<Object> handleConflict(Exception ex, WebRequest request) {

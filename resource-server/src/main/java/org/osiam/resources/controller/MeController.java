@@ -1,6 +1,6 @@
 package org.osiam.resources.controller;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.osiam.security.authorization.AccessTokenValidationService;

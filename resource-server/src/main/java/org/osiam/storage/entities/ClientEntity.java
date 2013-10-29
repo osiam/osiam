@@ -1,8 +1,8 @@
 package org.osiam.storage.entities;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import javax.persistence.*;
 import java.util.*;
@@ -176,7 +176,7 @@ public class ClientEntity {
     }
 
     public Date getExpiry() {
-        return expiry !=null ? (Date) expiry.clone() : null;
+        return expiry != null ? (Date) expiry.clone() : null;
     }
 
     public void setExpiry(Date expiry) {
