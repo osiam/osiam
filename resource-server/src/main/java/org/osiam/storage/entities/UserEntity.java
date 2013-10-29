@@ -656,7 +656,7 @@ public class UserEntity extends InternalIdSkeleton {
         }
         this.x509Certificates = x509Certificates;
     }
-    
+
     /**
      * Registers a new extension for this User. If the given extension is already registered, it will be ignored.
      * @param extension The extension to register
@@ -665,16 +665,16 @@ public class UserEntity extends InternalIdSkeleton {
         if(extension == null) {
             throw new IllegalArgumentException("extension must not be null");
         }
-        
+
         registeredExtensions.add(extension);
     }
-    
+
     /**
      * Adds or updates an extension field value for this User. When updating, the
      * old value of the extension field is removed from this user and the new
      * one will be added.
-     * 
-     * @param extension
+     *
+     * @param extensionField
      *            The extension this field value belongs to
      * @param extensionValue
      *            The extension field value to add or update
@@ -683,15 +683,15 @@ public class UserEntity extends InternalIdSkeleton {
         if(extensionValue == null) {
             throw new IllegalArgumentException("extensionValue must not be null");
         }
-        
+
         extensionValue.setExtensionField(extensionField);
-        
+
         if(extensionFieldValues.contains(extensionValue)) {
             extensionFieldValues.remove(extensionValue);
         }
-        
+
         extensionValue.setUser(this);
-        
+
         extensionFieldValues.add(extensionValue);
     }
 
@@ -821,5 +821,5 @@ public class UserEntity extends InternalIdSkeleton {
             return false;
         return true;
     }
-    
+
 }
