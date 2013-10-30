@@ -37,7 +37,7 @@ import spock.lang.Specification
 class UserEntitySpec extends Specification {
 
     private static final VALUE = 'irrelevant'
-    
+
     UserEntity userEntity = new UserEntity()
 
     def name = new NameEntity()
@@ -514,7 +514,7 @@ class UserEntitySpec extends Specification {
         given:
         def extField1 = new ExtensionFieldEntity(name: "field1")
         def extField2 = new ExtensionFieldEntity(name: "field2")
-        new ExtensionEntity(extensionUrn: "urn1", extensionFields: [extField1, extField2])
+        new ExtensionEntity(urn: "urn1", fields: [extField1, extField2])
         def userEntity = new UserEntity(id: UUID.randomUUID(), userName: "McDuck")
 
         def extFieldValue1 = new ExtensionFieldValueEntity(extensionField: extField1, user: userEntity, value: "value1")
