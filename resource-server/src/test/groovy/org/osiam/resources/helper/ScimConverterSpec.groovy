@@ -2,8 +2,10 @@ package org.osiam.resources.helper
 
 import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.User
+import org.osiam.storage.dao.ExtensionDao
 import org.osiam.storage.entities.NameEntity
-import org.osiam.storage.entities.UserEntity
+import org.osiam.storage.entities.extension.ExtensionEntity
+import org.osiam.storage.entities.extension.ExtensionFieldEntity;
 
 import spock.lang.Specification
 
@@ -86,12 +88,22 @@ class ScimConverterSpec extends Specification {
         userEntity.getExternalId() == null
     }
     
-    def "mapping of user extensions from scim to entity"() {
+    def 'mapping of user extensions from scim to entity'() {
         given:
-        def user = new User.Builder("userName").
-                addExtension("urn1", new Extension('urn1', ["gender":"male","age":"30"])).
-                addExtension("urn2", new Extension('urn2', ["newsletter":"true","size":"180"]))
+        ExtensionEntity extensionEntity = new ExtensionEntity()
+        
+        ExtensionFieldEntity extensionFieldGender = new ExtensionFieldEntity([name: 'gender', extension: extensionEntity])
+        ExtensionFieldEntity extensionFieldAge = new ExtensionFieldEntity([name: 'age', extension: extensionEntity])
+        
+        extensionEntity.urn = 'urn1'
+        extensionEntity.fields = [extensionFieldGender, extensionFieldAge] as Set
+        
+        ExtensionDao extensionDao = Mock(ExtensionDao)
+        extensionDao.getExtensionByUrn('urn1') >> extensionEntity
+        def user = new User.Builder('userName')
+                .addExtension('urn1', new Extension('urn1', ['gender':'male','age':'30']))
                 .build()
+        scimConverter.extensionDao = extensionDao
 
         when:
         def userEntity = scimConverter.fromScim(user)
@@ -99,27 +111,17 @@ class ScimConverterSpec extends Specification {
         then:
         def sortedExtensionList = userEntity.getUserExtensions().sort{it.extensionField.name}
 
-        userEntity.getUserExtensions().size() == 4
+        userEntity.getUserExtensions().size() == 2
 
         sortedExtensionList[0].getUser() == userEntity
-        sortedExtensionList[0].getValue() == "30"
-        sortedExtensionList[0].getExtensionField().getName() == "age"
-        sortedExtensionList[0].getExtensionField().getExtension().getExtensionUrn() == "urn1"
+        sortedExtensionList[0].getValue() == '30'
+        sortedExtensionList[0].getExtensionField().getName() == 'age'
+        sortedExtensionList[0].getExtensionField().getExtension().getUrn() == 'urn1'
 
         sortedExtensionList[1].getUser() == userEntity
-        sortedExtensionList[1].getValue() == "male"
-        sortedExtensionList[1].getExtensionField().getName() == "gender"
-        sortedExtensionList[1].getExtensionField().getExtension().getExtensionUrn() == "urn1"
-
-        sortedExtensionList[2].getUser() == userEntity
-        sortedExtensionList[2].getValue() == "true"
-        sortedExtensionList[2].getExtensionField().getName() == "newsletter"
-        sortedExtensionList[2].getExtensionField().getExtension().getExtensionUrn() == "urn2"
-
-        sortedExtensionList[3].getUser() == userEntity
-        sortedExtensionList[3].getValue() == "180"
-        sortedExtensionList[3].getExtensionField().getName() == "size"
-        sortedExtensionList[3].getExtensionField().getExtension().getExtensionUrn() == "urn2"
+        sortedExtensionList[1].getValue() == 'male'
+        sortedExtensionList[1].getExtensionField().getName() == 'gender'
+        sortedExtensionList[1].getExtensionField().getExtension().getUrn() == 'urn1'
     }
     
 }
