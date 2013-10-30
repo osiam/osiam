@@ -88,19 +88,17 @@ public class ExtensionEntity implements Serializable {
             return false;
         return true;
     }
-    
-    
 
 
     /**
-     * Konvertiert alle ExtensionFields des Users zu Scim-Extensions.
-
+     * Converting all ExtensionFields of the User into a Scim-Extensions representation.
      *
      * @param userEntity
-     * @return never null
+     *          getting the extensions for conversion
+     * @return A Map of extensions with corresponding urn's. Never null
      */
     public static Map<String, Extension> toScim(UserEntity userEntity) {
-        // Alle Felder nach Extensions sortieren
+        // Sorting all fields by extension
         Map<String, Map<String, String>> sortedValues = new HashMap<>();
         for (ExtensionFieldValueEntity extFieldValue : userEntity.getUserExtensions()) {
             String urn = extFieldValue.getExtensionField().getExtension().getExtensionUrn();
@@ -115,7 +113,7 @@ public class ExtensionEntity implements Serializable {
             extMap.put(fieldName, value);
         }
 
-        // Extensions in ScimExtensions umwandeln
+        // Convert Extensions to scim Extensions
         Map<String, Extension> res = new HashMap<>();
         for(Map.Entry<String, Map<String, String>> extensionEntry : sortedValues.entrySet()) {
             Extension ext = new Extension(extensionEntry.getValue());

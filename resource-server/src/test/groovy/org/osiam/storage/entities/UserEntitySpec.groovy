@@ -616,8 +616,8 @@ class UserEntitySpec extends Specification {
         given:
         def extField1 = new ExtensionFieldEntity(name: "field1")
         def extField2 = new ExtensionFieldEntity(name: "field2")
-        def ext1 = new ExtensionEntity(extensionUrn: "urn1", extensionFields: [extField1, extField2])
-        def userEntity = new UserEntity(id: UUID.randomUUID(), userName: new NameEntity(familyName: "McDuck"))
+        new ExtensionEntity(extensionUrn: "urn1", extensionFields: [extField1, extField2])
+        def userEntity = new UserEntity(id: UUID.randomUUID(), userName: "McDuck")
 
         def extFieldValue1 = new ExtensionFieldValueEntity(extensionField: extField1, user: userEntity, value: "value1")
         userEntity.getUserExtensions().add(extFieldValue1)
@@ -628,6 +628,7 @@ class UserEntitySpec extends Specification {
         User scimUser = userEntity.toScim()
 
         then:
+        scimUser.getUserName() == "McDuck"
         scimUser.getAllExtensions().size() == 1
         def scimExt1 = scimUser.getAllExtensions().get("urn1")
         scimExt1.getAllFields().size() == 2

@@ -2,12 +2,7 @@ package org.osiam.storage.entities.extension;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 import org.osiam.storage.entities.UserEntity;
 
@@ -23,12 +18,14 @@ public class ExtensionFieldValueEntity implements Serializable {
     private long internalId;
 
     @ManyToOne(optional=false)
+    @JoinColumn(name = "extension_field_internal_id")
     private ExtensionFieldEntity extensionField;
 
     @ManyToOne(optional=false)
     private UserEntity user;
 
     @Lob
+    @Column(nullable = false)
     private String value;
 
     public long getInternalId() {

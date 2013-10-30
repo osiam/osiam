@@ -25,6 +25,7 @@ DROP TABLE IF EXISTS osiam_client CASCADE;
 DROP TABLE IF EXISTS scim_extension_field_value CASCADE;
 DROP TABLE IF EXISTS scim_extension_field CASCADE;
 DROP TABLE IF EXISTS scim_extension CASCADE;
+DROP TABLE IF EXISTS scim_user_scim_extension CASCADE;
 DROP SEQUENCE IF EXISTS hibernate_sequence CASCADE;
 
 
@@ -344,21 +345,15 @@ CREATE TABLE scim_extension_field
 --
 -- Extension field value section: table, constraints, indexes
 --
-CREATE TABLE  scim_extension_field_value (
-  internal_id bigint NOT NULL,
-  value text,
-  extension_field_internal_id bigint,
-  user_internal_id bigint
-);
 
 CREATE TABLE scim_extension_field_value
 (
   internal_id bigint NOT NULL,
-  value text,
-  extensionfield_internal_id bigint NOT NULL,
+  value text NOT NULL,
+  extension_field_internal_id bigint NOT NULL,
   user_internal_id bigint NOT NULL,
   CONSTRAINT scim_extension_field_value_pkey PRIMARY KEY (internal_id ),
-  CONSTRAINT fk6683bf6124a90fb9 FOREIGN KEY (extensionfield_internal_id)
+  CONSTRAINT fk6683bf6124a90fb9 FOREIGN KEY (extension_field_internal_id)
       REFERENCES scim_extension_field (internal_id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT fk6683bf6146402c6a FOREIGN KEY (user_internal_id)
@@ -369,15 +364,14 @@ CREATE TABLE scim_extension_field_value
 CREATE TABLE scim_user_scim_extension
 (
   scim_user_internal_id bigint NOT NULL,
-  registeredextensions_internal_id bigint NOT NULL,
-  CONSTRAINT scim_user_scim_extension_pkey PRIMARY KEY (scim_user_internal_id , registeredextensions_internal_id ),
-  CONSTRAINT fk12ff42dd595826b4 FOREIGN KEY (registeredextensions_internal_id)
+  registered_extensions_internal_id bigint NOT NULL,
+  CONSTRAINT scim_user_scim_extension_pkey PRIMARY KEY (scim_user_internal_id , registered_extensions_internal_id ),
+  CONSTRAINT fk12ff42dd595826b4 FOREIGN KEY (registered_extensions_internal_id)
       REFERENCES scim_extension (internal_id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT fk12ff42dd7e951dd5 FOREIGN KEY (scim_user_internal_id)
       REFERENCES scim_user (internal_id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT uk12ff42dd16779334 UNIQUE (registeredextensions_internal_id )
+      ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
 --

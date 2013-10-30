@@ -28,14 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 import org.osiam.resources.scim.Address;
 import org.osiam.resources.scim.Extension;
@@ -121,6 +114,8 @@ public class UserEntity extends InternalIdSkeleton {
     private Set<X509CertificateEntity> x509Certificates;
 
     @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(name="scim_user_scim_extension", joinColumns={@JoinColumn(name="scim_user_internal_id", referencedColumnName="internal_id")},
+            inverseJoinColumns={@JoinColumn(name="registered_extensions_internal_id", referencedColumnName="internal_id")})
     private Set<ExtensionEntity> registeredExtensions = new HashSet<>();
 
     @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -670,6 +665,14 @@ public class UserEntity extends InternalIdSkeleton {
     }
 
     /**
+     * Read all registered user extensions.
+     * @return A set of all registered user extensions. Never null;
+     */
+    public Set<ExtensionEntity> getRegisteredExtensions() {
+        return registeredExtensions;
+    }
+
+    /**
      * Adds or updates an extension field value for this User. When updating, the
      * old value of the extension field is removed from this user and the new
      * one will be added.
@@ -815,10 +818,12 @@ public class UserEntity extends InternalIdSkeleton {
             return false;
         UserEntity other = (UserEntity) obj;
         if (userName == null) {
-            if (other.userName != null)
+            if (other.userName != null) {
                 return false;
-        } else if (!userName.equals(other.userName))
+            }
+        } else if (!userName.equals(other.userName)) {
             return false;
+        }
         return true;
     }
 
