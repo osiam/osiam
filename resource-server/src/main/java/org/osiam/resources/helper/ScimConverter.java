@@ -26,10 +26,8 @@ import org.osiam.storage.entities.extension.ExtensionEntity;
 import org.osiam.storage.entities.extension.ExtensionFieldEntity;
 import org.osiam.storage.entities.extension.ExtensionFieldValueEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 public class ScimConverter {
     
     @Inject
@@ -64,8 +62,6 @@ public class ScimConverter {
         userEntity.setX509Certificates(scimCertificatesToEntity(user.getX509Certificates()));
         userEntity.setUserExtensions(scimExtensionsToEntity(user, userEntity));
         
-        
-        
         return userEntity;
     }
     
@@ -74,15 +70,16 @@ public class ScimConverter {
 
         Set<String> userExtensionUris = scimUser.getAllExtensions().keySet();
         for (String urn : userExtensionUris) {
-            Set<ExtensionFieldValueEntity> extensionFieldValues = mappingScimUserExtensionToEntity(scimUser.getExtension(urn), userEntity);
-            addExtensionUrnToExtensionFields(extensionFieldValues, urn);
+            Extension scimExtension = scimUser.getExtension(urn);
+            ExtensionEntity extensionEntity = extensionDao.getExtensionByUrn(scimExtension.getUrn());
+            Set<ExtensionFieldValueEntity> extensionFieldValues = mappingScimUserExtensionToEntity(scimExtension, userEntity, extensionEntity);
+            addExtensionUrnToExtensionFields(extensionFieldValues, urn, extensionEntity);
             extensionFieldValueEntities.addAll(extensionFieldValues);
         }
         return extensionFieldValueEntities;
     }
 
-    private Set<ExtensionFieldValueEntity> mappingScimUserExtensionToEntity(Extension scimExtension, UserEntity userEntity) {
-        ExtensionEntity extensionEntity = extensionDao.getExtensionByUrn(scimExtension.getUrn());
+    private Set<ExtensionFieldValueEntity> mappingScimUserExtensionToEntity(Extension scimExtension, UserEntity userEntity, ExtensionEntity extensionEntity) {
         Set<ExtensionFieldValueEntity> extensionFieldValueEntities = new HashSet<>();
 
         for (ExtensionFieldEntity extensionFieldEntity : extensionEntity.getFields()) {
@@ -103,14 +100,13 @@ public class ScimConverter {
         return extensionFieldValueEntities;
     }
 
-    private void addExtensionUrnToExtensionFields(Set<ExtensionFieldValueEntity> extensionFieldValueEntities, String urn) {
+    private void addExtensionUrnToExtensionFields(Set<ExtensionFieldValueEntity> extensionFieldValueEntities, String urn, ExtensionEntity extensionEntity) {
         Set<ExtensionFieldEntity>  extensionFieldEntitySet = new HashSet<>();
 
         for (ExtensionFieldValueEntity extensionFieldValueEntity :extensionFieldValueEntities) {
             extensionFieldEntitySet.add(extensionFieldValueEntity.getExtensionField());
         }
 
-        ExtensionEntity extensionEntity = new ExtensionEntity();
         extensionEntity.setUrn(urn);
         extensionEntity.setFields(extensionFieldEntitySet);
 
