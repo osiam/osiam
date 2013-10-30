@@ -2,21 +2,16 @@ package org.osiam.resources.helper;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.inject.Inject;
 
 import org.osiam.resources.scim.Address;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.resources.scim.Name;
 import org.osiam.resources.scim.User;
+import org.osiam.storage.dao.ExtensionDao;
 import org.osiam.storage.entities.AddressEntity;
 import org.osiam.storage.entities.EmailEntity;
 import org.osiam.storage.entities.EntitlementsEntity;
@@ -37,8 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ScimConverter {
     
-    @PersistenceContext
-    private EntityManager em;
+    @Inject
+    private ExtensionDao extensionDao;
     
     public User toScim(UserEntity userEntity) {
         throw new UnsupportedOperationException("Not implemented yet");
@@ -87,10 +82,10 @@ public class ScimConverter {
     }
 
     private Set<ExtensionFieldValueEntity> mappingScimUserExtensionToEntity(Extension scimExtension, UserEntity userEntity) {
-        ExtensionEntity extensionEntity = getExtensionFromDb(scimExtension.getUrn());
+        ExtensionEntity extensionEntity = extensionDao.getExtensionByUrn(scimExtension.getUrn());
         Set<ExtensionFieldValueEntity> extensionFieldValueEntities = new HashSet<>();
 
-        for (ExtensionFieldEntity extensionFieldEntity : extensionEntity.getExtensionFields()) {
+        for (ExtensionFieldEntity extensionFieldEntity : extensionEntity.getFields()) {
             ExtensionFieldValueEntity extensionFieldValueEntity = new ExtensionFieldValueEntity();
             extensionFieldValueEntity.setExtensionField(extensionFieldEntity);
             extensionFieldValueEntity.setUser(userEntity);
@@ -108,18 +103,6 @@ public class ScimConverter {
         return extensionFieldValueEntities;
     }
 
-    private ExtensionEntity getExtensionFromDb(String urn) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<ExtensionEntity> cq = cb.createQuery(ExtensionEntity.class);
-        Root<ExtensionEntity> extension = cq.from(ExtensionEntity.class);
-        
-        cq.select(extension).where(cb.equal(extension.get("urn"), urn));
-        
-        TypedQuery<ExtensionEntity> query = em.createQuery(cq);
-        
-        return query.getSingleResult();
-    }
-
     private void addExtensionUrnToExtensionFields(Set<ExtensionFieldValueEntity> extensionFieldValueEntities, String urn) {
         Set<ExtensionFieldEntity>  extensionFieldEntitySet = new HashSet<>();
 
@@ -128,8 +111,8 @@ public class ScimConverter {
         }
 
         ExtensionEntity extensionEntity = new ExtensionEntity();
-        extensionEntity.setExtensionUrn(urn);
-        extensionEntity.setExtensionFields(extensionFieldEntitySet);
+        extensionEntity.setUrn(urn);
+        extensionEntity.setFields(extensionFieldEntitySet);
 
     }
 
