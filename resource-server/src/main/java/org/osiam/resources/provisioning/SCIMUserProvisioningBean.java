@@ -24,6 +24,7 @@
 package org.osiam.resources.provisioning;
 
 import org.osiam.resources.exceptions.ResourceExistsException;
+import org.osiam.resources.helper.ScimConverter;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.resources.scim.User;
 import org.osiam.storage.dao.GenericDAO;
@@ -32,20 +33,17 @@ import org.osiam.storage.entities.UserEntity;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 15.03.13
- * Time: 17:36
- * To change this template use File | Settings | File Templates.
- */
 @Service
 public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> implements SCIMUserProvisioning {
 
+    @Inject
+    private ScimConverter scimConverter;
+    
     @Inject
     private UserDAO userDao;
 
@@ -56,7 +54,7 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
 
     @Override
     public User create(User user) {
-        UserEntity userEntity = UserEntity.fromScim(user);
+        UserEntity userEntity = scimConverter.fromScim(user);
         userEntity.setId(UUID.randomUUID());
         try {
             userDao.create(userEntity);
