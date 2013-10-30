@@ -19,19 +19,19 @@ class ExtensionEntitySpec extends Specification {
         def urn = "myurn"
 
         when:
-        extension.setExtensionUrn(urn)
+        extension.setUrn(urn)
 
         then:
-        extension.getExtensionUrn() == urn
+        extension.getUrn() == urn
     }
 
     def "setter and getter for the ExtensionFields should be present"(){
         given:
         def fields = [new ExtensionFieldEntity()] as Set
-        extension.setExtensionFields(fields)
+        extension.setFields(fields)
 
         when:
-        def result = extension.getExtensionFields()
+        def result = extension.getFields()
 
         then:
         result == fields
@@ -40,7 +40,7 @@ class ExtensionEntitySpec extends Specification {
 
     def "should return empty set if extensionFields is empty"() {
         when:
-        def result = extension.getExtensionFields()
+        def result = extension.getFields()
 
         then:
         result != null

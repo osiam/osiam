@@ -30,7 +30,7 @@ public class ExtensionEntity implements Serializable {
     private String urn;
 
     @OneToMany(mappedBy = "extension")
-    private Set<ExtensionFieldEntity> extensionFields;
+    private Set<ExtensionFieldEntity> fields;
 
     public long getInternalId() {
         return internalId;
@@ -40,28 +40,28 @@ public class ExtensionEntity implements Serializable {
         this.internalId = internalId;
     }
 
-    public String getExtensionUrn() {
+    public String getUrn() {
         return urn;
     }
 
-    public void setExtensionUrn(String extensionUrn) {
+    public void setUrn(String extensionUrn) {
         this.urn = extensionUrn;
     }
 
-    public Set<ExtensionFieldEntity> getExtensionFields() {
-        if (extensionFields == null) {
-            extensionFields = new HashSet<>();
+    public Set<ExtensionFieldEntity> getFields() {
+        if (fields == null) {
+            fields = new HashSet<>();
         }
-        return extensionFields;
+        return fields;
     }
 
-    public void setExtensionFields(Set<ExtensionFieldEntity> extensionFields) {
+    public void setFields(Set<ExtensionFieldEntity> extensionFields) {
         if (extensionFields != null) {
             for (ExtensionFieldEntity extensionFieldEntity : extensionFields) {
                 extensionFieldEntity.setExtension(this);
             }
         }
-        this.extensionFields = extensionFields;
+        this.fields = extensionFields;
     }
 
     @Override
@@ -101,7 +101,7 @@ public class ExtensionEntity implements Serializable {
         // Sorting all fields by extension
         Map<String, Map<String, String>> sortedValues = new HashMap<>();
         for (ExtensionFieldValueEntity extFieldValue : userEntity.getUserExtensions()) {
-            String urn = extFieldValue.getExtensionField().getExtension().getExtensionUrn();
+            String urn = extFieldValue.getExtensionField().getExtension().getUrn();
             String fieldName = extFieldValue.getExtensionField().getName();
             String value = extFieldValue.getValue();
 
