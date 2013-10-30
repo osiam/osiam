@@ -33,42 +33,6 @@ class UserExtensionSpec extends Specification {
         emptySet != null
     }
 
-    def "mapping of user extensions from scim to entity"() {
-        given:
-        def user = new User.Builder("userName").
-                addExtension("urn1", new Extension(["gender": "male", "age": "30"])).
-                addExtension("urn2", new Extension(["newsletter": "true", "size": "180"]))
-                .build()
-
-        when:
-        def userEntity = UserEntity.fromScim(user)
-
-        then:
-        def sortedExtensionList = userEntity.getUserExtensions().sort { it.extensionField.name }
-
-        userEntity.getUserExtensions().size() == 4
-
-        sortedExtensionList[0].getUser() == userEntity
-        sortedExtensionList[0].getValue() == "30"
-        sortedExtensionList[0].getExtensionField().getName() == "age"
-        sortedExtensionList[0].getExtensionField().getExtension().getExtensionUrn() == "urn1"
-
-        sortedExtensionList[1].getUser() == userEntity
-        sortedExtensionList[1].getValue() == "male"
-        sortedExtensionList[1].getExtensionField().getName() == "gender"
-        sortedExtensionList[1].getExtensionField().getExtension().getExtensionUrn() == "urn1"
-
-        sortedExtensionList[2].getUser() == userEntity
-        sortedExtensionList[2].getValue() == "true"
-        sortedExtensionList[2].getExtensionField().getName() == "newsletter"
-        sortedExtensionList[2].getExtensionField().getExtension().getExtensionUrn() == "urn2"
-
-        sortedExtensionList[3].getUser() == userEntity
-        sortedExtensionList[3].getValue() == "180"
-        sortedExtensionList[3].getExtensionField().getName() == "size"
-        sortedExtensionList[3].getExtensionField().getExtension().getExtensionUrn() == "urn2"
-    }
-
     def 'extensions can be registered'() {
         given:
         def extension = new ExtensionEntity()

@@ -4,8 +4,10 @@ import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.SCIMSearchResult
 import org.osiam.storage.entities.UserEntity
 import org.osiam.resources.exceptions.ResourceExistsException
+import org.osiam.resources.helper.ScimConverter;
 import org.osiam.resources.scim.User
 import org.osiam.storage.dao.UserDAO
+
 import spock.lang.Specification
 
 /**
@@ -21,8 +23,8 @@ class ScimUserProvisioningBeanSpec extends Specification {
     def userDao = Mock(UserDAO)
     def userEntity = Mock(UserEntity)
     def scimUser = Mock(User)
-    SCIMUserProvisioningBean scimUserProvisioningBean = new SCIMUserProvisioningBean(userDao: userDao)
-
+    def scimConverter = Mock(ScimConverter)
+    SCIMUserProvisioningBean scimUserProvisioningBean = new SCIMUserProvisioningBean(userDao: userDao, scimConverter: scimConverter)
 
     def "should be possible to get an user by his id"() {
         given:
@@ -38,13 +40,13 @@ class ScimUserProvisioningBeanSpec extends Specification {
 
     def "should be possible to create a user with generated UUID as internalId"() {
         given:
-        def scimUser = new User.Builder("test").build()
-
+        def scimUser = new User.Builder('test').build()
+        
         when:
         def user = scimUserProvisioningBean.create(scimUser)
 
         then:
-        user.userName == "test"
+        1 * scimConverter.fromScim(_) >> new UserEntity(userName:'test')
         user.id ==~ "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
     }
 
@@ -52,48 +54,32 @@ class ScimUserProvisioningBeanSpec extends Specification {
         given:
         def exception = Mock(Exception)
         userDao.create(_) >> { throw exception }
-        scimUser.getUserName() >> "Bäm"
+        scimUser.getUserName() >> 'test'
         exception.getMessage() >> "scim_user_username_key"
-
-        def mapMock = Mock(Map)
-        def keys = ["urn"] as Set
-        def fields = ["field" : "value"]
-        def extensionMock = Mock(Extension)
 
         when:
         scimUserProvisioningBean.create(scimUser)
 
         then:
-        1 * scimUser.getAllExtensions() >> mapMock
-        1 * mapMock.keySet() >> keys
-        1 * scimUser.getExtension("urn") >> extensionMock
-        1 * extensionMock.getAllFields() >> fields
+        1 * scimConverter.fromScim(_) >> new UserEntity(userName:'test')
         def e = thrown(ResourceExistsException)
-        e.getMessage() == "The user with name Bäm already exists."
+        e.getMessage() == "The user with name test already exists."
     }
 
     def "should throw exception if externalId already exists"() {
         given:
         def exception = Mock(Exception)
         userDao.create(_) >> { throw exception }
-        scimUser.getExternalId() >> "Boom"
+        scimUser.getExternalId() >> "irrelevant"
         exception.getMessage() >> "scim_id_externalid_key"
-
-        def mapMock = Mock(Map)
-        def keys = ["urn"] as Set
-        def fields = ["field" : "value"]
-        def extensionMock = Mock(Extension)
 
         when:
         scimUserProvisioningBean.create(scimUser)
 
         then:
-        1 * scimUser.getAllExtensions() >> mapMock
-        1 * mapMock.keySet() >> keys
-        1 * scimUser.getExtension("urn") >> extensionMock
-        1 * extensionMock.getAllFields() >> fields
+        1 * scimConverter.fromScim(_) >> new UserEntity()
         def e = thrown(ResourceExistsException)
-        e.getMessage() == "The user with the externalId Boom already exists."
+        e.getMessage() == "The user with the externalId irrelevant already exists."
     }
 
     def "should get an user before update, set the expected fields, merge the result"() {
