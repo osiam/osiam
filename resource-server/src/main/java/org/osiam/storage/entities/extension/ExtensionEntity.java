@@ -27,7 +27,7 @@ public class ExtensionEntity implements Serializable {
     private long internalId;
 
     @Column(name = "urn", nullable = false, unique = true)
-    private String extensionUrn;
+    private String urn;
 
     @OneToMany(mappedBy = "extension")
     private Set<ExtensionFieldEntity> extensionFields;
@@ -41,11 +41,11 @@ public class ExtensionEntity implements Serializable {
     }
 
     public String getExtensionUrn() {
-        return extensionUrn;
+        return urn;
     }
 
     public void setExtensionUrn(String extensionUrn) {
-        this.extensionUrn = extensionUrn;
+        this.urn = extensionUrn;
     }
 
     public Set<ExtensionFieldEntity> getExtensionFields() {
@@ -68,7 +68,7 @@ public class ExtensionEntity implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((extensionUrn == null) ? 0 : extensionUrn.hashCode());
+        result = prime * result + ((urn == null) ? 0 : urn.hashCode());
         return result;
     }
 
@@ -81,10 +81,10 @@ public class ExtensionEntity implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         ExtensionEntity other = (ExtensionEntity) obj;
-        if (extensionUrn == null) {
-            if (other.extensionUrn != null)
+        if (urn == null) {
+            if (other.urn != null)
                 return false;
-        } else if (!extensionUrn.equals(other.extensionUrn))
+        } else if (!urn.equals(other.urn))
             return false;
         return true;
     }
@@ -116,7 +116,7 @@ public class ExtensionEntity implements Serializable {
         // Convert Extensions to scim Extensions
         Map<String, Extension> res = new HashMap<>();
         for(Map.Entry<String, Map<String, String>> extensionEntry : sortedValues.entrySet()) {
-            Extension ext = new Extension(extensionEntry.getValue());
+            Extension ext = new Extension(extensionEntry.getKey(), extensionEntry.getValue());
             String urn = extensionEntry.getKey();
             res.put(urn, ext);
         }
