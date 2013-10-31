@@ -23,21 +23,18 @@
 
 package org.osiam.storage.entities;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.*;
-
 import org.osiam.resources.scim.Address;
-import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.MultiValuedAttribute;
-import org.osiam.resources.scim.Name;
 import org.osiam.resources.scim.User;
 import org.osiam.storage.entities.extension.ExtensionEntity;
 import org.osiam.storage.entities.extension.ExtensionFieldEntity;
 import org.osiam.storage.entities.extension.ExtensionFieldValueEntity;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * User Entity
@@ -114,8 +111,8 @@ public class UserEntity extends InternalIdSkeleton {
     private Set<X509CertificateEntity> x509Certificates;
 
     @OneToMany(fetch = FetchType.EAGER)
-    @JoinTable(name="scim_user_scim_extension", joinColumns={@JoinColumn(name="scim_user_internal_id", referencedColumnName="internal_id")},
-            inverseJoinColumns={@JoinColumn(name="registered_extensions_internal_id", referencedColumnName="internal_id")})
+    @JoinTable(name = "scim_user_scim_extension", joinColumns = {@JoinColumn(name = "scim_user_internal_id", referencedColumnName = "internal_id")},
+            inverseJoinColumns = {@JoinColumn(name = "registered_extensions_internal_id", referencedColumnName = "internal_id")})
     private Set<ExtensionEntity> registeredExtensions = new HashSet<>();
 
     @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -345,7 +342,7 @@ public class UserEntity extends InternalIdSkeleton {
      */
     public void setPhoneNumbers(Set<PhoneNumberEntity> phoneNumbers) {
         //Setting Foreign key in child entity because hibernate did it not automatically
-        if(phoneNumbers != null) {
+        if (phoneNumbers != null) {
             for (PhoneNumberEntity phoneNumberEntity : phoneNumbers) {
                 phoneNumberEntity.setUser(this);
             }
@@ -368,7 +365,7 @@ public class UserEntity extends InternalIdSkeleton {
      */
     public void setIms(Set<ImEntity> ims) {
         //Setting Foreign key in child entity because hibernate did it not automatically
-        if(ims != null) {
+        if (ims != null) {
             for (ImEntity imEntity : ims) {
                 imEntity.setUser(this);
             }
@@ -391,7 +388,7 @@ public class UserEntity extends InternalIdSkeleton {
      */
     public void setPhotos(Set<PhotoEntity> photos) {
         //Setting Foreign key in child entity because hibernate did it not automatically
-        if(photos != null) {
+        if (photos != null) {
             for (PhotoEntity photoEntity : photos) {
                 photoEntity.setUser(this);
             }
@@ -482,7 +479,7 @@ public class UserEntity extends InternalIdSkeleton {
      */
     public void setX509Certificates(Set<X509CertificateEntity> x509Certificates) {
         //Setting Foreign key in child entity because hibernate did it not automatically
-        if(x509Certificates != null) {
+        if (x509Certificates != null) {
             for (X509CertificateEntity certificateEntity : x509Certificates) {
                 certificateEntity.setUser(this);
             }
@@ -492,10 +489,11 @@ public class UserEntity extends InternalIdSkeleton {
 
     /**
      * Registers a new extension for this User. If the given extension is already registered, it will be ignored.
+     *
      * @param extension The extension to register
      */
     public void registerExtension(ExtensionEntity extension) {
-        if(extension == null) {
+        if (extension == null) {
             throw new IllegalArgumentException("extension must not be null");
         }
 
@@ -504,6 +502,7 @@ public class UserEntity extends InternalIdSkeleton {
 
     /**
      * Read all registered user extensions.
+     *
      * @return A set of all registered user extensions. Never null;
      */
     public Set<ExtensionEntity> getRegisteredExtensions() {
@@ -515,19 +514,17 @@ public class UserEntity extends InternalIdSkeleton {
      * old value of the extension field is removed from this user and the new
      * one will be added.
      *
-     * @param extensionField
-     *            The extension this field value belongs to
-     * @param extensionValue
-     *            The extension field value to add or update
+     * @param extensionField The extension this field value belongs to
+     * @param extensionValue The extension field value to add or update
      */
     public void addOrUpdateExtensionValue(ExtensionFieldEntity extensionField, ExtensionFieldValueEntity extensionValue) {
-        if(extensionValue == null) {
+        if (extensionValue == null) {
             throw new IllegalArgumentException("extensionValue must not be null");
         }
 
         extensionValue.setExtensionField(extensionField);
 
-        if(extensionFieldValues.contains(extensionValue)) {
+        if (extensionFieldValues.contains(extensionValue)) {
             extensionFieldValues.remove(extensionValue);
         }
 
@@ -560,7 +557,7 @@ public class UserEntity extends InternalIdSkeleton {
                 setX509Certificates(entityX509CertificatesToScim(getX509Certificates())).
                 addExtensions(ExtensionEntity.toScim(this)).
                 //
-                setExternalId(getExternalId()).
+                        setExternalId(getExternalId()).
                 setId(getId().toString()).
                 setMeta(getMeta().toScim()).
                 build();
@@ -648,12 +645,15 @@ public class UserEntity extends InternalIdSkeleton {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         UserEntity other = (UserEntity) obj;
         if (userName == null) {
             if (other.userName != null) {
@@ -664,5 +664,4 @@ public class UserEntity extends InternalIdSkeleton {
         }
         return true;
     }
-
 }

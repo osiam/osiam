@@ -45,7 +45,7 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
 
     @Inject
     private ScimConverter scimConverter;
-    
+
     @Inject
     private UserDAO userDao;
 
@@ -56,7 +56,7 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
 
     @Override
     public User create(User user) {
-        UserEntity userEntity = scimConverter.fromScim(user);
+        UserEntity userEntity = scimConverter.createFromScim(user);
         userEntity.setId(UUID.randomUUID());
         try {
             userDao.create(userEntity);
@@ -69,6 +69,12 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
                     user.getUserName() + " already exists.", e);
         }
         return userEntity.toScim();
+    }
+
+    @Override
+    public User replace(String id, User user) {
+        UserEntity userEntity = scimConverter.createFromScim(user);
+        return userDao.update(userEntity).toScim();
     }
 
     @Override

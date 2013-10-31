@@ -65,7 +65,9 @@ public abstract class SCIMProvisiongSkeleton<T extends Resource> implements SCIM
 
     @Override
     public T update(String id, T user) {
+
         InternalIdSkeleton entity = getDao().getById(id);
+
         GenericSCIMToEntityWrapper genericSCIMToEntityWrapper =
                 new GenericSCIMToEntityWrapper(getTarget(), user, entity, GenericSCIMToEntityWrapper.Mode.PATCH, getScimEntities());
         setFieldsWrapException(genericSCIMToEntityWrapper);

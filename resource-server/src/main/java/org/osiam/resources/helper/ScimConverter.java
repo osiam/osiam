@@ -1,70 +1,97 @@
 package org.osiam.resources.helper;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.inject.Inject;
-
-import org.osiam.resources.scim.Address;
-import org.osiam.resources.scim.Extension;
-import org.osiam.resources.scim.MultiValuedAttribute;
-import org.osiam.resources.scim.Name;
-import org.osiam.resources.scim.User;
+import org.osiam.resources.scim.*;
 import org.osiam.storage.dao.ExtensionDao;
-import org.osiam.storage.entities.AddressEntity;
-import org.osiam.storage.entities.EmailEntity;
-import org.osiam.storage.entities.EntitlementsEntity;
-import org.osiam.storage.entities.ImEntity;
-import org.osiam.storage.entities.NameEntity;
-import org.osiam.storage.entities.PhoneNumberEntity;
-import org.osiam.storage.entities.PhotoEntity;
-import org.osiam.storage.entities.RolesEntity;
-import org.osiam.storage.entities.UserEntity;
-import org.osiam.storage.entities.X509CertificateEntity;
+import org.osiam.storage.dao.UserDAO;
+import org.osiam.storage.entities.*;
 import org.osiam.storage.entities.extension.ExtensionEntity;
 import org.osiam.storage.entities.extension.ExtensionFieldEntity;
 import org.osiam.storage.entities.extension.ExtensionFieldValueEntity;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
+import javax.persistence.NoResultException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
 @Service
 public class ScimConverter {
-    
+
     @Inject
     private ExtensionDao extensionDao;
-    
+
+    @Inject
+    private UserDAO userDao;
+
     public User toScim(UserEntity userEntity) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
-    
-    public UserEntity fromScim(User user) {
+
+    public UserEntity createFromScim(User user) {
+
+
         UserEntity userEntity = new UserEntity();
+        if (user.getId() != null) {
+            try {
+                userEntity = userDao.getById(user.getId());
+            } catch (NoResultException ex) {
+                // don't know what to do here
+            }
+            userEntity.setId(UUID.fromString(user.getId()));
+        }
+
+        if (!(user.getPassword() == null || user.getPassword().isEmpty())){
+            userEntity.setPassword(user.getPassword());
+        }
+
         userEntity.setActive(user.isActive());
-        userEntity.setAddresses(scimUserAddressesToEntity(user.getAddresses()));
         userEntity.setDisplayName(user.getDisplayName());
-        userEntity.setEmails(scimEmailsToEntity(user.getEmails()));
-        userEntity.setEntitlements(scimEntitlementsToEntity(user.getEntitlements()));
-        userEntity.setExternalId(user.getExternalId() == null ? null : user.getExternalId().equals("") ? null : user.getExternalId()); //Due to uniqueness in databases
-        userEntity.setIms(scimImsToEntity(user.getIms()));
-        userEntity.setLocale(user.getLocale());
-        userEntity.setName(scimNameToEntity(user.getName()));
         userEntity.setNickName(user.getNickName());
-        userEntity.setPassword(user.getPassword());
-        userEntity.setPhoneNumbers(scimPhonenumbersToEntity(user.getPhoneNumbers()));
-        userEntity.setPhotos(scimPhotosToEntity(user.getPhotos()));
+        userEntity.setExternalId(user.getExternalId() == null ? null : user.getExternalId().equals("") ? null : user.getExternalId()); //Due to uniqueness in databases
+        userEntity.setName(scimNameToEntity(user.getName()));
         userEntity.setPreferredLanguage(user.getPreferredLanguage());
+        userEntity.setLocale(user.getLocale());
+
+        userEntity.getAddresses().clear();
+        userEntity.getAddresses().addAll(scimUserAddressesToEntity(user.getAddresses()));
+
+        userEntity.getEmails().clear();
+        userEntity.getEmails().addAll(scimEmailsToEntity(user.getEmails()));
+
+        userEntity.getEntitlements().clear();
+        userEntity.getEntitlements().addAll(scimEntitlementsToEntity(user.getEntitlements()));
+
+        userEntity.getIms().clear();
+        userEntity.getIms().addAll(scimImsToEntity(user.getIms()));
+
+        userEntity.getPhoneNumbers().clear();
+        userEntity.getPhoneNumbers().addAll(scimPhonenumbersToEntity(user.getPhoneNumbers()));
+
+        userEntity.getPhotos().clear();
+        userEntity.getPhotos().addAll(scimPhotosToEntity(user.getPhotos()));
+
+        userEntity.getRoles().clear();
+        userEntity.getRoles().addAll(scimUserRolesToEntity(user.getRoles()));
+
+        userEntity.getX509Certificates().clear();
+        userEntity.getX509Certificates().addAll(scimCertificatesToEntity(user.getX509Certificates()));
+
+        userEntity.getUserExtensions().clear();
+        userEntity.getUserExtensions().addAll(scimExtensionsToEntity(user, userEntity));
+
         userEntity.setProfileUrl(user.getProfileUrl());
-        userEntity.setRoles(scimUserRolesToEntity(user.getRoles()));
         userEntity.setTimezone(user.getTimezone());
         userEntity.setTitle(user.getTitle());
         userEntity.setUserName(user.getUserName());
         userEntity.setUserType(user.getUserType());
-        userEntity.setX509Certificates(scimCertificatesToEntity(user.getX509Certificates()));
-        userEntity.setUserExtensions(scimExtensionsToEntity(user, userEntity));
-        
+
+
         return userEntity;
     }
-    
+
+
     private Set<ExtensionFieldValueEntity> scimExtensionsToEntity(User scimUser, UserEntity userEntity) {
         Set<ExtensionFieldValueEntity> extensionFieldValueEntities = new HashSet<>();
 
@@ -86,24 +113,24 @@ public class ScimConverter {
             ExtensionFieldValueEntity extensionFieldValueEntity = new ExtensionFieldValueEntity();
             extensionFieldValueEntity.setExtensionField(extensionFieldEntity);
             extensionFieldValueEntity.setUser(userEntity);
-            
-            if(scimExtension.isFieldPresent(extensionFieldEntity.getName())) {
+
+            if (scimExtension.isFieldPresent(extensionFieldEntity.getName())) {
                 String extensionFieldValue = scimExtension.getField(extensionFieldEntity.getName());
                 extensionFieldValueEntity.setValue(extensionFieldValue);
             } else {
                 extensionFieldValueEntity.setValue("");
             }
-            
+
             extensionFieldValueEntities.add(extensionFieldValueEntity);
         }
-        
+
         return extensionFieldValueEntities;
     }
 
     private void addExtensionUrnToExtensionFields(Set<ExtensionFieldValueEntity> extensionFieldValueEntities, String urn, ExtensionEntity extensionEntity) {
-        Set<ExtensionFieldEntity>  extensionFieldEntitySet = new HashSet<>();
+        Set<ExtensionFieldEntity> extensionFieldEntitySet = new HashSet<>();
 
-        for (ExtensionFieldValueEntity extensionFieldValueEntity :extensionFieldValueEntities) {
+        for (ExtensionFieldValueEntity extensionFieldValueEntity : extensionFieldValueEntities) {
             extensionFieldEntitySet.add(extensionFieldValueEntity.getExtensionField());
         }
 
@@ -196,5 +223,5 @@ public class ScimConverter {
         }
         return emailEntities;
     }
-    
+
 }

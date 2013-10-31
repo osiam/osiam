@@ -1,6 +1,5 @@
 package org.osiam.resources.provisioning
 
-import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.SCIMSearchResult
 import org.osiam.storage.entities.UserEntity
 import org.osiam.resources.exceptions.ResourceExistsException
@@ -41,12 +40,12 @@ class ScimUserProvisioningBeanSpec extends Specification {
     def "should be possible to create a user with generated UUID as internalId"() {
         given:
         def scimUser = new User.Builder('test').build()
-        
+
         when:
         def user = scimUserProvisioningBean.create(scimUser)
 
         then:
-        1 * scimConverter.fromScim(_) >> new UserEntity(userName:'test')
+        1 * scimConverter.createFromScim(_) >> new UserEntity(userName:'test')
         user.id ==~ "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
     }
 
@@ -61,7 +60,7 @@ class ScimUserProvisioningBeanSpec extends Specification {
         scimUserProvisioningBean.create(scimUser)
 
         then:
-        1 * scimConverter.fromScim(_) >> new UserEntity(userName:'test')
+        1 * scimConverter.createFromScim(_) >> new UserEntity(userName:'test')
         def e = thrown(ResourceExistsException)
         e.getMessage() == "The user with name test already exists."
     }
@@ -77,7 +76,7 @@ class ScimUserProvisioningBeanSpec extends Specification {
         scimUserProvisioningBean.create(scimUser)
 
         then:
-        1 * scimConverter.fromScim(_) >> new UserEntity()
+        1 * scimConverter.createFromScim(_) >> new UserEntity()
         def e = thrown(ResourceExistsException)
         e.getMessage() == "The user with the externalId irrelevant already exists."
     }
@@ -86,13 +85,13 @@ class ScimUserProvisioningBeanSpec extends Specification {
         given:
         def internalId = UUID.randomUUID()
         def scimUser = new User.Builder("test").build()
-        def entity = new UserEntity()
+        def entity = new UserEntity(userName: "username")
         entity.setId(internalId)
 
         when:
         scimUserProvisioningBean.replace(internalId.toString(), scimUser)
         then:
-        1 * userDao.getById(internalId.toString()) >> entity
+        1 * scimConverter.createFromScim(scimUser) >> entity
         1 * userDao.update(entity) >> entity
     }
 
