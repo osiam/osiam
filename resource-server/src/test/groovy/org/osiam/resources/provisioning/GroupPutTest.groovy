@@ -23,13 +23,12 @@
 
 package org.osiam.resources.provisioning
 
-import org.osiam.storage.dao.GroupDAO
-import org.osiam.resources.provisioning.SCIMGroupProvisioningBean
-import org.osiam.storage.entities.GroupEntity
-import org.osiam.storage.entities.UserEntity
 import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.resources.scim.Group
 import org.osiam.resources.scim.MultiValuedAttribute
+import org.osiam.storage.dao.GroupDAO
+import org.osiam.storage.entities.GroupEntity
+import org.osiam.storage.entities.UserEntity
 import spock.lang.Specification
 
 import javax.persistence.EntityManager
@@ -63,7 +62,7 @@ class GroupPutTest extends Specification {
 
     }
 
-    def "should abort when a member in group is not findable"() {
+    def "should abort when a member in group can not be found"() {
         given:
         def queryResults = []
         members.add(new MultiValuedAttribute.Builder().setValue(memberId.toString()).build())
@@ -112,7 +111,7 @@ class GroupPutTest extends Specification {
         then:
         3 * em.createNamedQuery("getById") >> query
         3 * query.setParameter("id", _);
-        3 * query.getResultList() >>> [groupToUpdate, queryResults, userToUpdate ]
+        3 * query.getResultList() >>> [groupToUpdate, queryResults, userToUpdate]
         1 * em.merge(_) >> GroupEntity.fromScim(group)
         result.members.size() == 2
     }
