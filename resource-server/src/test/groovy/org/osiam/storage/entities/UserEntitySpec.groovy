@@ -24,7 +24,6 @@
 package org.osiam.storage.entities
 
 import org.osiam.resources.scim.Address
-import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.Name
 import org.osiam.resources.scim.User
@@ -32,7 +31,6 @@ import org.osiam.storage.entities.extension.ExtensionEntity
 import org.osiam.storage.entities.extension.ExtensionFieldEntity
 import org.osiam.storage.entities.extension.ExtensionFieldValueEntity
 import spock.lang.Specification
-
 
 class UserEntitySpec extends Specification {
 
@@ -120,7 +118,7 @@ class UserEntitySpec extends Specification {
                 build())
     }
 
-    def "should be able to insert meta"(){
+    def "should be able to insert meta"() {
         given:
         def meta = new MetaEntity()
         when:
@@ -472,14 +470,14 @@ class UserEntitySpec extends Specification {
         user.x509Certificates != null
     }
 
-    def "should contain internal_id for jpa"(){
+    def "should contain internal_id for jpa"() {
         when:
         userEntity.setInternalId(23)
         then:
         userEntity.getInternalId() == 23
     }
 
-    def "User entity should set resourceType to User"(){
+    def "User entity should set resourceType to User"() {
         when:
         def result = new UserEntity(userName: "blubb", id: UUID.randomUUID())
 
@@ -489,7 +487,18 @@ class UserEntitySpec extends Specification {
 
     }
 
-    def "adding extensions to a user should result in setting the user also to the extension"(){
+    def 'touch should update lastModified field of the meta object'() {
+        given:
+        def currentDate = userEntity.meta.lastModified
+
+        when:
+        userEntity.touch()
+
+        then:
+        userEntity.meta.lastModified.time > currentDate.time
+    }
+
+    def "adding extensions to a user should result in setting the user also to the extension"() {
         given:
         def extensions = [new ExtensionFieldValueEntity()] as Set
         userEntity.setUserExtensions(extensions)
@@ -502,7 +511,7 @@ class UserEntitySpec extends Specification {
         result[0].getUser() == userEntity
     }
 
-    def "If extensions are null empty set should be returned"(){
+    def "If extensions are null empty set should be returned"() {
         when:
         def emptySet = userEntity.getUserExtensions()
 

@@ -27,6 +27,7 @@ import org.osiam.resources.scim.MultiValuedAttribute;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.UUID;
 
@@ -51,11 +52,9 @@ public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute, 
     @ManyToOne(cascade = CascadeType.ALL)
     private MetaEntity meta = new MetaEntity(GregorianCalendar.getInstance());
 
-
     public UUID getId() {
         return UUID.fromString(id);
     }
-
 
     public void setId(UUID id) {
         this.id = id.toString();
@@ -87,6 +86,13 @@ public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute, 
 
     public MultiValuedAttribute toMultiValueScim() {
         return new MultiValuedAttribute.Builder().setDisplay(getDisplayName()).setValue(id).build();
+    }
+
+    /**
+     * Update the last modified date for this entity.
+     */
+    public void touch() {
+        getMeta().setLastModified(new Date());
     }
 
     @Override

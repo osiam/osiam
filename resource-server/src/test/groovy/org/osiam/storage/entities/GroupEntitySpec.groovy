@@ -25,8 +25,6 @@ package org.osiam.storage.entities
 
 import org.osiam.resources.scim.Group
 import org.osiam.resources.scim.MultiValuedAttribute
-import org.osiam.storage.entities.GroupEntity
-import org.osiam.storage.entities.InternalIdSkeleton
 import spock.lang.Specification
 
 /**
@@ -111,7 +109,7 @@ class GroupEntitySpec extends Specification {
         !result.members.first().toScim()
     }
 
-    def "Group entity should set resourceType to Group"(){
+    def "Group entity should set resourceType to Group"() {
         when:
         def result = new GroupEntity(displayName: "blubb", id: UUID.randomUUID())
 
@@ -119,5 +117,16 @@ class GroupEntitySpec extends Specification {
         result.meta.resourceType == "Group"
         result.toScim().meta.resourceType == "Group"
 
+    }
+
+    def 'touch should update lastModified field of the meta object'() {
+        given:
+        def currentDate = groupEntity.meta.lastModified
+
+        when:
+        groupEntity.touch()
+
+        then:
+        groupEntity.meta.lastModified > currentDate
     }
 }
