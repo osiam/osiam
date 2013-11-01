@@ -31,18 +31,21 @@ public class ScimConverter {
 
     public UserEntity createFromScim(User user) {
 
-
         UserEntity userEntity = new UserEntity();
         if (user.getId() != null) {
             try {
-                userEntity = userDao.getById(user.getId());
+                UserEntity existingEntity = userDao.getById(user.getId());
+                userEntity.setInternalId(existingEntity.getInternalId());
+                userEntity.setMeta(existingEntity.getMeta());
+                userEntity.setPassword(existingEntity.getPassword());
             } catch (NoResultException ex) {
                 // don't know what to do here
             }
+
             userEntity.setId(UUID.fromString(user.getId()));
         }
 
-        if (!(user.getPassword() == null || user.getPassword().isEmpty())){
+        if (user.getPassword() != null || !user.getPassword().isEmpty()) {
             userEntity.setPassword(user.getPassword());
         }
 
@@ -54,43 +57,31 @@ public class ScimConverter {
         userEntity.setPreferredLanguage(user.getPreferredLanguage());
         userEntity.setLocale(user.getLocale());
 
-        userEntity.getAddresses().clear();
-        userEntity.getAddresses().addAll(scimUserAddressesToEntity(user.getAddresses()));
+        userEntity.setAddresses(scimUserAddressesToEntity(user.getAddresses()));
 
-        userEntity.getEmails().clear();
-        userEntity.getEmails().addAll(scimEmailsToEntity(user.getEmails()));
+        userEntity.setEmails(scimEmailsToEntity(user.getEmails()));
 
-        userEntity.getEntitlements().clear();
-        userEntity.getEntitlements().addAll(scimEntitlementsToEntity(user.getEntitlements()));
+        userEntity.setEntitlements(scimEntitlementsToEntity(user.getEntitlements()));
 
-        userEntity.getIms().clear();
-        userEntity.getIms().addAll(scimImsToEntity(user.getIms()));
+        userEntity.setIms(scimImsToEntity(user.getIms()));
 
-        userEntity.getPhoneNumbers().clear();
-        userEntity.getPhoneNumbers().addAll(scimPhonenumbersToEntity(user.getPhoneNumbers()));
+        userEntity.setPhoneNumbers(scimPhonenumbersToEntity(user.getPhoneNumbers()));
 
-        userEntity.getPhotos().clear();
-        userEntity.getPhotos().addAll(scimPhotosToEntity(user.getPhotos()));
+        userEntity.setPhotos(scimPhotosToEntity(user.getPhotos()));
 
-        userEntity.getRoles().clear();
-        userEntity.getRoles().addAll(scimUserRolesToEntity(user.getRoles()));
+        userEntity.setRoles(scimUserRolesToEntity(user.getRoles()));
 
-        userEntity.getX509Certificates().clear();
-        userEntity.getX509Certificates().addAll(scimCertificatesToEntity(user.getX509Certificates()));
+        userEntity.setX509Certificates(scimCertificatesToEntity(user.getX509Certificates()));
 
-        userEntity.getUserExtensions().clear();
-        userEntity.getUserExtensions().addAll(scimExtensionsToEntity(user, userEntity));
+        userEntity.setUserExtensions(scimExtensionsToEntity(user, userEntity));
 
         userEntity.setProfileUrl(user.getProfileUrl());
         userEntity.setTimezone(user.getTimezone());
         userEntity.setTitle(user.getTitle());
         userEntity.setUserName(user.getUserName());
         userEntity.setUserType(user.getUserType());
-
-
         return userEntity;
     }
-
 
     private Set<ExtensionFieldValueEntity> scimExtensionsToEntity(User scimUser, UserEntity userEntity) {
         Set<ExtensionFieldValueEntity> extensionFieldValueEntities = new HashSet<>();
