@@ -23,12 +23,6 @@
 
 package org.osiam.resources.provisioning;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import javax.inject.Inject;
-
 import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.helper.ScimConverter;
 import org.osiam.resources.scim.SCIMSearchResult;
@@ -38,6 +32,11 @@ import org.osiam.storage.dao.UserDAO;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -61,7 +60,7 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
         try {
             userDao.create(userEntity);
         } catch (Exception e) {
-            if(e.getMessage().contains("scim_id_externalid_key")) {
+            if (e.getMessage().contains("scim_id_externalid_key")) {
                 throw new ResourceExistsException("The user with the externalId " +
                         user.getExternalId() + " already exists.", e);
             }
@@ -74,6 +73,7 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
     @Override
     public User replace(String id, User user) {
         UserEntity userEntity = scimConverter.createFromScim(user);
+        userEntity.touch();
         return userDao.update(userEntity).toScim();
     }
 
