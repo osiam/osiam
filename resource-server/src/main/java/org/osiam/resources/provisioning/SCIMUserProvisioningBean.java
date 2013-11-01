@@ -72,7 +72,7 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
 
     @Override
     public User replace(String id, User user) {
-        UserEntity userEntity = scimConverter.createFromScim(user);
+        UserEntity userEntity = scimConverter.createFromScim(user, id);
         userEntity.touch();
         return userDao.update(userEntity).toScim();
     }

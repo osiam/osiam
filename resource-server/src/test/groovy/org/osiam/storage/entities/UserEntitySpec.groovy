@@ -489,13 +489,13 @@ class UserEntitySpec extends Specification {
 
     def 'touch should update lastModified field of the meta object'() {
         given:
-        def currentDate = userEntity.meta.lastModified
+        userEntity.meta.lastModified = new Date(0)
 
         when:
         userEntity.touch()
 
         then:
-        userEntity.meta.lastModified.time > currentDate.time
+        userEntity.meta.lastModified.time > 0
     }
 
     def "adding extensions to a user should result in setting the user also to the extension"() {

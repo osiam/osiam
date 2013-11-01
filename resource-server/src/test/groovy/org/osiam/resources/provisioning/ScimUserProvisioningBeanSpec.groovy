@@ -91,7 +91,7 @@ class ScimUserProvisioningBeanSpec extends Specification {
         when:
         scimUserProvisioningBean.replace(internalId.toString(), scimUser)
         then:
-        1 * scimConverter.createFromScim(scimUser) >> entity
+        1 * scimConverter.createFromScim(scimUser, internalId.toString()) >> entity
         1 * userDao.update(entity) >> entity
     }
 

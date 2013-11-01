@@ -31,7 +31,7 @@ class UserPatchTest extends Specification {
 
     def setup(){
         userDao.update(_) >> entity
-        scimConverter.createFromScim(_) >> entity
+        scimConverter.createFromScim(_,_) >> entity
     }
 
 

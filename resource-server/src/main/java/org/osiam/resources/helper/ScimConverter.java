@@ -29,22 +29,21 @@ public class ScimConverter {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
-    public UserEntity createFromScim(User user) {
-
+    public UserEntity createFromScim(User user, String uuid) {
         UserEntity userEntity = new UserEntity();
-        if (user.getId() != null) {
-            try {
-                UserEntity existingEntity = userDao.getById(user.getId());
-                userEntity.setInternalId(existingEntity.getInternalId());
-                userEntity.setMeta(existingEntity.getMeta());
-                userEntity.setPassword(existingEntity.getPassword());
-            } catch (NoResultException ex) {
-                // don't know what to do here
-            }
-
-            userEntity.setId(UUID.fromString(user.getId()));
+        try {
+            UserEntity existingEntity = userDao.getById(uuid);
+            userEntity.setInternalId(existingEntity.getInternalId());
+            userEntity.setMeta(existingEntity.getMeta());
+            userEntity.setPassword(existingEntity.getPassword());
+        } catch (NoResultException ex) {
+            // don't know what to do here
         }
+        userEntity.setId(UUID.fromString(uuid));
+        return copyUserValues(user, userEntity);
+    }
 
+    private UserEntity copyUserValues(User user, UserEntity userEntity) {
         if (user.getPassword() != null || !user.getPassword().isEmpty()) {
             userEntity.setPassword(user.getPassword());
         }
@@ -81,6 +80,14 @@ public class ScimConverter {
         userEntity.setUserName(user.getUserName());
         userEntity.setUserType(user.getUserType());
         return userEntity;
+    }
+
+    public UserEntity createFromScim(User user) {
+
+        UserEntity userEntity = new UserEntity();
+
+        return copyUserValues(user, userEntity);
+
     }
 
     private Set<ExtensionFieldValueEntity> scimExtensionsToEntity(User scimUser, UserEntity userEntity) {
