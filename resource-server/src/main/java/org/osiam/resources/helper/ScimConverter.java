@@ -44,7 +44,7 @@ public class ScimConverter {
     }
 
     private UserEntity copyUserValues(User user, UserEntity userEntity) {
-        if (user.getPassword() != null || !user.getPassword().isEmpty()) {
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             userEntity.setPassword(user.getPassword());
         }
 
