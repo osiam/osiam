@@ -23,11 +23,11 @@
 
 package org.osiam.resources.provisioning;
 
+import java.util.GregorianCalendar;
+
+import org.osiam.resources.scim.Resource;
 import org.osiam.storage.dao.GenericDAO;
 import org.osiam.storage.entities.InternalIdSkeleton;
-import org.osiam.resources.scim.Resource;
-
-import java.util.GregorianCalendar;
 
 public abstract class SCIMProvisiongSkeleton<T extends Resource> implements SCIMProvisioning<T> {
 

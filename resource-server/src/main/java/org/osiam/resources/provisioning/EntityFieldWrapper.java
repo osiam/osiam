@@ -23,11 +23,11 @@
 
 package org.osiam.resources.provisioning;
 
-import org.osiam.resources.scim.Name;
-
 import java.lang.reflect.Field;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+
+import org.osiam.resources.scim.Name;
 
 public class EntityFieldWrapper {
     private final GenericSCIMToEntityWrapper.Mode mode;

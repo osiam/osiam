@@ -1,6 +1,11 @@
 package org.osiam.resources.controller;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.LinkedHashMap;
+import java.util.Set;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.osiam.security.authorization.AccessTokenValidationService;
@@ -14,10 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import java.util.LinkedHashMap;
-import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Controller
 @RequestMapping(value = "/me")

@@ -1,8 +1,5 @@
 package org.osiam.storage.entities.extension;
 
-import org.osiam.resources.scim.Extension;
-import org.osiam.storage.entities.UserEntity;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,11 +12,16 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.osiam.resources.scim.Extension;
+import org.osiam.storage.entities.UserEntity; //NOSONAR - Needed due to bidirectional relation
+
 /**
  * Defines a SCIM-Extension.
  */
 @Entity(name = "scim_extension")
 public class ExtensionEntity implements Serializable {
+
+    private static final long serialVersionUID = 2192284482983111198L;
 
     @Id
     @GeneratedValue
@@ -74,18 +76,23 @@ public class ExtensionEntity implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         ExtensionEntity other = (ExtensionEntity) obj;
         if (urn == null) {
-            if (other.urn != null)
+            if (other.urn != null) {
                 return false;
-        } else if (!urn.equals(other.urn))
+            }
+        } else if (!urn.equals(other.urn)) {
             return false;
+        }
         return true;
     }
 

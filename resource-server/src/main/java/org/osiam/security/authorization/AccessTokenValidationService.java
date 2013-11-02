@@ -1,6 +1,7 @@
 package org.osiam.security.authorization;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+
 import org.apache.http.HttpStatus;
 import org.osiam.helper.HttpClientHelper;
 import org.osiam.helper.HttpClientRequestResult;
@@ -12,7 +13,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class AccessTokenValidationService implements ResourceServerTokenServices {

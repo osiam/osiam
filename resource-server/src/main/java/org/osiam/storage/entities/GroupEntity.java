@@ -23,13 +23,18 @@
 
 package org.osiam.storage.entities;
 
-import org.osiam.resources.scim.Group;
-import org.osiam.resources.scim.MultiValuedAttribute;
-
-import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+
+import org.osiam.resources.scim.Group;
+import org.osiam.resources.scim.MultiValuedAttribute;
 
 /**
  * Group Entity

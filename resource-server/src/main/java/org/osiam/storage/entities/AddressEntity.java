@@ -23,10 +23,17 @@
 
 package org.osiam.storage.entities;
 
-import org.osiam.resources.scim.Address;
-
-import javax.persistence.*;
 import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+
+import org.osiam.resources.scim.Address;
 
 /**
  * Address Entity
@@ -184,43 +191,6 @@ public class AddressEntity implements Serializable {
         addressEntity.setStreetAddress(address.getStreetAddress());
         addressEntity.setType(address.getType());
         return addressEntity;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof AddressEntity)) return false;
-
-        AddressEntity that = (AddressEntity) o;
-
-        if (id != that.id) return false;
-        if (country != null ? !country.equals(that.country) : that.country != null) return false;
-        if (formatted != null ? !formatted.equals(that.formatted) : that.formatted != null) return false;
-        if (locality != null ? !locality.equals(that.locality) : that.locality != null) return false;
-        if (postalCode != null ? !postalCode.equals(that.postalCode) : that.postalCode != null) return false;
-        if (primary != null ? !primary.equals(that.primary) : that.primary != null) return false;
-        if (region != null ? !region.equals(that.region) : that.region != null) return false;
-        if (streetAddress != null ? !streetAddress.equals(that.streetAddress) : that.streetAddress != null)
-            return false;
-        if (type != that.type) return false;
-        if (user != null ? !user.equals(that.user) : that.user != null) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = (int) (id ^ (id >>> 32));
-        result = 31 * result + (type != null ? type.hashCode() : 0);
-        result = 31 * result + (formatted != null ? formatted.hashCode() : 0);
-        result = 31 * result + (streetAddress != null ? streetAddress.hashCode() : 0);
-        result = 31 * result + (locality != null ? locality.hashCode() : 0);
-        result = 31 * result + (region != null ? region.hashCode() : 0);
-        result = 31 * result + (postalCode != null ? postalCode.hashCode() : 0);
-        result = 31 * result + (country != null ? country.hashCode() : 0);
-        result = 31 * result + (primary != null ? primary.hashCode() : 0);
-        result = 31 * result + (user != null ? user.hashCode() : 0);
-        return result;
     }
 
     private enum CanonicalAddressTypes {

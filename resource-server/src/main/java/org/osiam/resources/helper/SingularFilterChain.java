@@ -18,15 +18,6 @@
 package org.osiam.resources.helper;
 
 
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Restrictions;
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
-import org.osiam.storage.entities.EmailEntity;
-import org.osiam.storage.entities.ImEntity;
-import org.osiam.storage.entities.PhoneNumberEntity;
-import org.osiam.storage.entities.PhotoEntity;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
@@ -36,6 +27,15 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
+import org.osiam.storage.entities.EmailEntity;
+import org.osiam.storage.entities.ImEntity;
+import org.osiam.storage.entities.PhoneNumberEntity;
+import org.osiam.storage.entities.PhotoEntity;
 
 public class SingularFilterChain implements FilterChain {
 

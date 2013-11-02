@@ -23,6 +23,13 @@
 
 package org.osiam.resources.provisioning;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.UUID;
+
+import javax.inject.Inject;
+
 import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.helper.ScimConverter;
 import org.osiam.resources.scim.Extension;
@@ -37,13 +44,6 @@ import org.osiam.storage.entities.extension.ExtensionFieldEntity;
 import org.osiam.storage.entities.extension.ExtensionFieldValueEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.inject.Inject;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.UUID;
 
 @Service
 @Transactional

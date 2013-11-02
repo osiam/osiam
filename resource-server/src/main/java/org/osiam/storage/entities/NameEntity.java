@@ -23,13 +23,14 @@
 
 package org.osiam.storage.entities;
 
-import org.osiam.resources.scim.Name;
+import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import java.io.Serializable;
+
+import org.osiam.resources.scim.Name;
 
 /**
  * Name Entity

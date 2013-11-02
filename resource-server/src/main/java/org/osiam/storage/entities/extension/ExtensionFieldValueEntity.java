@@ -2,15 +2,23 @@ package org.osiam.storage.entities.extension;
 
 import java.io.Serializable;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 
-import org.osiam.storage.entities.UserEntity;
+import org.osiam.storage.entities.UserEntity; //NOSONAR - Needed due to bidirectional relation
 
 /**
  * Defines a value of a field of a scim-extension. It's user-dependent!
  */
 @Entity(name = "scim_extension_field_value")
 public class ExtensionFieldValueEntity implements Serializable {
+
+    private static final long serialVersionUID = -760477342867152175L;
 
     @Id
     @GeneratedValue
@@ -70,18 +78,23 @@ public class ExtensionFieldValueEntity implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         ExtensionFieldValueEntity other = (ExtensionFieldValueEntity) obj;
         if (extensionField == null) {
-            if (other.extensionField != null)
+            if (other.extensionField != null) {
                 return false;
-        } else if (!extensionField.equals(other.extensionField))
+            }
+        } else if (!extensionField.equals(other.extensionField)) {
             return false;
+        }
         return true;
     }
     

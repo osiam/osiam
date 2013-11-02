@@ -1,10 +1,11 @@
 package org.osiam.resources.helper.validators;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.User;
 
-import java.io.IOException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PatchValidator implements Validator {
 

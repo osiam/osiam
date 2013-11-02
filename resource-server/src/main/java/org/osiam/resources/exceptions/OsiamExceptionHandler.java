@@ -23,7 +23,9 @@
 
 package org.osiam.resources.exceptions;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,8 +34,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @ControllerAdvice
 public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {

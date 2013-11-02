@@ -24,10 +24,15 @@
 package org.osiam.storage.entities;
 
 
-import org.osiam.resources.scim.MultiValuedAttribute;
-
-import javax.persistence.*;
 import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.ManyToOne;
+
+import org.osiam.resources.scim.MultiValuedAttribute;
 
 /**
  * Email Entity

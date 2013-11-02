@@ -17,6 +17,8 @@ import javax.persistence.ManyToOne;
 @Entity(name = "scim_extension_field")
 public class ExtensionFieldEntity implements Serializable {
 
+    private static final long serialVersionUID = 2411072287353978505L;
+
     @Id
     @GeneratedValue
     @Column(name = "internal_id")
@@ -86,23 +88,30 @@ public class ExtensionFieldEntity implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         ExtensionFieldEntity other = (ExtensionFieldEntity) obj;
         if (extension == null) {
-            if (other.extension != null)
+            if (other.extension != null) {
                 return false;
-        } else if (!extension.equals(other.extension))
+            }
+        } else if (!extension.equals(other.extension)) {
             return false;
+        }
         if (name == null) {
-            if (other.name != null)
+            if (other.name != null) {
                 return false;
-        } else if (!name.equals(other.name))
+            }
+        } else if (!name.equals(other.name)) {
             return false;
+        }
         return true;
     }
     

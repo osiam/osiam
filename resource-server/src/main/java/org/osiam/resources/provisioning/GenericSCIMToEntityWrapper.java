@@ -23,12 +23,17 @@
 
 package org.osiam.resources.provisioning;
 
-import org.osiam.resources.scim.Resource;
-
 import java.lang.reflect.Field;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import org.osiam.resources.scim.Resource;
 
 /**
  * This class has the purpose to make it easier to write own provisioning classes with the purpose to map SCIM Classes to

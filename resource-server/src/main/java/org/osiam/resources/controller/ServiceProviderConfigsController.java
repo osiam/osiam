@@ -1,14 +1,15 @@
 package org.osiam.resources.controller;
 
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.osiam.resources.scim.Constants;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.HashSet;
-import java.util.Set;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Controller
 @RequestMapping(value = "/ServiceProviderConfigs")

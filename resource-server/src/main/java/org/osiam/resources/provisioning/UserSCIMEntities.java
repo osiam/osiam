@@ -23,10 +23,17 @@
 
 package org.osiam.resources.provisioning;
 
-import org.osiam.storage.entities.*;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.osiam.storage.entities.AddressEntity;
+import org.osiam.storage.entities.EmailEntity;
+import org.osiam.storage.entities.EntitlementsEntity;
+import org.osiam.storage.entities.ImEntity;
+import org.osiam.storage.entities.PhoneNumberEntity;
+import org.osiam.storage.entities.PhotoEntity;
+import org.osiam.storage.entities.RolesEntity;
+import org.osiam.storage.entities.X509CertificateEntity;
 
 public final class UserSCIMEntities implements SCIMEntities {
     public static final UserSCIMEntities ENTITIES = new UserSCIMEntities();
