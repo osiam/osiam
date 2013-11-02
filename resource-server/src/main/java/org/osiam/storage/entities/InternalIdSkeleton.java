@@ -92,7 +92,7 @@ public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute, 
      * Update the last modified date for this entity.
      */
     public void touch() {
-        getMeta().setLastModified(new Date());
+        getMeta().setLastModified(GregorianCalendar.getInstance().getTime());
     }
 
     @Override
