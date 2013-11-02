@@ -121,12 +121,12 @@ class GroupEntitySpec extends Specification {
 
     def 'touch should update lastModified field of the meta object'() {
         given:
-        def currentDate = groupEntity.meta.lastModified
+        groupEntity.meta.lastModified = new Date(0)
 
         when:
         groupEntity.touch()
 
         then:
-        groupEntity.meta.lastModified > currentDate
+        groupEntity.meta.lastModified.time > 0
     }
 }
