@@ -60,7 +60,7 @@ public class JsonInputValidator {
         try {
             return validator.validateGroup(jsonInput);
         } catch (JsonParseException ex) {
-            throw new IllegalArgumentException("The JSON structure is invalid");
+            throw new IllegalArgumentException("The JSON structure is invalid", ex);
         }
     }
 
