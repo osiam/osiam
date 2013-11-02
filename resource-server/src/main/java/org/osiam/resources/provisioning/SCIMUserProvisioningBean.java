@@ -25,17 +25,24 @@ package org.osiam.resources.provisioning;
 
 import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.helper.ScimConverter;
+import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.resources.scim.User;
+import org.osiam.storage.dao.ExtensionDao;
 import org.osiam.storage.dao.GenericDAO;
 import org.osiam.storage.dao.UserDAO;
 import org.osiam.storage.entities.UserEntity;
+import org.osiam.storage.entities.extension.ExtensionEntity;
+import org.osiam.storage.entities.extension.ExtensionFieldEntity;
+import org.osiam.storage.entities.extension.ExtensionFieldValueEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 @Service
@@ -47,6 +54,9 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
 
     @Inject
     private UserDAO userDao;
+    
+    @Inject
+    private ExtensionDao extensionDao;
 
     @Override
     protected GenericDAO getDao() {
@@ -85,6 +95,62 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
             users.add(User.Builder.generateForOutput(((UserEntity) g).toScim()));
         }
         return new SCIMSearchResult(users, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
+    }
+    
+    @Override
+    public User update(String id, User user) {
+        User updatedUser = super.update(id, user);
+        
+        if (user.getAllExtensions().size() == 0) {
+            return updatedUser;
+        }
+        
+        UserEntity userEntity = userDao.getById(id);
+        
+        for (Entry<String, Extension> extensionEntry : user.getAllExtensions().entrySet()) {
+            updateExtension(extensionEntry, userEntity);
+        }
+        
+        return userEntity.toScim();
+    }
+
+    private void updateExtension(Entry<String, Extension> extensionEntry, UserEntity userEntity) {
+        String urn = extensionEntry.getKey();
+        Extension updatedExtension = extensionEntry.getValue();
+        ExtensionEntity extensionEntity = extensionDao.getExtensionByUrn(urn);
+        
+        for (ExtensionFieldEntity extensionField : extensionEntity.getFields()) {
+            String fieldName = extensionField.getName();
+            ExtensionFieldValueEntity extensionFieldValue = findExtensionFieldValue(extensionField, userEntity);
+            
+            if(extensionFieldValue == null && !updatedExtension.isFieldPresent(fieldName)) {
+                continue;
+            } else if (extensionFieldValue == null && updatedExtension.isFieldPresent(fieldName)) {
+                extensionFieldValue = new ExtensionFieldValueEntity();
+            } else if (extensionFieldValue != null && !updatedExtension.isFieldPresent(fieldName)) {
+                continue;
+            }
+            
+            String newValue = updatedExtension.getField(fieldName);
+            
+            if(newValue == null) {
+                continue;
+            }
+            
+            extensionFieldValue.setValue(newValue);
+            
+            userEntity.addOrUpdateExtensionValue(extensionField, extensionFieldValue);
+        }
+    }
+    
+    private ExtensionFieldValueEntity findExtensionFieldValue(ExtensionFieldEntity extensionField, UserEntity userEntity) {
+        for (ExtensionFieldValueEntity extensionFieldValue : userEntity.getUserExtensions()) {
+            if(extensionFieldValue.getExtensionField().equals(extensionField)) {
+                return extensionFieldValue;
+            }
+        }
+        
+        return null;
     }
 
     @Override
