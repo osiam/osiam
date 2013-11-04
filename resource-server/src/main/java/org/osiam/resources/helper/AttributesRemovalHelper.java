@@ -1,24 +1,18 @@
 package org.osiam.resources.helper;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectWriter;
-import org.codehaus.jackson.map.ser.FilterProvider;
-import org.codehaus.jackson.map.ser.impl.SimpleBeanPropertyFilter;
-import org.codehaus.jackson.map.ser.impl.SimpleFilterProvider;
-import org.codehaus.jackson.node.ObjectNode;
-import org.osiam.resources.scim.SCIMSearchResult;
-
 import java.io.IOException;
 import java.util.Map;
 
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 15.05.13
- * Time: 17:02
- * To change this template use File | Settings | File Templates.
- */
+import org.osiam.resources.scim.SCIMSearchResult;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+
 public class AttributesRemovalHelper {
 
 
@@ -55,8 +49,8 @@ public class AttributesRemovalHelper {
 
     private ObjectWriter getObjectWriter(ObjectMapper mapper, String[] fieldsToReturn) {
 
-        if(fieldsToReturn.length != 0) {
-            mapper.getSerializationConfig().addMixInAnnotations(
+        if (fieldsToReturn.length != 0) {
+            mapper.addMixInAnnotations(
                     Object.class, PropertyFilterMixIn.class);
 
             FilterProvider filters = new SimpleFilterProvider()

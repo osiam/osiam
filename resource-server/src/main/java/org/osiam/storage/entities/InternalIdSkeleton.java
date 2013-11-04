@@ -23,12 +23,23 @@
 
 package org.osiam.storage.entities;
 
-import org.osiam.resources.scim.MultiValuedAttribute;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.GregorianCalendar;
 import java.util.UUID;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Transient;
+
+import org.osiam.resources.scim.MultiValuedAttribute;
 
 @Entity(name = "scim_id")
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -51,11 +62,9 @@ public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute, 
     @ManyToOne(cascade = CascadeType.ALL)
     private MetaEntity meta = new MetaEntity(GregorianCalendar.getInstance());
 
-
     public UUID getId() {
         return UUID.fromString(id);
     }
-
 
     public void setId(UUID id) {
         this.id = id.toString();
@@ -87,6 +96,13 @@ public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute, 
 
     public MultiValuedAttribute toMultiValueScim() {
         return new MultiValuedAttribute.Builder().setDisplay(getDisplayName()).setValue(id).build();
+    }
+
+    /**
+     * Update the last modified date for this entity.
+     */
+    public void touch() {
+        getMeta().setLastModified(GregorianCalendar.getInstance().getTime());
     }
 
     @Override

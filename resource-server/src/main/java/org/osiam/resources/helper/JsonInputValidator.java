@@ -1,63 +1,79 @@
 package org.osiam.resources.helper;
 
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.ObjectMapper;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.osiam.resources.helper.validators.PatchValidator;
+import org.osiam.resources.helper.validators.PostValidator;
+import org.osiam.resources.helper.validators.PutValidator;
+import org.osiam.resources.helper.validators.Validator;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.User;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
-import java.io.IOException;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 27.06.13
- * Time: 09:43
- * To change this template use File | Settings | File Templates.
- */
 @Service
 public class JsonInputValidator {
 
+    private Map<RequestMethod, Validator> validators;
+
+    public JsonInputValidator() {
+
+        ObjectMapper mapper = new ObjectMapper();
+        SimpleModule testModule = new SimpleModule("userDeserializerModule", new Version(1, 0, 0, null, "org.osiam", "scim-schema"))
+                .addDeserializer(User.class, new UserDeserializer(User.class));
+        mapper.registerModule(testModule);
+
+        validators = new HashMap<>();
+        validators.put(RequestMethod.PATCH, new PatchValidator(mapper));
+        validators.put(RequestMethod.POST, new PostValidator(mapper));
+        validators.put(RequestMethod.PUT, new PutValidator(mapper));
+    }
+
     public User validateJsonUser(HttpServletRequest request) throws IOException {
         String jsonInput = getRequestBody(request);
-
-        if(jsonInput.contains("userName") || request.getMethod().equals("PATCH")) {
-            return validateResource(jsonInput, User.class);
+        Validator validator = validators.get(RequestMethod.valueOf(request.getMethod()));
+        User user;
+        try {
+            user = validator.validateJsonUser(jsonInput);
+        } catch (JsonParseException ex) {
+            throw new IllegalArgumentException("The JSON structure is invalid", ex);
         }
-        throw new IllegalArgumentException("The attribute userName is mandatory and MUST NOT be null");
+        if (user.getId() != null && !user.getId().isEmpty()) {
+            user = new User.Builder(user).setId(null).build();
+        }
+        return user;
     }
 
     public Group validateJsonGroup(HttpServletRequest request) throws IOException {
         String jsonInput = getRequestBody(request);
-
-        if(jsonInput.contains("displayName") || request.getMethod().equals("PATCH")) {
-            return validateResource(jsonInput, Group.class);
+        Validator validator = validators.get(RequestMethod.valueOf(request.getMethod()));
+        try {
+            return validator.validateGroup(jsonInput);
+        } catch (JsonParseException ex) {
+            throw new IllegalArgumentException("The JSON structure is invalid", ex);
         }
-        throw new IllegalArgumentException("The attribute displayName is mandatory and MUST NOT be null.");
     }
 
     private String getRequestBody(HttpServletRequest request) throws IOException {
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuilder = new StringBuilder();
         String line;
 
         BufferedReader reader = request.getReader();
         while ((line = reader.readLine()) != null) {
-            stringBuffer.append(line);
+            stringBuilder.append(line);
         }
 
-        return stringBuffer.toString();
+        return stringBuilder.toString();
     }
 
-    private <T> T validateResource(String jsonInput, Class<T> clazz) throws IOException {
-        T resource;
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            resource = mapper.readValue(jsonInput, clazz);
-        } catch (JsonParseException e) {
-            throw new IllegalArgumentException("The JSON structure is incorrect", e);
-        }
-        return resource;
-    }
 }

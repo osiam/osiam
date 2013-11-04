@@ -62,7 +62,7 @@ public class CheckSchema {
             throw new SchemaUnknownException();
         }
         for (String s : user.getSchemas()) {
-            if (!Constants.CORE_SCHEMAS.contains(s)) {
+            if (!Constants.CORE_SCHEMA.contains(s)) {
                 throw new SchemaUnknownException();
             }
         }

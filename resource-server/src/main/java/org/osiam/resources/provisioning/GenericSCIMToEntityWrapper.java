@@ -23,18 +23,23 @@
 
 package org.osiam.resources.provisioning;
 
-import org.osiam.resources.scim.Resource;
-
 import java.lang.reflect.Field;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import org.osiam.resources.scim.Resource;
 
 /**
  * This class has the purpose to make it easier to write own provisioning classes with the purpose to map SCIM Classes to
  * Entity-Classes.
  * <p/>
- * How ever this class is in a very early state and not very stable -- therefor you have to follow some rules:
+ * However, this class is in a very early state and not very stable -- therefor you have to follow some rules:
  * <p/>
  * 1. the names of the fields in your entity must be equal to the names used in the ScimSchema
  * 2. if your Entity is an implementation of a multi value object it must implement ChildOfMultiValueAttribute

@@ -1,5 +1,6 @@
 package org.osiam.resources.provisioning
 
+import org.osiam.resources.helper.ScimConverter
 import org.osiam.storage.dao.UserDAO
 import org.osiam.storage.entities.AddressEntity
 import org.osiam.storage.entities.EmailEntity
@@ -22,13 +23,15 @@ import spock.lang.Specification
 
 class UserPatchTest extends Specification {
     def userDao = Mock(UserDAO)
-    SCIMUserProvisioningBean bean = new SCIMUserProvisioningBean(userDao: userDao)
+    def scimConverter = Mock(ScimConverter)
+    SCIMUserProvisioningBean bean = new SCIMUserProvisioningBean(userDao: userDao, scimConverter: scimConverter)
     def uId = UUID.randomUUID()
     def id = uId.toString()
     def entity = createEntityWithInternalId()
 
     def setup(){
         userDao.update(_) >> entity
+        scimConverter.createFromScim(_,_) >> entity
     }
 
 
@@ -239,6 +242,7 @@ class UserPatchTest extends Specification {
 
     private UserEntity createEntityWithInternalId() {
         def entity = new UserEntity()
+        entity.userName = "username"
         entity.id = uId
         entity
     }
@@ -434,7 +438,6 @@ class UserPatchTest extends Specification {
         bean.replace(id, user)
 
         then:
-        1 * userDao.getById(id) >> entity
         1 * userDao.update(entity) >> entity
         lastModified <= entity.getMeta().getLastModified()
     }

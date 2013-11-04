@@ -23,6 +23,10 @@
 
 package org.osiam.storage.dao;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Level;
+
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.sql.JoinType;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
@@ -31,10 +35,6 @@ import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.InternalIdSkeleton;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.logging.Level;
 
 
 @Repository

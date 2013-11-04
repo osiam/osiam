@@ -23,10 +23,10 @@
 
 package org.osiam.resources.provisioning;
 
-import org.osiam.storage.entities.GroupEntity;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.osiam.storage.entities.GroupEntity;
 
 public final class GroupSCIMEntities implements SCIMEntities {
     public static final GroupSCIMEntities ENTITIES = new GroupSCIMEntities();

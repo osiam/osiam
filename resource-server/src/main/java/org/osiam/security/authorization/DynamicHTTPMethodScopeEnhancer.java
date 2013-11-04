@@ -23,16 +23,16 @@
 
 package org.osiam.security.authorization;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.FilterInvocation;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
 
 /**
  * This AccessDecisionVoter is based upon an other AccessDecisionVoter given in the constructor.

@@ -39,18 +39,6 @@
     <!-- JPA -->
     <import resource="jpa-configuration.xml"/>
 
-
-    <!-- TODO: Test if ContentNegotiation is done correctly with this config-->
-    <!-- view resolver to find JSP's -->
-    <bean id="viewResolver" class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
-        <property name="defaultViews">
-            <bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView">
-                <property name="extractValueFromSingleKeyModel" value="true"/>
-            </bean>
-        </property>
-    </bean>
-
-
     <!-- general access denied handler -->
     <bean id="oauthAccessDeniedHandler"
           class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler"/>

@@ -23,15 +23,15 @@
 
 package org.osiam.resources.provisioning;
 
-import org.osiam.storage.entities.ChildOfMultiValueAttribute;
-import org.osiam.storage.entities.ChildOfMultiValueAttributeWithIdAndType;
-import org.osiam.storage.entities.ChildOfMultiValueAttributeWithIdAndTypeAndPrimary;
-import org.osiam.resources.scim.MultiValuedAttribute;
-
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
+
+import org.osiam.resources.scim.MultiValuedAttribute;
+import org.osiam.storage.entities.ChildOfMultiValueAttribute;
+import org.osiam.storage.entities.ChildOfMultiValueAttributeWithIdAndType;
+import org.osiam.storage.entities.ChildOfMultiValueAttributeWithIdAndTypeAndPrimary;
 
 public class EntityListFieldWrapper {
 

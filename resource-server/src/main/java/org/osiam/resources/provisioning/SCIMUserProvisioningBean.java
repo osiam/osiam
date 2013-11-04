@@ -23,31 +23,40 @@
 
 package org.osiam.resources.provisioning;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.UUID;
+
+import javax.inject.Inject;
+
 import org.osiam.resources.exceptions.ResourceExistsException;
+import org.osiam.resources.helper.ScimConverter;
+import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.resources.scim.User;
+import org.osiam.storage.dao.ExtensionDao;
 import org.osiam.storage.dao.GenericDAO;
 import org.osiam.storage.dao.UserDAO;
 import org.osiam.storage.entities.UserEntity;
+import org.osiam.storage.entities.extension.ExtensionEntity;
+import org.osiam.storage.entities.extension.ExtensionFieldEntity;
+import org.osiam.storage.entities.extension.ExtensionFieldValueEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 15.03.13
- * Time: 17:36
- * To change this template use File | Settings | File Templates.
- */
 @Service
+@Transactional
 public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> implements SCIMUserProvisioning {
 
     @Inject
+    private ScimConverter scimConverter;
+
+    @Inject
     private UserDAO userDao;
+    
+    @Inject
+    private ExtensionDao extensionDao;
 
     @Override
     protected GenericDAO getDao() {
@@ -56,12 +65,12 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
 
     @Override
     public User create(User user) {
-        UserEntity userEntity = UserEntity.fromScim(user);
+        UserEntity userEntity = scimConverter.createFromScim(user);
         userEntity.setId(UUID.randomUUID());
         try {
             userDao.create(userEntity);
         } catch (Exception e) {
-            if(e.getMessage().contains("scim_id_externalid_key")) {
+            if (e.getMessage().contains("scim_id_externalid_key")) {
                 throw new ResourceExistsException("The user with the externalId " +
                         user.getExternalId() + " already exists.", e);
             }
@@ -72,6 +81,13 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
     }
 
     @Override
+    public User replace(String id, User user) {
+        UserEntity userEntity = scimConverter.createFromScim(user, id);
+        userEntity.touch();
+        return userDao.update(userEntity).toScim();
+    }
+
+    @Override
     public SCIMSearchResult<User> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
         List<User> users = new ArrayList<>();
         SCIMSearchResult<UserEntity> result = getDao().search(filter, sortBy, sortOrder, count, startIndex);
@@ -79,6 +95,62 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
             users.add(User.Builder.generateForOutput(((UserEntity) g).toScim()));
         }
         return new SCIMSearchResult(users, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
+    }
+    
+    @Override
+    public User update(String id, User user) {
+        User updatedUser = super.update(id, user);
+        
+        if (user.getAllExtensions().size() == 0) {
+            return updatedUser;
+        }
+        
+        UserEntity userEntity = userDao.getById(id);
+        
+        for (Entry<String, Extension> extensionEntry : user.getAllExtensions().entrySet()) {
+            updateExtension(extensionEntry, userEntity);
+        }
+        
+        return userEntity.toScim();
+    }
+
+    private void updateExtension(Entry<String, Extension> extensionEntry, UserEntity userEntity) {
+        String urn = extensionEntry.getKey();
+        Extension updatedExtension = extensionEntry.getValue();
+        ExtensionEntity extensionEntity = extensionDao.getExtensionByUrn(urn);
+        
+        for (ExtensionFieldEntity extensionField : extensionEntity.getFields()) {
+            String fieldName = extensionField.getName();
+            ExtensionFieldValueEntity extensionFieldValue = findExtensionFieldValue(extensionField, userEntity);
+            
+            if(extensionFieldValue == null && !updatedExtension.isFieldPresent(fieldName)) {
+                continue;
+            } else if (extensionFieldValue == null && updatedExtension.isFieldPresent(fieldName)) {
+                extensionFieldValue = new ExtensionFieldValueEntity();
+            } else if (extensionFieldValue != null && !updatedExtension.isFieldPresent(fieldName)) {
+                continue;
+            }
+            
+            String newValue = updatedExtension.getField(fieldName);
+            
+            if(newValue == null) {
+                continue;
+            }
+            
+            extensionFieldValue.setValue(newValue);
+            
+            userEntity.addOrUpdateExtensionValue(extensionField, extensionFieldValue);
+        }
+    }
+    
+    private ExtensionFieldValueEntity findExtensionFieldValue(ExtensionFieldEntity extensionField, UserEntity userEntity) {
+        for (ExtensionFieldValueEntity extensionFieldValue : userEntity.getUserExtensions()) {
+            if(extensionFieldValue.getExtensionField().equals(extensionField)) {
+                return extensionFieldValue;
+            }
+        }
+        
+        return null;
     }
 
     @Override

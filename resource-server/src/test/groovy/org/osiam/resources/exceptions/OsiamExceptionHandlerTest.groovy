@@ -23,7 +23,7 @@
 
 package org.osiam.resources.exceptions
 
-import org.codehaus.jackson.map.ObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.osiam.resources.scim.User
 import org.osiam.storage.entities.EmailEntity
 import org.osiam.storage.entities.ImEntity

@@ -1,10 +1,11 @@
 package org.osiam.resources.helper;
 
-import org.osiam.resources.scim.Constants;
-
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.osiam.resources.scim.Constants;
 
 /**
  * Created with IntelliJ IDEA.

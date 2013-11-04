@@ -1,14 +1,21 @@
 package org.osiam.resources.controller;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import java.io.IOException;
+
+import javax.inject.Inject;
+
 import org.osiam.storage.dao.ClientDao;
 import org.osiam.storage.entities.ClientEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-import javax.inject.Inject;
-import java.io.IOException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
 @RequestMapping(value = "/Client")

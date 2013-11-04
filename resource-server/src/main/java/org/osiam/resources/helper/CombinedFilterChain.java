@@ -18,12 +18,12 @@
 package org.osiam.resources.helper;
 
 
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Restrictions;
-
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
 
 public class CombinedFilterChain implements FilterChain {
     // will be used to identify combined filter chain, the expression can be expressed in bracelets or without.

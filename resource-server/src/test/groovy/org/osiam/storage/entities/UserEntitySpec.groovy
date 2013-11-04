@@ -23,21 +23,18 @@
 
 package org.osiam.storage.entities
 
-import org.springframework.security.core.userdetails.UserDetails
 import org.osiam.resources.scim.Address
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.Name
 import org.osiam.resources.scim.User
+import org.osiam.storage.entities.extension.ExtensionEntity
+import org.osiam.storage.entities.extension.ExtensionFieldEntity
+import org.osiam.storage.entities.extension.ExtensionFieldValueEntity
 import spock.lang.Specification
 
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 15.03.13
- * Time: 16:18
- * To change this template use File | Settings | File Templates.
- */
 class UserEntitySpec extends Specification {
+
+    private static final VALUE = 'irrelevant'
 
     UserEntity userEntity = new UserEntity()
 
@@ -85,11 +82,11 @@ class UserEntitySpec extends Specification {
         emails.add(new MultiValuedAttribute.Builder().
                 setPrimary(true).
                 setType("home").
-                setValue("value").
+                setValue(VALUE).
                 build())
 
         entitlements.add(new MultiValuedAttribute.Builder().
-                setValue("value").
+                setValue(VALUE).
                 build())
 
         groups.add(new MultiValuedAttribute.Builder().
@@ -98,12 +95,12 @@ class UserEntitySpec extends Specification {
                 build())
 
         ims.add(new MultiValuedAttribute.Builder().
-                setValue("blaaaa").
+                setValue(VALUE).
                 setType("icq").
                 build())
 
         phoneNumbers.add(new MultiValuedAttribute.Builder().
-                setValue("blaaaa").
+                setValue(VALUE).
                 setType("home").
                 build())
 
@@ -113,15 +110,15 @@ class UserEntitySpec extends Specification {
                 build())
 
         roles.add(new MultiValuedAttribute.Builder().
-                setValue("blaaaa").
+                setValue("").
                 build())
 
         certificates.add(new MultiValuedAttribute.Builder().
-                setValue("blaaaa").
+                setValue(VALUE).
                 build())
     }
 
-    def "should be able to insert meta"(){
+    def "should be able to insert meta"() {
         given:
         def meta = new MetaEntity()
         when:
@@ -473,74 +470,14 @@ class UserEntitySpec extends Specification {
         user.x509Certificates != null
     }
 
-    def "should be possible to map a scim user class to a user entity"() {
-        given:
-        def internalId = UUID.randomUUID()
-
-        User user = new User.Builder("username").
-                setActive(true).
-                setAddresses(addresses).
-                setDisplayName("displayname").
-                setEmails(emails).
-                setEntitlements(entitlements).
-                setGroups(groups).
-                setIms(ims).
-                setLocale("locale").
-                setName(scimName).
-                setNickName("nickname").
-                setPassword("password").
-                setPhoneNumbers(phoneNumbers).
-                setPhotos(photos).
-                setPreferredLanguage("preferredLanguage").
-                setProfileUrl("profileUrl").
-                setRoles(roles).
-                setTimezone("timeZone").
-                setTitle("title").
-                setUserType("userType").
-                setX509Certificates(certificates).
-                setExternalId("externalId").
-                setId(internalId.toString()).
-                build()
-
-        when:
-        def userEntity = UserEntity.fromScim(user)
-
-        then:
-        userEntity.getUserName() == "username"
-        userEntity.getDisplayName() == "displayname"
-        userEntity.getLocale() == "locale"
-        userEntity.getNickName() == "nickname"
-        userEntity.getPassword() == "password"
-        userEntity.getPreferredLanguage() == "preferredLanguage"
-        userEntity.getProfileUrl() == "profileUrl"
-        userEntity.getTimezone() == "timeZone"
-        userEntity.getTitle() == "title"
-        userEntity.getUserType() == "userType"
-        userEntity.getExternalId() == "externalId"
-    }
-
-    def "external id should be null if empty string is provided due to database uniqueness"() {
-        given:
-        User user = new User.Builder("username").
-                setExternalId("").
-                build()
-
-        when:
-        def userEntity = UserEntity.fromScim(user)
-
-        then:
-        userEntity.getUserName() == "username"
-        userEntity.getExternalId() == null
-    }
-
-    def "should contain internal_id for jpa"(){
+    def "should contain internal_id for jpa"() {
         when:
         userEntity.setInternalId(23)
         then:
         userEntity.getInternalId() == 23
     }
 
-    def "User entity should set resourceType to User"(){
+    def "User entity should set resourceType to User"() {
         when:
         def result = new UserEntity(userName: "blubb", id: UUID.randomUUID())
 
@@ -549,4 +486,62 @@ class UserEntitySpec extends Specification {
         result.toScim().meta.resourceType == "User"
 
     }
+
+    def 'touch should update lastModified field of the meta object'() {
+        given:
+        userEntity.meta.lastModified = new Date(0)
+
+        when:
+        userEntity.touch()
+
+        then:
+        userEntity.meta.lastModified.time > 0
+    }
+
+    def "adding extensions to a user should result in setting the user also to the extension"() {
+        given:
+        def extensions = [new ExtensionFieldValueEntity()] as Set
+        userEntity.setUserExtensions(extensions)
+
+        when:
+        def result = userEntity.getUserExtensions()
+
+        then:
+        result == extensions
+        result[0].getUser() == userEntity
+    }
+
+    def "If extensions are null empty set should be returned"() {
+        when:
+        def emptySet = userEntity.getUserExtensions()
+
+        then:
+        emptySet != null
+    }
+
+    def "mapping of user extensions from entity to scim"() {
+        given:
+        def extField1 = new ExtensionFieldEntity(name: "field1")
+        def extField2 = new ExtensionFieldEntity(name: "field2")
+        new ExtensionEntity(urn: "urn1", fields: [extField1, extField2])
+        def userEntity = new UserEntity(id: UUID.randomUUID(), userName: "McDuck")
+
+        def extFieldValue1 = new ExtensionFieldValueEntity(extensionField: extField1, user: userEntity, value: "value1")
+        userEntity.getUserExtensions().add(extFieldValue1)
+        def extFieldValue2 = new ExtensionFieldValueEntity(extensionField: extField2, user: userEntity, value: "value2")
+        userEntity.getUserExtensions().add(extFieldValue2)
+
+        when:
+        User scimUser = userEntity.toScim()
+
+        then:
+        scimUser.getUserName() == "McDuck"
+        scimUser.getAllExtensions().size() == 1
+        def scimExt1 = scimUser.getAllExtensions().get("urn1")
+        scimExt1.getAllFields().size() == 2
+        scimExt1.getField("field1") == "value1"
+        scimExt1.getField("field2") == "value2"
+
+    }
+
 }

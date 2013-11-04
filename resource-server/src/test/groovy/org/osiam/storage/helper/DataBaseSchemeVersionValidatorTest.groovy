@@ -56,7 +56,7 @@ class DataBaseSchemeVersionValidatorTest extends Specification {
     def "should throw an exception if the versions of database-scheme are not equals"() {
         given:
         def version = new DBVersion()
-        version.version = 0.05
+        version.version = 0.06
         em.find(DBVersion, DBVersion.DB_VERSION) >> version
 
         when:

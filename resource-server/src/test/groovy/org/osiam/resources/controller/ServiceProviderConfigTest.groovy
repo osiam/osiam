@@ -6,10 +6,14 @@ import spock.lang.Specification
 class ServiceProviderConfigTest extends Specification {
     def underTest = new ServiceProviderConfigsController()
     def "should return a ServiceProviderConfig"(){
+        given:
+        def schemas = [Constants.CORE_SCHEMA] as Set
+
         when:
         def config = underTest.getConfig()
+
         then:
-        config.schemas == Constants.CORE_SCHEMAS
+        config.schemas == schemas
         config.patch.supported
         !config.bulk.supported
         !config.bulk.maxOperations

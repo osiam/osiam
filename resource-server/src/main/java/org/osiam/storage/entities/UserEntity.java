@@ -23,13 +23,28 @@
 
 package org.osiam.storage.entities;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+
 import org.osiam.resources.scim.Address;
 import org.osiam.resources.scim.MultiValuedAttribute;
-import org.osiam.resources.scim.Name;
 import org.osiam.resources.scim.User;
-
-import javax.persistence.*;
-import java.util.*;
+import org.osiam.storage.entities.extension.ExtensionEntity;
+import org.osiam.storage.entities.extension.ExtensionFieldEntity;
+import org.osiam.storage.entities.extension.ExtensionFieldValueEntity;
 
 /**
  * User Entity
@@ -41,42 +56,32 @@ public class UserEntity extends InternalIdSkeleton {
     private static final String MAPPING_NAME = "user";
     private static final long serialVersionUID = -6535056565639057058L;
 
-
     @Column(nullable = false, unique = true)
     private String userName;
-
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private NameEntity name;
 
-
     @Column
     private String nickName;
-
 
     @Column
     private String profileUrl;
 
-
     @Column
     private String title;
-
 
     @Column
     private String userType;
 
-
     @Column
     private String preferredLanguage;
-
 
     @Column
     private String locale;
 
-
     @Column
     private String timezone;
-
 
     @Column
     private Boolean active;
@@ -84,18 +89,14 @@ public class UserEntity extends InternalIdSkeleton {
     @Column(nullable = false)
     private String password;
 
-
     @Column
     private String displayName;
-
 
     @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EmailEntity> emails;
 
-
     @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PhoneNumberEntity> phoneNumbers;
-
 
     @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ImEntity> ims;
@@ -103,14 +104,11 @@ public class UserEntity extends InternalIdSkeleton {
     @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PhotoEntity> photos;
 
-
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<AddressEntity> addresses;
 
-
     @OneToMany(fetch = FetchType.EAGER)
     private Set<GroupEntity> groups;
-
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EntitlementsEntity> entitlements;
@@ -122,119 +120,16 @@ public class UserEntity extends InternalIdSkeleton {
     @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<X509CertificateEntity> x509Certificates;
 
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "scim_user_scim_extension", joinColumns = {@JoinColumn(name = "scim_user_internal_id", referencedColumnName = "internal_id")},
+            inverseJoinColumns = {@JoinColumn(name = "registered_extensions_internal_id", referencedColumnName = "internal_id")})
+    private Set<ExtensionEntity> registeredExtensions = new HashSet<>();
+
+    @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ExtensionFieldValueEntity> extensionFieldValues = new HashSet<>();
+
     public UserEntity() {
         getMeta().setResourceType("User");
-    }
-
-    public static UserEntity fromScim(User user) {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setActive(user.isActive());
-        userEntity.setAddresses(scimUserAddressesToEntity(user.getAddresses()));
-        userEntity.setDisplayName(user.getDisplayName());
-        userEntity.setEmails(scimEmailsToEntity(user.getEmails()));
-        userEntity.setEntitlements(scimEntitlementsToEntity(user.getEntitlements()));
-        userEntity.setExternalId(user.getExternalId() == null ? null : user.getExternalId().equals("") ? null : user.getExternalId()); //Due to uniqueness in databases
-        userEntity.setIms(scimImsToEntity(user.getIms()));
-        userEntity.setLocale(user.getLocale());
-        userEntity.setName(scimNameToEntity(user.getName()));
-        userEntity.setNickName(user.getNickName());
-        userEntity.setPassword(user.getPassword());
-        userEntity.setPhoneNumbers(scimPhonenumbersToEntity(user.getPhoneNumbers()));
-        userEntity.setPhotos(scimPhotosToEntity(user.getPhotos()));
-        userEntity.setPreferredLanguage(user.getPreferredLanguage());
-        userEntity.setProfileUrl(user.getProfileUrl());
-        userEntity.setRoles(scimUserRolesToEntity(user.getRoles()));
-        userEntity.setTimezone(user.getTimezone());
-        userEntity.setTitle(user.getTitle());
-        userEntity.setUserName(user.getUserName());
-        userEntity.setUserType(user.getUserType());
-        userEntity.setX509Certificates(scimCertificatesToEntity(user.getX509Certificates()));
-        return userEntity;
-    }
-
-    private static Set<X509CertificateEntity> scimCertificatesToEntity(List<MultiValuedAttribute> x509Certificates) {
-        Set<X509CertificateEntity> x509CertificateEntities = new HashSet<>();
-        if (x509Certificates != null) {
-            for (MultiValuedAttribute multiValuedAttribute : x509Certificates) {
-                x509CertificateEntities.add(X509CertificateEntity.fromScim(multiValuedAttribute));
-            }
-        }
-        return x509CertificateEntities;
-    }
-
-    private static Set<RolesEntity> scimUserRolesToEntity(List<MultiValuedAttribute> roles) {
-        Set<RolesEntity> rolesEntities = new HashSet<>();
-        if (roles != null) {
-            for (MultiValuedAttribute multiValuedAttribute : roles) {
-                rolesEntities.add(RolesEntity.fromScim(multiValuedAttribute));
-            }
-        }
-        return rolesEntities;
-    }
-
-    private static Set<PhotoEntity> scimPhotosToEntity(List<MultiValuedAttribute> photos) {
-        Set<PhotoEntity> photoEntities = new HashSet<>();
-        if (photos != null) {
-            for (MultiValuedAttribute multiValuedAttribute : photos) {
-                photoEntities.add(PhotoEntity.fromScim(multiValuedAttribute));
-            }
-        }
-        return photoEntities;
-    }
-
-    private static Set<PhoneNumberEntity> scimPhonenumbersToEntity(List<MultiValuedAttribute> phoneNumbers) {
-        Set<PhoneNumberEntity> phoneNumberEntities = new HashSet<>();
-        if (phoneNumbers != null) {
-            for (MultiValuedAttribute multiValuedAttribute : phoneNumbers) {
-                phoneNumberEntities.add(PhoneNumberEntity.fromScim(multiValuedAttribute));
-            }
-        }
-        return phoneNumberEntities;
-    }
-
-    private static NameEntity scimNameToEntity(Name name) {
-        return NameEntity.fromScim(name);
-    }
-
-    private static Set<ImEntity> scimImsToEntity(List<MultiValuedAttribute> ims) {
-        Set<ImEntity> imEntities = new HashSet<>();
-        if (ims != null) {
-            for (MultiValuedAttribute multiValuedAttribute : ims) {
-                imEntities.add(ImEntity.fromScim(multiValuedAttribute));
-            }
-        }
-        return imEntities;
-    }
-
-    private static Set<EntitlementsEntity> scimEntitlementsToEntity(List<MultiValuedAttribute> entitlements) {
-        Set<EntitlementsEntity> entitlementsEntities = new HashSet<>();
-        if (entitlements != null) {
-            for (MultiValuedAttribute multiValuedAttribute : entitlements) {
-                entitlementsEntities.add(EntitlementsEntity.fromScim(multiValuedAttribute));
-            }
-        }
-        return entitlementsEntities;
-    }
-
-    private static Set<AddressEntity> scimUserAddressesToEntity(List<Address> addresses) {
-
-        Set<AddressEntity> addressEntities = new HashSet<>();
-        if (addresses != null) {
-            for (Address address : addresses) {
-                addressEntities.add(AddressEntity.fromScim(address));
-            }
-        }
-        return addressEntities;
-    }
-
-    private static Set<EmailEntity> scimEmailsToEntity(List<MultiValuedAttribute> emails) {
-        Set<EmailEntity> emailEntities = new HashSet<>();
-        if (emails != null) {
-            for (MultiValuedAttribute multiValuedAttribute : emails) {
-                emailEntities.add(EmailEntity.fromScim(multiValuedAttribute));
-            }
-        }
-        return emailEntities;
     }
 
     /**
@@ -412,12 +307,34 @@ public class UserEntity extends InternalIdSkeleton {
      */
     public void setEmails(Set<EmailEntity> emails) {
         //Setting Foreign key in child entity because hibernate did it not automatically
-        if(emails != null) {
+        if (emails != null) {
             for (EmailEntity emailEntity : emails) {
                 emailEntity.setUser(this);
             }
         }
         this.emails = emails;
+    }
+
+    /**
+     * @return the extensions data of the user
+     */
+    public Set<ExtensionFieldValueEntity> getUserExtensions() {
+        if (extensionFieldValues == null) {
+            extensionFieldValues = new HashSet<>();
+        }
+        return extensionFieldValues;
+    }
+
+    /**
+     * @param userExtensions the extension data of the user
+     */
+    public void setUserExtensions(Set<ExtensionFieldValueEntity> userExtensions) {
+        if (userExtensions != null) {
+            for (ExtensionFieldValueEntity extensionValue : userExtensions) {
+                extensionValue.setUser(this);
+            }
+        }
+        this.extensionFieldValues = userExtensions;
     }
 
     /**
@@ -435,7 +352,7 @@ public class UserEntity extends InternalIdSkeleton {
      */
     public void setPhoneNumbers(Set<PhoneNumberEntity> phoneNumbers) {
         //Setting Foreign key in child entity because hibernate did it not automatically
-        if(phoneNumbers != null) {
+        if (phoneNumbers != null) {
             for (PhoneNumberEntity phoneNumberEntity : phoneNumbers) {
                 phoneNumberEntity.setUser(this);
             }
@@ -458,7 +375,7 @@ public class UserEntity extends InternalIdSkeleton {
      */
     public void setIms(Set<ImEntity> ims) {
         //Setting Foreign key in child entity because hibernate did it not automatically
-        if(ims != null) {
+        if (ims != null) {
             for (ImEntity imEntity : ims) {
                 imEntity.setUser(this);
             }
@@ -481,7 +398,7 @@ public class UserEntity extends InternalIdSkeleton {
      */
     public void setPhotos(Set<PhotoEntity> photos) {
         //Setting Foreign key in child entity because hibernate did it not automatically
-        if(photos != null) {
+        if (photos != null) {
             for (PhotoEntity photoEntity : photos) {
                 photoEntity.setUser(this);
             }
@@ -572,12 +489,58 @@ public class UserEntity extends InternalIdSkeleton {
      */
     public void setX509Certificates(Set<X509CertificateEntity> x509Certificates) {
         //Setting Foreign key in child entity because hibernate did it not automatically
-        if(x509Certificates != null) {
+        if (x509Certificates != null) {
             for (X509CertificateEntity certificateEntity : x509Certificates) {
                 certificateEntity.setUser(this);
             }
         }
         this.x509Certificates = x509Certificates;
+    }
+
+    /**
+     * Registers a new extension for this User. If the given extension is already registered, it will be ignored.
+     *
+     * @param extension The extension to register
+     */
+    public void registerExtension(ExtensionEntity extension) {
+        if (extension == null) {
+            throw new IllegalArgumentException("extension must not be null");
+        }
+
+        registeredExtensions.add(extension);
+    }
+
+    /**
+     * Read all registered user extensions.
+     *
+     * @return A set of all registered user extensions. Never null;
+     */
+    public Set<ExtensionEntity> getRegisteredExtensions() {
+        return registeredExtensions;
+    }
+
+    /**
+     * Adds or updates an extension field value for this User. When updating, the
+     * old value of the extension field is removed from this user and the new
+     * one will be added.
+     *
+     * @param extensionField The extension this field value belongs to
+     * @param extensionValue The extension field value to add or update
+     */
+    public void addOrUpdateExtensionValue(ExtensionFieldEntity extensionField, ExtensionFieldValueEntity extensionValue) {
+        if (extensionValue == null) {
+            throw new IllegalArgumentException("extensionValue must not be null");
+        }
+
+        extensionValue.setExtensionField(extensionField);
+
+        if (extensionFieldValues.contains(extensionValue)) {
+            extensionFieldValues.remove(extensionValue);
+        }
+
+        extensionValue.setUser(this);
+
+        extensionFieldValues.add(extensionValue);
     }
 
     public User toScim() {
@@ -602,7 +565,9 @@ public class UserEntity extends InternalIdSkeleton {
                 setTitle(getTitle()).
                 setUserType(getUserType()).
                 setX509Certificates(entityX509CertificatesToScim(getX509Certificates())).
-                setExternalId(getExternalId()).
+                addExtensions(ExtensionEntity.toScim(this)).
+                //
+                        setExternalId(getExternalId()).
                 setId(getId().toString()).
                 setMeta(getMeta().toScim()).
                 build();
@@ -678,5 +643,35 @@ public class UserEntity extends InternalIdSkeleton {
             addressesForMapping.add(addressEntity.toScim());
         }
         return addressesForMapping;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((userName == null) ? 0 : userName.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        UserEntity other = (UserEntity) obj;
+        if (userName == null) {
+            if (other.userName != null) {
+                return false;
+            }
+        } else if (!userName.equals(other.userName)) {
+            return false;
+        }
+        return true;
     }
 }

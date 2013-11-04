@@ -93,8 +93,9 @@ class CheckSchemaTest extends Specification {
 
     def "should do nothing when schema is correct"() {
         given:
-        def schema = Constants.CORE_SCHEMAS
-        User user = new User.Builder("test").setSchemas(schema).build()
+        def schema = Constants.CORE_SCHEMA
+        def schemas = [schema] as Set
+        User user = new User.Builder("test").setSchemas(schemas).build()
         joint.args >> [user]
         when:
         underTest.checkUser(joint)

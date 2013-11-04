@@ -23,10 +23,17 @@
 
 package org.osiam.storage.entities;
 
-import org.osiam.resources.scim.Address;
-
-import javax.persistence.*;
 import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+
+import org.osiam.resources.scim.Address;
 
 /**
  * Address Entity
@@ -40,36 +47,36 @@ public class AddressEntity implements Serializable {
     @GeneratedValue
     private long id;
 
-    
+
     @Column
     @Enumerated(EnumType.STRING)
     private CanonicalAddressTypes type;
 
-    
+
     @Column
     private String formatted;
 
-    
+
     @Column
     private String streetAddress;
 
-    
+
     @Column
     private String locality;
 
-    
+
     @Column
     private String region;
 
-    
+
     @Column
     private String postalCode;
 
-    
+
     @Column
     private String country;
 
-    
+
     @Column(name = "postgresql_does_not_like_primary")
     private Boolean primary;
 
