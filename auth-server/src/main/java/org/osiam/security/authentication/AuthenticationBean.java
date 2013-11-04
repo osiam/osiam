@@ -23,7 +23,7 @@
 
 package org.osiam.security.authentication;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.osiam.helper.HttpClientHelper;
 import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.resources.UserSpring;
@@ -59,7 +59,7 @@ public class AuthenticationBean implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(final String username) {
-        final String serverUri = httpScheme + "://" + serverHost + ":"+ serverPort + "/osiam-resource-server/authentication/user/";
+        final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort + "/osiam-resource-server/authentication/user/";
 
         final HttpClientRequestResult result = httpClientHelper.executeHttpGet(serverUri + username);
 

@@ -23,7 +23,7 @@
 
 package org.osiam.security.authentication
 
-import org.codehaus.jackson.map.ObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.osiam.helper.HttpClientHelper
 import org.osiam.helper.HttpClientRequestResult
 import org.osiam.resources.UserSpring
@@ -61,7 +61,7 @@ class AuthenticationBeanTest extends Specification {
 
         then:
         1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-resource-server/authentication/user/UserName") >> response
-        1 * jacksonMapperMock.readValue(response.getBody(), UserSpring.class) >> {throw new IOException()}
+        1 * jacksonMapperMock.readValue(response.getBody(), UserSpring.class) >> { throw new IOException() }
         thrown(RuntimeException.class)
     }
 }

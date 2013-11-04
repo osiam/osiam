@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.osiam</groupId>
         <artifactId>osiam-server-parent</artifactId>
-        <version>0.10</version>
+        <version>0.11</version>
     </parent>
 
     <artifactId>osiam-auth-server</artifactId>
@@ -282,12 +282,7 @@
         <dependency>
             <groupId>org.osiam</groupId>
             <artifactId>osiam-interaction-model</artifactId>
-            <version>0.10</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
+            <version>0.11</version>
         </dependency>
     </dependencies>
 

@@ -72,9 +72,6 @@
                 <bean class="org.osiam.security.helper.LessStrictRedirectUriAuthorizationCodeTokenGranter">
                     <constructor-arg ref="tokenServices"/>
                     <constructor-arg ref="clientDetails"/>
-<!--
-                    <constructor-arg ref="authorizationCodeServices"/>
--->
                 </bean>
             </util:list>
         </constructor-arg>
