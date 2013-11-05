@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
+@RequestMapping(value = "/register")
 public class RegisterController {
 
     /**
@@ -17,10 +18,10 @@ public class RegisterController {
      * @param clientToken The OAuth-Client-Token
      * @return
      */
-    @RequestMapping(value="/register/", method=RequestMethod.GET, produces = "text/html")
-    public ResponseEntity<String> index(@RequestHeader String clientToken) {
+    @RequestMapping(value="/", method=RequestMethod.GET, produces = "text/html")
+    public ResponseEntity<String> index(@RequestHeader final String clientToken) {
         String htmlForm = "<form>blabla</form>";
-        return new ResponseEntity<String>(htmlForm, HttpStatus.OK);
+        return new ResponseEntity<>(htmlForm, HttpStatus.OK);
     }
 
     /**
@@ -30,11 +31,11 @@ public class RegisterController {
      * Needs all data given by the 'index'-form. Saves the user in an inactivate-state. Sends an activation-email to
      * the registered email-address.
      * @param clientToken
+     * @return
      */
-    @RequestMapping("/register/create")
-    public ResponseEntity<String> create(@RequestHeader String clientToken) {
-        return null;
-
+    @RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json")
+    public ResponseEntity<String> create(@RequestHeader final String clientToken) {
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     /**
@@ -43,10 +44,12 @@ public class RegisterController {
      * @param clientToken
      * @param user
      * @param token
+     * @return
      */
-    @RequestMapping("/register/activate")
-    public void activate(@RequestHeader String clientToken, @RequestParam String user, @RequestParam String token) {
-
+    @RequestMapping(value = "/activate", method = RequestMethod.GET)
+    public ResponseEntity<String> activate(@RequestHeader final String clientToken,
+                            @RequestParam("user") final String user, @RequestParam("token") final String token) {
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 }
 
