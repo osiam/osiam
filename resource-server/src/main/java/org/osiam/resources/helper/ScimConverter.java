@@ -8,7 +8,6 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 
-import org.aspectj.util.GenericSignature.FieldTypeSignature;
 import org.osiam.resources.scim.Address;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.ExtensionFieldType;
@@ -32,6 +31,8 @@ import org.osiam.storage.entities.extension.ExtensionFieldEntity;
 import org.osiam.storage.entities.extension.ExtensionFieldValueEntity;
 import org.springframework.stereotype.Service;
 
+
+
 @Service
 public class ScimConverter {
 
@@ -53,7 +54,7 @@ public class ScimConverter {
             userEntity.setMeta(existingEntity.getMeta());
             userEntity.setPassword(existingEntity.getPassword());
         } catch (NoResultException ex) {
-            // don't know what to do here
+            // Just It's a new one.
         }
         userEntity.setId(UUID.fromString(uuid));
         return copyUserValues(user, userEntity);

@@ -55,7 +55,7 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
 
     @Inject
     private UserDAO userDao;
-    
+
     @Inject
     private ExtensionDao extensionDao;
 
@@ -97,21 +97,21 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
         }
         return new SCIMSearchResult(users, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
     }
-    
+
     @Override
     public User update(String id, User user) {
         User updatedUser = super.update(id, user);
-        
+
         if (user.getAllExtensions().size() == 0) {
             return updatedUser;
         }
-        
+
         UserEntity userEntity = userDao.getById(id);
-        
+
         for (Entry<String, Extension> extensionEntry : user.getAllExtensions().entrySet()) {
             updateExtension(extensionEntry, userEntity);
         }
-        
+
         return userEntity.toScim();
     }
 
@@ -119,11 +119,11 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
         String urn = extensionEntry.getKey();
         Extension updatedExtension = extensionEntry.getValue();
         ExtensionEntity extensionEntity = extensionDao.getExtensionByUrn(urn);
-        
+
         for (ExtensionFieldEntity extensionField : extensionEntity.getFields()) {
             String fieldName = extensionField.getName();
             ExtensionFieldValueEntity extensionFieldValue = findExtensionFieldValue(extensionField, userEntity);
-            
+
             if(extensionFieldValue == null && !updatedExtension.isFieldPresent(fieldName)) {
                 continue;
             } else if (extensionFieldValue == null && updatedExtension.isFieldPresent(fieldName)) {
@@ -131,26 +131,25 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
             } else if (extensionFieldValue != null && !updatedExtension.isFieldPresent(fieldName)) {
                 continue;
             }
-            
+
             String newValue = updatedExtension.getField(fieldName, ExtensionFieldType.STRING);
-            
             if(newValue == null) {
                 continue;
             }
-            
+
             extensionFieldValue.setValue(newValue);
-            
+
             userEntity.addOrUpdateExtensionValue(extensionField, extensionFieldValue);
         }
     }
-    
+
     private ExtensionFieldValueEntity findExtensionFieldValue(ExtensionFieldEntity extensionField, UserEntity userEntity) {
         for (ExtensionFieldValueEntity extensionFieldValue : userEntity.getUserExtensions()) {
             if(extensionFieldValue.getExtensionField().equals(extensionField)) {
                 return extensionFieldValue;
             }
         }
-        
+
         return null;
     }
 
