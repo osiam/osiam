@@ -44,7 +44,7 @@ public class GroupEntity extends InternalIdSkeleton {
 
     private static final long serialVersionUID = -6535056565639057158L;
 
-    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.EAGER)
     private Set<InternalIdSkeleton> members = new HashSet<>();
 
     @Column(unique = true, nullable = false)
