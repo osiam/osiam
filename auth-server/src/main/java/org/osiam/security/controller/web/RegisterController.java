@@ -1,5 +1,6 @@
 package org.osiam.security.controller.web;
 
+import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -8,9 +9,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.inject.Inject;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+
 @Controller
 @RequestMapping(value = "/register")
 public class RegisterController {
+
+    @Inject
+    ServletContext context;
 
     /**
      * Generates a form with all needed fields for creating a new user.
@@ -18,10 +28,11 @@ public class RegisterController {
      * @param authorization
      * @return
      */
-    @RequestMapping(method=RequestMethod.GET, produces = "text/html")
-    public ResponseEntity<String> index(@RequestHeader final String authorization) {
-        String htmlForm = "<form>blabla</form>";
-        return new ResponseEntity<>(htmlForm, HttpStatus.OK);
+    @RequestMapping(method=RequestMethod.GET)
+    public void index(@RequestHeader final String authorization, HttpServletResponse response) throws IOException {
+        response.setContentType("text/html");
+        InputStream in = context.getResourceAsStream("/WEB-INF/registration/registration.html");
+        IOUtils.copy(in, response.getOutputStream());
     }
 
     /**

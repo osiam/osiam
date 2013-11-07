@@ -1,0 +1,141 @@
+<html ng-app>
+<head>
+    <title>Registrierung</title>
+    <script src="http://code.angularjs.org/1.2.0-rc.3/angular.min.js"></script>
+    <script>
+        function RegistrationController($scope, $http) {
+
+            $scope.registration = {
+                emails : {'primary':'true','value':''}
+            }
+
+            $scope.submitRegistration = function() {
+                $scope.json = $scope.registration
+
+                $http({method: 'POST', url: 'http://localhost:8080/osiam-auth-server/register/create',
+                    data: $scope.registration, headers: {'Authorization':'Bearer ACCESS_TOKEN',
+                        'Content-Type': 'application/json'}}).
+                        success(function(data, status, headers, config) {
+                            $scope.status = 'Request success with code ' + status  + ' | ' + data
+                        }).
+                        error(function(data, status, headers, config) {
+                            $scope.status = 'Request failed with code ' + status + ' | ' + data
+                        });
+            };
+        }
+    </script>
+</head>
+<body>
+<div ng-controller="RegistrationController">
+    <h1>Registrierung</h1>
+    <hr>
+
+    <form name="form" class="css-form" novalidate>
+        <table>
+            <tr>
+                <td>
+                    <label>E-Mail Adresse*</label>
+                </td>
+                <td>
+                    <input type="email" ng-model="registration.userName" ng-change="registration.emails.value=registration.userName" required/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Vorname*</label>
+                </td>
+                <td>
+                    <input type="text" ng-model="registration.name.givenName" required>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Nachname*</label>
+                </td>
+                <td>
+                    <input type="text" ng-model="registration.name.familyName" required>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Passwort*</label>
+                </td>
+                <td>
+                    <input type="password" ng-model="registration.password" required>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Namenszusatz*</label>
+                </td>
+                <td>
+                    <input type="text" ng-model="registration.name.honorificSuffix" required>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Anrede*</label>
+                </td>
+                <td>
+                    <input type="text" ng-model="registration.name.honorificPrefix" required>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Geburtsname*</label>
+                </td>
+                <td>
+                    <input type="text" ng-model="registration.geburtsName" required>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Geburtsdatum*</label>
+                </td>
+                <td>
+                    <input type="text" ng-model="registration.geburtsDatum" required>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>Stipendium*</label>
+                </td>
+                <td>
+                    <input type="text" ng-model="registration.stipfoetyp" required>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label>EV Erklaerung*</label>
+                </td>
+                <td>
+                    <input type="text" ng-model="registration.evErklaerung" required>
+                </td>
+            </tr>
+            <tr>
+                <td/>
+                <td>
+                    <button ng-click='submitRegistration()' ng-disabled="form.$invalid" >Speichern</button>
+                </td>
+            </tr>
+        </table>
+        <hr>
+    </form>
+</div>
+<style type="text/css">
+    .css-form input.ng-invalid.ng-dirty {
+        background-color: #FA787E;
+    }
+
+    .css-form input.ng-valid.ng-dirty {
+        background-color: #78FA89;
+    }
+    input {
+        margin-left: 30%;
+    }
+    button {
+        margin-left: 30%;
+    }
+</style>
+</body>
+</html>
