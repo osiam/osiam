@@ -74,10 +74,12 @@ class AuthenticationControllerTest extends Specification {
         1 * userEntityMock.getUserName() >> "userName"
         1 * userEntityMock.getPassword() >> "password"
         1 * userEntityMock.getId() >> userId
+        1 * userEntityMock.getActive() >> true
         result instanceof UserSpring
         result.getUserName() == "userName"
         result.getPassword() == "password"
         result.getId() == userId.toString()
+        result.getActive()
     }
 
     def "The getClient method annotations should be present with appropriate configuration for RequestMapping and Response Body"(){
