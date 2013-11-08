@@ -8,8 +8,10 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 
+import org.aspectj.util.GenericSignature.FieldTypeSignature;
 import org.osiam.resources.scim.Address;
 import org.osiam.resources.scim.Extension;
+import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.resources.scim.Name;
 import org.osiam.resources.scim.User;
@@ -127,7 +129,7 @@ public class ScimConverter {
             extensionFieldValueEntity.setUser(userEntity);
 
             if (scimExtension.isFieldPresent(extensionFieldEntity.getName())) {
-                String extensionFieldValue = scimExtension.getField(extensionFieldEntity.getName());
+                String extensionFieldValue = scimExtension.getField(extensionFieldEntity.getName(), ExtensionFieldType.STRING);
                 extensionFieldValueEntity.setValue(extensionFieldValue);
             } else {
                 extensionFieldValueEntity.setValue("");
