@@ -8,6 +8,14 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 
+import org.osiam.resources.converter.AddressConverter;
+import org.osiam.resources.converter.EmailConverter;
+import org.osiam.resources.converter.EntitlementConverter;
+import org.osiam.resources.converter.ImConverter;
+import org.osiam.resources.converter.PhoneNumberConverter;
+import org.osiam.resources.converter.PhotoConverter;
+import org.osiam.resources.converter.RoleConverter;
+import org.osiam.resources.converter.X509CertificateConverter;
 import org.osiam.resources.scim.Address;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.ExtensionFieldType;
@@ -158,7 +166,7 @@ public class ScimConverter {
         Set<X509CertificateEntity> x509CertificateEntities = new HashSet<>();
         if (x509Certificates != null) {
             for (MultiValuedAttribute multiValuedAttribute : x509Certificates) {
-                x509CertificateEntities.add(X509CertificateEntity.fromScim(multiValuedAttribute));
+                x509CertificateEntities.add(new X509CertificateConverter().fromScim(multiValuedAttribute));
             }
         }
         return x509CertificateEntities;
@@ -168,7 +176,7 @@ public class ScimConverter {
         Set<RolesEntity> rolesEntities = new HashSet<>();
         if (roles != null) {
             for (MultiValuedAttribute multiValuedAttribute : roles) {
-                rolesEntities.add(RolesEntity.fromScim(multiValuedAttribute));
+                rolesEntities.add(new RoleConverter().fromScim(multiValuedAttribute));
             }
         }
         return rolesEntities;
@@ -178,7 +186,7 @@ public class ScimConverter {
         Set<PhotoEntity> photoEntities = new HashSet<>();
         if (photos != null) {
             for (MultiValuedAttribute multiValuedAttribute : photos) {
-                photoEntities.add(PhotoEntity.fromScim(multiValuedAttribute));
+                photoEntities.add(new PhotoConverter().fromScim(multiValuedAttribute));
             }
         }
         return photoEntities;
@@ -188,7 +196,7 @@ public class ScimConverter {
         Set<PhoneNumberEntity> phoneNumberEntities = new HashSet<>();
         if (phoneNumbers != null) {
             for (MultiValuedAttribute multiValuedAttribute : phoneNumbers) {
-                phoneNumberEntities.add(PhoneNumberEntity.fromScim(multiValuedAttribute));
+                phoneNumberEntities.add(new PhoneNumberConverter().fromScim(multiValuedAttribute));
             }
         }
         return phoneNumberEntities;
@@ -202,7 +210,7 @@ public class ScimConverter {
         Set<ImEntity> imEntities = new HashSet<>();
         if (ims != null) {
             for (MultiValuedAttribute multiValuedAttribute : ims) {
-                imEntities.add(ImEntity.fromScim(multiValuedAttribute));
+                imEntities.add(new ImConverter().fromScim(multiValuedAttribute));
             }
         }
         return imEntities;
@@ -212,7 +220,7 @@ public class ScimConverter {
         Set<EntitlementsEntity> entitlementsEntities = new HashSet<>();
         if (entitlements != null) {
             for (MultiValuedAttribute multiValuedAttribute : entitlements) {
-                entitlementsEntities.add(EntitlementsEntity.fromScim(multiValuedAttribute));
+                entitlementsEntities.add(new EntitlementConverter().fromScim(multiValuedAttribute));
             }
         }
         return entitlementsEntities;
@@ -223,7 +231,7 @@ public class ScimConverter {
         Set<AddressEntity> addressEntities = new HashSet<>();
         if (addresses != null) {
             for (Address address : addresses) {
-                addressEntities.add(AddressEntity.fromScim(address));
+                addressEntities.add(new AddressConverter().fromScim(address));
             }
         }
         return addressEntities;
@@ -233,7 +241,7 @@ public class ScimConverter {
         Set<EmailEntity> emailEntities = new HashSet<>();
         if (emails != null) {
             for (MultiValuedAttribute multiValuedAttribute : emails) {
-                emailEntities.add(EmailEntity.fromScim(multiValuedAttribute));
+                emailEntities.add(new EmailConverter().fromScim(multiValuedAttribute));
             }
         }
         return emailEntities;

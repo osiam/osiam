@@ -32,8 +32,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 
-import org.osiam.resources.scim.MultiValuedAttribute;
-
 /**
  * Email Entity
  */
@@ -78,22 +76,6 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ha
         this.primary = primary;
     }
 
-    public MultiValuedAttribute toScim() {
-        return new MultiValuedAttribute.Builder().
-                setPrimary(isPrimary()).
-                setType(getType()).
-                setValue(getValue()).
-                build();
-    }
-
-    public static EmailEntity fromScim(MultiValuedAttribute multiValuedAttribute) {
-        EmailEntity emailEntity = new EmailEntity();
-        emailEntity.setType(multiValuedAttribute.getType());
-        emailEntity.setValue(String.valueOf(multiValuedAttribute.getValue()));
-        emailEntity.setPrimary((multiValuedAttribute.isPrimary() == null ? false : multiValuedAttribute.isPrimary()));
-        return emailEntity;
-    }
-
     @Override
     public UserEntity getUser() {
         return user;
@@ -102,6 +84,44 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ha
     @Override
     public void setUser(UserEntity user) {
         this.user = user;
+    }
+    
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + (primary ? 1231 : 1237);
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + ((user == null) ? 0 : user.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        EmailEntity other = (EmailEntity) obj;
+        if (primary != other.primary) {
+            return false;
+        }
+        if (type != other.type) {
+            return false;
+        }
+        if (user == null) {
+            if (other.user != null) {
+                return false;
+            }
+        } else if (!user.equals(other.user)) {
+            return false;
+        }
+        return true;
     }
 
     public enum CanonicalEmailTypes {

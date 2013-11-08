@@ -30,6 +30,7 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import org.osiam.resources.converter.UserConverter;
 import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.helper.ScimConverter;
 import org.osiam.resources.scim.Extension;
@@ -93,7 +94,8 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
         List<User> users = new ArrayList<>();
         SCIMSearchResult<UserEntity> result = getDao().search(filter, sortBy, sortOrder, count, startIndex);
         for (Object g : result.getResources()) {
-            users.add(User.Builder.generateForOutput(((UserEntity) g).toScim()));
+            User scimResultUser = new UserConverter().toScim((UserEntity) g);
+            users.add(User.Builder.generateForOutput(scimResultUser));
         }
         return new SCIMSearchResult(users, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
     }

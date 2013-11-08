@@ -89,20 +89,6 @@ public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements Ch
         this.user = user;
     }
 
-    public MultiValuedAttribute toScim() {
-        return new MultiValuedAttribute.Builder().
-                setType(getType()).
-                setValue(getValue()).
-                build();
-    }
-
-    public static PhotoEntity fromScim(MultiValuedAttribute multiValuedAttribute) {
-        PhotoEntity photoEntity = new PhotoEntity();
-        photoEntity.setType(multiValuedAttribute.getType());
-        photoEntity.setValue(String.valueOf(multiValuedAttribute.getValue()));
-        return photoEntity;
-    }
-
     public enum CanonicalPhotoTypes {
         photo, thumbnail
     }
