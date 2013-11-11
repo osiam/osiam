@@ -23,18 +23,16 @@
 
 package org.osiam.storage.entities;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import org.osiam.resources.scim.Group;
+import org.osiam.resources.scim.MultiValuedAttribute;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-
-import org.osiam.resources.scim.Group;
-import org.osiam.resources.scim.MultiValuedAttribute;
+import javax.persistence.ManyToMany;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Group Entity
@@ -44,7 +42,7 @@ public class GroupEntity extends InternalIdSkeleton {
 
     private static final long serialVersionUID = -6535056565639057158L;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<InternalIdSkeleton> members = new HashSet<>();
 
     @Column(unique = true, nullable = false)
@@ -65,7 +63,9 @@ public class GroupEntity extends InternalIdSkeleton {
 
     private static Set<InternalIdSkeleton> createMembers(Group group) {
         Set<InternalIdSkeleton> result = new HashSet<>();
-        if (group.getMembers() != null) { transferMultiValueAttributeToInternalIdSkeleton(group, result); }
+        if (group.getMembers() != null) {
+            transferMultiValueAttributeToInternalIdSkeleton(group, result);
+        }
 
         return result;
     }
@@ -86,6 +86,7 @@ public class GroupEntity extends InternalIdSkeleton {
             this.displayName = displayName;
             setId(uuid);
         }
+
         @Override
         public String getDisplayName() {
             return displayName;

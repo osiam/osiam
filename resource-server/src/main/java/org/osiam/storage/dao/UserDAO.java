@@ -23,19 +23,20 @@
 
 package org.osiam.storage.dao;
 
-import java.util.logging.Level;
-
-import javax.inject.Inject;
-import javax.persistence.Query;
-
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.sql.JoinType;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.scim.SCIMSearchResult;
+import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
+import javax.persistence.Query;
+import java.util.Set;
+import java.util.logging.Level;
 
 @Repository
 @Transactional
@@ -87,8 +88,11 @@ public class UserDAO extends GetInternalIdSkeleton implements GenericDAO<UserEnt
     @Override
     public void delete(String id) {
         UserEntity userEntity = getById(id);
+        Set<GroupEntity> groups = userEntity.getGroups();
+        for (GroupEntity group : groups) {
+            group.getMembers().remove(userEntity);
+        }
         em.remove(userEntity);
-
     }
 
     @Override

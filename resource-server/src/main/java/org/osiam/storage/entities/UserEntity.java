@@ -23,28 +23,18 @@
 
 package org.osiam.storage.entities;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-
 import org.osiam.resources.scim.Address;
 import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.resources.scim.User;
 import org.osiam.storage.entities.extension.ExtensionEntity;
 import org.osiam.storage.entities.extension.ExtensionFieldEntity;
 import org.osiam.storage.entities.extension.ExtensionFieldValueEntity;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * User Entity
@@ -106,9 +96,6 @@ public class UserEntity extends InternalIdSkeleton {
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<AddressEntity> addresses;
-
-    @OneToMany(fetch = FetchType.EAGER)
-    private Set<GroupEntity> groups;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EntitlementsEntity> entitlements;
@@ -421,23 +408,6 @@ public class UserEntity extends InternalIdSkeleton {
      */
     public void setAddresses(Set<AddressEntity> addresses) {
         this.addresses = addresses;
-    }
-
-    /**
-     * @return the groups entity
-     */
-    public Set<GroupEntity> getGroups() {
-        if (groups == null) {
-            groups = new HashSet<>();
-        }
-        return groups;
-    }
-
-    /**
-     * @param groups the groups entity
-     */
-    public void setGroups(Set<GroupEntity> groups) {
-        this.groups = groups;
     }
 
     /**
