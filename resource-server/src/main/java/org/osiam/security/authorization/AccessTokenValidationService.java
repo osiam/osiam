@@ -37,7 +37,7 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
     public OAuth2Authentication loadAuthentication(String accessToken) {
         final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort + "/osiam-auth-server";
 
-        HttpClientRequestResult result = httpClient.executeHttpGet(serverUri + "/token/validate/" + accessToken);
+        HttpClientRequestResult result = httpClient.executeHttpGet(serverUri + "/token/validate/" + accessToken, null, null);
 
         if (result.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
             throw new InvalidTokenException("invalid_token");
@@ -57,7 +57,7 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
     public OAuth2AccessToken readAccessToken(String accessToken) {
         final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort + "/osiam-auth-server";
 
-        HttpClientRequestResult result = httpClient.executeHttpGet(serverUri + "/token/" + accessToken);
+        HttpClientRequestResult result = httpClient.executeHttpGet(serverUri + "/token/" + accessToken, null, null);
 
         if (result.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
             throw new InvalidTokenException("invalid_token");
