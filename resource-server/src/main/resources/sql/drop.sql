@@ -25,4 +25,5 @@ DROP TABLE IF EXISTS osiam_client CASCADE;
 DROP TABLE IF EXISTS scim_extension_field_value CASCADE;
 DROP TABLE IF EXISTS scim_extension_field CASCADE;
 DROP TABLE IF EXISTS scim_extension CASCADE;
+DROP TABLE IF EXISTS scim_user_scim_extension CASCADE;
 DROP SEQUENCE IF EXISTS hibernate_sequence CASCADE;
