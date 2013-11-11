@@ -124,5 +124,4 @@ public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute, 
         this.meta = meta;
     }
 
-    public abstract <T> T toScim();
 }

@@ -23,8 +23,10 @@
 
 package org.osiam.storage.entities
 
+import org.osiam.resources.converter.EntitlementConverter;
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.storage.entities.EntitlementsEntity
+
 import spock.lang.Specification
 
 /**
@@ -48,7 +50,7 @@ class EntitlementsEntitySpec extends Specification {
 
     def "mapping to scim should be present"() {
         when:
-        def multivalue = entitlementsEntity.toScim()
+        def multivalue = new EntitlementConverter().toScim(entitlementsEntity)
 
         then:
         multivalue.value == entitlementsEntity.value

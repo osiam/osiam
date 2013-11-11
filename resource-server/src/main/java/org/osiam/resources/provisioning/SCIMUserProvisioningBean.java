@@ -30,6 +30,7 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import org.osiam.resources.converter.Converter;
 import org.osiam.resources.converter.UserConverter;
 import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.helper.ScimConverter;
@@ -49,8 +50,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> implements SCIMUserProvisioning {
+public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserEntity> implements SCIMUserProvisioning {
 
+    @Inject
+    private UserConverter userConverter;
+    
     @Inject
     private ScimConverter scimConverter;
 
@@ -61,8 +65,13 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
     private ExtensionDao extensionDao;
 
     @Override
-    protected GenericDAO getDao() {
+    protected GenericDAO<UserEntity> getDao() {
         return userDao;
+    }
+    
+    @Override
+    protected Converter<User, UserEntity> getConverter() {
+        return userConverter;
     }
 
     @Override
@@ -79,14 +88,14 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
             throw new ResourceExistsException("The user with name " +
                     user.getUserName() + " already exists.", e);
         }
-        return userEntity.toScim();
+        return userConverter.toScim(userEntity);
     }
 
     @Override
     public User replace(String id, User user) {
         UserEntity userEntity = scimConverter.createFromScim(user, id);
         userEntity.touch();
-        return userDao.update(userEntity).toScim();
+        return userConverter.toScim(userDao.update(userEntity));
     }
 
     @Override
@@ -114,7 +123,7 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
             updateExtension(extensionEntry, userEntity);
         }
 
-        return userEntity.toScim();
+        return userConverter.toScim(userEntity);
     }
 
     private void updateExtension(Entry<String, Extension> extensionEntry, UserEntity userEntity) {

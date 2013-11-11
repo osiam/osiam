@@ -91,7 +91,7 @@ public class GroupEntity extends InternalIdSkeleton {
             return displayName;
         }
 
-        @Override
+        
         public <T> T toScim() {
             return null;
         }
@@ -113,7 +113,7 @@ public class GroupEntity extends InternalIdSkeleton {
         this.displayName = displayName;
     }
 
-    @Override
+    
     public Group toScim() {
         return new Group.Builder().setDisplayName(getDisplayName()).setMembers(membersToScim())
                 .setExternalId(getExternalId()).setId(getId().toString()).setMeta(getMeta().toScim()).build();

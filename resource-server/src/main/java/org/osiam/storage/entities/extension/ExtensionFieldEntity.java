@@ -22,7 +22,7 @@ public class ExtensionFieldEntity implements Serializable {
     private String name;
 
     @Transient
-    private ExtensionFieldType type;
+    private ExtensionFieldType<?> type;
 
     @Column(name = "is_required")
     private boolean isRequired;
@@ -54,11 +54,11 @@ public class ExtensionFieldEntity implements Serializable {
         this.name = name;
     }
 
-    public ExtensionFieldType getType() {
+    public ExtensionFieldType<?> getType() {
         return type;
     }
 
-    public void setType(ExtensionFieldType type) {
+    public void setType(ExtensionFieldType<?> type) {
         this.type = type;
     }
 
