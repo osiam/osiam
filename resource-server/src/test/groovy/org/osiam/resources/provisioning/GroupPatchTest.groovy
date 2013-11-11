@@ -23,12 +23,11 @@
 
 package org.osiam.resources.provisioning
 
-import org.osiam.storage.dao.GroupDAO
-import org.osiam.resources.provisioning.SCIMGroupProvisioningBean
 import org.osiam.resources.scim.Group
 import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.User
+import org.osiam.storage.dao.GroupDAO
 import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.UserEntity
 import spock.lang.Specification
@@ -123,7 +122,7 @@ class GroupPatchTest extends Specification {
         def members = new HashSet()
         def newUuid = UUID.randomUUID().toString()
         members.add(new MultiValuedAttribute.Builder().setValue(newUuid).setDisplay("narf").build())
-        members.add(new MultiValuedAttribute.Builder().setValue(userId).setOperation("delete").build())
+        members.add(new MultiValuedAttribute.Builder().setValue(userId.toString()).setOperation("delete").build())
         def group = new Group.Builder()
                 .setMembers(members)
                 .setDisplayName("hi")

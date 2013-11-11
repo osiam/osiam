@@ -107,8 +107,13 @@ class ScimConverterSpec extends Specification {
 
         ExtensionDao extensionDao = Mock(ExtensionDao)
         extensionDao.getExtensionByUrn('urn1') >> extensionEntity
+        
+        Extension extension = new Extension('urn1')
+        extension.addOrUpdateField('gender', 'male')
+        extension.addOrUpdateField('age', '30')
+        
         def user = new User.Builder('userName')
-                .addExtension('urn1', new Extension('urn1', ['gender':'male','age':'30']))
+                .addExtension('urn1', extension)
                 .build()
         scimConverter.extensionDao = extensionDao
 

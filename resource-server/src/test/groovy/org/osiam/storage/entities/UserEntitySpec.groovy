@@ -24,12 +24,14 @@
 package org.osiam.storage.entities
 
 import org.osiam.resources.scim.Address
+import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.Name
 import org.osiam.resources.scim.User
 import org.osiam.storage.entities.extension.ExtensionEntity
 import org.osiam.storage.entities.extension.ExtensionFieldEntity
 import org.osiam.storage.entities.extension.ExtensionFieldValueEntity
+
 import spock.lang.Specification
 
 class UserEntitySpec extends Specification {
@@ -539,8 +541,8 @@ class UserEntitySpec extends Specification {
         scimUser.getAllExtensions().size() == 1
         def scimExt1 = scimUser.getAllExtensions().get("urn1")
         scimExt1.getAllFields().size() == 2
-        scimExt1.getField("field1") == "value1"
-        scimExt1.getField("field2") == "value2"
+        scimExt1.getField("field1", ExtensionFieldType.STRING) == "value1"
+        scimExt1.getField("field2", ExtensionFieldType.STRING) == "value2"
 
     }
 

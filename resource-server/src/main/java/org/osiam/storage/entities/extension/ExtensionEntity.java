@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -123,7 +124,10 @@ public class ExtensionEntity implements Serializable {
         // Convert Extensions to scim Extensions
         Map<String, Extension> res = new HashMap<>();
         for(Map.Entry<String, Map<String, String>> extensionEntry : sortedValues.entrySet()) {
-            Extension ext = new Extension(extensionEntry.getKey(), extensionEntry.getValue());
+            Extension ext = new Extension(extensionEntry.getKey());
+            for (Entry<String, String> fieldData : extensionEntry.getValue().entrySet()) {
+                ext.addOrUpdateField(fieldData.getKey(), fieldData.getValue());
+            }
             String urn = extensionEntry.getKey();
             res.put(urn, ext);
         }

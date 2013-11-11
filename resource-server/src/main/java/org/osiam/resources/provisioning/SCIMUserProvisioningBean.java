@@ -33,6 +33,7 @@ import javax.inject.Inject;
 import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.helper.ScimConverter;
 import org.osiam.resources.scim.Extension;
+import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.resources.scim.User;
 import org.osiam.storage.dao.ExtensionDao;
@@ -131,7 +132,7 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
                 continue;
             }
             
-            String newValue = updatedExtension.getField(fieldName);
+            String newValue = updatedExtension.getField(fieldName, ExtensionFieldType.STRING);
             
             if(newValue == null) {
                 continue;
