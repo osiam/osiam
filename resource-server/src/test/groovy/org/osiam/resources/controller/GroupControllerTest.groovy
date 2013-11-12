@@ -23,22 +23,24 @@
 
 package org.osiam.resources.controller
 
+import java.lang.reflect.Method
+
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
+
 import org.osiam.resources.helper.AttributesRemovalHelper
 import org.osiam.resources.helper.JsonInputValidator
-import org.osiam.resources.provisioning.SCIMGroupProvisioning
 import org.osiam.resources.helper.RequestParamHelper
+import org.osiam.resources.provisioning.SCIMGroupProvisioning
+import org.osiam.resources.scim.Group
 import org.osiam.resources.scim.SCIMSearchResult
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.ResponseStatus
-import org.osiam.resources.scim.Group
-import spock.lang.Specification
 
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
-import java.lang.reflect.Method
+import spock.lang.Specification
 
 class GroupControllerTest extends Specification {
 

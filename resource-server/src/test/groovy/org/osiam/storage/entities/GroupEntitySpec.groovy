@@ -77,8 +77,6 @@ class GroupEntitySpec extends Specification {
 
         then:
         result.meta.resourceType == "Group"
-        result.toScim().meta.resourceType == "Group"
-
     }
 
     def 'touch should update lastModified field of the meta object'() {
