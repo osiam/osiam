@@ -23,15 +23,10 @@
 
 package org.osiam.storage.entities
 
-import org.osiam.resources.scim.Address
-import org.osiam.resources.scim.ExtensionFieldType;
-import org.osiam.resources.scim.MultiValuedAttribute
-import org.osiam.resources.scim.Name
-import org.osiam.resources.scim.User
+import org.osiam.resources.scim.*
 import org.osiam.storage.entities.extension.ExtensionEntity
 import org.osiam.storage.entities.extension.ExtensionFieldEntity
 import org.osiam.storage.entities.extension.ExtensionFieldValueEntity
-
 import spock.lang.Specification
 
 class UserEntitySpec extends Specification {
@@ -300,16 +295,6 @@ class UserEntitySpec extends Specification {
         userEntity.getAddresses() == addresses
     }
 
-    def "setter and getter for the groups should be present"() {
-        given:
-        def groups = [new GroupEntity()] as Set
-
-        when:
-        userEntity.setGroups(groups)
-
-        then:
-        userEntity.getGroups() == groups
-    }
 
     def "setter and getter for the entitlements should be present"() {
         given:
@@ -366,7 +351,6 @@ class UserEntitySpec extends Specification {
         userEntity.setEmails([Mock(EmailEntity)] as Set<EmailEntity>)
         userEntity.setEntitlements([Mock(EntitlementsEntity)] as Set<EntitlementsEntity>)
         userEntity.setExternalId("externalId")
-        userEntity.setGroups([Mock(GroupEntity)] as Set<GroupEntity>)
         userEntity.setIms([Mock(ImEntity)] as Set<ImEntity>)
         userEntity.setLocale("locale")
         userEntity.setName(name)
@@ -424,7 +408,6 @@ class UserEntitySpec extends Specification {
         userEntity.setEmails([Mock(EmailEntity)] as Set<EmailEntity>)
         userEntity.setEntitlements([Mock(EntitlementsEntity)] as Set<EntitlementsEntity>)
         userEntity.setExternalId("externalId")
-        userEntity.setGroups([Mock(GroupEntity)] as Set<GroupEntity>)
         userEntity.setIms([Mock(ImEntity)] as Set<ImEntity>)
         userEntity.setLocale("locale")
         userEntity.setName(null)

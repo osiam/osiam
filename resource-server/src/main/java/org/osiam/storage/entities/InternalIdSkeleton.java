@@ -103,8 +103,20 @@ public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute, 
         return groups;
     }
 
-    public void setGroups(Set<GroupEntity> groups) {
-        this.groups = groups;
+    public void addToGroup(GroupEntity group) {
+        if (groups.contains(group)) {
+            return;
+        }
+        groups.add(group);
+        group.addMember(this);
+    }
+
+    public void removeFromGroup(GroupEntity group) {
+        if (!groups.contains(group)) {
+            return;
+        }
+        groups.remove(group);
+        group.removeMember(this);
     }
 
     @Override
@@ -127,4 +139,27 @@ public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute, 
     }
 
     public abstract <T> T toScim();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof InternalIdSkeleton)) {
+            return false;
+        }
+
+        InternalIdSkeleton that = (InternalIdSkeleton) o;
+
+        if (id != null ? !id.equals(that.id) : that.id != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
 }

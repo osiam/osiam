@@ -616,32 +616,30 @@ public class UserEntity extends InternalIdSkeleton {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        UserEntity that = (UserEntity) o;
+
+        if (userName != null ? !userName.equals(that.userName) : that.userName != null) return false;
+
+        return true;
+    }
+
+    @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((userName == null) ? 0 : userName.hashCode());
+        int result = super.hashCode();
+        result = 31 * result + (userName != null ? userName.hashCode() : 0);
         return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        UserEntity other = (UserEntity) obj;
-        if (userName == null) {
-            if (other.userName != null) {
-                return false;
-            }
-        } else if (!userName.equals(other.userName)) {
-            return false;
-        }
-        return true;
+    public String toString() {
+        return "UserEntity{" +
+                "UUID='" + getId() + "\', " +
+                "userName='" + userName + '\'' +
+                '}';
     }
 }
