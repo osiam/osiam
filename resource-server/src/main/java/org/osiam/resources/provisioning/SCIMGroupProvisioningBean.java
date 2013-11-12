@@ -65,7 +65,7 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
 
     @Override
     public Group create(Group group) {
-        GroupEntity enrichedGroup = GroupEntity.fromScim(group);
+        GroupEntity enrichedGroup = groupConverter.fromScim(group);
         enrichedGroup.setId(UUID.randomUUID());
         try {
             groupDAO.create(enrichedGroup);
