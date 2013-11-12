@@ -12,12 +12,12 @@ class GroupMembershipSpec extends Specification {
     def NAME = 'irrelevant'
 
     def setup() {
-        containingGroup = new GroupEntity(displayName: NAME)
-        memberGroup = new GroupEntity(displayName: "other $NAME")
-        user = new UserEntity(userName: NAME)
+        containingGroup = new GroupEntity(displayName: NAME, id: UUID.randomUUID())
+        memberGroup = new GroupEntity(displayName: "other $NAME", id: UUID.randomUUID())
+        user = new UserEntity(userName: NAME, id: UUID.randomUUID())
     }
 
-    def 'Adding User to a Group updates both sides of the relation'() {
+    def 'Adding a User to a Group via the User updates both sides of the relation'() {
         when:
         user.addToGroup(containingGroup)
 
@@ -27,7 +27,16 @@ class GroupMembershipSpec extends Specification {
 
     }
 
-    def 'Adding Group to a Group updates both sides of the relation'() {
+    def 'Adding User to a Group via the Group updates both sides of the relation'() {
+        when:
+        containingGroup.addMember(user)
+
+        then:
+        user.groups.contains(containingGroup)
+        containingGroup.members.contains(user)
+    }
+
+    def 'Adding Group to a Group via the member Group updates both sides of the relation'() {
         when:
         memberGroup.addToGroup(containingGroup)
 
@@ -36,7 +45,16 @@ class GroupMembershipSpec extends Specification {
         memberGroup.groups.contains(containingGroup)
     }
 
-    def 'Removing User from a Group updates both sides of the relation'() {
+    def 'Adding Group to a Group via the containing Group updates both sides of the relation'() {
+        when:
+        containingGroup.addMember(memberGroup)
+
+        then:
+        memberGroup.groups.contains(containingGroup)
+        containingGroup.members.contains(memberGroup)
+    }
+
+    def 'Removing User from a Group via the User updates both sides of the relation'() {
         given:
         user.addToGroup(containingGroup)
 
@@ -48,8 +66,19 @@ class GroupMembershipSpec extends Specification {
         !user.groups.contains(containingGroup)
     }
 
+    def 'Removing User from a Group via the Group updates both sides of the relation'() {
+        given:
+        containingGroup.addMember(user)
 
-    def 'Removing Group from a Group updates both sides of the relation'() {
+        when:
+        containingGroup.removeMember(user)
+
+        then:
+        !user.groups.contains(containingGroup)
+        !containingGroup.members.contains(user)
+    }
+
+    def 'Removing Group from a Group via the member Group updates both sides of the relation'() {
         given:
         memberGroup.addToGroup(containingGroup)
 
@@ -59,5 +88,17 @@ class GroupMembershipSpec extends Specification {
         then:
         !containingGroup.members.contains(memberGroup)
         !memberGroup.groups.contains(containingGroup)
+    }
+
+    def 'Removing Group from a Group via the containing Group updates both sides of the relation'() {
+        given:
+        containingGroup.addMember(memberGroup)
+
+        when:
+        containingGroup.removeMember(memberGroup)
+
+        then:
+        !memberGroup.groups.contains(containingGroup)
+        !containingGroup.members.contains(memberGroup)
     }
 }
