@@ -57,7 +57,6 @@ public class GroupEntity extends InternalIdSkeleton {
         groupEntity.setDisplayName(group.getDisplayName());
         groupEntity.setId(group.getId() != null ? UUID.fromString(group.getId()) : UUID.randomUUID());
         groupEntity.setExternalId(group.getExternalId());
-        groupEntity.setMembers(createMembers(group));
         return groupEntity;
     }
 
@@ -116,10 +115,6 @@ public class GroupEntity extends InternalIdSkeleton {
         }
         members.remove(member);
         member.removeFromGroup(this);
-    }
-
-    public void setMembers(Set<InternalIdSkeleton> members) {
-        this.members = members;
     }
 
     public String getDisplayName() {
