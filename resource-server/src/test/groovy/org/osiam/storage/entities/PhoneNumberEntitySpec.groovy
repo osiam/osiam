@@ -64,29 +64,6 @@ class PhoneNumberEntitySpec extends Specification {
         phoneNumberEntity.getUser() == userEntity
     }
 
-    def "mapping to scim should be present"() {
-        when:
-        def multivalue = phoneNumberEntity.toScim()
-
-        then:
-        multivalue.value == phoneNumberEntity.value
-        multivalue.type == phoneNumberEntity.type
-    }
-
-    def "mapping from scim should be present"() {
-        given:
-        MultiValuedAttribute phoneNumber = new MultiValuedAttribute.Builder().
-                setValue("blaaaa").
-                setType("home").
-                build()
-
-        when:
-        def result = PhoneNumberEntity.fromScim(phoneNumber)
-
-        then:
-        result != null
-    }
-
     def "should throw an exception if the type is unknown"() {
         when:
         phoneNumberEntity.setType("huch")

@@ -31,6 +31,8 @@ import java.util.logging.Logger;
 
 import javax.inject.Inject;
 
+import org.osiam.resources.converter.Converter;
+import org.osiam.resources.converter.GroupConverter;
 import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.SCIMSearchResult;
@@ -41,16 +43,24 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group> implements SCIMGroupProvisioning {
+public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, GroupEntity> implements SCIMGroupProvisioning {
 
     private static final Logger LOGGER = Logger.getLogger(SCIMGroupProvisioningBean.class.getName());
 
     @Inject
+    private GroupConverter groupConverter;
+    
+    @Inject
     private GroupDAO groupDAO;
 
     @Override
-    protected GenericDAO getDao() {
+    protected GenericDAO<GroupEntity> getDao() {
         return groupDAO;
+    }
+    
+    @Override
+    protected Converter<Group, GroupEntity> getConverter() {
+        return groupConverter;
     }
 
     @Override
@@ -64,15 +74,15 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group> imp
 
             throw new ResourceExistsException(group.getDisplayName() + " already exists.", e);
         }
-        return enrichedGroup.toScim();  //To change body of implemented methods use File | Settings | File Templates.
+        return groupConverter.toScim(enrichedGroup);
     }
 
     @Override
     public SCIMSearchResult<Group> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
         List<Group> groups = new ArrayList<>();
         SCIMSearchResult<GroupEntity> result = getDao().search(filter, sortBy, sortOrder, count, startIndex);
-        for (Object g : result.getResources()) {
-            groups.add(((GroupEntity) g).toScim());
+        for (GroupEntity group : result.getResources()) {
+            groups.add(groupConverter.toScim(group));
         }
         return new SCIMSearchResult(groups, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
     }

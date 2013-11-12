@@ -129,8 +129,13 @@ public class ExtensionEntity implements Serializable {
                 ext.addOrUpdateField(fieldData.getKey(), fieldData.getValue());
             }
             String urn = extensionEntry.getKey();
-            res.put(urn, ext);
+            Extension extension = new Extension(urn);
+            Map<String, String> extensionEntries = extensionEntry.getValue();
+            for (String field:extensionEntries.keySet()){
+                extension.addOrUpdateField(field, extensionEntries.get(field));
+            }
+            res.put(urn, extension);
         }
         return res;
-    }   
+    }
 }

@@ -69,20 +69,6 @@ public class PhoneNumberEntity extends MultiValueAttributeEntitySkeleton impleme
         this.user = user;
     }
 
-    public MultiValuedAttribute toScim() {
-        return new MultiValuedAttribute.Builder().
-                setType(getType()).
-                setValue(getValue()).
-                build();
-    }
-
-    public static PhoneNumberEntity fromScim(MultiValuedAttribute multiValuedAttribute) {
-        PhoneNumberEntity phoneNumberEntity = new PhoneNumberEntity();
-        phoneNumberEntity.setType(multiValuedAttribute.getType());
-        phoneNumberEntity.setValue(String.valueOf(multiValuedAttribute.getValue()));
-        return phoneNumberEntity;
-    }
-
     public enum CanonicalPhoneNumberTypes {
         work, home, mobile, fax, pager, other
     }

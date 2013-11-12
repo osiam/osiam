@@ -139,8 +139,6 @@ public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute, 
         this.meta = meta;
     }
 
-    public abstract <T> T toScim();
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {

@@ -23,6 +23,7 @@
 
 package org.osiam.resources.provisioning
 
+import org.osiam.resources.converter.GroupConverter
 import org.osiam.resources.scim.Group
 import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.MultiValuedAttribute
@@ -31,11 +32,13 @@ import org.osiam.storage.dao.GroupDAO
 import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.UserEntity
 import spock.lang.Ignore
+
 import spock.lang.Specification
 
 class GroupPatchTest extends Specification {
     def groupDAO = Mock(GroupDAO)
-    SCIMGroupProvisioningBean bean = new SCIMGroupProvisioningBean(groupDAO: groupDAO)
+    def groupConverter = new GroupConverter()
+    SCIMGroupProvisioningBean bean = new SCIMGroupProvisioningBean(groupDAO: groupDAO, groupConverter: groupConverter)
     def uId = UUID.randomUUID()
     def id = uId.toString()
     def groupId = UUID.randomUUID()

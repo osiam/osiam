@@ -55,16 +55,6 @@ class GroupEntitySpec extends Specification {
         groupEntity.getDisplayName() == "Tour Guides"
     }
 
-    def "mapping to scim should be present"() {
-        groupEntity.setId(UUID.randomUUID())
-        when:
-        def multivalue = groupEntity.toScim()
-
-        then:
-        multivalue.id == groupEntity.id.toString()
-        multivalue.displayName == groupEntity.displayName
-    }
-
     def "mapping from scim should be present"() {
         def members = new HashSet()
         members.add(new MultiValuedAttribute.Builder().

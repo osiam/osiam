@@ -56,27 +56,6 @@ class X509CertificateEntitySpec extends Specification {
         certificateEntity.getUser() == userEntity
     }
 
-    def "mapping to scim should be present"() {
-        when:
-        def multivalue = certificateEntity.toScim()
-
-        then:
-        multivalue.value == certificateEntity.value
-    }
-
-    def "mapping from scim should be present"() {
-        given:
-        MultiValuedAttribute multiValuedAttribute = new MultiValuedAttribute.Builder().
-                setValue("blaaaa").
-                build()
-
-        when:
-        def result = X509CertificateEntity.fromScim(multiValuedAttribute)
-
-        then:
-        result != null
-    }
-
     def "setter and getter for id should be present"() {
         when:
         certificateEntity.setMultiValueId(1234)

@@ -23,6 +23,11 @@
 
 package org.osiam.resources.provisioning
 
+import javax.persistence.EntityManager
+import javax.persistence.Query
+
+import org.osiam.resources.converter.Converter
+import org.osiam.resources.converter.GroupConverter
 import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.resources.scim.Group
 import org.osiam.resources.scim.MultiValuedAttribute
@@ -32,13 +37,14 @@ import org.osiam.storage.entities.UserEntity
 import spock.lang.Ignore
 import spock.lang.Specification
 
-import javax.persistence.EntityManager
-import javax.persistence.Query
+import spock.lang.Ignore;
+import spock.lang.Specification
 
 class GroupPutTest extends Specification {
     EntityManager em = Mock(EntityManager)
     GroupDAO dao = new GroupDAO(em: em)
-    def underTest = new SCIMGroupProvisioningBean(groupDAO: dao)
+    Converter<Group, GroupEntity> converter = new GroupConverter()
+    def underTest = new SCIMGroupProvisioningBean(groupDAO: dao, groupConverter: converter)
     def members = new HashSet()
     def internalId = UUID.randomUUID().toString()
     def query = Mock(Query)

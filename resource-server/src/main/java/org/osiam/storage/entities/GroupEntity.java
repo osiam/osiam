@@ -92,7 +92,7 @@ public class GroupEntity extends InternalIdSkeleton {
             return displayName;
         }
 
-        @Override
+        
         public <T> T toScim() {
             return null;
         }
@@ -140,12 +140,6 @@ public class GroupEntity extends InternalIdSkeleton {
     @Override
     public int hashCode() {
         return super.hashCode();
-    }
-
-    @Override
-    public Group toScim() {
-        return new Group.Builder().setDisplayName(getDisplayName()).setMembers(membersToScim())
-                .setExternalId(getExternalId()).setId(getId().toString()).setMeta(getMeta().toScim()).build();
     }
 
     private Set<MultiValuedAttribute> membersToScim() {

@@ -2,15 +2,9 @@ package org.osiam.storage.entities.extension;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
+import org.osiam.resources.scim.ExtensionFieldType;
 /**
  * Defines a field in a scim-extension.
  */
@@ -27,9 +21,8 @@ public class ExtensionFieldEntity implements Serializable {
     @Column
     private String name;
 
-    @Column
-    @Enumerated(EnumType.STRING)
-    private ExtensionFieldType type;
+    @Transient
+    private ExtensionFieldType<?> type;
 
     @Column(name = "is_required")
     private boolean isRequired;
@@ -61,14 +54,22 @@ public class ExtensionFieldEntity implements Serializable {
         this.name = name;
     }
 
-    public ExtensionFieldType getType() {
+    public ExtensionFieldType<?> getType() {
         return type;
     }
 
-    public void setType(ExtensionFieldType type) {
+    public void setType(ExtensionFieldType<?> type) {
         this.type = type;
     }
 
+    private void setTypeAsString(String typeAsString){
+        type = ExtensionFieldType.valueOf(typeAsString);
+    }
+
+    @Column(name = "type")
+    private String getTypeAsString(){
+        return type.toString();
+    }
     public boolean isRequired() {
         return isRequired;
     }
@@ -114,6 +115,4 @@ public class ExtensionFieldEntity implements Serializable {
         }
         return true;
     }
-    
-    
 }

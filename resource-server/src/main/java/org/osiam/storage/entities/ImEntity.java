@@ -70,20 +70,6 @@ public class ImEntity extends MultiValueAttributeEntitySkeleton implements Child
         this.user = user;
     }
 
-    public MultiValuedAttribute toScim() {
-        return new MultiValuedAttribute.Builder().
-                setType(getType()).
-                setValue(getValue()).
-                build();
-    }
-
-    public static ImEntity fromScim(MultiValuedAttribute multiValuedAttribute) {
-        ImEntity imEntity = new ImEntity();
-        imEntity.setType(multiValuedAttribute.getType());
-        imEntity.setValue(String.valueOf(multiValuedAttribute.getValue()));
-        return imEntity;
-    }
-
     public enum CanonicalImTypes {
         aim, gtalk, icq, xmpp, msn, skype, qq, yahoo
     }

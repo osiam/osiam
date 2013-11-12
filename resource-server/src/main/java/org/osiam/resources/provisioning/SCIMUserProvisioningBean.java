@@ -30,6 +30,8 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import org.osiam.resources.converter.Converter;
+import org.osiam.resources.converter.UserConverter;
 import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.helper.ScimConverter;
 import org.osiam.resources.scim.Extension;
@@ -48,25 +50,30 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> implements SCIMUserProvisioning {
+public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserEntity> implements SCIMUserProvisioning {
 
     @Inject
-    private ScimConverter scimConverter;
+    private UserConverter userConverter;
 
     @Inject
     private UserDAO userDao;
-    
+
     @Inject
     private ExtensionDao extensionDao;
 
     @Override
-    protected GenericDAO getDao() {
+    protected GenericDAO<UserEntity> getDao() {
         return userDao;
+    }
+    
+    @Override
+    protected Converter<User, UserEntity> getConverter() {
+        return userConverter;
     }
 
     @Override
     public User create(User user) {
-        UserEntity userEntity = scimConverter.createFromScim(user);
+        UserEntity userEntity = userConverter.fromScim(user);
         userEntity.setId(UUID.randomUUID());
         try {
             userDao.create(userEntity);
@@ -78,14 +85,15 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
             throw new ResourceExistsException("The user with name " +
                     user.getUserName() + " already exists.", e);
         }
-        return userEntity.toScim();
+        return userConverter.toScim(userEntity);
     }
 
     @Override
     public User replace(String id, User user) {
-        UserEntity userEntity = scimConverter.createFromScim(user, id);
+        user = new User.Builder(user).setId(id).build();
+        UserEntity userEntity = userConverter.fromScim(user);
         userEntity.touch();
-        return userDao.update(userEntity).toScim();
+        return userConverter.toScim(userDao.update(userEntity));
     }
 
     @Override
@@ -93,37 +101,38 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
         List<User> users = new ArrayList<>();
         SCIMSearchResult<UserEntity> result = getDao().search(filter, sortBy, sortOrder, count, startIndex);
         for (Object g : result.getResources()) {
-            users.add(User.Builder.generateForOutput(((UserEntity) g).toScim()));
+            User scimResultUser = new UserConverter().toScim((UserEntity) g);
+            users.add(User.Builder.generateForOutput(scimResultUser));
         }
         return new SCIMSearchResult(users, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
     }
-    
+
     @Override
     public User update(String id, User user) {
         User updatedUser = super.update(id, user);
-        
+
         if (user.getAllExtensions().size() == 0) {
             return updatedUser;
         }
-        
+
         UserEntity userEntity = userDao.getById(id);
-        
+
         for (Entry<String, Extension> extensionEntry : user.getAllExtensions().entrySet()) {
             updateExtension(extensionEntry, userEntity);
         }
-        
-        return userEntity.toScim();
+
+        return userConverter.toScim(userEntity);
     }
 
     private void updateExtension(Entry<String, Extension> extensionEntry, UserEntity userEntity) {
         String urn = extensionEntry.getKey();
         Extension updatedExtension = extensionEntry.getValue();
         ExtensionEntity extensionEntity = extensionDao.getExtensionByUrn(urn);
-        
+
         for (ExtensionFieldEntity extensionField : extensionEntity.getFields()) {
             String fieldName = extensionField.getName();
             ExtensionFieldValueEntity extensionFieldValue = findExtensionFieldValue(extensionField, userEntity);
-            
+
             if(extensionFieldValue == null && !updatedExtension.isFieldPresent(fieldName)) {
                 continue;
             } else if (extensionFieldValue == null && updatedExtension.isFieldPresent(fieldName)) {
@@ -131,26 +140,25 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
             } else if (extensionFieldValue != null && !updatedExtension.isFieldPresent(fieldName)) {
                 continue;
             }
-            
+
             String newValue = updatedExtension.getField(fieldName, ExtensionFieldType.STRING);
-            
             if(newValue == null) {
                 continue;
             }
-            
+
             extensionFieldValue.setValue(newValue);
-            
+
             userEntity.addOrUpdateExtensionValue(extensionField, extensionFieldValue);
         }
     }
-    
+
     private ExtensionFieldValueEntity findExtensionFieldValue(ExtensionFieldEntity extensionField, UserEntity userEntity) {
         for (ExtensionFieldValueEntity extensionFieldValue : userEntity.getUserExtensions()) {
             if(extensionFieldValue.getExtensionField().equals(extensionField)) {
                 return extensionFieldValue;
             }
         }
-        
+
         return null;
     }
 

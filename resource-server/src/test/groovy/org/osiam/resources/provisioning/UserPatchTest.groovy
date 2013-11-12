@@ -4,22 +4,39 @@ import org.osiam.resources.helper.ScimConverter
 import org.osiam.resources.scim.*
 import org.osiam.storage.dao.UserDAO
 import org.osiam.storage.entities.*
+import org.osiam.resources.converter.UserConverter
+import org.osiam.resources.scim.Address
+import org.osiam.resources.scim.Meta
+import org.osiam.resources.scim.MultiValuedAttribute
+import org.osiam.resources.scim.Name
+import org.osiam.resources.scim.User
+import org.osiam.storage.dao.UserDAO
+import org.osiam.storage.entities.AddressEntity
+import org.osiam.storage.entities.EmailEntity
+import org.osiam.storage.entities.EntitlementsEntity
+import org.osiam.storage.entities.GroupEntity
+import org.osiam.storage.entities.ImEntity
+import org.osiam.storage.entities.NameEntity
+import org.osiam.storage.entities.PhoneNumberEntity
+import org.osiam.storage.entities.PhotoEntity
+import org.osiam.storage.entities.RolesEntity
+import org.osiam.storage.entities.UserEntity
+import org.osiam.storage.entities.X509CertificateEntity
+
 import spock.lang.Specification
 
 class UserPatchTest extends Specification {
     def userDao = Mock(UserDAO)
-    def scimConverter = Mock(ScimConverter)
-    SCIMUserProvisioningBean bean = new SCIMUserProvisioningBean(userDao: userDao, scimConverter: scimConverter)
+    def userConverter = Mock(UserConverter)
+    SCIMUserProvisioningBean bean = new SCIMUserProvisioningBean(userDao: userDao, userConverter: userConverter)
     def uId = UUID.randomUUID()
     def id = uId.toString()
     def entity = createEntityWithInternalId()
 
     def setup() {
         userDao.update(_) >> entity
-        scimConverter.createFromScim(_, _) >> entity
+        userConverter.fromScim(_) >> entity
     }
-
-
 
     def "should delete single attribute of a multi-value-attribute list"() {
         def emails = new ArrayList()

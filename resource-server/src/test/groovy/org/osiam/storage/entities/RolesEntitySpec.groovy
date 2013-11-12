@@ -47,27 +47,6 @@ class RolesEntitySpec extends Specification {
         rolesEntity.getValue() == "someValue"
     }
 
-    def "mapping to scim should be present"() {
-        when:
-        def multivalue = rolesEntity.toScim()
-
-        then:
-        multivalue.value == rolesEntity.value
-    }
-
-    def "mapping from scim should be present"() {
-        given:
-        MultiValuedAttribute attribute = new MultiValuedAttribute.Builder().
-                setValue("blaaaa").
-                build()
-
-        when:
-        def result = RolesEntity.fromScim(attribute)
-
-        then:
-        result != null
-    }
-
     def "setter and getter for id should be present"() {
         when:
         rolesEntity.setMultiValueId(1234)
