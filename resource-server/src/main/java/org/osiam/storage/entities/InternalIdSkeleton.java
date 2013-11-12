@@ -23,6 +23,7 @@
 
 package org.osiam.storage.entities;
 
+import com.google.common.collect.ImmutableSet;
 import org.osiam.resources.scim.MultiValuedAttribute;
 
 import javax.persistence.*;
@@ -100,7 +101,7 @@ public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute, 
     }
 
     public Set<GroupEntity> getGroups() {
-        return groups;
+        return ImmutableSet.copyOf(groups);
     }
 
     public void addToGroup(GroupEntity group) {

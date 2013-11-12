@@ -79,8 +79,8 @@ class GroupPatchTest extends Specification {
 
 
     private void addListsToEntity(GroupEntity entity) {
-        entity.getMembers().add(new GroupEntity(id: groupId, displayName: "group"))
-        entity.getMembers().add(new UserEntity(id: userId, displayName: "user"))
+        entity.addMember(new GroupEntity(id: groupId, displayName: "group"))
+        entity.addMember(new UserEntity(id: userId, displayName: "user"))
     }
 
 

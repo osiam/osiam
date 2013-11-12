@@ -55,19 +55,6 @@ class GroupEntitySpec extends Specification {
         groupEntity.getDisplayName() == "Tour Guides"
     }
 
-    def "setter and getter for the member should be present"() {
-        given:
-        def memberEntity = Mock(InternalIdSkeleton)
-        def members = [memberEntity] as Set<InternalIdSkeleton>
-
-
-        when:
-        groupEntity.setMembers(members)
-
-        then:
-        groupEntity.getMembers() == members
-    }
-
     def "mapping to scim should be present"() {
         groupEntity.setId(UUID.randomUUID())
         when:
@@ -92,21 +79,6 @@ class GroupEntitySpec extends Specification {
         then:
         result != null
         result.getDisplayName() == "displayname"
-    }
-
-    def "members from scim should return null when toscim"() {
-        def members = new HashSet()
-        members.add(new MultiValuedAttribute.Builder().
-                setValue(UUID.randomUUID().toString()).
-                setDisplay("display").
-                build())
-        given:
-        def group = new Group.Builder().setDisplayName("displayname").setMembers(members).setId(UUID.randomUUID().toString()).build()
-        when:
-        def result = GroupEntity.fromScim(group)
-        then:
-        result != null
-        !result.members.first().toScim()
     }
 
     def "Group entity should set resourceType to Group"() {

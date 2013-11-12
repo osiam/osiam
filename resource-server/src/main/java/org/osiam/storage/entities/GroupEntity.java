@@ -23,6 +23,7 @@
 
 package org.osiam.storage.entities;
 
+import com.google.common.collect.ImmutableSet;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.MultiValuedAttribute;
 
@@ -98,7 +99,7 @@ public class GroupEntity extends InternalIdSkeleton {
     }
 
     public Set<InternalIdSkeleton> getMembers() {
-        return members;
+        return ImmutableSet.copyOf(members);
     }
 
     public void addMember(InternalIdSkeleton member) {
