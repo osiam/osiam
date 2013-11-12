@@ -166,16 +166,14 @@ class GroupPatchTest extends Specification {
     }
 
 
-
-    @Ignore("This test is broken and should probably be deleted")
     def "should ignore when trying to delete required parameters"() {
         given:
         def meta = new Meta.Builder(null, null).setAttributes(["displayName"] as Set).build()
-        User user = new User.Builder().setMeta(meta).build()
+        Group group = new Group.Builder().setMeta(meta).build()
         def entity = createEntityWithInternalId()
 
         when:
-        bean.update(id, user)
+        bean.update(id, group)
         then:
         1 * groupDAO.getById(id) >> entity
         entity.displayName == "master of the universe"
