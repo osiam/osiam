@@ -31,15 +31,6 @@ class ExtensionFieldEntitySpec extends Specification {
         extField.getName() == name
     }
 
-    def "setter and getter for the type should be present"(){
-        def type = ExtensionFieldType.STRING
-        when:
-        extField.setType(type)
-
-        then:
-        extField.getType() == type
-    }
-
     def "setter and getter for the isRequired should be present"(){
 
         when:

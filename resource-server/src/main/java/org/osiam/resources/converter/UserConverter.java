@@ -1,79 +1,169 @@
 package org.osiam.resources.converter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.inject.Inject;
+import javax.persistence.NoResultException;
 
 import org.osiam.resources.scim.Address;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.MultiValuedAttribute;
-import org.osiam.resources.scim.Name;
 import org.osiam.resources.scim.User;
+import org.osiam.storage.dao.UserDAO;
 import org.osiam.storage.entities.AddressEntity;
 import org.osiam.storage.entities.EmailEntity;
 import org.osiam.storage.entities.EntitlementsEntity;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.ImEntity;
-import org.osiam.storage.entities.NameEntity;
 import org.osiam.storage.entities.PhoneNumberEntity;
 import org.osiam.storage.entities.PhotoEntity;
 import org.osiam.storage.entities.RolesEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.entities.X509CertificateEntity;
-import org.osiam.storage.entities.extension.ExtensionEntity;
+import org.osiam.storage.entities.extension.ExtensionFieldValueEntity;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserConverter implements Converter<User, UserEntity> {
 
     @Inject
-    private Converter<MultiValuedAttribute, X509CertificateEntity> x509CertificateConverter;
+    private X509CertificateConverter x509CertificateConverter;
     @Inject
-    private Converter<MultiValuedAttribute, RolesEntity> roleConverter;
+    private RoleConverter roleConverter;
     @Inject
-    private Converter<MultiValuedAttribute, PhotoEntity> photoConverter;
+    private PhotoConverter photoConverter;
     @Inject
-    private Converter<MultiValuedAttribute, PhoneNumberEntity> phoneNumberConverter;
+    private PhoneNumberConverter phoneNumberConverter;
     @Inject
-    private Converter<MultiValuedAttribute, ImEntity> imConverter;
+    private ImConverter imConverter;
     @Inject
-    private Converter<MultiValuedAttribute, EntitlementsEntity> entitlementConverter;
+    private EntitlementConverter entitlementConverter;
     @Inject
-    private Converter<MultiValuedAttribute, EmailEntity> emailConverter;
+    private EmailConverter emailConverter;
     @Inject
-    private Converter<Address, AddressEntity> addressConverter;
+    private AddressConverter addressConverter;
     @Inject
-    private Converter<Name, NameEntity> nameConverter;
+    private NameConverter nameConverter;
     @Inject
-    private Converter<Extension, ExtensionEntity> extensionConverter;
-
+    private ExtensionConverter extensionConverter;
+    @Inject
+    private MetaConverter metaConverter;
+    @Inject
+    private UserDAO userDao;
+    
     @Override
     public UserEntity fromScim(User scim) {
-        // TODO Auto-generated method stub
-        return null;
+        if(scim == null){
+            return null;
+        }
+        UserEntity userEntity = new UserEntity();
+        try {
+            UserEntity existingEntity = userDao.getById(scim.getId());
+            userEntity.setInternalId(existingEntity.getInternalId());
+            userEntity.setMeta(existingEntity.getMeta());
+            userEntity.setPassword(existingEntity.getPassword());
+        } catch (NoResultException ex) {
+            // Just It's a new one.
+        }
+        userEntity.setId(UUID.fromString(scim.getId()));
+        return copyUserValues(scim, userEntity);
+       
+    }
+    
+    private UserEntity copyUserValues(User user, UserEntity userEntity) {
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            userEntity.setPassword(user.getPassword());
+        }
+
+        userEntity.setActive(user.isActive());
+        userEntity.setDisplayName(user.getDisplayName());
+        userEntity.setNickName(user.getNickName());
+        userEntity.setExternalId(user.getExternalId() == null ? null : user.getExternalId().equals("") ? null : user.getExternalId()); //Due to uniqueness in databases
+        userEntity.setPreferredLanguage(user.getPreferredLanguage());
+        userEntity.setLocale(user.getLocale());
+        userEntity.setProfileUrl(user.getProfileUrl());
+        userEntity.setTimezone(user.getTimezone());
+        userEntity.setTitle(user.getTitle());
+        userEntity.setUserName(user.getUserName());
+        userEntity.setUserType(user.getUserType());
+        
+        userEntity.setName(nameConverter.fromScim(user.getName()));
+        
+        userEntity.setAddresses(convertMultiValue(addressConverter, new HashSet<>(user.getAddresses())));
+        userEntity.setEmails(convertMultiValue(emailConverter, new HashSet<>(user.getEmails())));
+        userEntity.setEntitlements(convertMultiValue(entitlementConverter, new HashSet<>(user.getEntitlements())));
+        userEntity.setIms(convertMultiValue(imConverter, new HashSet<>(user.getIms())));
+        userEntity.setPhoneNumbers(convertMultiValue(phoneNumberConverter, new HashSet<>(user.getPhoneNumbers())));
+        userEntity.setPhotos(convertMultiValue(photoConverter, new HashSet<>(user.getPhotos())));
+        userEntity.setRoles(convertMultiValue(roleConverter, new HashSet<>(user.getRoles())));
+        userEntity.setX509Certificates(convertMultiValue(x509CertificateConverter, new HashSet<>(user.getX509Certificates())));
+        userEntity.setUserExtensions(convertExtension(new HashSet<>(user.getAllExtensions().values())));
+                
+        return userEntity;
     }
 
+    private Set<ExtensionFieldValueEntity> convertExtension(Set<Extension> extensions){
+        Set<ExtensionFieldValueEntity> entities = extensionConverter.fromScim(extensions);
+        return entities;
+    }
+    
+    private <S, E> Set<E> convertMultiValue(Converter<S, E> converter, Set<S> multiValues){
+        Set<E> entities = new HashSet<>();
+        
+        for (S multiValue : multiValues) {
+            E entity = converter.fromScim(multiValue);
+            entities.add(entity);
+        }
+        return entities;
+    }
+    
     @Override
     public User toScim(UserEntity entity) {
-        User.Builder userBuilder = new User.Builder(entity.getUserName()).setActive(entity.getActive())
-                .setDisplayName(entity.getDisplayName()).setLocale(entity.getLocale())
+        if(entity == null){
+            return null;
+        }
+        User.Builder userBuilder = new User.Builder(entity.getUserName())
+                .setActive(entity.getActive())
+                .setDisplayName(entity.getDisplayName())
+                .setLocale(entity.getLocale())
                 .setName(entity.getName() != null ? nameConverter.toScim(entity.getName()) : null)
-                .setNickName(entity.getNickName()).setPassword(entity.getPassword())
-                .setPreferredLanguage(entity.getPreferredLanguage()).setProfileUrl(entity.getProfileUrl())
-                .setTimezone(entity.getTimezone()).setTitle(entity.getTitle()).setUserType(entity.getUserType())
-                .setExternalId(entity.getExternalId()).setId(entity.getId().toString())
-                .setMeta(entity.getMeta().toScim()).setAddresses(entityAddressToScim(entity.getAddresses()))
+                .setNickName(entity.getNickName())
+                .setPassword(entity.getPassword())
+                .setPreferredLanguage(entity.getPreferredLanguage())
+                .setProfileUrl(entity.getProfileUrl())
+                .setTimezone(entity.getTimezone())
+                .setTitle(entity.getTitle())
+                .setUserType(entity.getUserType())
+                .setExternalId(entity.getExternalId())
+                .setId(entity.getId().toString())
+                .setMeta(metaConverter.toScim(entity.getMeta()))
+                .setAddresses(entityAddressToScim(entity.getAddresses()))
                 .setEmails(entityEmailToScim(entity.getEmails()))
                 .setEntitlements(entityEntitlementsToScim(entity.getEntitlements()))
-                .setGroups(entityGroupsToScim(entity.getGroups())).setIms(entityImsToScim(entity.getIms()))
+                .setGroups(entityGroupsToScim(entity.getGroups()))
+                .setIms(entityImsToScim(entity.getIms()))
                 .setPhoneNumbers(entityPhonenumbersToScim(entity.getPhoneNumbers()))
-                .setPhotos(entityPhotosToScim(entity.getPhotos())).setRoles(entityRolesToScim(entity.getRoles()))
+                .setPhotos(entityPhotosToScim(entity.getPhotos()))
+                .setRoles(entityRolesToScim(entity.getRoles()))
                 .setX509Certificates(entityX509CertificatesToScim(entity.getX509Certificates()));
+
+        addExtensionField(userBuilder, entity.getUserExtensions());
 
         return userBuilder.build();
 
+    }
+
+    private void addExtensionField(User.Builder userBuilder, Set<ExtensionFieldValueEntity> extensionEntities) {
+
+        Set<Extension> extensions = extensionConverter.toScim(extensionEntities);
+
+        for (Extension extension : extensions) {
+            userBuilder.addExtension(extension.getUrn(), extension);
+        }
     }
 
     private List<Address> entityAddressToScim(Set<AddressEntity> addressEntities) {
@@ -103,7 +193,11 @@ public class UserConverter implements Converter<User, UserEntity> {
     private List<MultiValuedAttribute> entityGroupsToScim(Set<GroupEntity> groupEntities) {
         List<MultiValuedAttribute> groupsForMapping = new ArrayList<>();
         for (GroupEntity groupEntity : groupEntities) {
-            groupsForMapping.add(groupEntity.toMultiValueScim());
+            MultiValuedAttribute multiValue = new MultiValuedAttribute.Builder()
+                    .setDisplay(groupEntity.getDisplayName())
+                    .setValue(groupEntity.getId().toString())
+                    .build();
+            groupsForMapping.add(multiValue);
         }
         return groupsForMapping;
     }

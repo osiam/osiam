@@ -54,9 +54,6 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
 
     @Inject
     private UserConverter userConverter;
-    
-    @Inject
-    private ScimConverter scimConverter;
 
     @Inject
     private UserDAO userDao;
@@ -76,7 +73,7 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
 
     @Override
     public User create(User user) {
-        UserEntity userEntity = scimConverter.createFromScim(user);
+        UserEntity userEntity = userConverter.fromScim(user);
         userEntity.setId(UUID.randomUUID());
         try {
             userDao.create(userEntity);
@@ -93,7 +90,8 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
 
     @Override
     public User replace(String id, User user) {
-        UserEntity userEntity = scimConverter.createFromScim(user, id);
+        user = new User.Builder(user).setId(id).build();
+        UserEntity userEntity = userConverter.fromScim(user);
         userEntity.touch();
         return userConverter.toScim(userDao.update(userEntity));
     }

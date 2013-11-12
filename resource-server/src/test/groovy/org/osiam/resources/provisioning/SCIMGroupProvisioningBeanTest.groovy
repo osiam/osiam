@@ -23,22 +23,24 @@
 
 package org.osiam.resources.provisioning
 
-import org.osiam.resources.scim.SCIMSearchResult
-import org.osiam.storage.entities.GroupEntity
+import org.osiam.resources.converter.GroupConverter
 import org.osiam.resources.exceptions.ResourceExistsException
-import org.osiam.storage.dao.GroupDAO
-import org.springframework.dao.DataIntegrityViolationException
 import org.osiam.resources.scim.Group
+import org.osiam.resources.scim.SCIMSearchResult
+import org.osiam.storage.dao.GroupDAO
+import org.osiam.storage.entities.GroupEntity
+import org.springframework.dao.DataIntegrityViolationException
+
 import spock.lang.Specification
 
 class SCIMGroupProvisioningBeanTest extends Specification {
 
     def groupDao = Mock(GroupDAO)
-    def underTest = new SCIMGroupProvisioningBean(groupDAO: groupDao)
+    private GroupConverter groupConverter = Mock(GroupConverter)
+    def underTest = new SCIMGroupProvisioningBean(groupDAO: groupDao, groupConverter : groupConverter)
     def group = Mock(Group)
     def entity = Mock(GroupEntity)
-
-
+    
     def "should return with id enriched group on create"(){
         when:
         def result = underTest.create(group)
@@ -72,7 +74,7 @@ class SCIMGroupProvisioningBeanTest extends Specification {
         def result = underTest.getById("id")
         then:
         1 * groupDao.getById("id") >> entity
-        1 * entity.toScim() >> group
+        1 * groupConverter.toScim(entity) >> group
         result == group
     }
 
