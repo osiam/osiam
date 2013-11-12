@@ -1,25 +1,10 @@
 package org.osiam.resources.provisioning
 
 import org.osiam.resources.helper.ScimConverter
+import org.osiam.resources.scim.*
 import org.osiam.storage.dao.UserDAO
-import org.osiam.storage.entities.AddressEntity
-import org.osiam.storage.entities.EmailEntity
-import org.osiam.storage.entities.EntitlementsEntity
-import org.osiam.storage.entities.GroupEntity
-import org.osiam.storage.entities.ImEntity
-import org.osiam.storage.entities.NameEntity
-import org.osiam.storage.entities.PhoneNumberEntity
-import org.osiam.storage.entities.PhotoEntity
-import org.osiam.storage.entities.RolesEntity
-import org.osiam.storage.entities.UserEntity
-import org.osiam.storage.entities.X509CertificateEntity
-import org.osiam.resources.scim.Address
-import org.osiam.resources.scim.Meta
-import org.osiam.resources.scim.MultiValuedAttribute
-import org.osiam.resources.scim.Name
-import org.osiam.resources.scim.User
+import org.osiam.storage.entities.*
 import spock.lang.Specification
-
 
 class UserPatchTest extends Specification {
     def userDao = Mock(UserDAO)
@@ -29,9 +14,9 @@ class UserPatchTest extends Specification {
     def id = uId.toString()
     def entity = createEntityWithInternalId()
 
-    def setup(){
+    def setup() {
         userDao.update(_) >> entity
-        scimConverter.createFromScim(_,_) >> entity
+        scimConverter.createFromScim(_, _) >> entity
     }
 
 
@@ -406,7 +391,7 @@ class UserPatchTest extends Specification {
 
 
         entity.setUserName("username")
-        entity.groups.add(new GroupEntity(id: UUID.randomUUID()))
+        entity.addToGroup(new GroupEntity(id: UUID.randomUUID()))
 
         when:
         bean.update(id, user)
