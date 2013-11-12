@@ -5,11 +5,11 @@ import org.osiam.storage.entities.AddressEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AddressConverter implements Converter<Address, AddressEntity>{
+public class AddressConverter implements Converter<Address, AddressEntity> {
 
     @Override
     public AddressEntity fromScim(Address scim) {
-        if(scim == null){
+        if (scim == null) {
             return null;
         }
         AddressEntity addressEntity = new AddressEntity();
@@ -21,13 +21,12 @@ public class AddressConverter implements Converter<Address, AddressEntity>{
         addressEntity.setRegion(scim.getRegion());
         addressEntity.setStreetAddress(scim.getStreetAddress());
         addressEntity.setType(scim.getType());
-        addressEntity.setPrimary(scim.isPrimary());
         return addressEntity;
     }
 
     @Override
     public Address toScim(AddressEntity entity) {
-        if(entity == null){
+        if (entity == null) {
             return null;
         }
         return new Address.Builder().

@@ -23,8 +23,6 @@
 
 package org.osiam.storage.entities
 
-import org.osiam.resources.scim.Address
-import spock.lang.Ignore
 import spock.lang.Specification
 
 class AddressEntitySpec extends Specification {
@@ -120,21 +118,4 @@ class AddressEntitySpec extends Specification {
         addressEntity.getUser() == userEntity
     }
 
-    @Ignore('Temporarily ignored because of merge in propgress')
-    def "should set primary to false when null"() {
-        given:
-        Address address = new Address.Builder().
-                setCountry("country").
-                setFormatted("formatted").
-                setLocality("locality").
-                setPostalCode("123456").
-                setRegion("region").
-                setStreetAddress("streetAddress").
-                build()
-        when:
-        def result = AddressEntity.fromScim(address)
-
-        then:
-        !result.isPrimary()
-    }
 }
