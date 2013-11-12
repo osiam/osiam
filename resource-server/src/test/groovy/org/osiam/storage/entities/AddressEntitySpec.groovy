@@ -121,24 +121,6 @@ class AddressEntitySpec extends Specification {
     }
 
     @Ignore('Temporarily ignored because of merge in propgress')
-    def "mapping from scim should be possible"() {
-        given:
-        Address address = new Address.Builder().
-                setCountry("country").
-                setFormatted("formatted").
-                setLocality("locality").
-                setPostalCode("123456").
-                setRegion("region").
-                setStreetAddress("streetAddress").setPrimary(true).
-                build()
-        when:
-        def result = AddressEntity.fromScim(address)
-
-        then:
-        result != null
-    }
-
-    @Ignore('Temporarily ignored because of merge in propgress')
     def "should set primary to false when null"() {
         given:
         Address address = new Address.Builder().
