@@ -1,7 +1,6 @@
 package org.osiam.resources.converter
 
-import javax.persistence.NoResultException
-
+import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.resources.scim.Address
 import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.MultiValuedAttribute
@@ -122,7 +121,7 @@ class UserConverterSpec extends Specification {
         1 * emailConverter.fromScim(_) >> ([] as Set<>)
         1 * addressConverter.fromScim(_) >> ([] as Set<>)
         1 * nameConverter.fromScim(_) >> new NameEntity()
-        1 * userDao.getById(_) >> {throw new NoResultException()}
+        1 * userDao.getById(_) >> {throw new ResourceNotFoundException('')}
         
         userEntity.id == uuid
         userEntity.active == true

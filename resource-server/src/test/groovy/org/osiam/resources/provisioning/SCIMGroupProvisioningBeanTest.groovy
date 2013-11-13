@@ -27,6 +27,7 @@ import javax.persistence.NoResultException
 
 import org.osiam.resources.converter.GroupConverter
 import org.osiam.resources.exceptions.ResourceExistsException
+import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.resources.scim.Group
 import org.osiam.resources.scim.SCIMSearchResult
 import org.osiam.storage.dao.GroupDAO
@@ -34,7 +35,7 @@ import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.MetaEntity
 import org.springframework.dao.DataIntegrityViolationException
 
-import spock.lang.Ignore;
+import spock.lang.Ignore
 import spock.lang.Specification
 
 class SCIMGroupProvisioningBeanTest extends Specification {
@@ -47,8 +48,9 @@ class SCIMGroupProvisioningBeanTest extends Specification {
     
     def "should return with id enriched group on create"(){
         given:
-        groupDao.getById(_) >> {throw new NoResultException()}
+        groupDao.getById(_) >> {throw new ResourceNotFoundException('')}
         group.getId() >> UUID.randomUUID().toString()
+        group.getMembers() >> Collections.emptySet()
         
         when:
         def result = underTest.create(group)
@@ -61,8 +63,9 @@ class SCIMGroupProvisioningBeanTest extends Specification {
     
     def "should call dao create on create"(){
         given:
-        groupDao.getById(_) >> {throw new NoResultException()}
+        groupDao.getById(_) >> {throw new ResourceNotFoundException('')}
         group.getId() >> UUID.randomUUID().toString()
+        group.getMembers() >> Collections.emptySet()
         
         when:
         underTest.create(group)
@@ -73,8 +76,9 @@ class SCIMGroupProvisioningBeanTest extends Specification {
 
     def "should wrap exceptions to org.osiam.resources.exceptions.ResourceExistsException on create"(){
         given:
-        groupDao.getById(_) >> {throw new NoResultException()}
+        groupDao.getById(_) >> {throw new ResourceNotFoundException('')}
         group.getId() >> UUID.randomUUID().toString()
+        group.getMembers() >> Collections.emptySet()
         groupDao.create(_) >> {
             throw new DataIntegrityViolationException("moep")
         }
