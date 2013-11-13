@@ -1,14 +1,12 @@
 package org.osiam.resources.converter
 
-import javax.persistence.NoResultException
-
-import org.osiam.resources.exceptions.ResourceNotFoundException;
+import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.resources.scim.Group
-import org.osiam.resources.scim.MultiValuedAttribute;
+import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.storage.dao.GroupDAO
 import org.osiam.storage.dao.UserDAO
 import org.osiam.storage.entities.GroupEntity
-import org.osiam.storage.entities.MultiValueAttributeEntitySkeleton;
+import org.osiam.storage.entities.MetaEntity
 import org.osiam.storage.entities.UserEntity
 
 import spock.lang.Specification
@@ -73,6 +71,19 @@ class GroupConverterSpec extends Specification {
         GroupEntity.getMembers().size() == 0
     }
     
+    def 'converting group entity with member to scim works'() {
+        given:
+        def uuid = UUID.randomUUID()
+        GroupEntity groupEntity = getFilledGroupEntityWithMember(uuid, 'location')
+        
+        when:
+        Group group = groupConverter.toScim(groupEntity)
+        
+        then:
+        group.getMembers().size() == 1
+        group.getMembers().first().getReference() == 'location'
+    }
+    
     def 'converting group entity to scim works as expected'() {
         given:
         def uuid = UUID.randomUUID()
@@ -122,6 +133,22 @@ class GroupConverterSpec extends Specification {
         groupEntity.setId(uuid)
         
         return groupEntity
+    }
+    
+    def GroupEntity getFilledGroupEntityWithMember(def uuid, def location) {
+        GroupEntity group = getFilledGroupEntity(uuid)
+        
+        MetaEntity meta = new MetaEntity(Calendar.instance)
+        meta.setLocation(location)
+        
+        UserEntity member = new UserEntity(
+                id: UUID.fromString(memberUuidFixtures['user']),
+                displayName: 'user',
+                meta: meta)
+        
+        group.addMember(member)
+        
+        return group
     }
     
     def Group getFilledGroup(UUID uuid){

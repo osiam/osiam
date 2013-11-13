@@ -1,12 +1,14 @@
 package org.osiam.resources.converter;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.inject.Inject;
-import javax.persistence.NoResultException;
 
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.scim.Group;
+import org.osiam.resources.scim.MemberRef;
 import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.storage.dao.GroupDAO;
 import org.osiam.storage.dao.UserDAO;
@@ -69,16 +71,27 @@ public class GroupConverter implements Converter<Group, GroupEntity> {
     }
 
     @Override
-    public Group toScim(GroupEntity entity) {     
-        if(entity == null){
+    public Group toScim(GroupEntity group) {     
+        if(group == null){
             return null;
         }
         Group.Builder groupBuilder = new Group.Builder()
-                .setDisplayName(entity.getDisplayName())
-                .setId(entity.getId().toString())
-                .setMeta(entity.getMeta().toScim())
-                .setExternalId(entity.getExternalId());
+                .setDisplayName(group.getDisplayName())
+                .setId(group.getId().toString())
+                .setMeta(group.getMeta().toScim())
+                .setExternalId(group.getExternalId());
 
+        Set<MemberRef> members = new HashSet<>();
+        for (InternalIdSkeleton member : group.getMembers()) {
+            MemberRef memberRef = new MemberRef.Builder()
+                    .setValue(member.getId().toString())
+                    .setReference(member.getMeta().getLocation())
+                    .setDisplay(member.getDisplayName() != null ? member.getDisplayName() : null)
+                    .build();
+            members.add(memberRef);
+        }
+        groupBuilder.setMembers(members);
+        
         return groupBuilder.build();
     }
 }
