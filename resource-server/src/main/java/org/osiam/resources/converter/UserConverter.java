@@ -1,31 +1,17 @@
 package org.osiam.resources.converter;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
-import javax.inject.Inject;
-
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.scim.Address;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.resources.scim.User;
 import org.osiam.storage.dao.UserDAO;
-import org.osiam.storage.entities.AddressEntity;
-import org.osiam.storage.entities.EmailEntity;
-import org.osiam.storage.entities.EntitlementsEntity;
-import org.osiam.storage.entities.GroupEntity;
-import org.osiam.storage.entities.ImEntity;
-import org.osiam.storage.entities.PhoneNumberEntity;
-import org.osiam.storage.entities.PhotoEntity;
-import org.osiam.storage.entities.RolesEntity;
-import org.osiam.storage.entities.UserEntity;
-import org.osiam.storage.entities.X509CertificateEntity;
+import org.osiam.storage.entities.*;
 import org.osiam.storage.entities.extension.ExtensionFieldValueEntity;
 import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
+import java.util.*;
 
 @Service
 public class UserConverter implements Converter<User, UserEntity> {
@@ -103,14 +89,9 @@ public class UserConverter implements Converter<User, UserEntity> {
         userEntity.setRoles(convertMultiValue(roleConverter, new HashSet<>(user.getRoles())));
         userEntity.setX509Certificates(convertMultiValue(x509CertificateConverter,
                 new HashSet<>(user.getX509Certificates())));
-        userEntity.setUserExtensions(convertExtension(new HashSet<>(user.getAllExtensions().values())));
+        userEntity.setUserExtensions(extensionConverter.scimExtensionsToEntity(user, userEntity));
 
         return userEntity;
-    }
-
-    private Set<ExtensionFieldValueEntity> convertExtension(Set<Extension> extensions) {
-        Set<ExtensionFieldValueEntity> entities = extensionConverter.fromScim(extensions);
-        return entities;
     }
 
     private <S, E> Set<E> convertMultiValue(Converter<S, E> converter, Set<S> multiValues) {
