@@ -244,38 +244,4 @@ class GroupPatchTest extends Specification {
         1 * groupDAO.update(entity) >> entity
 
     }
-
-    def "should set Meta.lastModified to actual date on update resource"() {
-        given:
-        def group = new Group.Builder().setDisplayName("hallo").build()
-        def entity = createEntityWithInternalId()
-
-        def lastModified = entity.getMeta().getLastModified()
-
-        when:
-        bean.update(id, group)
-
-        then:
-        1 * groupDAO.getById(id) >> entity
-        1 * groupDAO.update(entity) >> entity
-        entity.displayName == "hallo"
-        lastModified <= entity.getMeta().getLastModified()
-    }
-
-    def "should set Meta.lastModified to actual date on replace resource"() {
-        given:
-        def group = new Group.Builder().setDisplayName("hallo").build()
-        def entity = createEntityWithInternalId()
-
-        def lastModified = entity.getMeta().getLastModified()
-
-        when:
-        bean.replace(id, group)
-
-        then:
-        1 * groupDAO.getById(id) >> entity
-        1 * groupDAO.update(entity) >> entity
-        entity.displayName == "hallo"
-        lastModified <= entity.getMeta().getLastModified()
-    }
 }

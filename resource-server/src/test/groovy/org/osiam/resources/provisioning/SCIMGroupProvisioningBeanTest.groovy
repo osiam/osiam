@@ -90,20 +90,6 @@ class SCIMGroupProvisioningBeanTest extends Specification {
         e.message == "displayName already exists."
     }
 
-    @Ignore('until mocking of entity is gone')
-    def "should call dao get on get"(){
-        given:
-        entity.getId() >> UUID.randomUUID()
-        entity.getMeta() >> new MetaEntity(Calendar.getInstance())
-        
-        when:
-        def result = underTest.getById("id")
-        
-        then:
-        1 * groupDao.getById("id") >> entity
-        result == group
-    }
-
     def "should call dao delete on delete"(){
         when:
         underTest.delete("id")
@@ -113,13 +99,15 @@ class SCIMGroupProvisioningBeanTest extends Specification {
 
     }
 
-    @Ignore('until mocking of entity is gone')
     def "should call dao search on search"() {
         given:
         def scimSearchResultMock = Mock(SCIMSearchResult)
         groupDao.search("anyFilter", "userName", "ascending", 100, 1) >> scimSearchResultMock
 
-        def groupEntityMock = Mock(GroupEntity)
+        GroupEntity groupEntityMock = Mock()
+        groupEntityMock.getId() >> UUID.randomUUID()
+        groupEntityMock.getMeta() >> new MetaEntity()
+        groupEntityMock.getMembers() >> ([] as Set)
         def userList = [groupEntityMock] as List
         scimSearchResultMock.getResources() >> userList
         scimSearchResultMock.getTotalResults() >> 1000.toLong()

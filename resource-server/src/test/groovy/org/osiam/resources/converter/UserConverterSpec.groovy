@@ -3,6 +3,7 @@ package org.osiam.resources.converter
 import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.resources.scim.Address
 import org.osiam.resources.scim.Extension
+import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.Name
 import org.osiam.resources.scim.User
@@ -12,6 +13,7 @@ import org.osiam.storage.entities.EmailEntity
 import org.osiam.storage.entities.EntitlementsEntity
 import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.ImEntity
+import org.osiam.storage.entities.MetaEntity;
 import org.osiam.storage.entities.NameEntity
 import org.osiam.storage.entities.PhoneNumberEntity
 import org.osiam.storage.entities.PhotoEntity
@@ -20,7 +22,6 @@ import org.osiam.storage.entities.UserEntity
 import org.osiam.storage.entities.X509CertificateEntity
 import org.osiam.storage.entities.extension.ExtensionFieldValueEntity
 
-import spock.lang.Ignore
 import spock.lang.Specification
 
 class UserConverterSpec extends Specification {
@@ -38,17 +39,19 @@ class UserConverterSpec extends Specification {
                     userType : 'userType',
                     active : true]
 
-    X509CertificateConverter x509CertificateConverter = Mock(X509CertificateConverter)
-    RoleConverter roleConverter = Mock(RoleConverter)
-    PhotoConverter photoConverter = Mock(PhotoConverter)
-    PhoneNumberConverter phoneNumberConverter = Mock(PhoneNumberConverter)
-    ImConverter imConverter = Mock(ImConverter)
-    EntitlementConverter entitlementConverter =  Mock(EntitlementConverter)
-    EmailConverter emailConverter = Mock(EmailConverter)
-    AddressConverter addressConverter = Mock(AddressConverter)
-    NameConverter nameConverter = Mock(NameConverter)
-    ExtensionConverter extensionConverter = Mock(ExtensionConverter)
-    UserDAO userDao = Mock(UserDAO)
+    X509CertificateConverter x509CertificateConverter = Mock()
+    RoleConverter roleConverter = Mock()
+    PhotoConverter photoConverter = Mock()
+    PhoneNumberConverter phoneNumberConverter = Mock()
+    ImConverter imConverter = Mock()
+    EntitlementConverter entitlementConverter =  Mock()
+    EmailConverter emailConverter = Mock()
+    AddressConverter addressConverter = Mock()
+    NameConverter nameConverter = Mock()
+    ExtensionConverter extensionConverter = Mock()
+    MetaConverter metaConverter = Mock()
+    
+    UserDAO userDao = Mock()
     
     UserConverter userConverter = new UserConverter(
         x509CertificateConverter: x509CertificateConverter,
@@ -61,10 +64,10 @@ class UserConverterSpec extends Specification {
         addressConverter: addressConverter,
         nameConverter: nameConverter,
         extensionConverter: extensionConverter,
+        metaConverter: metaConverter,
         userDao: userDao
     )
 
-    @Ignore('Temporarily ignored because of merge in propgress')
     def 'converting user entity to scim works as expected'() {
         given:
         def uuid = UUID.randomUUID()
@@ -85,6 +88,7 @@ class UserConverterSpec extends Specification {
         1 * emailConverter.toScim(_) >> ([] as Set<>)
         1 * addressConverter.toScim(_) >> ([] as Set<>)
         1 * nameConverter.toScim(_) >> (new Name())
+        1 * metaConverter.toScim(_) >> (new Meta())
         
         user.id == uuid.toString()
         user.isActive()
@@ -174,7 +178,7 @@ class UserConverterSpec extends Specification {
         userEntity.setAddresses([Mock(AddressEntity)] as Set<AddressEntity>)
         userEntity.setEmails([Mock(EmailEntity)] as Set<EmailEntity>)
         userEntity.setEntitlements([Mock(EntitlementsEntity)] as Set<EntitlementsEntity>)
-        userEntity.setGroups([groupEntity] as Set<GroupEntity>)
+        userEntity.addToGroup(groupEntity)
         userEntity.setIms([Mock(ImEntity)] as Set<ImEntity>)
         userEntity.setName(Mock(NameEntity))
         userEntity.setPhoneNumbers([Mock(PhoneNumberEntity)] as Set<PhoneNumberEntity>)
@@ -182,6 +186,7 @@ class UserConverterSpec extends Specification {
         userEntity.setRoles([Mock(RolesEntity)] as Set<RolesEntity>)
         userEntity.setX509Certificates([Mock(X509CertificateEntity)] as Set<X509CertificateEntity>)
         userEntity.setUserExtensions([Mock(ExtensionFieldValueEntity)] as Set<ExtensionFieldValueEntity>)
+        userEntity.setMeta(Mock(MetaEntity))
         
         return userEntity
     }

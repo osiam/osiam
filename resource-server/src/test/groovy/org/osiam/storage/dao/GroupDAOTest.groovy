@@ -56,16 +56,6 @@ class GroupDAOTest extends Specification {
         underTest.setEm(em)
     }
 
-    def "should abort when a given member does not exists"() {
-        given:
-        def entity = new GroupEntity(members: [internalidSkeleton] as Set)
-        when:
-        underTest.create(entity)
-        then:
-        1 * query.getResultList() >> []
-        thrown(ResourceNotFoundException)
-    }
-
     def "should persist on empty members "() {
         given:
         def entity = new GroupEntity()
@@ -75,24 +65,12 @@ class GroupDAOTest extends Specification {
         1 * em.persist(entity)
     }
 
-    def "should persist with known members "() {
-        given:
-        def entity = new GroupEntity(members: [internalidSkeleton] as Set)
-        when:
-        underTest.create(entity)
-        then:
-        1 * query.getResultList() >> [internalidSkeleton]
-        1 * em.persist(entity)
-        entity.members.size() == 1
-    }
-
     def "should get a group"(){
         when:
         def result = underTest.getById(id)
         then:
         1 * query.getResultList() >> [internalidSkeleton]
         result == internalidSkeleton
-
     }
 
     def "should wrap class cast exception to ResourceNotFoundException"(){

@@ -23,121 +23,80 @@
 
 package org.osiam.resources.provisioning
 
-import javax.persistence.EntityManager
-import javax.persistence.Query
-
-import org.osiam.resources.converter.Converter
 import org.osiam.resources.converter.GroupConverter
 import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.resources.scim.Group
+import org.osiam.resources.scim.MemberRef
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.storage.dao.GroupDAO
 import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.UserEntity
+
 import spock.lang.Ignore
 import spock.lang.Specification
 
-import spock.lang.Ignore;
-import spock.lang.Specification
-
 class GroupPutTest extends Specification {
-    EntityManager em = Mock(EntityManager)
-    GroupDAO dao = new GroupDAO(em: em)
-    Converter<Group, GroupEntity> converter = new GroupConverter()
-    def underTest = new SCIMGroupProvisioningBean(groupDAO: dao, groupConverter: converter)
-    def members = new HashSet()
-    def internalId = UUID.randomUUID().toString()
-    def query = Mock(Query)
-    def memberId = UUID.randomUUID().toString()
 
+    GroupDAO groupDao = Mock()
+    GroupConverter groupConverter = Mock()
 
+    SCIMGroupProvisioningBean underTest = new SCIMGroupProvisioningBean(groupDAO: groupDao, groupConverter: groupConverter)
 
+    Group group
+    GroupEntity groupEntity = Mock()
+    MemberRef member = new MemberRef.Builder()
+    .setValue(memberId)
+    .build()
 
-    def "should abort when group to replace not found"() {
-        given:
-        def queryResults = []
-        members.add(new MultiValuedAttribute.Builder().setValue(internalId).build())
-        def group = new Group.Builder().setMembers(members).build()
-        when:
-        underTest.replace(internalId.toString(), group)
-        then:
-        1 * em.createNamedQuery("getById") >> query
-        1 * query.setParameter("id", internalId);
-        1 * query.getResultList() >> queryResults
-        def e = thrown(ResourceNotFoundException)
-        e.message == "Resource " + internalId + " not found."
+    String groupUuid = UUID.randomUUID().toString()
+    String memberId = UUID.randomUUID().toString()
 
+    def setup() {
+        group = new Group.Builder()
+                .setDisplayName('irrelevant')
+                .setId(groupUuid)
+                .build();
     }
 
-    def "should abort when a member in group can not be found"() {
-        given:
-        def queryResults = []
-        members.add(new MultiValuedAttribute.Builder().setValue(memberId.toString()).build())
-        def group = new Group.Builder().setMembers(members).build()
-        def groupToUpdate = [GroupEntity.fromScim(group)]
+    def 'replacing a non-existant group raises exception'() {
         when:
-        underTest.replace(internalId, group)
-        then:
-        2 * em.createNamedQuery("getById") >> query
-        2 * query.setParameter("id", _);
-        2 * query.getResultList() >>> [groupToUpdate, queryResults]
-        def e = thrown(ResourceNotFoundException)
-        e.message == "Resource " + memberId + " not found."
+        underTest.replace(groupUuid.toString(), group)
 
+        then:
+        1 * groupConverter.fromScim(_) >> { throw new ResourceNotFoundException('') }
+        thrown(ResourceNotFoundException)
     }
 
-
-    @Ignore("Other team working on it")
-    def "should replace a group with known group member"() {
+    def 'replacing a group with a non-existant member raises exception'() {
         given:
-        members.add(new MultiValuedAttribute.Builder().setValue(memberId.toString()).build())
-        def group = new Group.Builder().setMembers(members).build()
-        def groupToUpdate = [GroupEntity.fromScim(group)]
-        def queryResults = [GroupEntity.fromScim(group)]
+        MemberRef member = new MemberRef.Builder()
+                .setValue(memberId)
+                .build()
+        group = new Group.Builder(group)
+                .setMembers([member] as Set)
+                .build();
+
         when:
-        def result = underTest.replace(internalId, group)
+        underTest.replace(groupUuid.toString(), group)
+
         then:
-        2 * em.createNamedQuery("getById") >> query
-        2 * query.setParameter("id", _);
-        2 * query.getResultList() >>> [groupToUpdate, queryResults]
-        1 * em.merge(_) >> GroupEntity.fromScim(group)
-        result.members.size() == 1
+        1 * groupConverter.fromScim(_) >> { throw new ResourceNotFoundException('') }
+        thrown(ResourceNotFoundException)
     }
 
-    @Ignore("Other team working on it")
-    def "should replace a group with known group and user member"() {
-        given:
-        def memberId2 = UUID.randomUUID().toString()
-        members.add(new MultiValuedAttribute.Builder().setValue(memberId.toString()).build())
-        members.add(new MultiValuedAttribute.Builder().setValue(memberId2.toString()).build())
-        def group = new Group.Builder().setMembers(members).build()
-        def groupToUpdate = [GroupEntity.fromScim(group)]
-        def userToUpdate = [new UserEntity(id: UUID.fromString(memberId2))]
-        def queryResults = [GroupEntity.fromScim(group)]
+    def 'replacing a group with a member works as expected'() {
+        group = new Group.Builder(group)
+                .setMembers([member] as Set)
+                .build();
+
         when:
-        def result = underTest.replace(internalId, group)
+        def replacedGroup = underTest.replace(groupUuid.toString(), group)
+
         then:
-        3 * em.createNamedQuery("getById") >> query
-        3 * query.setParameter("id", _);
-        3 * query.getResultList() >>> [groupToUpdate, queryResults, userToUpdate]
-        1 * em.merge(_) >> GroupEntity.fromScim(group)
-        result.members.size() == 2
+        1 * groupConverter.fromScim(_) >> groupEntity
+        1 * groupDao.update(groupEntity) >> groupEntity
+        1 * groupConverter.toScim(groupEntity) >> new Group.Builder(group).build();
+        1 * groupEntity.touch()
     }
-
-
-    def "should replace a group without member"() {
-        given:
-        def group = new Group.Builder().build()
-        def groupToUpdate = [GroupEntity.fromScim(group)]
-        when:
-        def result = underTest.replace(internalId, group)
-        then:
-        1 * em.createNamedQuery("getById") >> query
-        1 * query.setParameter("id", _);
-        1 * query.getResultList() >> groupToUpdate
-        1 * em.merge(_) >> GroupEntity.fromScim(group)
-        result.members.size() == 0
-    }
-
 
 }

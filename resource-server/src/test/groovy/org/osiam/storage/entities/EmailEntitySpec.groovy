@@ -72,22 +72,6 @@ class EmailEntitySpec extends Specification {
         emailEntity.getUser() == userEntity
     }
 
-    @Ignore('Temporarily ignored because of merge in propgress')
-    def "mapping from scim should set primary to false when null"() {
-        given:
-        MultiValuedAttribute multiValuedAttribute = new MultiValuedAttribute.Builder().
-                setPrimary(null).
-                setType("work").
-                setValue("value").
-                build()
-
-        when:
-        def result = EmailEntity.fromScim(multiValuedAttribute)
-
-        then:
-        !result.primary
-    }
-
     def "should throw an exception if the type is unknown"() {
         when:
         emailEntity.setType("huch")

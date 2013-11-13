@@ -1,9 +1,5 @@
 package org.osiam.resources.provisioning
 
-import org.osiam.resources.helper.ScimConverter
-import org.osiam.resources.scim.*
-import org.osiam.storage.dao.UserDAO
-import org.osiam.storage.entities.*
 import org.osiam.resources.converter.UserConverter
 import org.osiam.resources.scim.Address
 import org.osiam.resources.scim.Meta
@@ -24,6 +20,7 @@ import org.osiam.storage.entities.UserEntity
 import org.osiam.storage.entities.X509CertificateEntity
 
 import spock.lang.Specification
+
 
 class UserPatchTest extends Specification {
     def userDao = Mock(UserDAO)

@@ -31,7 +31,6 @@ import spock.lang.Specification
  */
 class ScimUserProvisioningBeanSpec extends Specification {
 
-
     def userDao = Mock(UserDAO)
     def userEntity = Mock(UserEntity)
     def scimUser = Mock(User)
@@ -62,9 +61,9 @@ class ScimUserProvisioningBeanSpec extends Specification {
         metaConverter: metaConverter,
         userDao: userDao
     )
+    
     SCIMUserProvisioningBean scimUserProvisioningBean = new SCIMUserProvisioningBean(userDao: userDao, userConverter: userConverter)
 
-    @Ignore('Temporarily ignored because of merge in propgress')
     def "should be possible to get an user by his id"() {
         given:
         userEntity.getUserName() >> 'test1234'

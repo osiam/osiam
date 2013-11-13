@@ -1,5 +1,7 @@
 package org.osiam.resources.provisioning
 
+import java.util.Set;
+
 import javax.persistence.EntityManager
 import javax.persistence.Query
 
@@ -7,6 +9,7 @@ import org.osiam.resources.converter.GroupConverter
 import org.osiam.resources.exceptions.ResourceExistsException
 import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.resources.scim.Group
+import org.osiam.resources.scim.MemberRef;
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.storage.dao.GroupDAO
 import org.osiam.storage.entities.GroupEntity
@@ -16,76 +19,61 @@ import spock.lang.Ignore
 import spock.lang.Specification
 
 class GroupCreateTest extends Specification {
-    EntityManager em = Mock(EntityManager)
-    GroupDAO dao = new GroupDAO(em: em)
-    GroupConverter groupConverter = new GroupConverter(groupDao: dao)
-    def underTest = new SCIMGroupProvisioningBean(groupDAO: dao, groupConverter:groupConverter)
-    def members = new HashSet()
 
+    GroupDAO groupDao = Mock()
+    GroupConverter groupConverter = Mock()
 
-    @Ignore("Temporarily ignored, other team working on it")
-    def "should abort when a member in group is not findable"() {
+    SCIMGroupProvisioningBean underTest = new SCIMGroupProvisioningBean(groupDAO: groupDao, groupConverter: groupConverter)
+
+    Group group
+    GroupEntity groupEntity = Mock()
+
+    String groupUuid = UUID.randomUUID().toString()
+    String memberId = UUID.randomUUID().toString()
+
+    def setup() {
+        group = new Group.Builder()
+                .setDisplayName('irrelevant')
+                .setId(groupUuid)
+                .build();
+    }
+    
+    def 'create a group with a non-existant member raises exception'() {
         given:
-        def internalId = UUID.randomUUID().toString()
-        def query = Mock(Query)
-        def queryResults = []
-        members.add(new MultiValuedAttribute.Builder().setValue(internalId).build())
-        def group = new Group.Builder().setMembers(members).build()
+        MemberRef member = new MemberRef.Builder()
+                .setValue(memberId)
+                .build()
+        group = new Group.Builder(group)
+                .setMembers([member] as Set)
+                .build();
+
         when:
         underTest.create(group)
+
         then:
-        1 * em.createNamedQuery("getById") >> query
-        1 * query.setParameter("id", internalId);
-        1 * query.getResultList() >> queryResults
-        def e = thrown(ResourceNotFoundException)
-        e.message == "Resource " + internalId + " not found."
-
+        1 * groupConverter.fromScim(_) >> { throw new ResourceNotFoundException('') }
+        thrown(ResourceNotFoundException)
     }
-
-    @Ignore("Temporarily ignored, other team working on it")
-    def "should abort when a group already exists"() {
-        given:
-        def internalId = UUID.randomUUID().toString()
-        def query = Mock(Query)
-        members.add(new MultiValuedAttribute.Builder().setValue(internalId).build())
-        def group = new Group.Builder().setDisplayName("displayName").setMembers(members).build()
+    
+    def 'creating an existant group raises exception'(){
         when:
         underTest.create(group)
-        then:
-        1 * em.createNamedQuery("getById") >> query
-        1 * query.setParameter("id", internalId);
-        1 * query.getResultList() >> { throw new DataIntegrityViolationException("moep") }
-        def e = thrown(ResourceExistsException)
-        e.message == "displayName already exists."
-    }
-
-    @Ignore("Temporarily ignored, other team working on it")
-    def "should create a group with known member"() {
-        given:
-        def internalId = UUID.randomUUID().toString()
-        def query = Mock(Query)
-        members.add(new MultiValuedAttribute.Builder().setValue(internalId).build())
-        def group = new Group.Builder().setMembers(members).build()
-        def queryResults = [GroupEntity.fromScim(group)]
-        when:
-        def result = underTest.create(group)
-        then:
-        1 * em.createNamedQuery("getById") >> query
-        1 * query.setParameter("id", internalId);
-        1 * query.getResultList() >> queryResults
-        result.members.size() == 1
-    }
-
-    @Ignore("Temporarily ignored, other team working on it")
-    def "should create a group without member"() {
-        given:
-        em.createNamedQuery(_) >> Mock(Query)
-        def group = new Group.Builder().build()
-        
-        when:
-        def result = underTest.create(group)
         
         then:
-        result.members.size() == 0
+        1 * groupConverter.fromScim(group) >> groupEntity
+        1 * groupDao.create(groupEntity) >> { throw new DataIntegrityViolationException('') }
+        thrown(ResourceExistsException)
     }
+    
+    def 'creating a group works as expected'(){
+        when:
+        underTest.create(group)
+        
+        then:
+        1 * groupConverter.fromScim(group) >> groupEntity
+        1 * groupEntity.setId(_)
+        1 * groupDao.create(groupEntity)
+        1 * groupConverter.toScim(groupEntity)
+    }
+
 }

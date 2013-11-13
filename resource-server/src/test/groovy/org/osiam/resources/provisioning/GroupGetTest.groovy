@@ -26,6 +26,7 @@ package org.osiam.resources.provisioning
 import javax.persistence.EntityManager
 import javax.persistence.Query
 
+import org.osiam.resources.converter.GroupConverter;
 import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.resources.scim.Group
 import org.osiam.storage.dao.GroupDAO
@@ -35,45 +36,29 @@ import spock.lang.Ignore
 import spock.lang.Specification
 
 class GroupGetTest extends Specification {
-    EntityManager em = Mock(EntityManager)
-    GroupDAO dao = new GroupDAO(em: em)
-    def underTest = new SCIMGroupProvisioningBean(groupDAO: dao)
-    def internalId = UUID.randomUUID().toString()
-    def query = Mock(Query)
 
+    GroupDAO groupDao = Mock()
+    GroupConverter groupConverter = Mock()
 
+    SCIMGroupProvisioningBean groupProvisioningBean = new SCIMGroupProvisioningBean(groupDAO: groupDao, groupConverter: groupConverter)
 
-
-
-
-    def "should abort when a member in group is not findable"() {
-        given:
-        def queryResults = []
-
+    String groupUuid = UUID.randomUUID().toString()
+    
+    def 'retrieving a group works as expected'() {
         when:
-        underTest.getById(internalId)
+        groupProvisioningBean.getById(groupUuid)
+        
         then:
-        1 * em.createNamedQuery("getById") >> query
-        1 * query.setParameter("id", internalId);
-        1 * query.getResultList() >> queryResults
-        def e = thrown(ResourceNotFoundException)
-        e.message == "Resource " + internalId + " not found."
-
+        1 * groupDao.getById(groupUuid)
+        1 * groupConverter.toScim(_)
     }
-
-    @Ignore('Temporarily ignored because of merge in propgress')
-    def "should get a group"() {
-        given:
-
-        def group = new Group.Builder().setId(internalId).build()
-        def queryResults = [GroupEntity.fromScim(group)]
+    
+    def 'retrieving a non-existant group raises exception'() {
         when:
-        def result = underTest.getById(internalId)
+        groupProvisioningBean.getById(groupUuid)
+        
         then:
-        1 * em.createNamedQuery("getById") >> query
-        1 * query.setParameter("id", internalId);
-        1 * query.getResultList() >> queryResults
-        result
+        1 * groupDao.getById(groupUuid) >> { throw new ResourceNotFoundException('') }
+        thrown(ResourceNotFoundException)
     }
-
 }
