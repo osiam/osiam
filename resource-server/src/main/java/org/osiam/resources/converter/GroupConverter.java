@@ -63,7 +63,7 @@ public class GroupConverter implements Converter<Group, GroupEntity> {
             try {
                 resource = groupDao.getById(uuid);
             } catch (ResourceNotFoundException e) {
-                return;
+                throw new ResourceNotFoundException("Group member with UUID " + uuid + " not found");
             }
         }
         
