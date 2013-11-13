@@ -36,9 +36,11 @@ import org.osiam.resources.converter.GroupConverter;
 import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.SCIMSearchResult;
+import org.osiam.resources.scim.User;
 import org.osiam.storage.dao.GenericDAO;
 import org.osiam.storage.dao.GroupDAO;
 import org.osiam.storage.entities.GroupEntity;
+import org.osiam.storage.entities.UserEntity;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -76,6 +78,18 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
         }
         return groupConverter.toScim(enrichedGroup);
     }
+    
+    @Override
+    public Group replace(String id, Group group) {
+        group = new Group.Builder(group).setId(id).build();
+        
+        GroupEntity groupEntity = groupConverter.fromScim(group);
+        groupEntity.touch();
+        
+        groupEntity = groupDAO.update(groupEntity);
+        
+        return groupConverter.toScim(groupEntity);
+    }
 
     @Override
     public SCIMSearchResult<Group> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
@@ -84,7 +98,7 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
         for (GroupEntity group : result.getResources()) {
             groups.add(groupConverter.toScim(group));
         }
-        return new SCIMSearchResult(groups, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
+        return new SCIMSearchResult<Group>(groups, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
     }
 
     @Override
