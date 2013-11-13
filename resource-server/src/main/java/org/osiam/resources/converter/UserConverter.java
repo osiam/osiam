@@ -54,10 +54,10 @@ public class UserConverter implements Converter<User, UserEntity> {
     private MetaConverter metaConverter;
     @Inject
     private UserDAO userDao;
-    
+
     @Override
     public UserEntity fromScim(User scim) {
-        if(scim == null){
+        if (scim == null) {
             return null;
         }
         UserEntity userEntity = new UserEntity();
@@ -71,9 +71,9 @@ public class UserConverter implements Converter<User, UserEntity> {
         }
         userEntity.setId(UUID.fromString(scim.getId()));
         return copyUserValues(scim, userEntity);
-       
+
     }
-    
+
     private UserEntity copyUserValues(User user, UserEntity userEntity) {
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             userEntity.setPassword(user.getPassword());
@@ -82,7 +82,8 @@ public class UserConverter implements Converter<User, UserEntity> {
         userEntity.setActive(user.isActive());
         userEntity.setDisplayName(user.getDisplayName());
         userEntity.setNickName(user.getNickName());
-        userEntity.setExternalId(user.getExternalId() == null ? null : user.getExternalId().equals("") ? null : user.getExternalId()); //Due to uniqueness in databases
+        userEntity.setExternalId(user.getExternalId() == null ? null : user.getExternalId().equals("") ? null : user
+                .getExternalId()); //Due to uniqueness in databases
         userEntity.setPreferredLanguage(user.getPreferredLanguage());
         userEntity.setLocale(user.getLocale());
         userEntity.setProfileUrl(user.getProfileUrl());
@@ -90,9 +91,9 @@ public class UserConverter implements Converter<User, UserEntity> {
         userEntity.setTitle(user.getTitle());
         userEntity.setUserName(user.getUserName());
         userEntity.setUserType(user.getUserType());
-        
+
         userEntity.setName(nameConverter.fromScim(user.getName()));
-        
+
         userEntity.setAddresses(convertMultiValue(addressConverter, new HashSet<>(user.getAddresses())));
         userEntity.setEmails(convertMultiValue(emailConverter, new HashSet<>(user.getEmails())));
         userEntity.setEntitlements(convertMultiValue(entitlementConverter, new HashSet<>(user.getEntitlements())));
@@ -100,55 +101,47 @@ public class UserConverter implements Converter<User, UserEntity> {
         userEntity.setPhoneNumbers(convertMultiValue(phoneNumberConverter, new HashSet<>(user.getPhoneNumbers())));
         userEntity.setPhotos(convertMultiValue(photoConverter, new HashSet<>(user.getPhotos())));
         userEntity.setRoles(convertMultiValue(roleConverter, new HashSet<>(user.getRoles())));
-        userEntity.setX509Certificates(convertMultiValue(x509CertificateConverter, new HashSet<>(user.getX509Certificates())));
+        userEntity.setX509Certificates(convertMultiValue(x509CertificateConverter,
+                new HashSet<>(user.getX509Certificates())));
         userEntity.setUserExtensions(convertExtension(new HashSet<>(user.getAllExtensions().values())));
-                
+
         return userEntity;
     }
 
-    private Set<ExtensionFieldValueEntity> convertExtension(Set<Extension> extensions){
+    private Set<ExtensionFieldValueEntity> convertExtension(Set<Extension> extensions) {
         Set<ExtensionFieldValueEntity> entities = extensionConverter.fromScim(extensions);
         return entities;
     }
-    
-    private <S, E> Set<E> convertMultiValue(Converter<S, E> converter, Set<S> multiValues){
+
+    private <S, E> Set<E> convertMultiValue(Converter<S, E> converter, Set<S> multiValues) {
         Set<E> entities = new HashSet<>();
-        
+
         for (S multiValue : multiValues) {
             E entity = converter.fromScim(multiValue);
             entities.add(entity);
         }
         return entities;
     }
-    
+
     @Override
     public User toScim(UserEntity entity) {
-        if(entity == null){
+        if (entity == null) {
             return null;
         }
-        User.Builder userBuilder = new User.Builder(entity.getUserName())
-                .setActive(entity.getActive())
-                .setDisplayName(entity.getDisplayName())
-                .setLocale(entity.getLocale())
+        User.Builder userBuilder = new User.Builder(entity.getUserName()).setActive(entity.getActive())
+                .setDisplayName(entity.getDisplayName()).setLocale(entity.getLocale())
                 .setName(entity.getName() != null ? nameConverter.toScim(entity.getName()) : null)
-                .setNickName(entity.getNickName())
-                .setPassword(entity.getPassword())
-                .setPreferredLanguage(entity.getPreferredLanguage())
-                .setProfileUrl(entity.getProfileUrl())
-                .setTimezone(entity.getTimezone())
-                .setTitle(entity.getTitle())
-                .setUserType(entity.getUserType())
-                .setExternalId(entity.getExternalId())
-                .setId(entity.getId().toString())
+                .setNickName(entity.getNickName()).setPassword(entity.getPassword())
+                .setPreferredLanguage(entity.getPreferredLanguage()).setProfileUrl(entity.getProfileUrl())
+                .setTimezone(entity.getTimezone()).setTitle(entity.getTitle()).setUserType(entity.getUserType())
+                .setExternalId(entity.getExternalId()).setId(entity.getId().toString())
                 .setMeta(metaConverter.toScim(entity.getMeta()))
                 .setAddresses(entityAddressToScim(entity.getAddresses()))
                 .setEmails(entityEmailToScim(entity.getEmails()))
                 .setEntitlements(entityEntitlementsToScim(entity.getEntitlements()))
-                .setGroups(entityGroupsToScim(entity.getGroups()))
-                .setIms(entityImsToScim(entity.getIms()))
+                .setGroups(entityGroupsToScim(entity.getGroups())).setIms(entityImsToScim(entity.getIms()))
                 .setPhoneNumbers(entityPhonenumbersToScim(entity.getPhoneNumbers()))
-                .setPhotos(entityPhotosToScim(entity.getPhotos()))
-                .setRoles(entityRolesToScim(entity.getRoles()))
+                .setPhotos(entityPhotosToScim(entity.getPhotos())).setRoles(entityRolesToScim(entity.getRoles()))
                 .setX509Certificates(entityX509CertificatesToScim(entity.getX509Certificates()));
 
         addExtensionField(userBuilder, entity.getUserExtensions());
@@ -161,84 +154,120 @@ public class UserConverter implements Converter<User, UserEntity> {
 
         Set<Extension> extensions = extensionConverter.toScim(extensionEntities);
 
-        for (Extension extension : extensions) {
-            userBuilder.addExtension(extension.getUrn(), extension);
+        if (extensions != null) {
+            for (Extension extension : extensions) {
+                userBuilder.addExtension(extension.getUrn(), extension);
+            }
         }
     }
 
     private List<Address> entityAddressToScim(Set<AddressEntity> addressEntities) {
         List<Address> addressesForMapping = new ArrayList<>();
-        for (AddressEntity addressEntity : addressEntities) {
-            addressesForMapping.add(addressConverter.toScim(addressEntity));
+
+        if (addressEntities != null) {
+            for (AddressEntity addressEntity : addressEntities) {
+                addressesForMapping.add(addressConverter.toScim(addressEntity));
+            }
         }
+
         return addressesForMapping;
     }
 
     private List<MultiValuedAttribute> entityEmailToScim(Set<EmailEntity> emailEntities) {
         List<MultiValuedAttribute> emailsForMapping = new ArrayList<>();
-        for (EmailEntity emailEntity : emailEntities) {
-            emailsForMapping.add(emailConverter.toScim(emailEntity));
+
+        if (emailEntities != null) {
+            for (EmailEntity emailEntity : emailEntities) {
+                emailsForMapping.add(emailConverter.toScim(emailEntity));
+            }
         }
+
         return emailsForMapping;
     }
 
     private List<MultiValuedAttribute> entityEntitlementsToScim(Set<EntitlementsEntity> entitlementsEntities) {
         List<MultiValuedAttribute> entitlementsForMapping = new ArrayList<>();
-        for (EntitlementsEntity entitlementsEntity : entitlementsEntities) {
-            entitlementsForMapping.add(entitlementConverter.toScim(entitlementsEntity));
+
+        if (entitlementsEntities != null) {
+            for (EntitlementsEntity entitlementsEntity : entitlementsEntities) {
+                entitlementsForMapping.add(entitlementConverter.toScim(entitlementsEntity));
+            }
         }
+
         return entitlementsForMapping;
     }
 
     private List<MultiValuedAttribute> entityGroupsToScim(Set<GroupEntity> groupEntities) {
         List<MultiValuedAttribute> groupsForMapping = new ArrayList<>();
-        for (GroupEntity groupEntity : groupEntities) {
-            MultiValuedAttribute multiValue = new MultiValuedAttribute.Builder()
-                    .setDisplay(groupEntity.getDisplayName())
-                    .setValue(groupEntity.getId().toString())
-                    .build();
-            groupsForMapping.add(multiValue);
+
+        if (groupEntities != null) {
+            for (GroupEntity groupEntity : groupEntities) {
+                MultiValuedAttribute multiValue = new MultiValuedAttribute.Builder()
+                        .setDisplay(groupEntity.getDisplayName()).setValue(groupEntity.getId().toString()).build();
+                groupsForMapping.add(multiValue);
+            }
         }
+
         return groupsForMapping;
     }
 
     private List<MultiValuedAttribute> entityImsToScim(Set<ImEntity> imEntities) {
         List<MultiValuedAttribute> imsForMapping = new ArrayList<>();
-        for (ImEntity imEntity : imEntities) {
-            imsForMapping.add(imConverter.toScim(imEntity));
+
+        if (imEntities != null) {
+            for (ImEntity imEntity : imEntities) {
+                imsForMapping.add(imConverter.toScim(imEntity));
+            }
         }
+
         return imsForMapping;
     }
 
     private List<MultiValuedAttribute> entityPhonenumbersToScim(Set<PhoneNumberEntity> phoneNumberEntities) {
         List<MultiValuedAttribute> phoneNumbersForMapping = new ArrayList<>();
-        for (PhoneNumberEntity phoneNumberEntity : phoneNumberEntities) {
-            phoneNumbersForMapping.add(phoneNumberConverter.toScim(phoneNumberEntity));
+
+        if (phoneNumberEntities != null) {
+            for (PhoneNumberEntity phoneNumberEntity : phoneNumberEntities) {
+                phoneNumbersForMapping.add(phoneNumberConverter.toScim(phoneNumberEntity));
+            }
         }
+
         return phoneNumbersForMapping;
     }
 
     private List<MultiValuedAttribute> entityPhotosToScim(Set<PhotoEntity> photoEntities) {
         List<MultiValuedAttribute> photosForMapping = new ArrayList<>();
-        for (PhotoEntity photoEntity : photoEntities) {
-            photosForMapping.add(photoConverter.toScim(photoEntity));
+
+        if (photoEntities != null) {
+            for (PhotoEntity photoEntity : photoEntities) {
+                photosForMapping.add(photoConverter.toScim(photoEntity));
+            }
         }
+
         return photosForMapping;
     }
 
     private List<MultiValuedAttribute> entityRolesToScim(Set<RolesEntity> rolesEntities) {
         List<MultiValuedAttribute> rolesForMapping = new ArrayList<>();
-        for (RolesEntity rolesEntity : rolesEntities) {
-            rolesForMapping.add(roleConverter.toScim(rolesEntity));
+
+        if (rolesEntities != null) {
+            for (RolesEntity rolesEntity : rolesEntities) {
+                rolesForMapping.add(roleConverter.toScim(rolesEntity));
+            }
         }
+
         return rolesForMapping;
     }
 
     private List<MultiValuedAttribute> entityX509CertificatesToScim(Set<X509CertificateEntity> x509CertificateEntities) {
         List<MultiValuedAttribute> x509CertificatesForMapping = new ArrayList<>();
-        for (X509CertificateEntity x509CertificateEntity : x509CertificateEntities) {
-            x509CertificatesForMapping.add(x509CertificateConverter.toScim(x509CertificateEntity));
+
+        if (x509CertificateEntities != null) {
+            for (X509CertificateEntity x509CertificateEntity : x509CertificateEntities) {
+                x509CertificatesForMapping.add(x509CertificateConverter.toScim(x509CertificateEntity));
+            }
         }
+
         return x509CertificatesForMapping;
     }
 
