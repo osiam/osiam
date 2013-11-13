@@ -53,14 +53,6 @@ public class GroupEntity extends InternalIdSkeleton {
         getMeta().setResourceType("Group");
     }
 
-    public static GroupEntity fromScim(Group group) {
-        GroupEntity groupEntity = new GroupEntity();
-        groupEntity.setDisplayName(group.getDisplayName());
-        groupEntity.setId(group.getId() != null ? UUID.fromString(group.getId()) : UUID.randomUUID());
-        groupEntity.setExternalId(group.getExternalId());
-        return groupEntity;
-    }
-
     private static Set<InternalIdSkeleton> createMembers(Group group) {
         Set<InternalIdSkeleton> result = new HashSet<>();
         if (group.getMembers() != null) {
