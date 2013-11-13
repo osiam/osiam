@@ -7,8 +7,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import javax.inject.Inject;
-import javax.persistence.NoResultException;
 
+import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.scim.Address;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.MultiValuedAttribute;
@@ -66,8 +66,8 @@ public class UserConverter implements Converter<User, UserEntity> {
             userEntity.setInternalId(existingEntity.getInternalId());
             userEntity.setMeta(existingEntity.getMeta());
             userEntity.setPassword(existingEntity.getPassword());
-        } catch (NoResultException ex) {
-            // Just It's a new one.
+        } catch (ResourceNotFoundException ex) {
+            // safe to ignore - it's a new user
         }
         userEntity.setId(UUID.fromString(scim.getId()));
         return copyUserValues(scim, userEntity);
