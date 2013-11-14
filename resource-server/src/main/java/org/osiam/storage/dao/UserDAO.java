@@ -81,8 +81,7 @@ public class UserDAO extends GetInternalIdSkeleton implements GenericDAO<UserEnt
         if (password.length() != PW_LENGHT) {
             entity.setPassword(passwordEncoder.encodePassword(password, entity.getId()));
         }
-        em.merge(entity);
-        return entity;
+        return em.merge(entity);
     }
 
     @Override
