@@ -33,8 +33,6 @@ import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.InternalIdSkeleton
 import org.osiam.storage.entities.RolesEntity
 import org.osiam.storage.entities.UserEntity
-import org.springframework.security.authentication.encoding.PasswordEncoder
-import org.springframework.security.authentication.encoding.ShaPasswordEncoder
 import spock.lang.Specification
 
 import javax.persistence.EntityManager
@@ -120,49 +118,12 @@ class UserDAOSpec extends Specification {
 
     def "should be able to create a user"() {
         given:
-        def passwordEncoder = Mock(PasswordEncoder)
-        underTest.setPasswordEncoder(passwordEncoder)
         def id = UUID.randomUUID()
         when:
         underTest.create(userEntity)
 
         then:
-        1 * userEntity.password >> "password"
-        1 * userEntity.id >> id
-        1 * passwordEncoder.encodePassword("password", id) >> "moep"
         1 * em.persist(userEntity)
-
-    }
-
-    def "should set password hash when users password is not hashed"() {
-        given:
-        def passwordEncoder = Mock(PasswordEncoder)
-        underTest.setPasswordEncoder(passwordEncoder)
-        def id = UUID.randomUUID()
-
-        when:
-        underTest.update(userEntity)
-        then:
-        1 * userEntity.password >> "password"
-        1 * userEntity.id >> id
-        1 * em.merge(userEntity)
-        1 * passwordEncoder.encodePassword("password", id) >> "moep"
-    }
-
-    def "should not set password hash when users password is hashed"() {
-        given:
-        def passwordEncoder = Mock(PasswordEncoder)
-        def password = new ShaPasswordEncoder(512).encodePassword("password", null)
-        underTest.setPasswordEncoder(passwordEncoder)
-        def id = UUID.randomUUID()
-
-        when:
-        underTest.update(userEntity)
-        then:
-        1 * userEntity.password >> password
-        0 * userEntity.id >> id
-        0 * passwordEncoder.encodePassword("password", id) >> "moep"
-        1 * em.merge(userEntity)
 
     }
 

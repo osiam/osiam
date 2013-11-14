@@ -7,16 +7,20 @@ import org.osiam.resources.scim.User
 import org.osiam.storage.dao.UserDAO
 import org.osiam.storage.entities.MetaEntity
 import org.osiam.storage.entities.UserEntity
+import org.springframework.security.authentication.encoding.PasswordEncoder
 import spock.lang.Ignore
 import spock.lang.Specification
 
 class ScimUserProvisioningBeanSpec extends Specification {
 
-    def userDao = Mock(UserDAO)
+    PasswordEncoder passwordEncoder = Mock()
+    UserDAO userDao = Mock()
     UserConverter userConverter = Mock()
 
 
-    SCIMUserProvisioningBean scimUserProvisioningBean = new SCIMUserProvisioningBean(userDao: userDao, userConverter: userConverter)
+    SCIMUserProvisioningBean scimUserProvisioningBean = new SCIMUserProvisioningBean(userDao: userDao,
+            userConverter: userConverter,
+            passwordEncoder: passwordEncoder)
 
     def 'should be possible to get an user by his id'() {
 
@@ -30,12 +34,13 @@ class ScimUserProvisioningBeanSpec extends Specification {
 
     def 'should be possible to create a user with generated UUID as internalId'() {
         given:
-        def scimUser = new User.Builder('test').build()
+        def scimUser = new User.Builder(userName: 'test', password: 'password').build()
 
         when:
         def user = scimUserProvisioningBean.create(scimUser)
 
         then:
+        1 * passwordEncoder.encodePassword(_, _) >> "password"
         1 * userConverter.fromScim(_) >> new UserEntity(userName: 'test')
         1 * userDao.create(_)
         1 * userConverter.toScim(_) >> { UserEntity it -> new User.Builder(id: it.id).build() }

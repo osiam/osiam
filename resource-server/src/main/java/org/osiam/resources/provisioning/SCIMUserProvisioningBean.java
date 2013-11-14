@@ -37,6 +37,7 @@ import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.entities.extension.ExtensionEntity;
 import org.osiam.storage.entities.extension.ExtensionFieldEntity;
 import org.osiam.storage.entities.extension.ExtensionFieldValueEntity;
+import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,6 +60,9 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
     @Inject
     private ExtensionDao extensionDao;
 
+    @Inject
+    private PasswordEncoder passwordEncoder;
+
     @Override
     protected GenericDAO<UserEntity> getDao() {
         return userDao;
@@ -73,6 +77,10 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
     public User create(User user) {
         UserEntity userEntity = userConverter.fromScim(user);
         userEntity.setId(UUID.randomUUID());
+
+        String hashedPassword = passwordEncoder.encodePassword(user.getPassword(), userEntity.getId());
+        userEntity.setPassword(hashedPassword);
+
         try {
             userDao.create(userEntity);
         } catch (Exception e) {
@@ -94,9 +102,14 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
         UserEntity existingEntity = userDao.getById(user.getId());
         userEntity.setInternalId(existingEntity.getInternalId());
         userEntity.setMeta(existingEntity.getMeta());
-        userEntity.setPassword(existingEntity.getPassword());
         userEntity.setId(existingEntity.getId());
 
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            String hashedPassword = passwordEncoder.encodePassword(user.getPassword(), userEntity.getId());
+            userEntity.setPassword(hashedPassword);
+        } else {
+            userEntity.setPassword(existingEntity.getPassword());
+        }
 
         userEntity.touch();
         return userConverter.toScim(userDao.update(userEntity));
@@ -115,18 +128,23 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
 
     @Override
     public User update(String id, User user) {
-        User updatedUser = super.update(id, user);
 
-        if (user.getAllExtensions().size() == 0) {
-            return updatedUser;
-        }
+        super.update(id, user);
 
         UserEntity userEntity = userDao.getById(id);
 
-        for (Entry<String, Extension> extensionEntry : user.getAllExtensions().entrySet()) {
-            updateExtension(extensionEntry, userEntity);
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            String hashedPassword = passwordEncoder.encodePassword(user.getPassword(), userEntity.getId());
+            userEntity.setPassword(hashedPassword);
         }
 
+        if (user.getAllExtensions().size() != 0) {
+            for (Entry<String, Extension> extensionEntry : user.getAllExtensions().entrySet()) {
+                updateExtension(extensionEntry, userEntity);
+            }
+        }
+
+        userEntity.touch();
         return userConverter.toScim(userEntity);
     }
 
