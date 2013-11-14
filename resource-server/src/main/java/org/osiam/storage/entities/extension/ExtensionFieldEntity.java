@@ -1,10 +1,10 @@
 package org.osiam.storage.entities.extension;
 
-import java.io.Serializable;
+import org.osiam.resources.scim.ExtensionFieldType;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
-import org.osiam.resources.scim.ExtensionFieldType;
 /**
  * Defines a field in a scim-extension.
  */
@@ -27,7 +27,7 @@ public class ExtensionFieldEntity implements Serializable {
     @Column(name = "is_required")
     private boolean isRequired;
 
-    @ManyToOne(fetch=FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     private ExtensionEntity extension;
 
     public ExtensionEntity getExtension() {
@@ -62,14 +62,18 @@ public class ExtensionFieldEntity implements Serializable {
         this.type = type;
     }
 
-    private void setTypeAsString(String typeAsString){
+    private void setTypeAsString(String typeAsString) {
         type = ExtensionFieldType.valueOf(typeAsString);
     }
 
+    // @Access is necessary to provide a portable way of mapping our new extension field type in
+    // anything < JPA 2.1 Should be replaced by a custom user type at some point.
     @Column(name = "type")
-    private String getTypeAsString(){
+    @Access(AccessType.PROPERTY)
+    private String getTypeAsString() {
         return type.toString();
     }
+
     public boolean isRequired() {
         return isRequired;
     }
