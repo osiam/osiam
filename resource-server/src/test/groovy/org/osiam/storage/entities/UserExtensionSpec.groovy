@@ -1,7 +1,5 @@
 package org.osiam.storage.entities
 
-import org.osiam.resources.scim.Extension
-import org.osiam.resources.scim.User
 import org.osiam.storage.entities.extension.ExtensionEntity
 import org.osiam.storage.entities.extension.ExtensionFieldEntity
 import org.osiam.storage.entities.extension.ExtensionFieldValueEntity
@@ -63,7 +61,7 @@ class UserExtensionSpec extends Specification {
         def fieldValue = new ExtensionFieldValueEntity()
 
         when:
-        userEntity.addOrUpdateExtensionValue(extensionField, fieldValue)
+        userEntity.addOrUpdateExtensionValue(fieldValue)
 
         then:
         userEntity.extensionFieldValues.contains(fieldValue)
@@ -74,7 +72,7 @@ class UserExtensionSpec extends Specification {
         def extension = new ExtensionEntity()
 
         when:
-        userEntity.addOrUpdateExtensionValue(new ExtensionFieldEntity(), null)
+        userEntity.addOrUpdateExtensionValue(null)
 
         then:
         thrown(IllegalArgumentException)
@@ -88,38 +86,29 @@ class UserExtensionSpec extends Specification {
         extensionField.extension = extension
         extensionField.name = "testField"
 
-        def fieldValue = new ExtensionFieldValueEntity()
-        fieldValue.value = "fieldValue"
+        def fieldValue = new ExtensionFieldValueEntity(extensionField: extensionField, value: "fieldValue")
 
-        def fieldValueUpdated = new ExtensionFieldValueEntity()
-        fieldValueUpdated.value = "fieldValueUpdated"
+        def fieldValueUpdated = new ExtensionFieldValueEntity(extensionField: extensionField, value: "fieldValueUpdated")
 
-        userEntity.addOrUpdateExtensionValue(extensionField, fieldValue)
+        userEntity.addOrUpdateExtensionValue(fieldValue)
 
         when:
-        userEntity.addOrUpdateExtensionValue(extensionField, fieldValueUpdated)
+        userEntity.addOrUpdateExtensionValue(fieldValueUpdated)
 
         then:
-        extensionValuesOnlyContains(fieldValueUpdated, extensionField) == true
+        extensionValuesOnlyContains(fieldValueUpdated, extensionField)
     }
 
-    def 'updating/adding an extension value sets references to extension field and user'() {
+    def 'updating/adding an extension value sets references to user'() {
         given:
-        def extension = new ExtensionEntity()
-
-        def extensionField = new ExtensionFieldEntity()
-        extensionField.extension = extension
-        extensionField.name = "testField"
-
         def fieldValue = new ExtensionFieldValueEntity()
         fieldValue.value = "fieldValue"
 
         when:
-        userEntity.addOrUpdateExtensionValue(extensionField, fieldValue)
+        userEntity.addOrUpdateExtensionValue(fieldValue)
 
         then:
         fieldValue.user == userEntity
-        fieldValue.extensionField == extensionField
     }
 
     def extensionValuesOnlyContains(fieldValue, extensionField) {
