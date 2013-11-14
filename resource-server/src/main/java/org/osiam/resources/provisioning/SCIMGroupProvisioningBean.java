@@ -76,13 +76,6 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
         return groupConverter.toScim(enrichedGroup);
     }
 
-    /*
-        try {
-
-            } catch (ResourceNotFoundException ex) {
-                // Safe to ignore - it's a new group
-            }
-         */
     @Override
     public Group replace(String id, Group group) {
 
