@@ -23,26 +23,23 @@
 
 package org.osiam.resources.provisioning;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.inject.Inject;
-
 import org.osiam.resources.converter.Converter;
 import org.osiam.resources.converter.GroupConverter;
 import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.SCIMSearchResult;
-import org.osiam.resources.scim.User;
 import org.osiam.storage.dao.GenericDAO;
 import org.osiam.storage.dao.GroupDAO;
 import org.osiam.storage.entities.GroupEntity;
-import org.osiam.storage.entities.UserEntity;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, GroupEntity> implements SCIMGroupProvisioning {
@@ -51,7 +48,7 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
 
     @Inject
     private GroupConverter groupConverter;
-    
+
     @Inject
     private GroupDAO groupDAO;
 
@@ -59,7 +56,7 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
     protected GenericDAO<GroupEntity> getDao() {
         return groupDAO;
     }
-    
+
     @Override
     protected Converter<Group, GroupEntity> getConverter() {
         return groupConverter;
@@ -78,16 +75,28 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
         }
         return groupConverter.toScim(enrichedGroup);
     }
-    
+
+    /*
+        try {
+
+            } catch (ResourceNotFoundException ex) {
+                // Safe to ignore - it's a new group
+            }
+         */
     @Override
     public Group replace(String id, Group group) {
+
         group = new Group.Builder(group).setId(id).build();
-        
+
         GroupEntity groupEntity = groupConverter.fromScim(group);
+
+        GroupEntity existingEntity = groupDAO.getById(group.getId());
+        groupEntity.setInternalId(existingEntity.getInternalId());
+        groupEntity.setId(existingEntity.getId());
+        groupEntity.setMeta(existingEntity.getMeta());
         groupEntity.touch();
-        
+
         groupEntity = groupDAO.update(groupEntity);
-        
         return groupConverter.toScim(groupEntity);
     }
 
@@ -98,7 +107,7 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
         for (GroupEntity group : result.getResources()) {
             groups.add(groupConverter.toScim(group));
         }
-        return new SCIMSearchResult<Group>(groups, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
+        return new SCIMSearchResult<>(groups, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
     }
 
     @Override

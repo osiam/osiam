@@ -8,24 +8,23 @@ import org.osiam.storage.dao.UserDAO
 import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.MetaEntity
 import org.osiam.storage.entities.UserEntity
-
 import spock.lang.Specification
 
 class GroupConverterSpec extends Specification {
 
-    Map fixtures = [displayName:'displayName',
-        externalId: 'externalId'
+    Map fixtures = [displayName: 'displayName',
+            externalId: 'externalId'
     ]
 
     def memberUuidFixtures = [
-        user: 'c2b4f6d0-7028-4f8d-b78a-bb4d3eadc5bd',
-        group: '0c60179c-0b9c-4cad-a918-4ec59bbab173',
-        'non-existant': 'e75522d8-2b4d-4b60-bb92-6c6cda8faaea']
+            user: 'c2b4f6d0-7028-4f8d-b78a-bb4d3eadc5bd',
+            group: '0c60179c-0b9c-4cad-a918-4ec59bbab173',
+            'non-existant': 'e75522d8-2b4d-4b60-bb92-6c6cda8faaea']
 
     private GroupDAO groupDao = Mock()
     private UserDAO userDao = Mock()
 
-    GroupConverter groupConverter = new GroupConverter(groupDao:groupDao, userDao: userDao)
+    GroupConverter groupConverter = new GroupConverter(groupDao: groupDao, userDao: userDao)
 
     def 'mapping a user as member works'() {
         given:
@@ -99,7 +98,7 @@ class GroupConverterSpec extends Specification {
         group.externalId == fixtures["externalId"]
     }
 
-    def 'converting scim group to entity works as expected'(){
+    def 'converting scim group to entity works as expected'() {
         given:
         def uuid = UUID.randomUUID()
 
@@ -109,24 +108,21 @@ class GroupConverterSpec extends Specification {
         def groupEntity = groupConverter.fromScim(group)
 
         then:
-        1 * groupDao.getById(_) >> {throw new ResourceNotFoundException('')}
-
-        groupEntity.id == uuid
         groupEntity.displayName == fixtures["displayName"]
         groupEntity.externalId == fixtures["externalId"]
     }
 
-    def 'converting null scim group returns null'(){
+    def 'converting null scim group returns null'() {
         expect:
         groupConverter.fromScim(null) == null
     }
 
-    def 'converting null group entity returns null'(){
+    def 'converting null group entity returns null'() {
         expect:
         groupConverter.toScim(null) == null
     }
 
-    def GroupEntity getFilledGroupEntity(def uuid){
+    def GroupEntity getFilledGroupEntity(def uuid) {
 
         GroupEntity groupEntity = new GroupEntity(fixtures)
 
@@ -151,7 +147,7 @@ class GroupConverterSpec extends Specification {
         return group
     }
 
-    def Group getFilledGroup(UUID uuid){
+    def Group getFilledGroup(UUID uuid) {
 
         Group.Builder groupBuilder = new Group.Builder(fixtures)
 

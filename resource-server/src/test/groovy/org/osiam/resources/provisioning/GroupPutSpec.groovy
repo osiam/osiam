@@ -86,10 +86,11 @@ class GroupPutSpec extends Specification {
                 .build();
 
         when:
-        def replacedGroup = underTest.replace(groupUuid.toString(), group)
+        underTest.replace(groupUuid.toString(), group)
 
         then:
         1 * groupConverter.fromScim(_) >> groupEntity
+        1 * groupDao.getById(groupUuid.toString()) >> groupEntity   // <- is not the same as above, but doesn't really matter here
         1 * groupDao.update(groupEntity) >> groupEntity
         1 * groupConverter.toScim(groupEntity) >> new Group.Builder(group).build();
         1 * groupEntity.touch()
