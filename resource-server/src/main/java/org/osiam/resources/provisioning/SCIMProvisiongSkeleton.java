@@ -53,6 +53,7 @@ public abstract class SCIMProvisiongSkeleton<T extends Resource, E extends Inter
                 entity, GenericSCIMToEntityWrapper.Mode.PUT, getScimEntities());
         setFieldsWrapException(genericSCIMToEntityWrapper);
 
+        entity.touch();
         return updateLastModified(entity);
     }
 

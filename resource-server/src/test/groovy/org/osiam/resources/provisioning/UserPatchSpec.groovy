@@ -421,6 +421,7 @@ class UserPatchSpec extends Specification {
         bean.replace(id, user)
 
         then:
+        1 * userDao.getById(id) >> entity
         1 * userDao.update(entity) >> entity
         lastModified <= entity.getMeta().getLastModified()
     }

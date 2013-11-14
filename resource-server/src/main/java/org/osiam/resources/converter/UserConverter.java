@@ -1,6 +1,5 @@
 package org.osiam.resources.converter;
 
-import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.scim.Address;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.MultiValuedAttribute;
@@ -11,7 +10,10 @@ import org.osiam.storage.entities.extension.ExtensionFieldValueEntity;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserConverter implements Converter<User, UserEntity> {
@@ -42,25 +44,12 @@ public class UserConverter implements Converter<User, UserEntity> {
     private UserDAO userDao;
 
     @Override
-    public UserEntity fromScim(User scim) {
-        if (scim == null) {
+    public UserEntity fromScim(User user) {
+        if (user == null) {
             return null;
         }
         UserEntity userEntity = new UserEntity();
-        try {
-            UserEntity existingEntity = userDao.getById(scim.getId());
-            userEntity.setInternalId(existingEntity.getInternalId());
-            userEntity.setMeta(existingEntity.getMeta());
-            userEntity.setPassword(existingEntity.getPassword());
-        } catch (ResourceNotFoundException ex) {
-            // safe to ignore - it's a new user
-        }
-        userEntity.setId(UUID.fromString(scim.getId()));
-        return copyUserValuesFromScim(scim, userEntity);
 
-    }
-
-    private UserEntity copyUserValuesFromScim(User user, UserEntity userEntity) {
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             userEntity.setPassword(user.getPassword());
         }
