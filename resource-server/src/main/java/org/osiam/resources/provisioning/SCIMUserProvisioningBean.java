@@ -23,13 +23,6 @@
 
 package org.osiam.resources.provisioning;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.UUID;
-
-import javax.inject.Inject;
-
 import org.osiam.resources.converter.Converter;
 import org.osiam.resources.converter.UserConverter;
 import org.osiam.resources.exceptions.ResourceExistsException;
@@ -46,6 +39,12 @@ import org.osiam.storage.entities.extension.ExtensionFieldEntity;
 import org.osiam.storage.entities.extension.ExtensionFieldValueEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -64,7 +63,7 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
     protected GenericDAO<UserEntity> getDao() {
         return userDao;
     }
-    
+
     @Override
     protected Converter<User, UserEntity> getConverter() {
         return userConverter;
@@ -100,7 +99,7 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
         List<User> users = new ArrayList<>();
         SCIMSearchResult<UserEntity> result = getDao().search(filter, sortBy, sortOrder, count, startIndex);
         for (Object g : result.getResources()) {
-            User scimResultUser = new UserConverter().toScim((UserEntity) g);
+            User scimResultUser = userConverter.toScim((UserEntity) g);
             users.add(User.Builder.generateForOutput(scimResultUser));
         }
         return new SCIMSearchResult(users, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
@@ -132,7 +131,7 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
             String fieldName = extensionField.getName();
             ExtensionFieldValueEntity extensionFieldValue = findExtensionFieldValue(extensionField, userEntity);
 
-            if(extensionFieldValue == null && !updatedExtension.isFieldPresent(fieldName)) {
+            if (extensionFieldValue == null && !updatedExtension.isFieldPresent(fieldName)) {
                 continue;
             } else if (extensionFieldValue == null && updatedExtension.isFieldPresent(fieldName)) {
                 extensionFieldValue = new ExtensionFieldValueEntity();
@@ -141,19 +140,19 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
             }
 
             String newValue = updatedExtension.getField(fieldName, ExtensionFieldType.STRING);
-            if(newValue == null) {
+            if (newValue == null) {
                 continue;
             }
 
             extensionFieldValue.setValue(newValue);
-
-            userEntity.addOrUpdateExtensionValue(extensionField, extensionFieldValue);
+            extensionFieldValue.setExtensionField(extensionField);
+            userEntity.addOrUpdateExtensionValue(extensionFieldValue);
         }
     }
 
     private ExtensionFieldValueEntity findExtensionFieldValue(ExtensionFieldEntity extensionField, UserEntity userEntity) {
         for (ExtensionFieldValueEntity extensionFieldValue : userEntity.getUserExtensions()) {
-            if(extensionFieldValue.getExtensionField().equals(extensionField)) {
+            if (extensionFieldValue.getExtensionField().equals(extensionField)) {
                 return extensionFieldValue;
             }
         }

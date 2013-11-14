@@ -56,11 +56,11 @@ public class UserConverter implements Converter<User, UserEntity> {
             // safe to ignore - it's a new user
         }
         userEntity.setId(UUID.fromString(scim.getId()));
-        return copyUserValues(scim, userEntity);
+        return copyUserValuesFromScim(scim, userEntity);
 
     }
 
-    private UserEntity copyUserValues(User user, UserEntity userEntity) {
+    private UserEntity copyUserValuesFromScim(User user, UserEntity userEntity) {
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             userEntity.setPassword(user.getPassword());
         }
@@ -89,7 +89,13 @@ public class UserConverter implements Converter<User, UserEntity> {
         userEntity.setRoles(convertMultiValue(roleConverter, new HashSet<>(user.getRoles())));
         userEntity.setX509Certificates(convertMultiValue(x509CertificateConverter,
                 new HashSet<>(user.getX509Certificates())));
-        userEntity.setUserExtensions(extensionConverter.scimExtensionsToEntity(user, userEntity));
+
+
+        Set<ExtensionFieldValueEntity> fieldValues = extensionConverter.fromScim(new HashSet<>(user.getAllExtensions().values()));
+
+        for (ExtensionFieldValueEntity fieldValue : fieldValues) {
+            userEntity.addOrUpdateExtensionValue(fieldValue);
+        }
 
         return userEntity;
     }

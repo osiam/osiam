@@ -23,17 +23,11 @@
 
 package org.osiam.storage.entities;
 
-import org.osiam.resources.scim.Address;
-import org.osiam.resources.scim.MultiValuedAttribute;
-import org.osiam.resources.scim.User;
 import org.osiam.storage.entities.extension.ExtensionEntity;
-import org.osiam.storage.entities.extension.ExtensionFieldEntity;
 import org.osiam.storage.entities.extension.ExtensionFieldValueEntity;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -494,15 +488,13 @@ public class UserEntity extends InternalIdSkeleton {
      * old value of the extension field is removed from this user and the new
      * one will be added.
      *
-     * @param extensionField The extension this field value belongs to
      * @param extensionValue The extension field value to add or update
      */
-    public void addOrUpdateExtensionValue(ExtensionFieldEntity extensionField, ExtensionFieldValueEntity extensionValue) {
+    public void addOrUpdateExtensionValue(ExtensionFieldValueEntity extensionValue) {
         if (extensionValue == null) {
             throw new IllegalArgumentException("extensionValue must not be null");
         }
 
-        extensionValue.setExtensionField(extensionField);
 
         if (extensionFieldValues.contains(extensionValue)) {
             extensionFieldValues.remove(extensionValue);
