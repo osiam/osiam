@@ -1,20 +1,9 @@
 package org.osiam.storage.entities.extension;
 
+import javax.persistence.*;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-
-import org.osiam.resources.scim.Extension;
-import org.osiam.storage.entities.UserEntity; //NOSONAR - Needed due to bidirectional relation
 
 /**
  * Defines a SCIM-Extension.
@@ -97,45 +86,4 @@ public class ExtensionEntity implements Serializable {
         return true;
     }
 
-
-    /**
-     * Converting all ExtensionFields of the User into a Scim-Extensions representation.
-     *
-     * @param userEntity
-     *          getting the extensions for conversion
-     * @return A Map of extensions with corresponding urn's. Never null
-     */
-    public static Map<String, Extension> toScim(UserEntity userEntity) {
-        // Sorting all fields by extension
-        Map<String, Map<String, String>> sortedValues = new HashMap<>();
-        for (ExtensionFieldValueEntity extFieldValue : userEntity.getUserExtensions()) {
-            String urn = extFieldValue.getExtensionField().getExtension().getUrn();
-            String fieldName = extFieldValue.getExtensionField().getName();
-            String value = extFieldValue.getValue();
-
-            Map<String, String> extMap = sortedValues.get(urn);
-            if (extMap == null) {
-                extMap = new HashMap<String, String>();
-                sortedValues.put(urn, extMap);
-            }
-            extMap.put(fieldName, value);
-        }
-
-        // Convert Extensions to scim Extensions
-        Map<String, Extension> res = new HashMap<>();
-        for(Map.Entry<String, Map<String, String>> extensionEntry : sortedValues.entrySet()) {
-            Extension ext = new Extension(extensionEntry.getKey());
-            for (Entry<String, String> fieldData : extensionEntry.getValue().entrySet()) {
-                ext.addOrUpdateField(fieldData.getKey(), fieldData.getValue());
-            }
-            String urn = extensionEntry.getKey();
-            Extension extension = new Extension(urn);
-            Map<String, String> extensionEntries = extensionEntry.getValue();
-            for (String field:extensionEntries.keySet()){
-                extension.addOrUpdateField(field, extensionEntries.get(field));
-            }
-            res.put(urn, extension);
-        }
-        return res;
-    }
 }
