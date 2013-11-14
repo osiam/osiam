@@ -44,19 +44,6 @@ public abstract class SCIMProvisiongSkeleton<T extends Resource, E extends Inter
         return getConverter().toScim(getDao().getById(id));
     }
 
-    @Override
-    public T replace(String id, T resource) {
-
-        E entity = getDao().getById(id);
-
-        GenericSCIMToEntityWrapper genericSCIMToEntityWrapper = new GenericSCIMToEntityWrapper(getTarget(), resource,
-                entity, GenericSCIMToEntityWrapper.Mode.PUT, getScimEntities());
-        setFieldsWrapException(genericSCIMToEntityWrapper);
-
-        entity.touch();
-        return updateLastModified(entity);
-    }
-
     protected abstract SCIMEntities getScimEntities();
 
     protected void setFieldsWrapException(GenericSCIMToEntityWrapper genericSCIMToEntityWrapper) {
