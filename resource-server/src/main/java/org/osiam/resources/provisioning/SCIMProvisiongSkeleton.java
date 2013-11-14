@@ -39,12 +39,15 @@ public abstract class SCIMProvisiongSkeleton<T extends Resource, E extends Inter
 
     public abstract T create(T resource);
 
+    public abstract GenericSCIMToEntityWrapper.For getTarget();
+
+    protected abstract SCIMEntities getScimEntities();
+
     @Override
     public T getById(String id) {
         return getConverter().toScim(getDao().getById(id));
     }
 
-    protected abstract SCIMEntities getScimEntities();
 
     protected void setFieldsWrapException(GenericSCIMToEntityWrapper genericSCIMToEntityWrapper) {
         try {
@@ -63,7 +66,9 @@ public abstract class SCIMProvisiongSkeleton<T extends Resource, E extends Inter
                 entity, GenericSCIMToEntityWrapper.Mode.PATCH, getScimEntities());
         setFieldsWrapException(genericSCIMToEntityWrapper);
 
-        return updateLastModified(entity);
+        entity.touch();
+        return getConverter().toScim(entity);
+
     }
 
     @Override
@@ -71,10 +76,5 @@ public abstract class SCIMProvisiongSkeleton<T extends Resource, E extends Inter
         getDao().delete(id);
     }
 
-    public abstract GenericSCIMToEntityWrapper.For getTarget();
 
-    private T updateLastModified(E resource) {
-        resource.getMeta().setLastModified(GregorianCalendar.getInstance().getTime());
-        return getConverter().toScim(getDao().update(resource));
-    }
 }

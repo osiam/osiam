@@ -56,7 +56,6 @@ class GroupPatchSpec extends Specification {
         1 * groupDAO.getById(id) >> entity
         entity.members.size() == 1
         entity.members.first() instanceof UserEntity
-        1 * groupDAO.update(entity) >> entity
     }
 
     def "should delete a single user in members"() {
@@ -74,7 +73,6 @@ class GroupPatchSpec extends Specification {
         1 * groupDAO.getById(id) >> entity
         entity.members.size() == 1
         entity.members.first() instanceof GroupEntity
-        1 * groupDAO.update(entity) >> entity
     }
 
 
@@ -97,7 +95,6 @@ class GroupPatchSpec extends Specification {
         then:
         1 * groupDAO.getById(id) >> entity
         entity.members.empty
-        1 * groupDAO.update(entity) >> entity
     }
 
 
@@ -115,7 +112,6 @@ class GroupPatchSpec extends Specification {
         bean.update(id, group)
         then:
         1 * groupDAO.getById(id) >> entity
-        1 * groupDAO.update(entity) >> entity
         entity.members.size() == 3
     }
 
@@ -134,7 +130,6 @@ class GroupPatchSpec extends Specification {
         bean.update(id, group)
         then:
         1 * groupDAO.getById(id) >> entity
-        1 * groupDAO.update(entity) >> entity
         entity.members.size() == 2
         entity.members.last() instanceof GroupEntity
 
@@ -151,7 +146,6 @@ class GroupPatchSpec extends Specification {
 
         then:
         1 * groupDAO.getById(id) >> entity
-        1 * groupDAO.update(entity) >> entity
         entity.displayName == "hallo"
     }
 
@@ -174,7 +168,6 @@ class GroupPatchSpec extends Specification {
         then:
         1 * groupDAO.getById(id) >> entity
         entity.displayName == "master of the universe"
-        1 * groupDAO.update(entity) >> entity
     }
 
     def "should delete and update simple attributes"() {
@@ -190,7 +183,6 @@ class GroupPatchSpec extends Specification {
         1 * groupDAO.getById(id) >> entity
         entity.displayName == "harald"
         entity.members.empty
-        1 * groupDAO.update(entity) >> entity
 
     }
 
@@ -210,7 +202,6 @@ class GroupPatchSpec extends Specification {
         then:
         1 * groupDAO.getById(id) >> entity
         entity.getMembers().empty
-        1 * groupDAO.update(entity) >> entity
     }
 
 
@@ -224,7 +215,6 @@ class GroupPatchSpec extends Specification {
         then:
         1 * groupDAO.getById(id) >> entity
         result.id == oldUuid.toString()
-        1 * groupDAO.update(entity) >> entity
     }
 
     def "should ignore read-only attributes on delete"() {
@@ -238,7 +228,6 @@ class GroupPatchSpec extends Specification {
         then:
         1 * groupDAO.getById(id) >> entity
         result.id == oldUuid.toString()
-        1 * groupDAO.update(entity) >> entity
 
     }
 }

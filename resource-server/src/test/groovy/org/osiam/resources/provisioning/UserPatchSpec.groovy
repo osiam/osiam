@@ -220,7 +220,6 @@ class UserPatchSpec extends Specification {
         1 * userDao.getById(id) >> entity
         entity.userName == "username"
         entity.displayName == "hallo"
-        1 * userDao.update(entity) >> entity
     }
 
     private UserEntity createEntityWithInternalId() {
@@ -245,7 +244,6 @@ class UserPatchSpec extends Specification {
         1 * userDao.getById(id) >> entity
         entity.userName == "username"
         entity.displayName == null
-        1 * userDao.update(entity) >> entity
 
     }
 
@@ -276,7 +274,6 @@ class UserPatchSpec extends Specification {
         1 * userDao.getById(id) >> entity
         entity.userName == "Harald"
         entity.displayName == null
-        1 * userDao.update(entity) >> entity
 
     }
 
@@ -294,7 +291,6 @@ class UserPatchSpec extends Specification {
         1 * userDao.getById(id) >> entity
         entity.userName == "Harald"
         entity.displayName == null
-        1 * userDao.update(entity) >> entity
     }
 
     def "should update parts of an complex attribute"() {
@@ -408,7 +404,6 @@ class UserPatchSpec extends Specification {
 
         then:
         1 * userDao.getById(id) >> entity
-        1 * userDao.update(entity) >> entity
         lastModified <= entity.getMeta().getLastModified()
     }
 
