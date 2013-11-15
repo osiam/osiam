@@ -18,7 +18,7 @@ import java.util.Set;
 public class ExtensionConverter implements Converter<Set<Extension>, Set<ExtensionFieldValueEntity>> {
 
     @Inject
-    ExtensionDao extensionDao;
+    private ExtensionDao extensionDao;
 
 
     @Override
