@@ -176,7 +176,7 @@ public class AddressEntity implements Serializable {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj) {   // NOSONAR : Sadly this method is that long
         if (this == obj) {
             return true;
         }
