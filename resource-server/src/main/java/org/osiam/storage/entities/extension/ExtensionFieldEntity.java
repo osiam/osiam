@@ -67,12 +67,12 @@ public class ExtensionFieldEntity implements Serializable {
 
     @Column(name = "type")
     @Access(AccessType.PROPERTY)
-    private String getTypeAsString() {  // NOSONAR : This method is needed to serialize our type
-        return type.toString();
+    private String getTypeAsString() {
+        return type.toString(); // NOSONAR : This method is needed to serialize our type
     }
 
-    private void setTypeAsString(String typeAsString) { // NOSONAR : This method is needed to deserialize our type
-        type = ExtensionFieldType.valueOf(typeAsString);
+    private void setTypeAsString(String typeAsString) {
+        type = ExtensionFieldType.valueOf(typeAsString); // NOSONAR : This method is needed to deserialize our type
     }
 
     public boolean isRequired() {
