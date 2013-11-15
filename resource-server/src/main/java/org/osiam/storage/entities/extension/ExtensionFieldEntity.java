@@ -62,16 +62,17 @@ public class ExtensionFieldEntity implements Serializable {
         this.type = type;
     }
 
-    private void setTypeAsString(String typeAsString) {
-        type = ExtensionFieldType.valueOf(typeAsString);
-    }
-
     // @Access is necessary to provide a portable way of mapping our new extension field type in
     // anything < JPA 2.1 Should be replaced by a custom user type at some point.
+
     @Column(name = "type")
     @Access(AccessType.PROPERTY)
-    private String getTypeAsString() {
+    private String getTypeAsString() {  // NOSONAR : This method is needed to serialize our type
         return type.toString();
+    }
+
+    private void setTypeAsString(String typeAsString) { // NOSONAR : This method is needed to deserialize our type
+        type = ExtensionFieldType.valueOf(typeAsString);
     }
 
     public boolean isRequired() {
