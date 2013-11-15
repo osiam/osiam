@@ -64,11 +64,11 @@ public class ExtensionFieldEntity {
 
     @Column(name = "type")
     @Access(AccessType.PROPERTY)
-    private String getTypeAsString() {
-        return type.toString(); // NOSONAR : This method is needed to serialize our type
+    private String getTypeAsString() {  // NOSONAR : This method is needed to serialize our type
+        return type.toString();         // NOSONAR : This method is needed to serialize our type
     }
 
-    private void setTypeAsString(String typeAsString) {
+    private void setTypeAsString(String typeAsString) {  // NOSONAR : This method is needed to deserialize our type
         type = ExtensionFieldType.valueOf(typeAsString); // NOSONAR : This method is needed to deserialize our type
     }
 

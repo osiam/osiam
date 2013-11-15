@@ -172,7 +172,7 @@ public class AddressEntity {
         return result;
     }
 
-    @Override
+    @Override                             // NOSONAR : Cyclomatic complexity can't be reduced
     public boolean equals(Object obj) {   // NOSONAR : Sadly this method is that long
         if (this == obj) {
             return true;

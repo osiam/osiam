@@ -158,8 +158,8 @@ public class NameEntity {
         return true;
     }
 
-    @Override
-    public int hashCode() {
+    @Override                // NOSONAR : Cyclomatic complexity can't be reduced
+    public int hashCode() {  // NOSONAR : Cyclomatic complexity can't be reduced
         final int prime = 31;
         int result = formatted != null ? formatted.hashCode() : 0;
         result = prime * result + (familyName != null ? familyName.hashCode() : 0);
