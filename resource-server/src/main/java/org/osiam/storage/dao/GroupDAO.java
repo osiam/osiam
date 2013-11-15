@@ -23,8 +23,6 @@
 
 package org.osiam.storage.dao;
 
-import java.util.logging.Level;
-
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.sql.JoinType;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
@@ -32,6 +30,9 @@ import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.entities.GroupEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
+import java.util.logging.Level;
 
 
 @Repository
@@ -55,6 +56,10 @@ public class GroupDAO extends GetInternalIdSkeleton implements GenericDAO<GroupE
 
     public void delete(String id) {
         GroupEntity groupEntity = getById(id);
+        Set<GroupEntity> groups = groupEntity.getGroups();
+        for (GroupEntity group : groups) {
+            group.removeMember(groupEntity);
+        }
         em.remove(groupEntity);
     }
 

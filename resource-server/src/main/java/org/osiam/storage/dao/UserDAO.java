@@ -71,7 +71,7 @@ public class UserDAO extends GetInternalIdSkeleton implements GenericDAO<UserEnt
         UserEntity userEntity = getById(id);
         Set<GroupEntity> groups = userEntity.getGroups();
         for (GroupEntity group : groups) {
-            group.getMembers().remove(userEntity);
+            group.removeMember(userEntity);
         }
         em.remove(userEntity);
     }
