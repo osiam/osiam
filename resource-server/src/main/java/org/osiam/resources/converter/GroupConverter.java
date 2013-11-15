@@ -46,14 +46,15 @@ public class GroupConverter implements Converter<Group, GroupEntity> {
 
         try {
             resource = userDao.getById(uuid);
-        } catch (ResourceNotFoundException e) {
+        } catch (ResourceNotFoundException ignored) {
+            // this exception is safe to ignore
         }
 
         if (resource == null) {
             try {
                 resource = groupDao.getById(uuid);
             } catch (ResourceNotFoundException e) {
-                throw new ResourceNotFoundException("Group member with UUID " + uuid + " not found");
+                throw new ResourceNotFoundException("Group member with UUID " + uuid + " not found"); // NOSONAR : Don't preserve stack trace here
             }
         }
 

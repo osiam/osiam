@@ -91,7 +91,7 @@ public class GroupEntity extends InternalIdSkeleton {
 
     @Override
     public int hashCode() {
-        return super.hashCode();
+        return super.hashCode(); // NOSONAR : Make sure you change hashcode() too if you modify equals
     }
 
     @Override
