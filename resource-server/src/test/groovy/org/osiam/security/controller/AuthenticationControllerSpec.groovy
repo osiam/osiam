@@ -78,7 +78,7 @@ class AuthenticationControllerSpec extends Specification {
         result.getUserName() == "userName"
         result.getPassword() == "password"
         result.getId() == userId.toString()
-        result.getActive()
+        result.isActive()
     }
 
     def "The getClient method annotations should be present with appropriate configuration for RequestMapping and Response Body"() {
