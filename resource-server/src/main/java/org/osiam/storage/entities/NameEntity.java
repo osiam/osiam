@@ -160,7 +160,7 @@ public class NameEntity {
 
     @Override
     public int hashCode() {
-        int prime = 31;
+        final int prime = 31;
         int result = formatted != null ? formatted.hashCode() : 0;
         result = prime * result + (familyName != null ? familyName.hashCode() : 0);
         result = prime * result + (givenName != null ? givenName.hashCode() : 0);

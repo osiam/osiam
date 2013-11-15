@@ -524,7 +524,7 @@ public class UserEntity extends InternalIdSkeleton {
 
     @Override
     public int hashCode() {
-        int prime = 31;
+        final int prime = 31;
         int result = super.hashCode();
         result = prime * result + (userName != null ? userName.hashCode() : 0);
         return result;
