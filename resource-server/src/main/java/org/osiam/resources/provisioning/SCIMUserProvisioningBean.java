@@ -124,7 +124,7 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
             User scimResultUser = userConverter.toScim((UserEntity) g);
             users.add(User.Builder.generateForOutput(scimResultUser));
         }
-        return new SCIMSearchResult(users, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
+        return new SCIMSearchResult<>(users, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
     }
 
     @Override
