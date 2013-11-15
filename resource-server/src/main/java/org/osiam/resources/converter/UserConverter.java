@@ -54,7 +54,7 @@ public class UserConverter implements Converter<User, UserEntity> {
         userEntity.setActive(user.isActive());
         userEntity.setDisplayName(user.getDisplayName());
         userEntity.setNickName(user.getNickName());
-        userEntity.setExternalId(user.getExternalId() == null ? null : user.getExternalId().equals("") ? null : user
+        userEntity.setExternalId(user.getExternalId() == null ? null : user.getExternalId().isEmpty() ? null : user
                 .getExternalId()); //Due to uniqueness in databases
         userEntity.setPreferredLanguage(user.getPreferredLanguage());
         userEntity.setLocale(user.getLocale());
