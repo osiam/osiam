@@ -23,16 +23,9 @@
 
 package org.osiam.storage.entities;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.regex.Pattern;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
-
-import org.osiam.resources.scim.MultiValuedAttribute;
 
 /**
  * Photos Entity
@@ -54,7 +47,7 @@ public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements Ch
 
     @Override
     public void setValue(String value) {
-        if(isValueIncorrect(value)) {
+        if (isValueIncorrect(value)) {
             throw new IllegalArgumentException("The photo MUST have an attribute 'value' that ends with " +
                     "JPEG, JPG, GIF, PNG.");
         }
@@ -69,14 +62,14 @@ public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements Ch
     }
 
     public String getType() {
-        if(type != null) {
+        if (type != null) {
             return type.toString();
         }
         return null;
     }
 
     public void setType(String type) {
-        if(type != null) {
+        if (type != null) {
             this.type = CanonicalPhotoTypes.valueOf(type);
         }
     }

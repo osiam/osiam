@@ -23,17 +23,8 @@
 
 package org.osiam.storage.entities;
 
+import javax.persistence.*;
 import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-
-import org.osiam.resources.scim.Address;
 
 /**
  * Address Entity
@@ -175,14 +166,12 @@ public class AddressEntity implements Serializable {
         int result = 1;
         result = prime * result + ((country == null) ? 0 : country.hashCode());
         result = prime * result + ((formatted == null) ? 0 : formatted.hashCode());
-        result = prime * result + (int) (id ^ (id >>> 32));
         result = prime * result + ((locality == null) ? 0 : locality.hashCode());
         result = prime * result + ((postalCode == null) ? 0 : postalCode.hashCode());
         result = prime * result + ((primary == null) ? 0 : primary.hashCode());
         result = prime * result + ((region == null) ? 0 : region.hashCode());
         result = prime * result + ((streetAddress == null) ? 0 : streetAddress.hashCode());
         result = prime * result + ((type == null) ? 0 : type.hashCode());
-        result = prime * result + ((user == null) ? 0 : user.hashCode());
         return result;
     }
 
@@ -210,9 +199,6 @@ public class AddressEntity implements Serializable {
                 return false;
             }
         } else if (!formatted.equals(other.formatted)) {
-            return false;
-        }
-        if (id != other.id) {
             return false;
         }
         if (locality == null) {
@@ -251,13 +237,6 @@ public class AddressEntity implements Serializable {
             return false;
         }
         if (type != other.type) {
-            return false;
-        }
-        if (user == null) {
-            if (other.user != null) {
-                return false;
-            }
-        } else if (!user.equals(other.user)) {
             return false;
         }
         return true;

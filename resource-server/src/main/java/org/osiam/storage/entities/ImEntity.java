@@ -23,15 +23,8 @@
 
 package org.osiam.storage.entities;
 
+import javax.persistence.*;
 import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
-
-import org.osiam.resources.scim.MultiValuedAttribute;
 
 /**
  * Instant messaging Entity
@@ -50,14 +43,14 @@ public class ImEntity extends MultiValueAttributeEntitySkeleton implements Child
 
 
     public String getType() {
-        if(type != null) {
+        if (type != null) {
             return type.toString();
         }
         return null;
     }
 
     public void setType(String type) {
-        if(type != null) {
+        if (type != null) {
             this.type = CanonicalImTypes.valueOf(type);
         }
     }

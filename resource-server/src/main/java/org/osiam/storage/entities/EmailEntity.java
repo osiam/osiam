@@ -24,27 +24,22 @@
 package org.osiam.storage.entities;
 
 
+import javax.persistence.*;
 import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
 
 /**
  * Email Entity
  */
 @Entity(name = "scim_email")
-public class EmailEntity extends MultiValueAttributeEntitySkeleton implements HasUser, ChildOfMultiValueAttributeWithIdAndTypeAndPrimary, Serializable{
+public class EmailEntity extends MultiValueAttributeEntitySkeleton implements HasUser, ChildOfMultiValueAttributeWithIdAndTypeAndPrimary, Serializable {
 
     private static final long serialVersionUID = -6535056565639057057L;
-    
+
     @Column
     @Enumerated(EnumType.STRING)
     private CanonicalEmailTypes type;
 
-    
+
     @Column(name = "postgresql_does_not_like_primary")
     private boolean primary;
 
@@ -53,7 +48,7 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ha
 
     @Override
     public String getType() {
-        if(type != null) {
+        if (type != null) {
             return type.toString();
         }
         return null;
@@ -61,7 +56,7 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ha
 
     @Override
     public void setType(String type) {
-        if(type != null) {
+        if (type != null) {
             this.type = CanonicalEmailTypes.valueOf(type);
         }
     }
@@ -85,14 +80,13 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ha
     public void setUser(UserEntity user) {
         this.user = user;
     }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + (primary ? 1231 : 1237);
+        result = prime * result + (primary ? 1 : 0);
         result = prime * result + ((type == null) ? 0 : type.hashCode());
-        result = prime * result + ((user == null) ? 0 : user.hashCode());
         return result;
     }
 
@@ -112,13 +106,6 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ha
             return false;
         }
         if (type != other.type) {
-            return false;
-        }
-        if (user == null) {
-            if (other.user != null) {
-                return false;
-            }
-        } else if (!user.equals(other.user)) {
             return false;
         }
         return true;

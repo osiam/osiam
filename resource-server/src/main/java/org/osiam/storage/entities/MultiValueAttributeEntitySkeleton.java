@@ -23,12 +23,7 @@
 
 package org.osiam.storage.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
+import javax.persistence.*;
 
 
 @Entity
@@ -65,7 +60,6 @@ public abstract class MultiValueAttributeEntitySkeleton implements ChildOfMultiV
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + (int) (multiValueId ^ (multiValueId >>> 32));
         result = prime * result + ((value == null) ? 0 : value.hashCode());
         return result;
     }
@@ -82,9 +76,6 @@ public abstract class MultiValueAttributeEntitySkeleton implements ChildOfMultiV
             return false;
         }
         MultiValueAttributeEntitySkeleton other = (MultiValueAttributeEntitySkeleton) obj;
-        if (multiValueId != other.multiValueId) {
-            return false;
-        }
         if (value == null) {
             if (other.value != null) {
                 return false;
@@ -94,5 +85,5 @@ public abstract class MultiValueAttributeEntitySkeleton implements ChildOfMultiV
         }
         return true;
     }
-    
+
 }

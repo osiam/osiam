@@ -23,10 +23,7 @@
 
 package org.osiam.resources.provisioning;
 
-import java.util.GregorianCalendar;
-
 import org.osiam.resources.converter.Converter;
-import org.osiam.resources.converter.ResourceConverter;
 import org.osiam.resources.scim.Resource;
 import org.osiam.storage.dao.GenericDAO;
 import org.osiam.storage.entities.InternalIdSkeleton;

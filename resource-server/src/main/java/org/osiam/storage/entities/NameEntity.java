@@ -163,12 +163,13 @@ public class NameEntity implements Serializable {
 
     @Override
     public int hashCode() {
+        int prime = 31;
         int result = formatted != null ? formatted.hashCode() : 0;
-        result = 31 * result + (familyName != null ? familyName.hashCode() : 0);
-        result = 31 * result + (givenName != null ? givenName.hashCode() : 0);
-        result = 31 * result + (middleName != null ? middleName.hashCode() : 0);
-        result = 31 * result + (honorificPrefix != null ? honorificPrefix.hashCode() : 0);
-        result = 31 * result + (honorificSuffix != null ? honorificSuffix.hashCode() : 0);
+        result = prime * result + (familyName != null ? familyName.hashCode() : 0);
+        result = prime * result + (givenName != null ? givenName.hashCode() : 0);
+        result = prime * result + (middleName != null ? middleName.hashCode() : 0);
+        result = prime * result + (honorificPrefix != null ? honorificPrefix.hashCode() : 0);
+        result = prime * result + (honorificSuffix != null ? honorificSuffix.hashCode() : 0);
         return result;
     }
 }
