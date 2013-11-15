@@ -1,16 +1,7 @@
-package org.osiam.storage.entities.extension;
+package org.osiam.storage.entities;
 
+import javax.persistence.*;
 import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-
-import org.osiam.storage.entities.UserEntity; //NOSONAR - Needed due to bidirectional relation
 
 /**
  * Defines a value of a field of a scim-extension. It's user-dependent!
@@ -25,11 +16,11 @@ public class ExtensionFieldValueEntity implements Serializable {
     @Column(name = "internal_id")
     private long internalId;
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "extension_field_internal_id")
     private ExtensionFieldEntity extensionField;
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional = false)
     private UserEntity user;
 
     @Lob
@@ -97,7 +88,7 @@ public class ExtensionFieldValueEntity implements Serializable {
         }
         return true;
     }
-    
+
 }
 
 

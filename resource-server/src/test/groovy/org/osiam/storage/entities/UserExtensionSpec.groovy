@@ -1,8 +1,5 @@
 package org.osiam.storage.entities
 
-import org.osiam.storage.entities.extension.ExtensionEntity
-import org.osiam.storage.entities.extension.ExtensionFieldEntity
-import org.osiam.storage.entities.extension.ExtensionFieldValueEntity
 import spock.lang.Specification
 
 class UserExtensionSpec extends Specification {

@@ -4,9 +4,9 @@ import org.joda.time.format.ISODateTimeFormat
 import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.ExtensionFieldType
 import org.osiam.storage.dao.ExtensionDao
-import org.osiam.storage.entities.extension.ExtensionEntity
-import org.osiam.storage.entities.extension.ExtensionFieldEntity
-import org.osiam.storage.entities.extension.ExtensionFieldValueEntity
+import org.osiam.storage.entities.ExtensionEntity
+import org.osiam.storage.entities.ExtensionFieldEntity
+import org.osiam.storage.entities.ExtensionFieldValueEntity
 import spock.lang.Specification
 
 class ExtensionConverterSpec extends Specification {

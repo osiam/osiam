@@ -23,27 +23,9 @@
 
 package org.osiam.storage.entities
 
-import org.osiam.resources.scim.*
-import org.osiam.resources.converter.AddressConverter;
-import org.osiam.resources.converter.EmailConverter;
-import org.osiam.resources.converter.EntitlementConverter;
-import org.osiam.resources.converter.ExtensionConverter;
-import org.osiam.resources.converter.ImConverter;
-import org.osiam.resources.converter.NameConverter;
-import org.osiam.resources.converter.PhoneNumberConverter;
-import org.osiam.resources.converter.PhotoConverter;
-import org.osiam.resources.converter.RoleConverter;
-import org.osiam.resources.converter.UserConverter;
-import org.osiam.resources.converter.X509CertificateConverter;
 import org.osiam.resources.scim.Address
-import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.Name
-import org.osiam.resources.scim.User
-import org.osiam.storage.dao.UserDAO;
-import org.osiam.storage.entities.extension.ExtensionEntity
-import org.osiam.storage.entities.extension.ExtensionFieldEntity
-import org.osiam.storage.entities.extension.ExtensionFieldValueEntity
 import spock.lang.Specification
 
 class UserEntitySpec extends Specification {
@@ -51,7 +33,7 @@ class UserEntitySpec extends Specification {
     private static final VALUE = 'irrelevant'
 
     UserEntity userEntity = new UserEntity()
-    
+
     def name = new NameEntity()
     def scimName
 

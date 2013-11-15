@@ -1,4 +1,4 @@
-package org.osiam.storage.entities.extension;
+package org.osiam.storage.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;

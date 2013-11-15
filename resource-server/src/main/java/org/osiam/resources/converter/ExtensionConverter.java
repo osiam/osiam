@@ -3,9 +3,9 @@ package org.osiam.resources.converter;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.storage.dao.ExtensionDao;
-import org.osiam.storage.entities.extension.ExtensionEntity;
-import org.osiam.storage.entities.extension.ExtensionFieldEntity;
-import org.osiam.storage.entities.extension.ExtensionFieldValueEntity;
+import org.osiam.storage.entities.ExtensionEntity;
+import org.osiam.storage.entities.ExtensionFieldEntity;
+import org.osiam.storage.entities.ExtensionFieldValueEntity;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;

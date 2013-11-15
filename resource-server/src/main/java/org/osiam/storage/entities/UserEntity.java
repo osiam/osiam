@@ -23,9 +23,6 @@
 
 package org.osiam.storage.entities;
 
-import org.osiam.storage.entities.extension.ExtensionEntity;
-import org.osiam.storage.entities.extension.ExtensionFieldValueEntity;
-
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
