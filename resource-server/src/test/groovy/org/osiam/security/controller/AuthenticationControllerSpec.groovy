@@ -8,7 +8,6 @@ import org.osiam.storage.entities.ClientEntity
 import org.osiam.storage.entities.RolesEntity
 import org.osiam.storage.entities.UserEntity
 import org.springframework.http.HttpStatus
-import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.ResponseBody
@@ -17,44 +16,11 @@ import spock.lang.Specification
 
 import java.lang.reflect.Method
 
-/**
- * Created with IntelliJ IDEA.
- * User: jochen
- * Date: 14.10.13
- * Time: 15:05
- * To change this template use File | Settings | File Templates.
- */
 class AuthenticationControllerSpec extends Specification {
 
     def userDaoMock = Mock(UserDAO)
     def clientDaoMock = Mock(ClientDao)
     def authenticationController = new AuthenticationController(userDAO: userDaoMock, clientDao: clientDaoMock)
-
-    def "The AuthenticationController class should have the appropriate annotations and corresponding value configuration"() {
-        when:
-        def controllerAnnotation = AuthenticationController.class.getAnnotation(Controller.class)
-        def requestMappingAnnotation = AuthenticationController.class.getAnnotation(RequestMapping.class);
-        def value = requestMappingAnnotation.annotationType().getMethod("value").invoke(requestMappingAnnotation)
-
-        then:
-        controllerAnnotation.annotationType() is Controller
-        requestMappingAnnotation.annotationType() is RequestMapping
-        value == ['/authentication']
-    }
-
-    def "The getUser method annotations should be present with appropriate configuration for RequestMapping and Response Body"() {
-        given:
-        Method method = AuthenticationController.class.getDeclaredMethod("getUser", String)
-
-        when:
-        RequestMapping mapping = method.getAnnotation(RequestMapping)
-        ResponseBody body = method.getAnnotation(ResponseBody)
-
-        then:
-        mapping.value() == ["/user/{id}"]
-        mapping.method() == [RequestMethod.GET]
-        body
-    }
 
     def "Should be able to load an User by his name an getting a UserSpring representation"() {
         given:
@@ -75,7 +41,7 @@ class AuthenticationControllerSpec extends Specification {
         1 * userEntityMock.getId() >> userId
         1 * userEntityMock.getActive() >> true
         result instanceof UserSpring
-        result.getUserName() == "userName"
+        result.getUsername() == "userName"
         result.getPassword() == "password"
         result.getId() == userId.toString()
         result.isActive()
