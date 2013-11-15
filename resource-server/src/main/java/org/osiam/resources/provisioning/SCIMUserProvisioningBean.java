@@ -96,10 +96,11 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
 
     @Override
     public User replace(String id, User user) {
-        user = new User.Builder(user).setId(id).build();
+
+        UserEntity existingEntity = userDao.getById(id);
+
         UserEntity userEntity = userConverter.fromScim(user);
 
-        UserEntity existingEntity = userDao.getById(user.getId());
         userEntity.setInternalId(existingEntity.getInternalId());
         userEntity.setMeta(existingEntity.getMeta());
         userEntity.setId(existingEntity.getId());

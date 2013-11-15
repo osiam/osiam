@@ -79,11 +79,10 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
     @Override
     public Group replace(String id, Group group) {
 
-        group = new Group.Builder(group).setId(id).build();
+        GroupEntity existingEntity = groupDAO.getById(id);
 
         GroupEntity groupEntity = groupConverter.fromScim(group);
 
-        GroupEntity existingEntity = groupDAO.getById(group.getId());
         groupEntity.setInternalId(existingEntity.getInternalId());
         groupEntity.setId(existingEntity.getId());
         groupEntity.setMeta(existingEntity.getMeta());
