@@ -47,7 +47,6 @@ class UserConverterSpec extends Specification {
             nameConverter: nameConverter,
             extensionConverter: extensionConverter,
             metaConverter: metaConverter,
-            userDao: userDao
     )
 
     def 'converting user entity to scim works as expected'() {

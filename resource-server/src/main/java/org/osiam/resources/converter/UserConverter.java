@@ -4,7 +4,6 @@ import org.osiam.resources.scim.Address;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.resources.scim.User;
-import org.osiam.storage.dao.UserDAO;
 import org.osiam.storage.entities.*;
 import org.osiam.storage.entities.extension.ExtensionFieldValueEntity;
 import org.springframework.stereotype.Service;
@@ -40,8 +39,6 @@ public class UserConverter implements Converter<User, UserEntity> {
     private ExtensionConverter extensionConverter;
     @Inject
     private MetaConverter metaConverter;
-    @Inject
-    private UserDAO userDao;
 
     @Override
     public UserEntity fromScim(User user) {
