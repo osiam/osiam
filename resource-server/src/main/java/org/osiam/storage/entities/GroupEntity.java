@@ -24,8 +24,6 @@
 package org.osiam.storage.entities;
 
 import com.google.common.collect.ImmutableSet;
-import org.osiam.resources.scim.Group;
-import org.osiam.resources.scim.MultiValuedAttribute;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,7 +31,6 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Group Entity
@@ -51,43 +48,6 @@ public class GroupEntity extends InternalIdSkeleton {
 
     public GroupEntity() {
         getMeta().setResourceType("Group");
-    }
-
-    private static Set<InternalIdSkeleton> createMembers(Group group) {
-        Set<InternalIdSkeleton> result = new HashSet<>();
-        if (group.getMembers() != null) {
-            transferMultiValueAttributeToInternalIdSkeleton(group, result);
-        }
-
-        return result;
-    }
-
-    private static void transferMultiValueAttributeToInternalIdSkeleton(Group group, Set<InternalIdSkeleton> result) {
-        for (final MultiValuedAttribute m : group.getMembers()) {
-            InternalIdSkeleton skeleton = new InternalIdSkeletonToMultivalueAttribute(m.getDisplay(), UUID.fromString(String.valueOf(m.getValue())));
-            result.add(skeleton);
-        }
-    }
-
-    private static class InternalIdSkeletonToMultivalueAttribute extends InternalIdSkeleton {
-
-        private static final long serialVersionUID = 2192883719672334983L;
-        private final String displayName;
-
-        public InternalIdSkeletonToMultivalueAttribute(String displayName, UUID uuid) {
-            this.displayName = displayName;
-            setId(uuid);
-        }
-
-        @Override
-        public String getDisplayName() {
-            return displayName;
-        }
-
-        
-        public <T> T toScim() {
-            return null;
-        }
     }
 
     public Set<InternalIdSkeleton> getMembers() {
@@ -132,16 +92,6 @@ public class GroupEntity extends InternalIdSkeleton {
     @Override
     public int hashCode() {
         return super.hashCode();
-    }
-
-    private Set<MultiValuedAttribute> membersToScim() {
-        Set<MultiValuedAttribute> members1 = new HashSet<>();
-        for (InternalIdSkeleton i : members) {
-            members1.add(
-                    new MultiValuedAttribute.Builder().setValue(i.getId().toString()).setDisplay(i.getDisplayName())
-                            .build());
-        }
-        return members1;
     }
 
     @Override
