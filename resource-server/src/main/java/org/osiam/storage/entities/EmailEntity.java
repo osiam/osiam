@@ -25,15 +25,12 @@ package org.osiam.storage.entities;
 
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 /**
  * Email Entity
  */
 @Entity(name = "scim_email")
-public class EmailEntity extends MultiValueAttributeEntitySkeleton implements HasUser, ChildOfMultiValueAttributeWithIdAndTypeAndPrimary, Serializable {
-
-    private static final long serialVersionUID = -6535056565639057057L;
+public class EmailEntity extends MultiValueAttributeEntitySkeleton implements HasUser, ChildOfMultiValueAttributeWithIdAndTypeAndPrimary {
 
     @Column
     @Enumerated(EnumType.STRING)

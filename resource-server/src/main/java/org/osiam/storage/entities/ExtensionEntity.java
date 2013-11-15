@@ -1,7 +1,6 @@
 package org.osiam.storage.entities;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,9 +8,7 @@ import java.util.Set;
  * Defines a SCIM-Extension.
  */
 @Entity(name = "scim_extension")
-public class ExtensionEntity implements Serializable {
-
-    private static final long serialVersionUID = 2192284482983111198L;
+public class ExtensionEntity {
 
     @Id
     @GeneratedValue

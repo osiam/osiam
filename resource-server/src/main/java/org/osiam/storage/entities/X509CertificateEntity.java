@@ -23,8 +23,6 @@
 
 package org.osiam.storage.entities;
 
-import java.io.Serializable;
-
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
@@ -32,9 +30,7 @@ import javax.persistence.ManyToOne;
  * X509 Certificates Entity
  */
 @Entity(name = "scim_certificate")
-public class X509CertificateEntity extends MultiValueAttributeEntitySkeleton implements HasUser, Serializable {
-
-    private static final long serialVersionUID = -6535057565639057058L;
+public class X509CertificateEntity extends MultiValueAttributeEntitySkeleton implements HasUser {
 
     @ManyToOne(optional = false)
     private UserEntity user;

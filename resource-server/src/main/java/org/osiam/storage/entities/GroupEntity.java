@@ -38,8 +38,6 @@ import java.util.Set;
 @Entity(name = "scim_group")
 public class GroupEntity extends InternalIdSkeleton {
 
-    private static final long serialVersionUID = -6535056565639057158L;
-
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<InternalIdSkeleton> members = new HashSet<>();
 
@@ -90,8 +88,8 @@ public class GroupEntity extends InternalIdSkeleton {
     }
 
     @Override
-    public int hashCode() {
-        return super.hashCode(); // NOSONAR : Make sure you change hashcode() too if you modify equals
+    public int hashCode() { // NOSONAR : Make sure you change hashcode() too if you modify equals
+        return super.hashCode();
     }
 
     @Override

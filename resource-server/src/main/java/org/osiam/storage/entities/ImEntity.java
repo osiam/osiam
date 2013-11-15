@@ -24,15 +24,12 @@
 package org.osiam.storage.entities;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 /**
  * Instant messaging Entity
  */
 @Entity(name = "scim_im")
-public class ImEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndType, HasUser, Serializable {
-
-    private static final long serialVersionUID = -6835056565639057058L;
+public class ImEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndType, HasUser {
 
     @Column
     @Enumerated(EnumType.STRING)

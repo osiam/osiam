@@ -23,16 +23,12 @@
 
 package org.osiam.storage.entities;
 
-import java.io.Serializable;
-
 import javax.persistence.Entity;
 
 /**
  * Entitlements Entity
  */
 @Entity(name = "scim_entitlements")
-public class EntitlementsEntity extends MultiValueAttributeEntitySkeleton implements Serializable {
-
-    private static final long serialVersionUID = -6534056565639057058L;
+public class EntitlementsEntity extends MultiValueAttributeEntitySkeleton {
 
 }

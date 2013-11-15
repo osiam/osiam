@@ -27,7 +27,6 @@ import com.google.common.collect.ImmutableSet;
 import org.osiam.resources.scim.MultiValuedAttribute;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -36,9 +35,7 @@ import java.util.UUID;
 @Entity(name = "scim_id")
 @Inheritance(strategy = InheritanceType.JOINED)
 @NamedQueries({@NamedQuery(name = "getById", query = "SELECT i FROM scim_id i WHERE i.id= :id")})
-public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute, Serializable {
-
-    private static final long serialVersionUID = -5890750191971717942L;
+public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute {
 
     @Column(unique = true, nullable = false)
     private String id;

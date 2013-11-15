@@ -3,15 +3,12 @@ package org.osiam.storage.entities;
 import org.osiam.resources.scim.ExtensionFieldType;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 /**
  * Defines a field in a scim-extension.
  */
 @Entity(name = "scim_extension_field")
-public class ExtensionFieldEntity implements Serializable {
-
-    private static final long serialVersionUID = 2411072287353978505L;
+public class ExtensionFieldEntity {
 
     @Id
     @GeneratedValue
