@@ -25,6 +25,7 @@ DROP TABLE IF EXISTS scim_extension_field_value CASCADE;
 DROP TABLE IF EXISTS scim_extension_field CASCADE;
 DROP TABLE IF EXISTS scim_extension CASCADE;
 DROP TABLE IF EXISTS scim_user_scim_extension CASCADE;
+DROP TABLE IF EXISTS hibernate_sequences CASCADE;
 DROP SEQUENCE IF EXISTS hibernate_sequence CASCADE;
 
 
@@ -46,6 +47,14 @@ NO MINVALUE
 NO MAXVALUE
 CACHE 1;
 
+
+--
+-- This table is for the sequence strategy 'per table' for multiValue attributes
+--
+CREATE TABLE hibernate_sequences (
+  SEQUENCE_NAME varchar(255),
+  SEQUENCE_NEXT_HI_VALUE integer
+);
 
 --
 -- Name: scim_address; Type: TABLE; Schema: public; Owner: -; Tablespace:
