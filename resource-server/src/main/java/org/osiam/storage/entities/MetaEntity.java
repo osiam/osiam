@@ -23,23 +23,15 @@
 
 package org.osiam.storage.entities;
 
-import java.util.Calendar;
-import java.util.Date;
+import org.osiam.resources.scim.Meta;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.util.Calendar;
+import java.util.Date;
 
-import org.osiam.resources.scim.Meta;
-
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 15.03.13
- * Time: 14:35
- * To change this template use File | Settings | File Templates.
- */
 @Entity(name = "scim_meta")
 public class MetaEntity {
 
@@ -67,8 +59,8 @@ public class MetaEntity {
         lastModified = instance.getTime();
     }
 
-    public MetaEntity() {}
-
+    public MetaEntity() {
+    }
 
 
     public long getId() {

@@ -64,14 +64,6 @@ class ManagerEntitySpec extends Specification {
         managerEntity.getDisplayName() == "John Smith"
     }
 
-    def "mapping to scim should be present"() {
-        when:
-        def manager = managerEntity.toScim()
-
-        then:
-        manager != null
-    }
-
     def "should return manager id if it is not null"() {
         given:
         managerEntity.setManagerId(UUID.randomUUID())

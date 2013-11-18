@@ -23,14 +23,8 @@
 
 package org.osiam.resources.provisioning;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.inject.Inject;
-
+import org.osiam.resources.converter.Converter;
+import org.osiam.resources.converter.GroupConverter;
 import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.SCIMSearchResult;
@@ -40,22 +34,37 @@ import org.osiam.storage.entities.GroupEntity;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 @Service
-public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group> implements SCIMGroupProvisioning {
+public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, GroupEntity> implements SCIMGroupProvisioning {
 
     private static final Logger LOGGER = Logger.getLogger(SCIMGroupProvisioningBean.class.getName());
+
+    @Inject
+    private GroupConverter groupConverter;
 
     @Inject
     private GroupDAO groupDAO;
 
     @Override
-    protected GenericDAO getDao() {
+    protected GenericDAO<GroupEntity> getDao() {
         return groupDAO;
     }
 
     @Override
+    protected Converter<Group, GroupEntity> getConverter() {
+        return groupConverter;
+    }
+
+    @Override
     public Group create(Group group) {
-        GroupEntity enrichedGroup = GroupEntity.fromScim(group);
+        GroupEntity enrichedGroup = groupConverter.fromScim(group);
         enrichedGroup.setId(UUID.randomUUID());
         try {
             groupDAO.create(enrichedGroup);
@@ -64,17 +73,33 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group> imp
 
             throw new ResourceExistsException(group.getDisplayName() + " already exists.", e);
         }
-        return enrichedGroup.toScim();  //To change body of implemented methods use File | Settings | File Templates.
+        return groupConverter.toScim(enrichedGroup);
+    }
+
+    @Override
+    public Group replace(String id, Group group) {
+
+        GroupEntity existingEntity = groupDAO.getById(id);
+
+        GroupEntity groupEntity = groupConverter.fromScim(group);
+
+        groupEntity.setInternalId(existingEntity.getInternalId());
+        groupEntity.setId(existingEntity.getId());
+        groupEntity.setMeta(existingEntity.getMeta());
+        groupEntity.touch();
+
+        groupEntity = groupDAO.update(groupEntity);
+        return groupConverter.toScim(groupEntity);
     }
 
     @Override
     public SCIMSearchResult<Group> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
         List<Group> groups = new ArrayList<>();
         SCIMSearchResult<GroupEntity> result = getDao().search(filter, sortBy, sortOrder, count, startIndex);
-        for (Object g : result.getResources()) {
-            groups.add(((GroupEntity) g).toScim());
+        for (GroupEntity group : result.getResources()) {
+            groups.add(groupConverter.toScim(group));
         }
-        return new SCIMSearchResult(groups, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
+        return new SCIMSearchResult<>(groups, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
     }
 
     @Override

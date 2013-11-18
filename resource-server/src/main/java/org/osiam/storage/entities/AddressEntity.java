@@ -23,25 +23,13 @@
 
 package org.osiam.storage.entities;
 
-import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-
-import org.osiam.resources.scim.Address;
+import javax.persistence.*;
 
 /**
  * Address Entity
  */
 @Entity(name = "scim_address")
-public class AddressEntity implements Serializable {
-
-    private static final long serialVersionUID = -6535056565939057058L;
+public class AddressEntity {
 
     @Id
     @GeneratedValue
@@ -169,28 +157,86 @@ public class AddressEntity implements Serializable {
         this.user = user;
     }
 
-    public Address toScim() {
-        return new Address.Builder().
-                setCountry(getCountry()).
-                setFormatted(getFormatted()).
-                setLocality(getLocality()).
-                setPostalCode(String.valueOf(getPostalCode())).
-                setRegion(getRegion()).
-                setStreetAddress(getStreetAddress()).
-                build();
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((country == null) ? 0 : country.hashCode());
+        result = prime * result + ((formatted == null) ? 0 : formatted.hashCode());
+        result = prime * result + ((locality == null) ? 0 : locality.hashCode());
+        result = prime * result + ((postalCode == null) ? 0 : postalCode.hashCode());
+        result = prime * result + ((primary == null) ? 0 : primary.hashCode());
+        result = prime * result + ((region == null) ? 0 : region.hashCode());
+        result = prime * result + ((streetAddress == null) ? 0 : streetAddress.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
     }
 
-    public static AddressEntity fromScim(Address address) {
-        AddressEntity addressEntity = new AddressEntity();
-        addressEntity.setCountry(address.getCountry());
-        addressEntity.setFormatted(address.getFormatted());
-        addressEntity.setLocality(address.getLocality());
-        addressEntity.setPostalCode(address.getPostalCode());
-        addressEntity.setPrimary((address.isPrimary() == null ? false : address.isPrimary()));
-        addressEntity.setRegion(address.getRegion());
-        addressEntity.setStreetAddress(address.getStreetAddress());
-        addressEntity.setType(address.getType());
-        return addressEntity;
+    @Override                             // NOSONAR : Cyclomatic complexity can't be reduced
+    public boolean equals(Object obj) {   // NOSONAR : Sadly this method is that long
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        AddressEntity other = (AddressEntity) obj;
+        if (country == null) {
+            if (other.country != null) {
+                return false;
+            }
+        } else if (!country.equals(other.country)) {
+            return false;
+        }
+        if (formatted == null) {
+            if (other.formatted != null) {
+                return false;
+            }
+        } else if (!formatted.equals(other.formatted)) {
+            return false;
+        }
+        if (locality == null) {
+            if (other.locality != null) {
+                return false;
+            }
+        } else if (!locality.equals(other.locality)) {
+            return false;
+        }
+        if (postalCode == null) {
+            if (other.postalCode != null) {
+                return false;
+            }
+        } else if (!postalCode.equals(other.postalCode)) {
+            return false;
+        }
+        if (primary == null) {
+            if (other.primary != null) {
+                return false;
+            }
+        } else if (!primary.equals(other.primary)) {
+            return false;
+        }
+        if (region == null) {
+            if (other.region != null) {
+                return false;
+            }
+        } else if (!region.equals(other.region)) {
+            return false;
+        }
+        if (streetAddress == null) {
+            if (other.streetAddress != null) {
+                return false;
+            }
+        } else if (!streetAddress.equals(other.streetAddress)) {
+            return false;
+        }
+        if (type != other.type) {
+            return false;
+        }
+        return true;
     }
 
     private enum CanonicalAddressTypes {

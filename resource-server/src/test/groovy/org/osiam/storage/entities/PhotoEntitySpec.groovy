@@ -59,29 +59,6 @@ class PhotoEntitySpec extends Specification {
         photoEntity.getUser() == userEntity
     }
 
-    def "mapping to scim should be present"() {
-        when:
-        def multivalue = photoEntity.toScim()
-
-        then:
-        multivalue.value == photoEntity.value
-        multivalue.type == photoEntity.type
-    }
-
-    def "mapping from scim should be present"() {
-        given:
-        MultiValuedAttribute multiValuedAttribute = new MultiValuedAttribute.Builder().
-                setValue("http://localhorst:8080/photo.png").
-                setType("photo").
-                build()
-
-        when:
-        def result = PhotoEntity.fromScim(multiValuedAttribute)
-
-        then:
-        result != null
-    }
-
     def "value should contain a valid file suffix"() {
         when:
         photoEntity.setValue("file.JPG")

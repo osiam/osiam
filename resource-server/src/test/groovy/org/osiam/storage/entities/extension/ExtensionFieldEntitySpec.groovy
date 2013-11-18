@@ -1,5 +1,7 @@
 package org.osiam.storage.entities.extension
 
+import org.osiam.storage.entities.ExtensionEntity
+import org.osiam.storage.entities.ExtensionFieldEntity
 import spock.lang.Specification
 
 /**
@@ -13,7 +15,7 @@ class ExtensionFieldEntitySpec extends Specification {
 
     ExtensionFieldEntity extField = new ExtensionFieldEntity();
 
-    def "setter and getter for the Id should be present"(){
+    def "setter and getter for the Id should be present"() {
         def id = 42
         when:
         extField.setInternalId(id)
@@ -22,7 +24,7 @@ class ExtensionFieldEntitySpec extends Specification {
         extField.getInternalId() == id
     }
 
-    def "setter and getter for the name should be present"(){
+    def "setter and getter for the name should be present"() {
         def name = "Donald Duck"
         when:
         extField.setName(name)
@@ -31,16 +33,7 @@ class ExtensionFieldEntitySpec extends Specification {
         extField.getName() == name
     }
 
-    def "setter and getter for the type should be present"(){
-        def type = ExtensionFieldType.STRING
-        when:
-        extField.setType(type)
-
-        then:
-        extField.getType() == type
-    }
-
-    def "setter and getter for the isRequired should be present"(){
+    def "setter and getter for the isRequired should be present"() {
 
         when:
         extField.setRequired(true)
@@ -49,7 +42,7 @@ class ExtensionFieldEntitySpec extends Specification {
         extField.isRequired()
     }
 
-    def "setter and getter for extension should be present"(){
+    def "setter and getter for extension should be present"() {
         given:
         def extension = Mock(ExtensionEntity)
 

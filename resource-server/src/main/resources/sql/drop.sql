@@ -1,5 +1,4 @@
 DROP TABLE IF EXISTS scim_user_scim_roles CASCADE;
-DROP TABLE IF EXISTS scim_user_scim_group CASCADE;
 DROP TABLE IF EXISTS scim_user_scim_entitlements CASCADE;
 DROP TABLE IF EXISTS scim_user_scim_address CASCADE;
 DROP TABLE IF EXISTS scim_user CASCADE;

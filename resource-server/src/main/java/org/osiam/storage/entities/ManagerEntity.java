@@ -23,22 +23,14 @@
 
 package org.osiam.storage.entities;
 
-import java.util.UUID;
+import org.osiam.resources.scim.Manager;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.util.UUID;
 
-import org.osiam.resources.scim.Manager;
-
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 15.03.13
- * Time: 16:18
- * To change this template use File | Settings | File Templates.
- */
 @Entity(name = "scim_manager")
 public class ManagerEntity {
 

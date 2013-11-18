@@ -23,37 +23,28 @@
 
 package org.osiam.resources.provisioning;
 
-import java.util.GregorianCalendar;
-
+import org.osiam.resources.converter.Converter;
 import org.osiam.resources.scim.Resource;
 import org.osiam.storage.dao.GenericDAO;
 import org.osiam.storage.entities.InternalIdSkeleton;
 
-public abstract class SCIMProvisiongSkeleton<T extends Resource> implements SCIMProvisioning<T> {
+public abstract class SCIMProvisiongSkeleton<T extends Resource, E extends InternalIdSkeleton> implements SCIMProvisioning<T> {
 
-    protected abstract GenericDAO getDao();
+    protected abstract GenericDAO<E> getDao();
+
+    protected abstract Converter<T, E> getConverter();
 
     public abstract T create(T resource);
 
-    @Override
-    public T getById(String id) {
-        return getDao().getById(id).toScim();
-    }
-
-    @Override
-    public T replace(String id, T resource) {
-
-        InternalIdSkeleton entity = getDao().getById(id);
-
-        GenericSCIMToEntityWrapper genericSCIMToEntityWrapper =
-                new GenericSCIMToEntityWrapper(getTarget(), resource, entity, GenericSCIMToEntityWrapper.Mode.PUT,
-                        getScimEntities());
-        setFieldsWrapException(genericSCIMToEntityWrapper);
-
-        return updateLastModified(entity);
-    }
+    public abstract GenericSCIMToEntityWrapper.For getTarget();
 
     protected abstract SCIMEntities getScimEntities();
+
+    @Override
+    public T getById(String id) {
+        return getConverter().toScim(getDao().getById(id));
+    }
+
 
     protected void setFieldsWrapException(GenericSCIMToEntityWrapper genericSCIMToEntityWrapper) {
         try {
@@ -66,13 +57,15 @@ public abstract class SCIMProvisiongSkeleton<T extends Resource> implements SCIM
     @Override
     public T update(String id, T resource) {
 
-        InternalIdSkeleton entity = getDao().getById(id);
+        E entity = getDao().getById(id);
 
-        GenericSCIMToEntityWrapper genericSCIMToEntityWrapper =
-                new GenericSCIMToEntityWrapper(getTarget(), resource, entity, GenericSCIMToEntityWrapper.Mode.PATCH, getScimEntities());
+        GenericSCIMToEntityWrapper genericSCIMToEntityWrapper = new GenericSCIMToEntityWrapper(getTarget(), resource,
+                entity, GenericSCIMToEntityWrapper.Mode.PATCH, getScimEntities());
         setFieldsWrapException(genericSCIMToEntityWrapper);
 
-        return updateLastModified(entity);
+        entity.touch();
+        return getConverter().toScim(entity);
+
     }
 
     @Override
@@ -80,11 +73,5 @@ public abstract class SCIMProvisiongSkeleton<T extends Resource> implements SCIM
         getDao().delete(id);
     }
 
-    public abstract GenericSCIMToEntityWrapper.For getTarget();
 
-    private T updateLastModified(InternalIdSkeleton resource) {
-        resource.getMeta().setLastModified(GregorianCalendar.getInstance().getTime());
-        return getDao().update(resource).toScim();
-    }
 }
-
