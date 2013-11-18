@@ -64,7 +64,7 @@ public class UserEntity extends InternalIdSkeleton {
     private String timezone;
 
     @Column
-    private Boolean active;
+    private Boolean active = Boolean.FALSE;
 
     @Column(nullable = false)
     private String password;
