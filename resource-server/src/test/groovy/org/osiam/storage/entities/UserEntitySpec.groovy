@@ -26,10 +26,6 @@ package org.osiam.storage.entities
 import org.osiam.resources.scim.Address
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.Name
-import org.osiam.resources.scim.User
-import org.osiam.storage.entities.extension.ExtensionEntity
-import org.osiam.storage.entities.extension.ExtensionFieldEntity
-import org.osiam.storage.entities.extension.ExtensionFieldValueEntity
 import spock.lang.Specification
 
 class UserEntitySpec extends Specification {
@@ -298,16 +294,6 @@ class UserEntitySpec extends Specification {
         userEntity.getAddresses() == addresses
     }
 
-    def "setter and getter for the groups should be present"() {
-        given:
-        def groups = [new GroupEntity()] as Set
-
-        when:
-        userEntity.setGroups(groups)
-
-        then:
-        userEntity.getGroups() == groups
-    }
 
     def "setter and getter for the entitlements should be present"() {
         given:
@@ -353,123 +339,6 @@ class UserEntitySpec extends Specification {
         internalId == userEntity.getId()
     }
 
-    def "should be possible to map a user entity to a scim user class"() {
-        given:
-        def internalId = UUID.randomUUID()
-
-        userEntity.setId(internalId)
-        userEntity.setActive(true)
-        userEntity.setAddresses([Mock(AddressEntity)] as Set<AddressEntity>)
-        userEntity.setDisplayName("displayName")
-        userEntity.setEmails([Mock(EmailEntity)] as Set<EmailEntity>)
-        userEntity.setEntitlements([Mock(EntitlementsEntity)] as Set<EntitlementsEntity>)
-        userEntity.setExternalId("externalId")
-        userEntity.setGroups([Mock(GroupEntity)] as Set<GroupEntity>)
-        userEntity.setIms([Mock(ImEntity)] as Set<ImEntity>)
-        userEntity.setLocale("locale")
-        userEntity.setName(name)
-        userEntity.setNickName("nickName")
-        userEntity.setPassword("topS3cr3t")
-        userEntity.setPhoneNumbers([Mock(PhoneNumberEntity)] as Set<PhoneNumberEntity>)
-        userEntity.setPhotos([Mock(PhotoEntity)] as Set<PhotoEntity>)
-        userEntity.setPreferredLanguage("preferredLanguage")
-        userEntity.setProfileUrl("profileURL")
-        userEntity.setRoles([Mock(RolesEntity)] as Set<RolesEntity>)
-        userEntity.setTimezone("timeZone")
-        userEntity.setTitle("title")
-        userEntity.setUserName("userName")
-        userEntity.setUserType("userType")
-        userEntity.setX509Certificates([Mock(X509CertificateEntity)] as Set<X509CertificateEntity>)
-        userEntity.setExternalId("externalId")
-        userEntity.setId(internalId)
-
-        when:
-        def user = userEntity.toScim()
-
-        then:
-        user.id == internalId.toString()
-        user.isActive()
-        user.addresses != null
-        user.displayName == "displayName"
-        user.emails != null
-        user.entitlements != null
-        user.externalId == "externalId"
-        user.groups != null
-        user.ims != null
-        user.locale == "locale"
-        user.name != null
-        user.nickName == "nickName"
-        user.password == "topS3cr3t"
-        user.phoneNumbers != null
-        user.photos != null
-        user.preferredLanguage == "preferredLanguage"
-        user.profileUrl == "profileURL"
-        user.roles != null
-        user.timezone == "timeZone"
-        user.title == "title"
-        user.userName == "userName"
-        user.userType == "userType"
-        user.x509Certificates != null
-    }
-
-    def "should be possible to map a user entity to a scim user class without setting the name"() {
-        given:
-        def internalId = UUID.randomUUID()
-
-        userEntity.setActive(true)
-        userEntity.setAddresses([Mock(AddressEntity)] as Set<AddressEntity>)
-        userEntity.setDisplayName("displayName")
-        userEntity.setEmails([Mock(EmailEntity)] as Set<EmailEntity>)
-        userEntity.setEntitlements([Mock(EntitlementsEntity)] as Set<EntitlementsEntity>)
-        userEntity.setExternalId("externalId")
-        userEntity.setGroups([Mock(GroupEntity)] as Set<GroupEntity>)
-        userEntity.setIms([Mock(ImEntity)] as Set<ImEntity>)
-        userEntity.setLocale("locale")
-        userEntity.setName(null)
-        userEntity.setNickName("nickName")
-        userEntity.setPassword("topS3cr3t")
-        userEntity.setPhoneNumbers([Mock(PhoneNumberEntity)] as Set<PhoneNumberEntity>)
-        userEntity.setPhotos([Mock(PhotoEntity)] as Set<PhotoEntity>)
-        userEntity.setPreferredLanguage("preferredLanguage")
-        userEntity.setProfileUrl("profileURL")
-        userEntity.setRoles([Mock(RolesEntity)] as Set<RolesEntity>)
-        userEntity.setTimezone("timeZone")
-        userEntity.setTitle("title")
-        userEntity.setUserName("userName")
-        userEntity.setUserType("userType")
-        userEntity.setX509Certificates([Mock(X509CertificateEntity)] as Set<X509CertificateEntity>)
-        userEntity.setExternalId("externalId")
-        userEntity.setId(internalId)
-
-        when:
-        def user = userEntity.toScim()
-
-        then:
-        user.id == internalId.toString()
-        user.isActive()
-        user.addresses != null
-        user.displayName == "displayName"
-        user.emails != null
-        user.entitlements != null
-        user.externalId == "externalId"
-        user.groups != null
-        user.ims != null
-        user.locale == "locale"
-        user.name == null
-        user.nickName == "nickName"
-        user.password == "topS3cr3t"
-        user.phoneNumbers != null
-        user.photos != null
-        user.preferredLanguage == "preferredLanguage"
-        user.profileUrl == "profileURL"
-        user.roles != null
-        user.timezone == "timeZone"
-        user.title == "title"
-        user.userName == "userName"
-        user.userType == "userType"
-        user.x509Certificates != null
-    }
-
     def "should contain internal_id for jpa"() {
         when:
         userEntity.setInternalId(23)
@@ -483,8 +352,6 @@ class UserEntitySpec extends Specification {
 
         then:
         result.meta.resourceType == "User"
-        result.toScim().meta.resourceType == "User"
-
     }
 
     def 'touch should update lastModified field of the meta object'() {
@@ -517,31 +384,6 @@ class UserEntitySpec extends Specification {
 
         then:
         emptySet != null
-    }
-
-    def "mapping of user extensions from entity to scim"() {
-        given:
-        def extField1 = new ExtensionFieldEntity(name: "field1")
-        def extField2 = new ExtensionFieldEntity(name: "field2")
-        new ExtensionEntity(urn: "urn1", fields: [extField1, extField2])
-        def userEntity = new UserEntity(id: UUID.randomUUID(), userName: "McDuck")
-
-        def extFieldValue1 = new ExtensionFieldValueEntity(extensionField: extField1, user: userEntity, value: "value1")
-        userEntity.getUserExtensions().add(extFieldValue1)
-        def extFieldValue2 = new ExtensionFieldValueEntity(extensionField: extField2, user: userEntity, value: "value2")
-        userEntity.getUserExtensions().add(extFieldValue2)
-
-        when:
-        User scimUser = userEntity.toScim()
-
-        then:
-        scimUser.getUserName() == "McDuck"
-        scimUser.getAllExtensions().size() == 1
-        def scimExt1 = scimUser.getAllExtensions().get("urn1")
-        scimExt1.getAllFields().size() == 2
-        scimExt1.getField("field1") == "value1"
-        scimExt1.getField("field2") == "value2"
-
     }
 
 }

@@ -94,34 +94,4 @@ class NameEntitySpec extends Specification {
         nameEntity.getHonorificSuffix() == "III"
     }
 
-    def "mapping to scim should be present"() {
-        when:
-        def name = nameEntity.toScim()
-
-        then:
-        name.familyName == nameEntity.familyName
-        name.formatted == nameEntity.formatted
-        name.givenName == nameEntity.givenName
-        name.honorificPrefix == nameEntity.honorificPrefix
-        name.honorificSuffix == nameEntity.honorificSuffix
-        name.middleName == nameEntity.middleName
-    }
-
-    def "mapping from scim should be present"() {
-        given:
-        Name name = new Name.Builder().
-                setFamilyName("familyName").
-                setFormatted("formattedName").
-                setGivenName("givenName").
-                setHonorificPrefix("prefix").
-                setHonorificSuffix("suffix").
-                setMiddleName("middleName").
-                build()
-
-        when:
-        def result = NameEntity.fromScim(name)
-
-        then:
-        result != null
-    }
 }

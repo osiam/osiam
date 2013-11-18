@@ -64,29 +64,6 @@ class ImEntitySpec extends Specification {
         imsEntity.getUser() == userEntity
     }
 
-    def "mapping to scim should be present"() {
-        when:
-        def multivalue = imsEntity.toScim()
-
-        then:
-        multivalue.value == imsEntity.value
-        multivalue.type == imsEntity.type
-    }
-
-    def "mapping from scim should be present"() {
-        given:
-        MultiValuedAttribute multiValuedAttribute = new MultiValuedAttribute.Builder().
-                setValue("blaaaa").
-                setType("icq").
-                build()
-
-        when:
-        def result = ImEntity.fromScim(multiValuedAttribute)
-
-        then:
-        result != null
-    }
-
     def "should throw an exception if the type is unknown"() {
         when:
         imsEntity.setType("huch")

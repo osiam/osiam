@@ -24,29 +24,19 @@
 package org.osiam.storage.entities;
 
 
-import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
-
-import org.osiam.resources.scim.MultiValuedAttribute;
+import javax.persistence.*;
 
 /**
  * Email Entity
  */
 @Entity(name = "scim_email")
-public class EmailEntity extends MultiValueAttributeEntitySkeleton implements HasUser, ChildOfMultiValueAttributeWithIdAndTypeAndPrimary, Serializable{
+public class EmailEntity extends MultiValueAttributeEntitySkeleton implements HasUser, ChildOfMultiValueAttributeWithIdAndTypeAndPrimary {
 
-    private static final long serialVersionUID = -6535056565639057057L;
-    
     @Column
     @Enumerated(EnumType.STRING)
     private CanonicalEmailTypes type;
 
-    
+
     @Column(name = "postgresql_does_not_like_primary")
     private boolean primary;
 
@@ -55,7 +45,7 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ha
 
     @Override
     public String getType() {
-        if(type != null) {
+        if (type != null) {
             return type.toString();
         }
         return null;
@@ -63,7 +53,7 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ha
 
     @Override
     public void setType(String type) {
-        if(type != null) {
+        if (type != null) {
             this.type = CanonicalEmailTypes.valueOf(type);
         }
     }
@@ -78,22 +68,6 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ha
         this.primary = primary;
     }
 
-    public MultiValuedAttribute toScim() {
-        return new MultiValuedAttribute.Builder().
-                setPrimary(isPrimary()).
-                setType(getType()).
-                setValue(getValue()).
-                build();
-    }
-
-    public static EmailEntity fromScim(MultiValuedAttribute multiValuedAttribute) {
-        EmailEntity emailEntity = new EmailEntity();
-        emailEntity.setType(multiValuedAttribute.getType());
-        emailEntity.setValue(String.valueOf(multiValuedAttribute.getValue()));
-        emailEntity.setPrimary((multiValuedAttribute.isPrimary() == null ? false : multiValuedAttribute.isPrimary()));
-        return emailEntity;
-    }
-
     @Override
     public UserEntity getUser() {
         return user;
@@ -102,6 +76,36 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ha
     @Override
     public void setUser(UserEntity user) {
         this.user = user;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + (primary ? 1 : 0);
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        EmailEntity other = (EmailEntity) obj;
+        if (primary != other.primary) {
+            return false;
+        }
+        if (type != other.type) {
+            return false;
+        }
+        return true;
     }
 
     public enum CanonicalEmailTypes {

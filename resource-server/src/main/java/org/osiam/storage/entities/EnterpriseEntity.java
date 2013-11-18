@@ -23,21 +23,10 @@
 
 package org.osiam.storage.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-
 import org.osiam.resources.scim.Enterprise;
 
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 15.03.13
- * Time: 16:19
- * To change this template use File | Settings | File Templates.
- */
+import javax.persistence.*;
+
 @Entity(name = "scim_enterprise")
 public class EnterpriseEntity {
 

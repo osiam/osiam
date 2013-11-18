@@ -23,16 +23,6 @@
 
 package org.osiam.security.controller;
 
-import java.io.IOException;
-import java.net.URLDecoder;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
-
-import javax.inject.Inject;
-
 import org.osiam.resources.ClientSpring;
 import org.osiam.resources.RoleSpring;
 import org.osiam.resources.UserSpring;
@@ -43,12 +33,16 @@ import org.osiam.storage.entities.RolesEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
+
+import javax.inject.Inject;
+import java.io.IOException;
+import java.net.URLDecoder;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  * This Controller is used to manage client and user authentication for spring security OAuth.
@@ -63,11 +57,11 @@ public class AuthenticationController {
     @Inject
     private ClientDao clientDao;
 
-    @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/user/{userName:.+}", method = RequestMethod.GET)
     @ResponseBody
-    public UserSpring getUser(@PathVariable final String id) {
+    public UserSpring getUser(@PathVariable final String userName) {
 
-        UserEntity dbUser = userDAO.getByUsername(id);
+        UserEntity dbUser = userDAO.getByUsername(userName);
         return getUserSpring(dbUser);
     }
 
@@ -81,10 +75,11 @@ public class AuthenticationController {
         }
 
         UserSpring springUser = new UserSpring();
-        springUser.setUserName(dbUser.getUserName());
+        springUser.setUsername(dbUser.getUserName());
         springUser.setId(dbUser.getId().toString());
         springUser.setPassword(dbUser.getPassword());
         springUser.setRoles(springRoles);
+        springUser.setActive(dbUser.getActive());
         return springUser;
     }
 

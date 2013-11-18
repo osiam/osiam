@@ -23,23 +23,13 @@
 
 package org.osiam.storage.entities;
 
-import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
-
-import org.osiam.resources.scim.MultiValuedAttribute;
+import javax.persistence.*;
 
 /**
  * Phone Numbers Entity
  */
 @Entity(name = "scim_phoneNumber")
-public class PhoneNumberEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndType, HasUser, Serializable {
-
-    private static final long serialVersionUID = -6535056565639157058L;
+public class PhoneNumberEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndType, HasUser {
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -49,14 +39,14 @@ public class PhoneNumberEntity extends MultiValueAttributeEntitySkeleton impleme
     private UserEntity user;
 
     public String getType() {
-        if(type != null) {
+        if (type != null) {
             return type.toString();
         }
         return null;
     }
 
     public void setType(String type) {
-        if(type != null) {
+        if (type != null) {
             this.type = CanonicalPhoneNumberTypes.valueOf(type);
         }
     }
@@ -67,20 +57,6 @@ public class PhoneNumberEntity extends MultiValueAttributeEntitySkeleton impleme
 
     public void setUser(UserEntity user) {
         this.user = user;
-    }
-
-    public MultiValuedAttribute toScim() {
-        return new MultiValuedAttribute.Builder().
-                setType(getType()).
-                setValue(getValue()).
-                build();
-    }
-
-    public static PhoneNumberEntity fromScim(MultiValuedAttribute multiValuedAttribute) {
-        PhoneNumberEntity phoneNumberEntity = new PhoneNumberEntity();
-        phoneNumberEntity.setType(multiValuedAttribute.getType());
-        phoneNumberEntity.setValue(String.valueOf(multiValuedAttribute.getValue()));
-        return phoneNumberEntity;
     }
 
     public enum CanonicalPhoneNumberTypes {

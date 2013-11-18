@@ -23,30 +23,19 @@
 
 package org.osiam.storage.entities;
 
-import java.io.Serializable;
-import java.util.GregorianCalendar;
-import java.util.UUID;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Transient;
-
+import com.google.common.collect.ImmutableSet;
 import org.osiam.resources.scim.MultiValuedAttribute;
+
+import javax.persistence.*;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @Entity(name = "scim_id")
 @Inheritance(strategy = InheritanceType.JOINED)
 @NamedQueries({@NamedQuery(name = "getById", query = "SELECT i FROM scim_id i WHERE i.id= :id")})
-public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute, Serializable {
-
-    private static final long serialVersionUID = -5890750191971717942L;
+public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute {
 
     @Column(unique = true, nullable = false)
     private String id;
@@ -61,6 +50,9 @@ public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute, 
 
     @ManyToOne(cascade = CascadeType.ALL)
     private MetaEntity meta = new MetaEntity(GregorianCalendar.getInstance());
+
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "members")
+    private Set<GroupEntity> groups = new HashSet<>();
 
     public UUID getId() {
         return UUID.fromString(id);
@@ -105,6 +97,26 @@ public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute, 
         getMeta().setLastModified(GregorianCalendar.getInstance().getTime());
     }
 
+    public Set<GroupEntity> getGroups() {
+        return ImmutableSet.copyOf(groups);
+    }
+
+    public void addToGroup(GroupEntity group) {
+        if (groups.contains(group)) {
+            return;
+        }
+        groups.add(group);
+        group.addMember(this);
+    }
+
+    public void removeFromGroup(GroupEntity group) {
+        if (!groups.contains(group)) {
+            return;
+        }
+        groups.remove(group);
+        group.removeMember(this);
+    }
+
     @Override
     @Transient
     public String getValue() {
@@ -124,5 +136,26 @@ public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute, 
         this.meta = meta;
     }
 
-    public abstract <T> T toScim();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof InternalIdSkeleton)) {
+            return false;
+        }
+
+        InternalIdSkeleton that = (InternalIdSkeleton) o;
+
+        if (id != null ? !id.equals(that.id) : that.id != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
 }

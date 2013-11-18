@@ -23,22 +23,18 @@
 
 package org.osiam.storage.entities;
 
-import java.io.Serializable;
+import org.osiam.resources.scim.Name;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-import org.osiam.resources.scim.Name;
-
 /**
  * Name Entity
  */
 @Entity(name = "scim_name")
-public class NameEntity implements Serializable {
-
-    private static final long serialVersionUID = -6535056565659057058L;
+public class NameEntity {
 
     @Id
     @GeneratedValue
@@ -129,16 +125,48 @@ public class NameEntity implements Serializable {
                 build();
     }
 
-    public static NameEntity fromScim(Name name) {
-        NameEntity nameEntity = new NameEntity();
-        if (name != null) {
-            nameEntity.setFamilyName(name.getFamilyName());
-            nameEntity.setFormatted(name.getFormatted());
-            nameEntity.setGivenName(name.getGivenName());
-            nameEntity.setHonorificPrefix(name.getHonorificPrefix());
-            nameEntity.setHonorificSuffix(name.getHonorificSuffix());
-            nameEntity.setMiddleName(name.getMiddleName());
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
         }
-        return nameEntity;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        NameEntity other = (NameEntity) o;
+
+        if (familyName != null ? !familyName.equals(other.familyName) : other.familyName != null) {
+            return false;
+        }
+        if (formatted != null ? !formatted.equals(other.formatted) : other.formatted != null) {
+            return false;
+        }
+        if (givenName != null ? !givenName.equals(other.givenName) : other.givenName != null) {
+            return false;
+        }
+        if (honorificPrefix != null ? !honorificPrefix.equals(other.honorificPrefix) : other.honorificPrefix != null) {
+            return false;
+        }
+        if (honorificSuffix != null ? !honorificSuffix.equals(other.honorificSuffix) : other.honorificSuffix != null) {
+            return false;
+        }
+        if (middleName != null ? !middleName.equals(other.middleName) : other.middleName != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override                // NOSONAR : Cyclomatic complexity can't be reduced
+    public int hashCode() {  // NOSONAR : Cyclomatic complexity can't be reduced
+        final int prime = 31;
+        int result = formatted != null ? formatted.hashCode() : 0;
+        result = prime * result + (familyName != null ? familyName.hashCode() : 0);
+        result = prime * result + (givenName != null ? givenName.hashCode() : 0);
+        result = prime * result + (middleName != null ? middleName.hashCode() : 0);
+        result = prime * result + (honorificPrefix != null ? honorificPrefix.hashCode() : 0);
+        result = prime * result + (honorificSuffix != null ? honorificSuffix.hashCode() : 0);
+        return result;
     }
 }

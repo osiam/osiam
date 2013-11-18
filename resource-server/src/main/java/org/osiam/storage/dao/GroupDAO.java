@@ -23,18 +23,16 @@
 
 package org.osiam.storage.dao;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.logging.Level;
-
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.sql.JoinType;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.entities.GroupEntity;
-import org.osiam.storage.entities.InternalIdSkeleton;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
+import java.util.logging.Level;
 
 
 @Repository
@@ -43,20 +41,8 @@ public class GroupDAO extends GetInternalIdSkeleton implements GenericDAO<GroupE
 
     @Override
     public void create(GroupEntity group) {
-        findAndAddMembers(group);
         em.persist(group);
-
     }
-
-    private void findAndAddMembers(GroupEntity group) {
-        Set<InternalIdSkeleton> skeletons = new HashSet<>(group.getMembers());
-        for (InternalIdSkeleton i : skeletons) {
-            InternalIdSkeleton skeleton = getInternalIdSkeleton(i.getId().toString());
-            group.getMembers().remove(i);
-            group.getMembers().add(skeleton);
-        }
-    }
-
 
     @Override
     public GroupEntity getById(String id) {
@@ -70,11 +56,14 @@ public class GroupDAO extends GetInternalIdSkeleton implements GenericDAO<GroupE
 
     public void delete(String id) {
         GroupEntity groupEntity = getById(id);
+        Set<GroupEntity> groups = groupEntity.getGroups();
+        for (GroupEntity group : groups) {
+            group.removeMember(groupEntity);
+        }
         em.remove(groupEntity);
     }
 
     public GroupEntity update(GroupEntity entity) {
-        findAndAddMembers(entity);
         return em.merge(entity);
     }
 

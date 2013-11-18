@@ -23,50 +23,64 @@
 
 package org.osiam.resources.provisioning;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.UUID;
-
-import javax.inject.Inject;
-
+import org.osiam.resources.converter.Converter;
+import org.osiam.resources.converter.UserConverter;
 import org.osiam.resources.exceptions.ResourceExistsException;
-import org.osiam.resources.helper.ScimConverter;
 import org.osiam.resources.scim.Extension;
+import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.resources.scim.User;
 import org.osiam.storage.dao.ExtensionDao;
 import org.osiam.storage.dao.GenericDAO;
 import org.osiam.storage.dao.UserDAO;
+import org.osiam.storage.entities.ExtensionEntity;
+import org.osiam.storage.entities.ExtensionFieldEntity;
+import org.osiam.storage.entities.ExtensionFieldValueEntity;
 import org.osiam.storage.entities.UserEntity;
-import org.osiam.storage.entities.extension.ExtensionEntity;
-import org.osiam.storage.entities.extension.ExtensionFieldEntity;
-import org.osiam.storage.entities.extension.ExtensionFieldValueEntity;
+import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.UUID;
+
 @Service
 @Transactional
-public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> implements SCIMUserProvisioning {
+public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserEntity> implements SCIMUserProvisioning {
 
     @Inject
-    private ScimConverter scimConverter;
+    private UserConverter userConverter;
 
     @Inject
     private UserDAO userDao;
-    
+
     @Inject
     private ExtensionDao extensionDao;
 
+    @Inject
+    private PasswordEncoder passwordEncoder;
+
     @Override
-    protected GenericDAO getDao() {
+    protected GenericDAO<UserEntity> getDao() {
         return userDao;
     }
 
     @Override
+    protected Converter<User, UserEntity> getConverter() {
+        return userConverter;
+    }
+
+    @Override
     public User create(User user) {
-        UserEntity userEntity = scimConverter.createFromScim(user);
+        UserEntity userEntity = userConverter.fromScim(user);
         userEntity.setId(UUID.randomUUID());
+
+        String hashedPassword = passwordEncoder.encodePassword(user.getPassword(), userEntity.getId());
+        userEntity.setPassword(hashedPassword);
+
         try {
             userDao.create(userEntity);
         } catch (Exception e) {
@@ -77,14 +91,29 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
             throw new ResourceExistsException("The user with name " +
                     user.getUserName() + " already exists.", e);
         }
-        return userEntity.toScim();
+        return userConverter.toScim(userEntity);
     }
 
     @Override
     public User replace(String id, User user) {
-        UserEntity userEntity = scimConverter.createFromScim(user, id);
+
+        UserEntity existingEntity = userDao.getById(id);
+
+        UserEntity userEntity = userConverter.fromScim(user);
+
+        userEntity.setInternalId(existingEntity.getInternalId());
+        userEntity.setMeta(existingEntity.getMeta());
+        userEntity.setId(existingEntity.getId());
+
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            String hashedPassword = passwordEncoder.encodePassword(user.getPassword(), userEntity.getId());
+            userEntity.setPassword(hashedPassword);
+        } else {
+            userEntity.setPassword(existingEntity.getPassword());
+        }
+
         userEntity.touch();
-        return userDao.update(userEntity).toScim();
+        return userConverter.toScim(userDao.update(userEntity));
     }
 
     @Override
@@ -92,64 +121,69 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User> imple
         List<User> users = new ArrayList<>();
         SCIMSearchResult<UserEntity> result = getDao().search(filter, sortBy, sortOrder, count, startIndex);
         for (Object g : result.getResources()) {
-            users.add(User.Builder.generateForOutput(((UserEntity) g).toScim()));
+            User scimResultUser = userConverter.toScim((UserEntity) g);
+            users.add(User.Builder.generateForOutput(scimResultUser));
         }
-        return new SCIMSearchResult(users, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
+        return new SCIMSearchResult<>(users, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
     }
-    
+
     @Override
     public User update(String id, User user) {
-        User updatedUser = super.update(id, user);
-        
-        if (user.getAllExtensions().size() == 0) {
-            return updatedUser;
-        }
-        
+
+        super.update(id, user);
+
         UserEntity userEntity = userDao.getById(id);
-        
-        for (Entry<String, Extension> extensionEntry : user.getAllExtensions().entrySet()) {
-            updateExtension(extensionEntry, userEntity);
+
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            String hashedPassword = passwordEncoder.encodePassword(user.getPassword(), userEntity.getId());
+            userEntity.setPassword(hashedPassword);
         }
-        
-        return userEntity.toScim();
+
+        if (user.getAllExtensions().size() != 0) {
+            for (Entry<String, Extension> extensionEntry : user.getAllExtensions().entrySet()) {
+                updateExtension(extensionEntry, userEntity);
+            }
+        }
+
+        userEntity.touch();
+        return userConverter.toScim(userEntity);
     }
 
     private void updateExtension(Entry<String, Extension> extensionEntry, UserEntity userEntity) {
         String urn = extensionEntry.getKey();
         Extension updatedExtension = extensionEntry.getValue();
         ExtensionEntity extensionEntity = extensionDao.getExtensionByUrn(urn);
-        
+
         for (ExtensionFieldEntity extensionField : extensionEntity.getFields()) {
             String fieldName = extensionField.getName();
             ExtensionFieldValueEntity extensionFieldValue = findExtensionFieldValue(extensionField, userEntity);
-            
-            if(extensionFieldValue == null && !updatedExtension.isFieldPresent(fieldName)) {
+
+            if (extensionFieldValue == null && !updatedExtension.isFieldPresent(fieldName)) {
                 continue;
             } else if (extensionFieldValue == null && updatedExtension.isFieldPresent(fieldName)) {
                 extensionFieldValue = new ExtensionFieldValueEntity();
             } else if (extensionFieldValue != null && !updatedExtension.isFieldPresent(fieldName)) {
                 continue;
             }
-            
-            String newValue = updatedExtension.getField(fieldName);
-            
-            if(newValue == null) {
+
+            String newValue = updatedExtension.getField(fieldName, ExtensionFieldType.STRING);
+            if (newValue == null) {
                 continue;
             }
-            
+
             extensionFieldValue.setValue(newValue);
-            
-            userEntity.addOrUpdateExtensionValue(extensionField, extensionFieldValue);
+            extensionFieldValue.setExtensionField(extensionField);
+            userEntity.addOrUpdateExtensionValue(extensionFieldValue);
         }
     }
-    
+
     private ExtensionFieldValueEntity findExtensionFieldValue(ExtensionFieldEntity extensionField, UserEntity userEntity) {
         for (ExtensionFieldValueEntity extensionFieldValue : userEntity.getUserExtensions()) {
-            if(extensionFieldValue.getExtensionField().equals(extensionField)) {
+            if (extensionFieldValue.getExtensionField().equals(extensionField)) {
                 return extensionFieldValue;
             }
         }
-        
+
         return null;
     }
 

@@ -23,23 +23,13 @@
 
 package org.osiam.storage.entities;
 
-import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
-
-import org.osiam.resources.scim.MultiValuedAttribute;
+import javax.persistence.*;
 
 /**
  * Instant messaging Entity
  */
 @Entity(name = "scim_im")
-public class ImEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndType, HasUser, Serializable {
-
-    private static final long serialVersionUID = -6835056565639057058L;
+public class ImEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndType, HasUser {
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -50,14 +40,14 @@ public class ImEntity extends MultiValueAttributeEntitySkeleton implements Child
 
 
     public String getType() {
-        if(type != null) {
+        if (type != null) {
             return type.toString();
         }
         return null;
     }
 
     public void setType(String type) {
-        if(type != null) {
+        if (type != null) {
             this.type = CanonicalImTypes.valueOf(type);
         }
     }
@@ -68,20 +58,6 @@ public class ImEntity extends MultiValueAttributeEntitySkeleton implements Child
 
     public void setUser(UserEntity user) {
         this.user = user;
-    }
-
-    public MultiValuedAttribute toScim() {
-        return new MultiValuedAttribute.Builder().
-                setType(getType()).
-                setValue(getValue()).
-                build();
-    }
-
-    public static ImEntity fromScim(MultiValuedAttribute multiValuedAttribute) {
-        ImEntity imEntity = new ImEntity();
-        imEntity.setType(multiValuedAttribute.getType());
-        imEntity.setValue(String.valueOf(multiValuedAttribute.getValue()));
-        return imEntity;
     }
 
     public enum CanonicalImTypes {
