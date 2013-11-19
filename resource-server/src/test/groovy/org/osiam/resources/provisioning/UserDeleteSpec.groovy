@@ -24,7 +24,7 @@
 package org.osiam.resources.provisioning
 
 import org.osiam.resources.exceptions.ResourceNotFoundException
-import org.osiam.storage.dao.UserDAO
+import org.osiam.storage.dao.UserDao
 import org.osiam.storage.entities.UserEntity
 import spock.lang.Specification
 
@@ -33,7 +33,7 @@ import javax.persistence.Query
 
 class UserDeleteSpec extends Specification {
     EntityManager em = Mock(EntityManager)
-    def userDao = new UserDAO(em: em)
+    def userDao = new UserDao(em: em)
     SCIMUserProvisioningBean bean = new SCIMUserProvisioningBean(userDao: userDao)
     def uId = UUID.randomUUID()
     def id = uId.toString()

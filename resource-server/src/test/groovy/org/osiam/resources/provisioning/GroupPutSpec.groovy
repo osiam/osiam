@@ -27,13 +27,13 @@ import org.osiam.resources.converter.GroupConverter
 import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.resources.scim.Group
 import org.osiam.resources.scim.MemberRef
-import org.osiam.storage.dao.GroupDAO
+import org.osiam.storage.dao.GroupDao
 import org.osiam.storage.entities.GroupEntity
 import spock.lang.Specification
 
 class GroupPutSpec extends Specification {
 
-    GroupDAO groupDao = Mock()
+    GroupDao groupDao = Mock()
     GroupConverter groupConverter = Mock()
 
     SCIMGroupProvisioningBean underTest = new SCIMGroupProvisioningBean(groupDAO: groupDao, groupConverter: groupConverter)

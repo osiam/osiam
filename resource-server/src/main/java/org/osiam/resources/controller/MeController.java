@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.osiam.security.authorization.AccessTokenValidationService;
-import org.osiam.storage.dao.UserDAO;
+import org.osiam.storage.dao.UserDao;
 import org.osiam.storage.entities.EmailEntity;
 import org.osiam.storage.entities.NameEntity;
 import org.osiam.storage.entities.UserEntity;
@@ -33,7 +33,7 @@ public class MeController {
     private AccessTokenValidationService accessTokenValidationService;
 
     @Inject
-    private UserDAO userDAO;
+    private UserDao userDAO;
 
     /**
      * This method is used to get information about the user who initialised the authorization process.

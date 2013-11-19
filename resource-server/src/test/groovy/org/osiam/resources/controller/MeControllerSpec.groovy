@@ -3,7 +3,7 @@ package org.osiam.resources.controller
 import org.joda.time.format.DateTimeFormatter
 import org.joda.time.format.ISODateTimeFormat
 import org.osiam.security.authorization.AccessTokenValidationService
-import org.osiam.storage.dao.UserDAO
+import org.osiam.storage.dao.UserDao
 import org.osiam.storage.entities.EmailEntity
 import org.osiam.storage.entities.MetaEntity
 import org.osiam.storage.entities.NameEntity
@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest
 
 class MeControllerSpec extends Specification {
     def accessTokenValidationService = Mock(AccessTokenValidationService)
-    def userDao = Mock(UserDAO)
+    def userDao = Mock(UserDao)
     def underTest = new MeController(accessTokenValidationService: accessTokenValidationService, userDAO: userDao)
     OAuth2Authentication authentication = Mock(OAuth2Authentication)
     HttpServletRequest request = Mock(HttpServletRequest)

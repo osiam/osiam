@@ -4,7 +4,7 @@ import org.osiam.resources.converter.UserConverter
 import org.osiam.resources.exceptions.ResourceExistsException
 import org.osiam.resources.scim.SCIMSearchResult
 import org.osiam.resources.scim.User
-import org.osiam.storage.dao.UserDAO
+import org.osiam.storage.dao.UserDao
 import org.osiam.storage.entities.MetaEntity
 import org.osiam.storage.entities.UserEntity
 import org.springframework.security.authentication.encoding.PasswordEncoder
@@ -14,7 +14,7 @@ import spock.lang.Specification
 class ScimUserProvisioningBeanSpec extends Specification {
 
     PasswordEncoder passwordEncoder = Mock()
-    UserDAO userDao = Mock()
+    UserDao userDao = Mock()
     UserConverter userConverter = Mock()
 
 

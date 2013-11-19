@@ -2,12 +2,12 @@ package org.osiam.resources.provisioning
 
 import org.osiam.resources.converter.UserConverter
 import org.osiam.resources.scim.*
-import org.osiam.storage.dao.UserDAO
+import org.osiam.storage.dao.UserDao
 import org.osiam.storage.entities.*
 import spock.lang.Specification
 
 class UserPatchSpec extends Specification {
-    def userDao = Mock(UserDAO)
+    def userDao = Mock(UserDao)
     def userConverter = Mock(UserConverter)
     SCIMUserProvisioningBean bean = new SCIMUserProvisioningBean(userDao: userDao, userConverter: userConverter)
     def uId = UUID.randomUUID()

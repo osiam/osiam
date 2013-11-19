@@ -3,7 +3,7 @@ package org.osiam.security.controller
 import org.osiam.resources.ClientSpring
 import org.osiam.resources.UserSpring
 import org.osiam.storage.dao.ClientDao
-import org.osiam.storage.dao.UserDAO
+import org.osiam.storage.dao.UserDao
 import org.osiam.storage.entities.ClientEntity
 import org.osiam.storage.entities.RolesEntity
 import org.osiam.storage.entities.UserEntity
@@ -18,7 +18,7 @@ import java.lang.reflect.Method
 
 class AuthenticationControllerSpec extends Specification {
 
-    def userDaoMock = Mock(UserDAO)
+    def userDaoMock = Mock(UserDao)
     def clientDaoMock = Mock(ClientDao)
     def authenticationController = new AuthenticationController(userDAO: userDaoMock, clientDao: clientDaoMock)
 

@@ -4,8 +4,8 @@ import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.MemberRef;
 import org.osiam.resources.scim.MultiValuedAttribute;
-import org.osiam.storage.dao.GroupDAO;
-import org.osiam.storage.dao.UserDAO;
+import org.osiam.storage.dao.GroupDao;
+import org.osiam.storage.dao.UserDao;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.InternalIdSkeleton;
 import org.springframework.stereotype.Service;
@@ -18,10 +18,10 @@ import java.util.Set;
 public class GroupConverter implements Converter<Group, GroupEntity> {
 
     @Inject
-    private GroupDAO groupDao;
+    private GroupDao groupDao;
 
     @Inject
-    private UserDAO userDao;
+    private UserDao userDao;
 
     @Override
     public GroupEntity fromScim(Group group) {

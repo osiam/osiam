@@ -31,8 +31,8 @@ import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.resources.scim.User;
 import org.osiam.storage.dao.ExtensionDao;
-import org.osiam.storage.dao.GenericDAO;
-import org.osiam.storage.dao.UserDAO;
+import org.osiam.storage.dao.GenericDao;
+import org.osiam.storage.dao.UserDao;
 import org.osiam.storage.entities.ExtensionEntity;
 import org.osiam.storage.entities.ExtensionFieldEntity;
 import org.osiam.storage.entities.ExtensionFieldValueEntity;
@@ -55,7 +55,7 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
     private UserConverter userConverter;
 
     @Inject
-    private UserDAO userDao;
+    private UserDao userDao;
 
     @Inject
     private ExtensionDao extensionDao;
@@ -64,7 +64,7 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
     private PasswordEncoder passwordEncoder;
 
     @Override
-    protected GenericDAO<UserEntity> getDao() {
+    protected GenericDao<UserEntity> getDao() {
         return userDao;
     }
 

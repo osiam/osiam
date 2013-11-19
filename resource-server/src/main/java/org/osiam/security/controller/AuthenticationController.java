@@ -27,7 +27,7 @@ import org.osiam.resources.ClientSpring;
 import org.osiam.resources.RoleSpring;
 import org.osiam.resources.UserSpring;
 import org.osiam.storage.dao.ClientDao;
-import org.osiam.storage.dao.UserDAO;
+import org.osiam.storage.dao.UserDao;
 import org.osiam.storage.entities.ClientEntity;
 import org.osiam.storage.entities.RolesEntity;
 import org.osiam.storage.entities.UserEntity;
@@ -52,7 +52,7 @@ import java.util.Set;
 public class AuthenticationController {
 
     @Inject
-    private UserDAO userDAO;
+    private UserDao userDAO;
 
     @Inject
     private ClientDao clientDao;

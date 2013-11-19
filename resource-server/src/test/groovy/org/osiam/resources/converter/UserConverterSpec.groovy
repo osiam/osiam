@@ -1,7 +1,7 @@
 package org.osiam.resources.converter
 
 import org.osiam.resources.scim.*
-import org.osiam.storage.dao.UserDAO
+import org.osiam.storage.dao.UserDao
 import org.osiam.storage.entities.*
 import spock.lang.Specification
 
@@ -32,7 +32,7 @@ class UserConverterSpec extends Specification {
     ExtensionConverter extensionConverter = Mock()
     MetaConverter metaConverter = Mock()
 
-    UserDAO userDao = Mock()
+    UserDao userDao = Mock()
 
     UserConverter userConverter = new UserConverter(
             x509CertificateConverter: x509CertificateConverter,

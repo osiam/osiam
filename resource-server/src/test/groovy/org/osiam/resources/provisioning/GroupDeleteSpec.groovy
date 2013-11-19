@@ -26,7 +26,7 @@
 package org.osiam.resources.provisioning
 
 import org.osiam.resources.exceptions.ResourceNotFoundException
-import org.osiam.storage.dao.GroupDAO
+import org.osiam.storage.dao.GroupDao
 import org.osiam.storage.entities.GroupEntity
 import spock.lang.Specification
 
@@ -35,7 +35,7 @@ import javax.persistence.Query
 
 class GroupDeleteSpec extends Specification {
     EntityManager em = Mock(EntityManager)
-    def groupDao = new GroupDAO(em: em)
+    def groupDao = new GroupDao(em: em)
     SCIMGroupProvisioningBean bean = new SCIMGroupProvisioningBean(groupDAO: groupDao)
     def uId = UUID.randomUUID()
     def id = uId.toString()

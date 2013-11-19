@@ -28,8 +28,8 @@ import org.osiam.resources.converter.GroupConverter;
 import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.SCIMSearchResult;
-import org.osiam.storage.dao.GenericDAO;
-import org.osiam.storage.dao.GroupDAO;
+import org.osiam.storage.dao.GenericDao;
+import org.osiam.storage.dao.GroupDao;
 import org.osiam.storage.entities.GroupEntity;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -50,10 +50,10 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
     private GroupConverter groupConverter;
 
     @Inject
-    private GroupDAO groupDAO;
+    private GroupDao groupDAO;
 
     @Override
-    protected GenericDAO<GroupEntity> getDao() {
+    protected GenericDao<GroupEntity> getDao() {
         return groupDAO;
     }
 

@@ -37,7 +37,7 @@ import java.util.logging.Level;
 
 @Repository
 @Transactional
-public class GroupDAO extends GetInternalIdSkeleton implements GenericDAO<GroupEntity> {
+public class GroupDao extends GetInternalIdSkeleton implements GenericDao<GroupEntity> {
 
     @Override
     public void create(GroupEntity group) {
