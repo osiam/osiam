@@ -20,7 +20,7 @@ class AuthenticationControllerSpec extends Specification {
 
     def userDaoMock = Mock(UserDao)
     def clientDaoMock = Mock(ClientDao)
-    def authenticationController = new AuthenticationController(userDAO: userDaoMock, clientDao: clientDaoMock)
+    def authenticationController = new AuthenticationController(userDao: userDaoMock, clientDao: clientDaoMock)
 
     def "Should be able to load an User by his name an getting a UserSpring representation"() {
         given:

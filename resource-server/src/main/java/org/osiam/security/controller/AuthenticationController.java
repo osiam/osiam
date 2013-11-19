@@ -52,7 +52,7 @@ import java.util.Set;
 public class AuthenticationController {
 
     @Inject
-    private UserDao userDAO;
+    private UserDao userDao;
 
     @Inject
     private ClientDao clientDao;
@@ -61,7 +61,7 @@ public class AuthenticationController {
     @ResponseBody
     public UserSpring getUser(@PathVariable final String userName) {
 
-        UserEntity dbUser = userDAO.getByUsername(userName);
+        UserEntity dbUser = userDao.getByUsername(userName);
         return getUserSpring(dbUser);
     }
 
