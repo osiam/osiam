@@ -239,7 +239,7 @@ public class AddressEntity {
         return true;
     }
 
-    private enum CanonicalAddressTypes {
+    public enum CanonicalAddressTypes {
         work, home, other
     }
 }
