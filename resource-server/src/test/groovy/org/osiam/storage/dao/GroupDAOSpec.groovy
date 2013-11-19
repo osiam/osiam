@@ -45,14 +45,12 @@ class GroupDAOSpec extends Specification {
     InternalIdSkeleton internalidSkeleton = new GroupEntity(id: UUID.randomUUID())
 
     def filterParser = Mock(FilterParser)
-    def underTest = new GroupDAO()
+    def underTest = new GroupDAO(em: em, filterParser: filterParser)
     String id = UUID.randomUUID().toString()
     def aClass = GroupEntity.class
 
     def setup() {
         em.createNamedQuery("getById") >> query
-        underTest.setFilterParser(filterParser)
-        underTest.setEm(em)
     }
 
     def "should persist on empty members "() {

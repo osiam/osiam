@@ -42,14 +42,12 @@ class UserDAOSpec extends Specification {
 
     def em = Mock(EntityManager)
     def filterParserMock = Mock(FilterParser)
-    def underTest = new UserDAO()
+    def underTest = new UserDAO(em: em, filterParser: filterParserMock)
     def userEntity = Mock(UserEntity)
 
     def aClass = UserEntity.class
 
     def setup() {
-        underTest.setEm(em)
-        underTest.setFilterParser(filterParserMock)
         userEntity.roles >> new HashSet<>(Arrays.asList(new RolesEntity(value: "test"), new RolesEntity()))
         userEntity.addresses >> new HashSet<>()
         userEntity.phoneNumbers >> new HashSet<>()

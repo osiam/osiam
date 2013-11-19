@@ -52,15 +52,7 @@ public abstract class GetInternalIdSkeleton {
     protected EntityManager em; // NOSONAR used in child classes
 
     @Inject
-    private FilterParser filterParser;
-
-    public void setEm(EntityManager em) {
-        this.em = em;
-    }
-
-    public void setFilterParser(FilterParser filterParser) {
-        this.filterParser = filterParser;
-    }
+    protected FilterParser filterParser;
 
     protected <T extends InternalIdSkeleton> T getInternalIdSkeleton(String id) {
         Query query = em.createNamedQuery("getById");
@@ -75,7 +67,6 @@ public abstract class GetInternalIdSkeleton {
             throw new ResourceNotFoundException("Resource " + identifier + " not found.");
         }
         return (T) result.get(0);
-
     }
 
     protected <T> SCIMSearchResult<T> search(Class<T> clazz, String filter, int count, int startIndex, String sortBy,
@@ -92,11 +83,11 @@ public abstract class GetInternalIdSkeleton {
         long totalResult = getTotalResults(idsOnlyCriteria, clazz);
 
         int newStartIndex = startIndex <1 ? 1 :startIndex;
-        
+
         return new SCIMSearchResult(results, totalResult, count, newStartIndex, Constants.CORE_SCHEMA);
     }
 
-    
+
     private <T> List getResults(DetachedCriteria idsOnlyCriteria, Class<T> clazz, int count, int startIndex, String sortBy,
             String sortOrder) {
 	    Criteria criteria = ((Session) em.getDelegate()).createCriteria(clazz);
@@ -104,7 +95,7 @@ public abstract class GetInternalIdSkeleton {
         criteria.setReadOnly(true);
         criteria.setCacheMode(CacheMode.GET);
         criteria.setCacheable(true);
-        
+
         criteria.add(Subqueries.propertyIn("internalId", idsOnlyCriteria));
         setSortOrder(sortBy, sortOrder, criteria);
         criteria.setMaxResults(count);
@@ -115,7 +106,7 @@ public abstract class GetInternalIdSkeleton {
 
         return criteria.list();
     }
-    
+
     private void setSortOrder(String sortBy, String sortOrder, Criteria criteria) {
         if (sortOrder.equalsIgnoreCase("descending")) {
             criteria.addOrder(Order.desc(sortBy));
@@ -130,11 +121,11 @@ public abstract class GetInternalIdSkeleton {
         countCriteria.setReadOnly(true);
         countCriteria.setCacheMode(CacheMode.GET);
         countCriteria.setCacheable(true);
-        
+
         countCriteria.add(Subqueries.propertyIn("internalId", idsOnlyCriteria));
         countCriteria.setProjection(Projections.rowCount());
         Object totalResultAsObject = countCriteria.uniqueResult();
-        
+
         return totalResultAsObject != null ? (long) totalResultAsObject : 0;
     }
 
