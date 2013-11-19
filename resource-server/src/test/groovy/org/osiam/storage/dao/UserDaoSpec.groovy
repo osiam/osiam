@@ -38,7 +38,7 @@ import spock.lang.Specification
 import javax.persistence.EntityManager
 import javax.persistence.Query
 
-class UserDAOSpec extends Specification {
+class UserDaoSpec extends Specification {
 
     def em = Mock(EntityManager)
     def filterParserMock = Mock(FilterParser)

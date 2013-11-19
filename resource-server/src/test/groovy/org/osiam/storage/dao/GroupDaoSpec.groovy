@@ -37,7 +37,7 @@ import spock.lang.Specification
 import javax.persistence.EntityManager
 import javax.persistence.Query
 
-class GroupDAOSpec extends Specification {
+class GroupDaoSpec extends Specification {
 
     EntityManager em = Mock(EntityManager)
 
