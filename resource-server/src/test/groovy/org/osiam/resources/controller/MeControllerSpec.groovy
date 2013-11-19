@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest
 class MeControllerSpec extends Specification {
     def accessTokenValidationService = Mock(AccessTokenValidationService)
     def userDao = Mock(UserDao)
-    def underTest = new MeController(accessTokenValidationService: accessTokenValidationService, userDAO: userDao)
+    def underTest = new MeController(accessTokenValidationService: accessTokenValidationService, userDao: userDao)
     OAuth2Authentication authentication = Mock(OAuth2Authentication)
     HttpServletRequest request = Mock(HttpServletRequest)
     Authentication userAuthentication = Mock(Authentication)

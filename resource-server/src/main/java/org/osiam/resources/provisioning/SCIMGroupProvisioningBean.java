@@ -50,11 +50,11 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
     private GroupConverter groupConverter;
 
     @Inject
-    private GroupDao groupDAO;
+    private GroupDao groupDao;
 
     @Override
     protected GenericDao<GroupEntity> getDao() {
-        return groupDAO;
+        return groupDao;
     }
 
     @Override
@@ -67,7 +67,7 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
         GroupEntity enrichedGroup = groupConverter.fromScim(group);
         enrichedGroup.setId(UUID.randomUUID());
         try {
-            groupDAO.create(enrichedGroup);
+            groupDao.create(enrichedGroup);
         } catch (DataIntegrityViolationException e) {
             LOGGER.log(Level.INFO, "An exception got thrown while creating a group.", e);
 
@@ -79,7 +79,7 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
     @Override
     public Group replace(String id, Group group) {
 
-        GroupEntity existingEntity = groupDAO.getById(id);
+        GroupEntity existingEntity = groupDao.getById(id);
 
         GroupEntity groupEntity = groupConverter.fromScim(group);
 
@@ -88,7 +88,7 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
         groupEntity.setMeta(existingEntity.getMeta());
         groupEntity.touch();
 
-        groupEntity = groupDAO.update(groupEntity);
+        groupEntity = groupDao.update(groupEntity);
         return groupConverter.toScim(groupEntity);
     }
 

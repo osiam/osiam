@@ -15,7 +15,7 @@ class GroupCreateSpec extends Specification {
     GroupDao groupDao = Mock()
     GroupConverter groupConverter = Mock()
 
-    SCIMGroupProvisioningBean underTest = new SCIMGroupProvisioningBean(groupDAO: groupDao, groupConverter: groupConverter)
+    SCIMGroupProvisioningBean underTest = new SCIMGroupProvisioningBean(groupDao: groupDao, groupConverter: groupConverter)
 
     Group group
     GroupEntity groupEntity = Mock()

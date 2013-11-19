@@ -33,7 +33,7 @@ class GroupGetSpec extends Specification {
     GroupDao groupDao = Mock()
     GroupConverter groupConverter = Mock()
 
-    SCIMGroupProvisioningBean groupProvisioningBean = new SCIMGroupProvisioningBean(groupDAO: groupDao, groupConverter: groupConverter)
+    SCIMGroupProvisioningBean groupProvisioningBean = new SCIMGroupProvisioningBean(groupDao: groupDao, groupConverter: groupConverter)
 
     String groupUuid = UUID.randomUUID().toString()
 

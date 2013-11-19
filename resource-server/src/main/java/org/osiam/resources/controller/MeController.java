@@ -33,7 +33,7 @@ public class MeController {
     private AccessTokenValidationService accessTokenValidationService;
 
     @Inject
-    private UserDao userDAO;
+    private UserDao userDao;
 
     /**
      * This method is used to get information about the user who initialised the authorization process.
@@ -68,7 +68,7 @@ public class MeController {
         Object o = userAuthentication.getPrincipal();
         if (o instanceof LinkedHashMap) {
             String principalId = (String) ((LinkedHashMap) o).get("id");
-            UserEntity userEntity = userDAO.getById(principalId);
+            UserEntity userEntity = userDao.getById(principalId);
             return new FacebookInformationConstruct(userEntity);
         } else {
             throw new IllegalArgumentException("User was not authenticated with OSIAM.");

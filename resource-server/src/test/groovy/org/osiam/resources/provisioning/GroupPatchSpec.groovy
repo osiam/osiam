@@ -33,9 +33,9 @@ import org.osiam.storage.entities.UserEntity
 import spock.lang.Specification
 
 class GroupPatchSpec extends Specification {
-    def groupDAO = Mock(GroupDao)
+    def groupDao = Mock(GroupDao)
     def groupConverter = new GroupConverter()
-    SCIMGroupProvisioningBean bean = new SCIMGroupProvisioningBean(groupDAO: groupDAO, groupConverter: groupConverter)
+    SCIMGroupProvisioningBean bean = new SCIMGroupProvisioningBean(groupDao: groupDao, groupConverter: groupConverter)
     def uId = UUID.randomUUID()
     def id = uId.toString()
     def groupId = UUID.randomUUID()
@@ -53,7 +53,7 @@ class GroupPatchSpec extends Specification {
         when:
         bean.update(id, group)
         then:
-        1 * groupDAO.getById(id) >> entity
+        1 * groupDao.getById(id) >> entity
         entity.members.size() == 1
         entity.members.first() instanceof UserEntity
     }
@@ -70,7 +70,7 @@ class GroupPatchSpec extends Specification {
         when:
         bean.update(id, group)
         then:
-        1 * groupDAO.getById(id) >> entity
+        1 * groupDao.getById(id) >> entity
         entity.members.size() == 1
         entity.members.first() instanceof GroupEntity
     }
@@ -93,7 +93,7 @@ class GroupPatchSpec extends Specification {
         when:
         bean.update(id, group)
         then:
-        1 * groupDAO.getById(id) >> entity
+        1 * groupDao.getById(id) >> entity
         entity.members.empty
     }
 
@@ -111,7 +111,7 @@ class GroupPatchSpec extends Specification {
         when:
         bean.update(id, group)
         then:
-        1 * groupDAO.getById(id) >> entity
+        1 * groupDao.getById(id) >> entity
         entity.members.size() == 3
     }
 
@@ -129,7 +129,7 @@ class GroupPatchSpec extends Specification {
         when:
         bean.update(id, group)
         then:
-        1 * groupDAO.getById(id) >> entity
+        1 * groupDao.getById(id) >> entity
         entity.members.size() == 2
         entity.members.last() instanceof GroupEntity
 
@@ -145,7 +145,7 @@ class GroupPatchSpec extends Specification {
         bean.update(id, group)
 
         then:
-        1 * groupDAO.getById(id) >> entity
+        1 * groupDao.getById(id) >> entity
         entity.displayName == "hallo"
     }
 
@@ -166,7 +166,7 @@ class GroupPatchSpec extends Specification {
         when:
         bean.update(id, group)
         then:
-        1 * groupDAO.getById(id) >> entity
+        1 * groupDao.getById(id) >> entity
         entity.displayName == "master of the universe"
     }
 
@@ -180,7 +180,7 @@ class GroupPatchSpec extends Specification {
         when:
         bean.update(id, group)
         then:
-        1 * groupDAO.getById(id) >> entity
+        1 * groupDao.getById(id) >> entity
         entity.displayName == "harald"
         entity.members.empty
 
@@ -200,7 +200,7 @@ class GroupPatchSpec extends Specification {
         when:
         bean.update(id, user)
         then:
-        1 * groupDAO.getById(id) >> entity
+        1 * groupDao.getById(id) >> entity
         entity.getMembers().empty
     }
 
@@ -213,7 +213,7 @@ class GroupPatchSpec extends Specification {
         when:
         def result = bean.update(id, group)
         then:
-        1 * groupDAO.getById(id) >> entity
+        1 * groupDao.getById(id) >> entity
         result.id == oldUuid.toString()
     }
 
@@ -226,7 +226,7 @@ class GroupPatchSpec extends Specification {
         when:
         def result = bean.update(id, group)
         then:
-        1 * groupDAO.getById(id) >> entity
+        1 * groupDao.getById(id) >> entity
         result.id == oldUuid.toString()
 
     }
