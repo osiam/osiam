@@ -35,7 +35,7 @@ public class CombinedFilterChain implements FilterChain {
     private final FilterChain term1;
     private final Combiner combinedWith;
     private final FilterChain term2;
-    private FilterParser filterParser = new FilterParser();
+    private FilterParser filterParser = new UserFilterParser();
 
     public CombinedFilterChain(String chain, Class clazz) {
         Matcher matcher = COMBINED_FILTER_CHAIN.matcher(chain);

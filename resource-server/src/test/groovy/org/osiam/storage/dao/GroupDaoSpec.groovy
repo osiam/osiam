@@ -28,7 +28,7 @@ import org.hibernate.Session
 import org.hibernate.criterion.Criterion
 import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.resources.helper.FilterChain
-import org.osiam.resources.helper.FilterParser
+import org.osiam.resources.helper.UserFilterParser
 import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.InternalIdSkeleton
 import org.osiam.storage.entities.UserEntity
@@ -44,7 +44,7 @@ class GroupDaoSpec extends Specification {
     Query query = Mock(Query)
     InternalIdSkeleton internalidSkeleton = new GroupEntity(id: UUID.randomUUID())
 
-    def filterParser = Mock(FilterParser)
+    def filterParser = Mock(UserFilterParser)
     def underTest = new GroupDao(em: em, filterParser: filterParser)
     String id = UUID.randomUUID().toString()
     def aClass = GroupEntity.class

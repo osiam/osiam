@@ -21,7 +21,7 @@ import org.osiam.storage.entities.UserEntity
 import spock.lang.Specification
 
 class FilteredSearchSpec extends Specification {
-    def parser = new FilterParser()
+    def parser = new UserFilterParser()
     def aClass = UserEntity.class
 
     def "should parse equals (eq)"() {

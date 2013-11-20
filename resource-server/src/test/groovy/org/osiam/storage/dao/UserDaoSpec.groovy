@@ -28,7 +28,7 @@ import org.hibernate.Session
 import org.hibernate.criterion.Criterion
 import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.resources.helper.FilterChain
-import org.osiam.resources.helper.FilterParser
+import org.osiam.resources.helper.UserFilterParser
 import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.InternalIdSkeleton
 import org.osiam.storage.entities.RolesEntity
@@ -41,7 +41,7 @@ import javax.persistence.Query
 class UserDaoSpec extends Specification {
 
     def em = Mock(EntityManager)
-    def filterParserMock = Mock(FilterParser)
+    def filterParserMock = Mock(UserFilterParser)
     def underTest = new UserDao(em: em, filterParser: filterParserMock)
     def userEntity = Mock(UserEntity)
 
