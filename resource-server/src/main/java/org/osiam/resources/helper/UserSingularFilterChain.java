@@ -276,17 +276,18 @@ public class UserSingularFilterChain implements FilterChain<UserEntity> {
             }
 
         },
-        EMAILS_TYPE("emails.type") {
+        EMAILS_PRIMARY("emails.primary") {
 
             @Override
             public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
                     String value, CriteriaBuilder cb) {
 
                 SetJoin<UserEntity, EmailEntity> join = root.join(UserEntity_.emails, JoinType.LEFT);
-                return constraint.createPredicateForEmailTypeField(join.get(EmailEntity_.type), CanonicalEmailTypes.valueOf(value), cb);
+                return constraint.createPredicateForBooleanField(join.get(EmailEntity_.primary), Boolean.valueOf(value), cb);
             }
 
         },
+        
         
 
         ;
