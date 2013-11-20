@@ -17,8 +17,12 @@
 
 package org.osiam.resources.helper;
 
-import org.hibernate.criterion.Criterion;
+import javax.persistence.criteria.AbstractQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
-public interface FilterChain {
-    Criterion buildCriterion();
+import org.osiam.storage.entities.InternalIdSkeleton;
+
+public interface FilterChain<T extends InternalIdSkeleton> {
+    Predicate createPredicateAndJoin(AbstractQuery<Long> query, Root<T> root);
 }
