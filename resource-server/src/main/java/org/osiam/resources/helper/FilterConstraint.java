@@ -56,8 +56,7 @@ public enum FilterConstraint {
         @Override
         public Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path, CanonicalEmailTypes value,
                 CriteriaBuilder cb) {
-            // TODO Auto-generated method stub
-            return null;
+            throw new InvalidConstraintException(toString());
         }
 
     },
@@ -80,8 +79,7 @@ public enum FilterConstraint {
         @Override
         public Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path, CanonicalEmailTypes value,
                 CriteriaBuilder cb) {
-            // TODO Auto-generated method stub
-            return null;
+            throw new InvalidConstraintException(toString());
         }
     },
     PRESENT("pr") {
@@ -103,8 +101,7 @@ public enum FilterConstraint {
         @Override
         public Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path, CanonicalEmailTypes value,
                 CriteriaBuilder cb) {
-            // TODO Auto-generated method stub
-            return null;
+            return cb.isNotNull(path);
         }
     },
     GREATER_THAN("gt") {
@@ -121,15 +118,13 @@ public enum FilterConstraint {
 
         @Override
         public Predicate createPredicateForBooleanField(Path<Boolean> path, Boolean value, CriteriaBuilder cb) {
-            return cb.greaterThan(path, value);
+            throw new InvalidConstraintException(toString());
         }
 
         @Override
         public Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path, CanonicalEmailTypes value,
                 CriteriaBuilder cb) {
-            // TODO Auto-generated method stub
-            return null;
-        }
+            throw new InvalidConstraintException(toString());        }
     },
     GREATER_EQUALS("ge") {
 
@@ -145,14 +140,13 @@ public enum FilterConstraint {
 
         @Override
         public Predicate createPredicateForBooleanField(Path<Boolean> path, Boolean value, CriteriaBuilder cb) {
-            return cb.greaterThanOrEqualTo(path, value);
+            throw new InvalidConstraintException(toString());
         }
 
         @Override
         public Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path, CanonicalEmailTypes value,
                 CriteriaBuilder cb) {
-            // TODO Auto-generated method stub
-            return null;
+            throw new InvalidConstraintException(toString());
         }
     },
     LESS_THAN("lt") {
@@ -169,15 +163,13 @@ public enum FilterConstraint {
 
         @Override
         public Predicate createPredicateForBooleanField(Path<Boolean> path, Boolean value, CriteriaBuilder cb) {
-            return cb.lessThan(path, value);
+            throw new InvalidConstraintException(toString());
         }
 
         @Override
         public Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path, CanonicalEmailTypes value,
                 CriteriaBuilder cb) {
-            // TODO Auto-generated method stub
-            return null;
-        }
+            throw new InvalidConstraintException(toString());        }
     },
     LESS_EQUALS("le") {
 
@@ -192,15 +184,13 @@ public enum FilterConstraint {
 
         @Override
         public Predicate createPredicateForBooleanField(Path<Boolean> path, Boolean value, CriteriaBuilder cb) {
-            return cb.lessThanOrEqualTo(path, value);
+            throw new InvalidConstraintException(toString());
         }
 
         @Override
         public Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path, CanonicalEmailTypes value,
                 CriteriaBuilder cb) {
-            // TODO Auto-generated method stub
-            return null;
-        }
+            throw new InvalidConstraintException(toString());        }
     };
 
     static Map<String, FilterConstraint> stringToEnum = new ConcurrentHashMap<>();

@@ -34,6 +34,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 
 import org.osiam.storage.entities.EmailEntity;
+import org.osiam.storage.entities.EmailEntity.CanonicalEmailTypes;
 import org.osiam.storage.entities.EmailEntity_;
 import org.osiam.storage.entities.NameEntity_;
 import org.osiam.storage.entities.UserEntity;
@@ -271,10 +272,22 @@ public class UserSingularFilterChain implements FilterChain<UserEntity> {
                     String value, CriteriaBuilder cb) {
 
                 SetJoin<UserEntity, EmailEntity> join = root.join(UserEntity_.emails, JoinType.LEFT);
-                return constraint.createPredicateForEmailTypeField(join.get(EmailEntity_.type), value, cb);
+                return constraint.createPredicateForEmailTypeField(join.get(EmailEntity_.type), CanonicalEmailTypes.valueOf(value), cb);
             }
 
         },
+        EMAILS_TYPE("emails.type") {
+
+            @Override
+            public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
+                    String value, CriteriaBuilder cb) {
+
+                SetJoin<UserEntity, EmailEntity> join = root.join(UserEntity_.emails, JoinType.LEFT);
+                return constraint.createPredicateForEmailTypeField(join.get(EmailEntity_.type), CanonicalEmailTypes.valueOf(value), cb);
+            }
+
+        },
+        
 
         ;
 
