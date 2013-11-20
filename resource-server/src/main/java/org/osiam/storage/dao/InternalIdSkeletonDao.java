@@ -44,9 +44,9 @@ import org.osiam.resources.scim.Constants;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.entities.InternalIdSkeleton;
 
-public abstract class GetInternalIdSkeleton {
+public abstract class InternalIdSkeletonDao {
 
-    protected static final Logger LOGGER = Logger.getLogger(GetInternalIdSkeleton.class.getName()); // NOSONAR used in child classes
+    protected static final Logger LOGGER = Logger.getLogger(InternalIdSkeletonDao.class.getName()); // NOSONAR used in child classes
 
     @PersistenceContext
     protected EntityManager em; // NOSONAR used in child classes
