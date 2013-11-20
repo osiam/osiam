@@ -23,51 +23,37 @@
 
 package org.osiam.storage.dao;
 
-import java.util.List;
-import java.util.logging.Logger;
-
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
-import org.hibernate.CacheMode;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Subqueries;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
+import org.osiam.resources.helper.FilterChain;
 import org.osiam.resources.helper.FilterParser;
+import org.osiam.resources.scim.Constants;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.entities.InternalIdSkeleton;
 import org.osiam.storage.entities.InternalIdSkeleton_;
 
-public abstract class InternalIdSkeletonDao {
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.*;
+import java.util.List;
+import java.util.logging.Logger;
 
-    protected static final Logger LOGGER = Logger.getLogger(InternalIdSkeletonDao.class.getName()); // NOSONAR used in child classes
+public abstract class ResourceDaoCopy<T extends InternalIdSkeleton> {
+
+    protected static final Logger LOGGER = Logger.getLogger(ResourceDaoCopy.class.getName()); // NOSONAR used in child classes
 
     @PersistenceContext
     protected EntityManager em; // NOSONAR used in child classes
 
-    @Inject
-    protected FilterParser filterParser;
-
-    protected <T extends InternalIdSkeleton> T getInternalIdSkeleton(String id) {
+    protected T getInternalIdSkeleton(String id) {
         Query query = em.createNamedQuery("getById");
         query.setParameter("id", id);
         return getSingleInternalIdSkeleton(query, id);
     }
 
     @SuppressWarnings("unchecked")
-    protected <T extends InternalIdSkeleton> T getSingleInternalIdSkeleton(Query query, String identifier) {
+    protected T getSingleInternalIdSkeleton(Query query, String identifier) {
         List result = query.getResultList();
         if (result.isEmpty()) {
             throw new ResourceNotFoundException("Resource " + identifier + " not found.");
@@ -75,8 +61,8 @@ public abstract class InternalIdSkeletonDao {
         return (T) result.get(0);
     }
 
-    protected <T extends InternalIdSkeleton> SCIMSearchResult<T> search(Class<T> clazz, String filter, int count,
-            int startIndex, String sortBy, String sortOrder) {
+    protected SCIMSearchResult<T> search(Class<T> clazz, String filter, int count, int startIndex, String sortBy,
+                                         String sortOrder) {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -87,13 +73,14 @@ public abstract class InternalIdSkeletonDao {
         Root<T> internalIdRoot = internalIdQuery.from(clazz);
         internalIdQuery.select(internalIdRoot.get(InternalIdSkeleton_.internalId));
 
-        // TODO: add predicates
-        /*if (filter != null && !filter.isEmpty()) {
-            idsOnlyCriteria.add(filterParser.parse(filter, clazz).buildCriterion());
-        }*/
+        if (filter != null && !filter.isEmpty()) {
+            FilterChain<T> filterChain = getFilterParser().parse(filter);
+            Predicate predicate = filterChain.createPredicateAndJoin(internalIdQuery, internalIdRoot);
+            internalIdQuery.where(predicate);
+        }
 
-        List<T> results = getResults(idsOnlyCriteria, clazz, count, startIndex, sortBy, sortOrder);
-        long totalResult = getTotalResults(idsOnlyCriteria, clazz);
+        resourceQuery.select(resourceRoot).where(
+                cb.in(resourceRoot.get(InternalIdSkeleton_.internalId)).value(internalIdQuery));
 
         Expression<?> sortByField = resourceRoot.get(sortBy);
         Order order;
@@ -104,41 +91,34 @@ public abstract class InternalIdSkeletonDao {
         }
         resourceQuery.orderBy(order);
 
-        return new SCIMSearchResult<T>(results, totalResult, count, newStartIndex, getCoreSchema());
-    }
-        List<T> results = q.getResultList();
+        TypedQuery<T> query = em.createQuery(resourceQuery);
+        query.setFirstResult(startIndex);
+        query.setMaxResults(count);
 
-    private <T> List<T> getResults(DetachedCriteria idsOnlyCriteria, Class<T> clazz, int count, int startIndex, String sortBy,
-            String sortOrder) {
-	    Criteria criteria = ((Session) em.getDelegate()).createCriteria(clazz);
+        List<T> results = query.getResultList();
 
-        long totalResult = getTotalResults(clazz, filter);
 
-        ///////////////////////////////////////////////////////////////////////////////////
+        long totalResult = getTotalResults(clazz, internalIdQuery);
 
-        int newStartIndex = startIndex < 1 ? 1 : startIndex;
-
-        return new SCIMSearchResult<T>(results, totalResult, count, newStartIndex, Constants.CORE_SCHEMA);
+        // TODO: Replace this SearchResult with some other value class and build the SCIMSearchResult one layer up
+        return new SCIMSearchResult<>(results, totalResult, count, startIndex + 1, Constants.CORE_SCHEMA);
     }
 
-    private <T extends InternalIdSkeleton> long getTotalResults(Class<T> clazz, String filter) {
+    private long getTotalResults(Class<T> clazz, Subquery<Long> internalIdQuery) {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> resourceQuery = cb.createQuery(Long.class);
         Root<T> resourceRoot = resourceQuery.from(clazz);
+        //  );
 
-        // TODO: add predicates
-        /*if (filter != null && !filter.isEmpty()) {
-            idsOnlyCriteria.add(filterParser.parse(filter, clazz).buildCriterion());
-        }*/
-
-        resourceQuery.select(cb.count(resourceRoot));
+        resourceQuery.select(cb.count(resourceRoot)).where(cb.in(resourceRoot.get(InternalIdSkeleton_.internalId)).value(internalIdQuery));
 
         Long total = em.createQuery(resourceQuery).getSingleResult();
 
         return total;
     }
 
-    protected abstract void createAliasesForCriteria(DetachedCriteria criteria);
-    protected abstract String getCoreSchema();
+    protected abstract FilterParser<T> getFilterParser();
+
+    protected abstract Class<T> getResourceClass();
 }
