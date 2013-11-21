@@ -23,10 +23,7 @@
 
 package org.osiam.storage.dao;
 
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.sql.JoinType;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
-import org.osiam.resources.scim.Constants;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.entities.GroupEntity;
 import org.springframework.stereotype.Repository;
@@ -38,7 +35,7 @@ import java.util.logging.Level;
 
 @Repository
 @Transactional
-public class GroupDao extends ResourceDao implements GenericDao<GroupEntity> {
+public class GroupDao extends ResourceDao<GroupEntity> implements GenericDao<GroupEntity> {
 
     @Override
     public void create(GroupEntity group) {
@@ -74,13 +71,17 @@ public class GroupDao extends ResourceDao implements GenericDao<GroupEntity> {
     }
 
     @Override
-    protected void createAliasesForCriteria(DetachedCriteria criteria) {
-        criteria.createAlias("meta", "meta", JoinType.INNER_JOIN);
+    protected FilterParser<GroupEntity> getFilterParser() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
-    
+
     @Override
     protected String getCoreSchema() {
         return Constants.GROUP_CORE_SCHEMA;
     }
 
+    @Override
+    protected Class<GroupEntity> getResourceClass() {
+        return GroupEntity.class;
+    }
 }
