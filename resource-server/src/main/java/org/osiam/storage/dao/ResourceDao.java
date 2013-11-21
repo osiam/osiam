@@ -39,9 +39,9 @@ import javax.persistence.criteria.*;
 import java.util.List;
 import java.util.logging.Logger;
 
-public abstract class ResourceDaoCopy<T extends InternalIdSkeleton> {
+public abstract class ResourceDao<T extends InternalIdSkeleton> {
 
-    protected static final Logger LOGGER = Logger.getLogger(ResourceDaoCopy.class.getName()); // NOSONAR used in child classes
+    protected static final Logger LOGGER = Logger.getLogger(ResourceDao.class.getName()); // NOSONAR used in child classes
 
     @PersistenceContext
     protected EntityManager em; // NOSONAR used in child classes

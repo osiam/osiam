@@ -17,27 +17,25 @@
 
 package org.osiam.resources.helper;
 
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 @Service
 public class UserFilterParser implements FilterParser<UserEntity> {
 
-    @Inject
+    @PersistenceContext
     private EntityManager em;
 
-    /* (non-Javadoc)
-     * @see org.osiam.resources.helper.FilterParser#parse(java.lang.String)
-     */
+
     @Override
-    public FilterChain<UserEntity> parse(String p) {
-        if (CombinedFilterChain.COMBINED_FILTER_CHAIN.matcher(p).matches()) {
-            return new CombinedFilterChain(p, em);
+    public FilterChain<UserEntity> parse(String filterString) {
+        if (UserCombinedFilterChain.COMBINED_FILTER_CHAIN.matcher(filterString).matches()) {
+            return new UserCombinedFilterChain(em, filterString);
         }
-        return new UserSingularFilterChain(p, em);
+        return new UserSimpleFilterChain(em, filterString);
 
     }
 }
