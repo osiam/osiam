@@ -128,7 +128,7 @@ public class UserConverter implements Converter<User, UserEntity> {
 
         if (extensions != null) {
             for (Extension extension : extensions) {
-                userBuilder.addExtension(extension.getUrn(), extension);
+                userBuilder.addExtension(extension);
             }
         }
     }
