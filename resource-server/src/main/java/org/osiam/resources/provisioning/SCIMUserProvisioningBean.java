@@ -119,7 +119,8 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
     @Override
     public SCIMSearchResult<User> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
         List<User> users = new ArrayList<>();
-        SCIMSearchResult<UserEntity> result = getDao().search(filter, sortBy, sortOrder, count, startIndex);
+        // Decrease startIndex by 1 because scim pagination starts at 1 and JPA doesn't
+        SCIMSearchResult<UserEntity> result = getDao().search(filter, sortBy, sortOrder, count, startIndex - 1);
         for (Object g : result.getResources()) {
             User scimResultUser = userConverter.toScim((UserEntity) g);
             users.add(User.Builder.generateForOutput(scimResultUser));
