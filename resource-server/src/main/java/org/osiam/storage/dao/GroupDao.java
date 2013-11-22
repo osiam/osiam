@@ -24,7 +24,8 @@
 package org.osiam.storage.dao;
 
 import org.osiam.resources.exceptions.ResourceNotFoundException;
-import org.osiam.resources.scim.SCIMSearchResult;
+import org.osiam.resources.helper.FilterParser;
+import org.osiam.resources.scim.Constants;
 import org.osiam.storage.entities.GroupEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,7 +67,7 @@ public class GroupDao extends ResourceDao<GroupEntity> implements GenericDao<Gro
     }
 
     @Override
-    public SCIMSearchResult<GroupEntity> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
+    public SearchResult<GroupEntity> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
         return search(GroupEntity.class, filter, count, startIndex, sortBy, sortOrder);
     }
 

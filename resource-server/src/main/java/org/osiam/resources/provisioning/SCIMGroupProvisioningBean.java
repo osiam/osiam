@@ -26,10 +26,12 @@ package org.osiam.resources.provisioning;
 import org.osiam.resources.converter.Converter;
 import org.osiam.resources.converter.GroupConverter;
 import org.osiam.resources.exceptions.ResourceExistsException;
+import org.osiam.resources.scim.Constants;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.dao.GenericDao;
 import org.osiam.storage.dao.GroupDao;
+import org.osiam.storage.dao.SearchResult;
 import org.osiam.storage.entities.GroupEntity;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -95,11 +97,15 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
     @Override
     public SCIMSearchResult<Group> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
         List<Group> groups = new ArrayList<>();
-        SCIMSearchResult<GroupEntity> result = getDao().search(filter, sortBy, sortOrder, count, startIndex);
-        for (GroupEntity group : result.getResources()) {
+
+        // Decrease startIndex by 1 because scim pagination starts at 1 and JPA doesn't
+        SearchResult<GroupEntity> result = getDao().search(filter, sortBy, sortOrder, count, startIndex - 1);
+
+        for (GroupEntity group : result.results) {
             groups.add(groupConverter.toScim(group));
         }
-        return new SCIMSearchResult<>(groups, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
+
+        return new SCIMSearchResult<>(groups, result.totalResults, count, startIndex, Constants.GROUP_CORE_SCHEMA);
     }
 
     @Override

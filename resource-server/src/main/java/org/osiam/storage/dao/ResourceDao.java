@@ -26,8 +26,6 @@ package org.osiam.storage.dao;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.helper.FilterChain;
 import org.osiam.resources.helper.FilterParser;
-import org.osiam.resources.scim.Constants;
-import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.entities.InternalIdSkeleton;
 import org.osiam.storage.entities.InternalIdSkeleton_;
 
@@ -61,8 +59,8 @@ public abstract class ResourceDao<T extends InternalIdSkeleton> {
         return (T) result.get(0);
     }
 
-    protected SCIMSearchResult<T> search(Class<T> clazz, String filter, int count, int startIndex, String sortBy,
-                                         String sortOrder) {
+    protected SearchResult<T> search(Class<T> clazz, String filter, int count, int startIndex, String sortBy,
+                                     String sortOrder) {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -101,7 +99,7 @@ public abstract class ResourceDao<T extends InternalIdSkeleton> {
         long totalResult = getTotalResults(clazz, internalIdQuery);
 
         // TODO: Replace this SearchResult with some other value class and build the SCIMSearchResult one layer up
-        return new SCIMSearchResult<>(results, totalResult, count, startIndex + 1, Constants.CORE_SCHEMA);
+        return new SearchResult<>(results, totalResult);
     }
 
     private long getTotalResults(Class<T> clazz, Subquery<Long> internalIdQuery) {
@@ -119,6 +117,8 @@ public abstract class ResourceDao<T extends InternalIdSkeleton> {
     }
 
     protected abstract FilterParser<T> getFilterParser();
+
+    protected abstract String getCoreSchema();
 
     protected abstract Class<T> getResourceClass();
 }

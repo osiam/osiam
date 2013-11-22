@@ -27,7 +27,6 @@ import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.helper.FilterParser;
 import org.osiam.resources.helper.UserFilterParser;
 import org.osiam.resources.scim.Constants;
-import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.stereotype.Repository;
@@ -82,7 +81,7 @@ public class UserDao extends ResourceDao<UserEntity> implements GenericDao<UserE
     }
 
     @Override
-    public SCIMSearchResult<UserEntity> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
+    public SearchResult<UserEntity> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
         return search(UserEntity.class, filter, count, startIndex, sortBy, sortOrder);
     }
 
