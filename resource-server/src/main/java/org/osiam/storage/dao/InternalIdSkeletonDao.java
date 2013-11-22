@@ -40,7 +40,6 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Subqueries;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.helper.FilterParser;
-import org.osiam.resources.scim.Constants;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.entities.InternalIdSkeleton;
 
@@ -84,7 +83,7 @@ public abstract class InternalIdSkeletonDao {
 
         int newStartIndex = startIndex <1 ? 1 :startIndex;
 
-        return new SCIMSearchResult<T>(results, totalResult, count, newStartIndex, Constants.USER_CORE_SCHEMA);
+        return new SCIMSearchResult<T>(results, totalResult, count, newStartIndex, getCoreSchema());
     }
 
 
@@ -130,4 +129,5 @@ public abstract class InternalIdSkeletonDao {
     }
 
     protected abstract void createAliasesForCriteria(DetachedCriteria criteria);
+    protected abstract String getCoreSchema();
 }

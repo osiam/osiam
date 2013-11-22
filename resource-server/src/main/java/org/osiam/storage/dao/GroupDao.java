@@ -26,6 +26,7 @@ package org.osiam.storage.dao;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.sql.JoinType;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
+import org.osiam.resources.scim.Constants;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.entities.GroupEntity;
 import org.springframework.stereotype.Repository;
@@ -75,6 +76,11 @@ public class GroupDao extends InternalIdSkeletonDao implements GenericDao<GroupE
     @Override
     protected void createAliasesForCriteria(DetachedCriteria criteria) {
         criteria.createAlias("meta", "meta", JoinType.INNER_JOIN);
+    }
+    
+    @Override
+    protected String getCoreSchema() {
+        return Constants.GROUP_CORE_SCHEMA;
     }
 
 }
