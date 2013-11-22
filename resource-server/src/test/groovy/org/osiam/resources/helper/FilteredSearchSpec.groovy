@@ -37,7 +37,7 @@ class FilteredSearchSpec extends Specification {
         then:
         result.field == 'userName'
         result.constraint == FilterConstraint.EQUALS
-        result.value == 1
+        result.value == '1' // <- It's a String!
     }
 
     def 'should parse contains (co)'() {

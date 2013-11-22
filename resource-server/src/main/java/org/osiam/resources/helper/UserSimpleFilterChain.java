@@ -67,7 +67,7 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
         // TODO: is this needed anymore? maybe for extensions!
         this.splitKeys = splitKey(field); // Split keys for handling complex types
 
-        this.value = matcher.group(3).trim(); // NOSONAR - no need to make constant for number
+        this.value = matcher.group(3).trim().replace("\"", ""); // NOSONAR - no need to make constant for number
     }
 
     private List<String> splitKey(String key) {
