@@ -373,14 +373,12 @@ CREATE TABLE scim_user_scim_extension
 );
 
 --
--- Inserting default role, scheme version and updating table sequence for multivalues
+-- Inserting default role and scheme version
 --
 
 INSERT INTO database_scheme_version VALUES (0.05);
 
 INSERT INTO scim_roles VALUES (1, 'USER');
-
-INSERT INTO hibernate_sequences VALUES ('MultiValueAttributeEntitySkeleton', 2);
 
 
 --
