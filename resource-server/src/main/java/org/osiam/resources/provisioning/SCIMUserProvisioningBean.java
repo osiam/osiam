@@ -26,12 +26,10 @@ package org.osiam.resources.provisioning;
 import org.osiam.resources.converter.Converter;
 import org.osiam.resources.converter.UserConverter;
 import org.osiam.resources.exceptions.ResourceExistsException;
-import org.osiam.resources.scim.Extension;
-import org.osiam.resources.scim.ExtensionFieldType;
-import org.osiam.resources.scim.SCIMSearchResult;
-import org.osiam.resources.scim.User;
+import org.osiam.resources.scim.*;
 import org.osiam.storage.dao.ExtensionDao;
 import org.osiam.storage.dao.GenericDao;
+import org.osiam.storage.dao.SearchResult;
 import org.osiam.storage.dao.UserDao;
 import org.osiam.storage.entities.ExtensionEntity;
 import org.osiam.storage.entities.ExtensionFieldEntity;
@@ -119,13 +117,16 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
     @Override
     public SCIMSearchResult<User> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
         List<User> users = new ArrayList<>();
+
         // Decrease startIndex by 1 because scim pagination starts at 1 and JPA doesn't
-        SCIMSearchResult<UserEntity> result = getDao().search(filter, sortBy, sortOrder, count, startIndex - 1);
-        for (Object g : result.getResources()) {
-            User scimResultUser = userConverter.toScim((UserEntity) g);
+        SearchResult<UserEntity> result = getDao().search(filter, sortBy, sortOrder, count, startIndex - 1);
+
+        for (UserEntity userEntity : result.results) {
+            User scimResultUser = userConverter.toScim(userEntity);
             users.add(User.Builder.generateForOutput(scimResultUser));
         }
-        return new SCIMSearchResult<>(users, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
+
+        return new SCIMSearchResult<>(users, result.totalResults, count, startIndex, Constants.USER_CORE_SCHEMA);
     }
 
     @Override
