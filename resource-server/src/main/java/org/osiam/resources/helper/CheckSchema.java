@@ -29,7 +29,9 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.osiam.resources.exceptions.SchemaUnknownException;
 import org.osiam.resources.scim.Constants;
+import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.Resource;
+import org.osiam.resources.scim.User;
 
 @Aspect
 public class CheckSchema {
@@ -50,21 +52,40 @@ public class CheckSchema {
     }
 
     private void validateArguments(Object[] args) {
-        for (Object o : args) {
-            if (o instanceof Resource) {
-                validateUser((Resource) o);
+        for (Object argument : args) {
+            if (argument instanceof User) {
+                validateUser((User) argument);
+            } else if (argument instanceof Group) {
+                validateGroup((Group) argument);
             }
         }
     }
 
-    private void validateUser(Resource user) {
+    private void validateGroup(Group group) {
+        if (group.getSchemas() == null || group.getSchemas().isEmpty()) {
+            throw new SchemaUnknownException();
+        }
+        
+        for (String schema : group.getSchemas()) {
+            if (Constants.GROUP_CORE_SCHEMA.equals(schema)) {
+                return;
+            }
+        }
+        
+        throw new SchemaUnknownException();
+    }
+
+    private void validateUser(User user) {
         if (user.getSchemas() == null || user.getSchemas().isEmpty()) {
             throw new SchemaUnknownException();
         }
-        for (String s : user.getSchemas()) {
-            if (!Constants.CORE_SCHEMA.contains(s)) {
-                throw new SchemaUnknownException();
+        
+        for (String schema : user.getSchemas()) {
+            if (Constants.USER_CORE_SCHEMA.equals(schema)) {
+                return;
             }
         }
+        
+        throw new SchemaUnknownException();
     }
 }

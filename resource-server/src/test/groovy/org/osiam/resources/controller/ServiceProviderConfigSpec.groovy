@@ -8,7 +8,7 @@ class ServiceProviderConfigSpec extends Specification {
 
     def "should return a ServiceProviderConfig"() {
         given:
-        def schemas = [Constants.CORE_SCHEMA] as Set
+        def schemas = [Constants.SERVICE_PROVIDER_CORE_SCHEMA] as Set
 
         when:
         def config = underTest.getConfig()

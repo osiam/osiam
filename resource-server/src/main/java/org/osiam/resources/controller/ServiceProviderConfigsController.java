@@ -38,7 +38,7 @@ public class ServiceProviderConfigsController {
                         "http://oauth.net/2/"));
 
         private ServiceProviderConfig() {
-            schemas.add(Constants.CORE_SCHEMA);
+            schemas.add(Constants.SERVICE_PROVIDER_CORE_SCHEMA);
         }
 
         @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
