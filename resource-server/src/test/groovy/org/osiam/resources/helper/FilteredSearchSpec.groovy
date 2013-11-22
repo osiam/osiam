@@ -17,96 +17,95 @@
 
 package org.osiam.resources.helper
 
-import org.osiam.storage.entities.UserEntity
 import spock.lang.Specification
 
 class FilteredSearchSpec extends Specification {
     def parser = new UserFilterParser()
-    def aClass = UserEntity.class
 
-    def "should parse equals (eq)"() {
+    def 'should parse equals (eq)'() {
         when:
-        def result = parser.parse("userName eq \"bjensen\"", aClass)
+        UserSimpleFilterChain result = parser.parse('userName eq "bjensen"')
         then:
-        result.key == 'userName'
-        result.constraint == SingularFilterChain.Constraints.EQUALS
+        result.field == 'userName'
+        result.constraint == FilterConstraint.EQUALS
         result.value == "bjensen"
     }
 
-    def "should parse without \""() {
+    def 'should parse without "'() {
         when:
-        def result = parser.parse("userName eq 1", aClass)
+        UserSimpleFilterChain result = parser.parse('userName eq 1')
         then:
-        result.key == 'userName'
-        result.constraint == SingularFilterChain.Constraints.EQUALS
+        result.field == 'userName'
+        result.constraint == FilterConstraint.EQUALS
         result.value == 1
     }
 
-    def "should parse contains (co)"() {
+    def 'should parse contains (co)'() {
         when:
-        def result = parser.parse("name.familyName co \"O'Malley\"", aClass)
+        UserSimpleFilterChain result = parser.parse('name.familyName co "O\'Malley"')
         then:
-        result.key == 'name.familyName'
-        result.constraint == SingularFilterChain.Constraints.CONTAINS
+        result.field == 'name.familyName'
+        result.constraint == FilterConstraint.CONTAINS
         result.value == "O'Malley"
     }
 
-    def "should parse starts with (sw)"() {
+    def 'should parse starts with (sw)'() {
         when:
-        def result = parser.parse("userName sw \"L\"", aClass)
+        UserSimpleFilterChain result = parser.parse('userName sw "L"')
         then:
-        result.key == 'userName'
-        result.constraint == SingularFilterChain.Constraints.STARTS_WITH
+        result.field == 'userName'
+        result.constraint == FilterConstraint.STARTS_WITH
         result.value == "L"
 
     }
 
     def "should parse present (pr)"() {
         when:
-        def result = parser.parse("title pr", aClass)
+        UserSimpleFilterChain result = parser.parse('title pr')
         then:
-        result.key == 'title'
-        result.constraint == SingularFilterChain.Constraints.PRESENT
+        result.field == 'title'
+        result.constraint == FilterConstraint.PRESENT
         !result.value
 
     }
 
     def "should parse greater than (gt)"() {
         when:
-        def result = parser.parse("meta.lastModified gt \"2011-05-13T04:42:34Z\"", aClass)
+        UserSimpleFilterChain result = parser.parse('meta.lastModified gt "2011-05-13T04:42:34Z"')
         then:
-        result.key == 'meta.lastModified'
-        result.constraint == SingularFilterChain.Constraints.GREATER_THAN
+        result.field == 'meta.lastModified'
+        result.constraint == FilterConstraint.GREATER_THAN
         result.value
 
     }
 
     def "should parse greater than or equal (ge)"() {
         when:
-        def result = parser.parse("meta.lastModified ge \"2011-05-13T04:42:34Z\"", aClass)
+        UserSimpleFilterChain result = parser.parse('meta.lastModified ge "2011-05-13T04:42:34Z"')
         then:
-        result.key == 'meta.lastModified'
-        result.constraint == SingularFilterChain.Constraints.GREATER_EQUALS
+        result.field == 'meta.lastModified'
+        result.constraint == FilterConstraint.GREATER_EQUALS
         result.value
 
     }
 
     def "should parse less than (lt)"() {
         when:
-        def result = parser.parse("meta.lastModified lt \"2011-05-13T04:42:34Z\"", aClass)
+        UserSimpleFilterChain result = parser.parse('meta.lastModified lt "2011-05-13T04:42:34Z"')
         then:
-        result.key == 'meta.lastModified'
-        result.constraint == SingularFilterChain.Constraints.LESS_THAN
+        result.field == 'meta.lastModified'
+        result.constraint == FilterConstraint.LESS_THAN
         result.value
 
     }
 
-    def "should parse less than or equal (le)"() {
+    def 'should parse less than or equal (le)'() {
         when:
-        def result = parser.parse("meta.lastModified le \"2011-05-13T04:42:34Z\"", aClass)
+        UserSimpleFilterChain result = parser.parse('meta.lastModified le "2011-05-13T04:42:34Z"')
+
         then:
-        result.key == 'meta.lastModified'
-        result.constraint == SingularFilterChain.Constraints.LESS_EQUALS
+        result.field == 'meta.lastModified'
+        result.constraint == FilterConstraint.LESS_EQUALS
         result.value
 
     }

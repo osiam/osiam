@@ -1,13 +1,8 @@
 package org.osiam.resources.helper
 
-import org.hibernate.criterion.Criterion
-import org.osiam.storage.entities.UserEntity
 import spock.lang.Specification
 
 import javax.persistence.EntityManager
-import javax.persistence.criteria.AbstractQuery
-import javax.persistence.criteria.Predicate
-import javax.persistence.criteria.Root
 
 class UserCombinedFilterChainSpec extends Specification {
 
@@ -105,16 +100,4 @@ class UserCombinedFilterChainSpec extends Specification {
         thrown(IllegalArgumentException)
     }
 
-    def "should build an Predicate"() {
-        given:
-        Root<UserEntity> root = Mock()
-        AbstractQuery<Long> query = Mock()
-        def filter = 'userType eq "Employee" AND (emails.value co "example.com" OR emails.value co "example.org")'
-        def chain = new UserCombinedFilterChain(em, filter)
-
-        when:
-        def cf = chain.createPredicateAndJoin(query,root)
-        then:
-        1 * em.getCriteriaBuilder()
-    }
 }

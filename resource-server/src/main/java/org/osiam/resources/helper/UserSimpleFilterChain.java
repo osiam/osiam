@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 
 public class UserSimpleFilterChain implements FilterChain<UserEntity> {
 
-    private static final Pattern SINGULAR_CHAIN_PATTERN = Pattern.compile("(\\S+) (" + createOrConstraints()
+    private static final Pattern SIMPLE_CHAIN_PATTERN = Pattern.compile("(\\S+) (" + createOrConstraints()
             + ")[ ]??([\\S ]*?)");
 
     private static String createOrConstraints() {
@@ -54,7 +54,7 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
     private final EntityManager em;
 
     public UserSimpleFilterChain(EntityManager em, String filter) {
-        Matcher matcher = SINGULAR_CHAIN_PATTERN.matcher(filter);
+        Matcher matcher = SIMPLE_CHAIN_PATTERN.matcher(filter);
         if (!matcher.matches()) {
             throw new IllegalArgumentException(filter + " is not a simple filter string");
         }
@@ -95,12 +95,12 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
                 return constraint.createPredicateForStringField(root.get(UserEntity_.externalId), value, cb);
             }
         },
-        META_CREATED("meta.created"){
+        META_CREATED("meta.created") {
             @Override
             public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
                                        String value, CriteriaBuilder cb) {
                 Date date = ISODateTimeFormat.dateParser().parseDateTime(value).toDate();
-                return constraint.createPredicateForDateField(root.get(UserEntity_.meta).get(MetaEntity_.created), date, cb );
+                return constraint.createPredicateForDateField(root.get(UserEntity_.meta).get(MetaEntity_.created), date, cb);
             }
         },
         USERNAME("username") {

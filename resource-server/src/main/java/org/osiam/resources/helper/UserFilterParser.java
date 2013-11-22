@@ -27,15 +27,15 @@ import javax.persistence.PersistenceContext;
 public class UserFilterParser implements FilterParser<UserEntity> {
 
     @PersistenceContext
-    private EntityManager em;
+    EntityManager entityManager;
 
 
     @Override
     public FilterChain<UserEntity> parse(String filterString) {
         if (UserCombinedFilterChain.COMBINED_FILTER_CHAIN.matcher(filterString).matches()) {
-            return new UserCombinedFilterChain(em, filterString);
+            return new UserCombinedFilterChain(this, filterString);
         }
-        return new UserSimpleFilterChain(em, filterString);
+        return new UserSimpleFilterChain(entityManager, filterString);
 
     }
 }
