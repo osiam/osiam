@@ -23,12 +23,7 @@
 
 package org.osiam.storage.dao
 
-import org.hibernate.Criteria
-import org.hibernate.Session
-import org.hibernate.criterion.Criterion
 import org.osiam.resources.exceptions.ResourceNotFoundException
-import org.osiam.resources.helper.FilterChain
-import org.osiam.resources.helper.UserFilterParser
 import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.InternalIdSkeleton
 import org.osiam.storage.entities.UserEntity
@@ -42,18 +37,16 @@ class GroupDaoSpec extends Specification {
     EntityManager em = Mock(EntityManager)
 
     Query query = Mock(Query)
-    InternalIdSkeleton internalidSkeleton = new GroupEntity(id: UUID.randomUUID())
+    InternalIdSkeleton internalIdSkeleton = new GroupEntity(id: UUID.randomUUID())
 
-    def filterParser = Mock(UserFilterParser)
-    def underTest = new GroupDao(em: em, filterParser: filterParser)
+    def underTest = new GroupDao(em: em)
     String id = UUID.randomUUID().toString()
-    def aClass = GroupEntity.class
 
     def setup() {
-        em.createNamedQuery("getById") >> query
+        em.createNamedQuery('getById') >> query
     }
 
-    def "should persist on empty members "() {
+    def 'persisting a group without members works'() {
         given:
         def entity = new GroupEntity()
         when:
@@ -62,69 +55,39 @@ class GroupDaoSpec extends Specification {
         1 * em.persist(entity)
     }
 
-    def "should get a group"() {
+    // This test might well be senseless
+    def 'retrieving a group works'() {
         when:
         def result = underTest.getById(id)
         then:
-        1 * query.getResultList() >> [internalidSkeleton]
-        result == internalidSkeleton
+        1 * query.getResultList() >> [internalIdSkeleton]
+        result == internalIdSkeleton
     }
 
-    def "should wrap class cast exception to ResourceNotFoundException"() {
+    def 'a class cast exception is wraped into a ResourceNotFoundException'() {
         given:
-        internalidSkeleton = new UserEntity()
+        internalIdSkeleton = new UserEntity()
         when:
         underTest.getById(id)
         then:
-        1 * query.getResultList() >> [internalidSkeleton]
+        1 * query.getResultList() >> [internalIdSkeleton]
         thrown(ResourceNotFoundException)
     }
 
-    def "should first try to get and then delete a group"() {
+    def 'deleting a group first retrieves it, then deletes it'() {
         when:
         underTest.delete(id)
         then:
-        1 * query.getResultList() >> [internalidSkeleton]
-        1 * em.remove(internalidSkeleton)
+        1 * query.getResultList() >> [internalIdSkeleton]
+        1 * em.remove(internalIdSkeleton)
     }
 
-    def "should not delete an unknown group"() {
+    def 'deleting an unknown group raises exception'() {
         when:
         underTest.delete(id)
         then:
         1 * query.getResultList() >> []
-        0 * em.remove(internalidSkeleton)
+        0 * em.remove(internalIdSkeleton)
         thrown(ResourceNotFoundException)
     }
-
-    def "should do filtered searches on groups sorting ascending"() {
-        given:
-        def hibernateSessionMock = Mock(Session)
-        def filterChainMock = Mock(FilterChain)
-        def criteriaMock = Mock(Criteria)
-        def criterionMock = Mock(Criterion)
-        def groupList = ["group"] as List
-
-        em.getDelegate() >> hibernateSessionMock
-        hibernateSessionMock.createCriteria(GroupEntity.class) >> criteriaMock
-        filterParser.parse("anyFilter", aClass) >> filterChainMock
-        filterChainMock.buildCriterion() >> criterionMock
-        criteriaMock.add(criterionMock) >> criteriaMock
-        criteriaMock.setProjection(_) >> criteriaMock
-        criteriaMock.uniqueResult() >> 1000.toLong()
-        criteriaMock.setResultTransformer(_) >> criteriaMock
-        criteriaMock.setCacheMode(_) >> criteriaMock
-        criteriaMock.setCacheable(_) >> criteriaMock
-        criteriaMock.list() >> groupList
-
-        when:
-        def result = underTest.search("anyFilter", "displayName", "ascending", 100, 1)
-
-        then:
-        result != null
-        result.getTotalResults() == 1000
-        result.getResources() == groupList
-
-    }
-
 }
