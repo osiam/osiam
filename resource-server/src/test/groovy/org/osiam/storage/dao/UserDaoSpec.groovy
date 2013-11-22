@@ -23,11 +23,7 @@
 
 package org.osiam.storage.dao
 
-import org.hibernate.Criteria
-import org.hibernate.Session
-import org.hibernate.criterion.Criterion
 import org.osiam.resources.exceptions.ResourceNotFoundException
-import org.osiam.resources.helper.FilterChain
 import org.osiam.resources.helper.UserFilterParser
 import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.InternalIdSkeleton
@@ -45,8 +41,6 @@ class UserDaoSpec extends Specification {
     def underTest = new UserDao(em: em, filterParser: filterParserMock)
     def userEntity = Mock(UserEntity)
 
-    def aClass = UserEntity.class
-
     def setup() {
         userEntity.roles >> new HashSet<>(Arrays.asList(new RolesEntity(value: "test"), new RolesEntity()))
         userEntity.addresses >> new HashSet<>()
@@ -58,65 +52,68 @@ class UserDaoSpec extends Specification {
         userEntity.ims >> new HashSet<>()
     }
 
-    def "should get user by internal id"() {
+    def 'should get user by internal id'() {
         given:
         def internalId = UUID.randomUUID()
         def query = Mock(Query)
         def entity = new UserEntity()
+
         when:
         def result = underTest.getById(internalId.toString())
+
         then:
-        1 * em.createNamedQuery("getById") >> query
+        1 * em.createNamedQuery('getById') >> query
         1 * query.getResultList() >> [entity]
         result == entity
     }
 
-    def "should throw an exception when no user got found by id"() {
+    def 'should throw an exception when no user is found by id'() {
         given:
         def internalId = UUID.randomUUID()
         def query = Mock(Query)
         def queryResults = []
+
         when:
         underTest.getById(internalId.toString())
+
         then:
-        1 * em.createNamedQuery("getById") >> query
+        1 * em.createNamedQuery('getById') >> query
         1 * query.getResultList() >> queryResults
         def e = thrown(ResourceNotFoundException)
-        e.message == "Resource " + internalId.toString() + " not found."
+        e.message.contains(internalId.toString())
     }
 
-    def "should throw an exception when no user got found by name"() {
+    def 'should throw an exception when no user is found by name'() {
         given:
         def query = Mock(Query)
         def queryResults = []
+
         when:
-        underTest.getByUsername("name")
+        underTest.getByUsername('name')
+
         then:
-        1 * em.createNamedQuery("getUserByUsername") >> query
-        1 * query.setParameter("username", "name")
+        1 * em.createNamedQuery('getUserByUsername') >> query
+        1 * query.setParameter('username', 'name')
         1 * query.getResultList() >> queryResults
-        def e = thrown(ResourceNotFoundException)
-        e.message == "Resource name not found."
+        thrown(ResourceNotFoundException)
 
     }
 
-    def "should get user by username"() {
+    def 'should get user by username'() {
         given:
         def query = Mock(Query)
         def queryResults = [new UserEntity()]
         when:
-        def result = underTest.getByUsername("name")
+        def result = underTest.getByUsername('name')
         then:
-        1 * em.createNamedQuery("getUserByUsername") >> query
-        1 * query.setParameter("username", "name")
+        1 * em.createNamedQuery('getUserByUsername') >> query
+        1 * query.setParameter('username', 'name')
         1 * query.getResultList() >> queryResults
         result == queryResults.get(0)
 
     }
 
-    def "should be able to create a user"() {
-        given:
-        def id = UUID.randomUUID()
+    def 'should be able to create a user'() {
         when:
         underTest.create(userEntity)
 
@@ -125,7 +122,7 @@ class UserDaoSpec extends Specification {
 
     }
 
-    def "should first get an user than delete it"() {
+    def 'should first get an user than delete it'() {
         given:
         def entity = new UserEntity()
         def id = UUID.randomUUID().toString()
@@ -133,83 +130,23 @@ class UserDaoSpec extends Specification {
         when:
         underTest.delete(id)
         then:
-        1 * em.createNamedQuery("getById") >> query
+        1 * em.createNamedQuery('getById') >> query
         1 * query.getResultList() >> [entity]
         1 * em.remove(entity)
 
     }
 
-    def "should wrap class cast exception to ResourceNotFoundException"() {
+    def 'should wrap class cast exception to ResourceNotFoundException'() {
         given:
         def id = UUID.randomUUID().toString()
         def query = Mock(Query)
 
-        InternalIdSkeleton internalidSkeleton = new GroupEntity()
+        InternalIdSkeleton internalIdSkeleton = new GroupEntity()
         when:
         underTest.getById(id)
         then:
-        1 * em.createNamedQuery("getById") >> query
-        1 * query.getResultList() >> [internalidSkeleton]
+        1 * em.createNamedQuery('getById') >> query
+        1 * query.getResultList() >> [internalIdSkeleton]
         thrown(ResourceNotFoundException)
-    }
-
-    def "should do filtered searches on users sorting ascending"() {
-        given:
-        def hibernateSessionMock = Mock(Session)
-        def filterChainMock = Mock(FilterChain)
-        def criteriaMock = Mock(Criteria)
-        def criterionMock = Mock(Criterion)
-        def userList = ["user"] as List
-
-        em.getDelegate() >> hibernateSessionMock
-        hibernateSessionMock.createCriteria(UserEntity.class) >> criteriaMock
-        filterParserMock.parse("anyFilter", aClass) >> filterChainMock
-        filterChainMock.buildCriterion() >> criterionMock
-        criteriaMock.add(criterionMock) >> criteriaMock
-        criteriaMock.setProjection(_) >> criteriaMock
-        criteriaMock.setResultTransformer(_) >> criteriaMock
-        criteriaMock.setCacheMode(_) >> criteriaMock
-        criteriaMock.setCacheable(_) >> criteriaMock
-        criteriaMock.uniqueResult() >> 1000.toLong()
-        criteriaMock.list() >> userList
-
-        when:
-        def result = underTest.search("anyFilter", "userName", "ascending", 100, 1)
-
-        then:
-        result != null
-        result.getTotalResults() == 1000
-        result.getResources() == userList
-
-    }
-
-    def "should do filtered searches on users sorting descending"() {
-        given:
-        def hibernateSessionMock = Mock(Session)
-        def filterChainMock = Mock(FilterChain)
-        def criteriaMock = Mock(Criteria)
-        def criterionMock = Mock(Criterion)
-        def userList = ["user"] as List
-
-        em.getDelegate() >> hibernateSessionMock
-        hibernateSessionMock.createCriteria(UserEntity.class) >> criteriaMock
-        filterParserMock.parse("anyFilter", aClass) >> filterChainMock
-        filterChainMock.buildCriterion() >> criterionMock
-        criteriaMock.add(criterionMock) >> criteriaMock
-        criteriaMock.setProjection(_) >> criteriaMock
-        criteriaMock.setResultTransformer(_) >> criteriaMock
-        criteriaMock.setCacheMode(_) >> criteriaMock
-        criteriaMock.setCacheable(_) >> criteriaMock
-        criteriaMock.uniqueResult() >> 1000.toLong()
-        criteriaMock.list() >> userList
-
-        when:
-        def result = underTest.search("anyFilter", "userName", "descending", 100, 1)
-
-        then:
-        result != null
-        result.getTotalResults() == 1000
-        result.getResources() == userList
-
     }
 }
