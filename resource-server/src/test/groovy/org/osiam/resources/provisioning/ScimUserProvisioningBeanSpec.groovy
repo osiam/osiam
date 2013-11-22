@@ -118,6 +118,7 @@ class ScimUserProvisioningBeanSpec extends Specification {
         1 * userDao.delete(id)
     }
 
+    @Ignore('Don\'t mock the EntityManager or result here')
     def 'should call dao search on search'() {
         given:
         def scimSearchResultMock = Mock(SCIMSearchResult)
