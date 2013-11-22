@@ -42,13 +42,12 @@ public class UserCombinedFilterChain implements FilterChain<UserEntity> {
 
     private final EntityManager em;
 
-    public UserCombinedFilterChain(EntityManager em, String filter) {
-        this.em = em;
+    public UserCombinedFilterChain(UserFilterParser filterParser, String filter) {
+        this.em = filterParser.entityManager;
         Matcher matcher = COMBINED_FILTER_CHAIN.matcher(filter);
         if (!matcher.matches()) {
             throw new IllegalArgumentException(filter + " is not a complex filter string");
         }
-        FilterParser<UserEntity> filterParser = new UserFilterParser();
         this.leftTerm = filterParser.parse(matcher.group(1)); // NOSONAR - no need to make constant for number
         this.combinedWith = Combiner.valueOf(matcher.group(2).toUpperCase(Locale.ENGLISH)); // NOSONAR - no need to make constant for number
         this.rightTerm = filterParser.parse(matcher.group(3)); // NOSONAR - no need to make constant for number
