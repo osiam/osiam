@@ -17,16 +17,20 @@
 
 package org.osiam.resources.helper;
 
-import org.osiam.storage.entities.*;
-
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.*;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class UserSimpleFilterChain implements FilterChain<UserEntity> {
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.AbstractQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import org.osiam.storage.entities.GroupEntity;
+
+public class GroupSimpleFilterChain implements FilterChain<GroupEntity> {
 
     private static final Pattern SIMPLE_CHAIN_PATTERN = Pattern.compile("(\\S+) (" + createOrConstraints()
             + ")[ ]??([\\S ]*?)");
@@ -49,10 +53,10 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
 
     private final List<String> splitKeys;
 
-    private final UserFilterField filterField;
+    private final GroupFilterField filterField;
     private final EntityManager em;
 
-    public UserSimpleFilterChain(EntityManager em, String filter) {
+    public GroupSimpleFilterChain(EntityManager em, String filter) {
         Matcher matcher = SIMPLE_CHAIN_PATTERN.matcher(filter);
         if (!matcher.matches()) {
             throw new IllegalArgumentException(filter + " is not a simple filter string");
@@ -69,7 +73,7 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
                                                                                // constant
                                                                                // for
                                                                                // number
-        this.filterField = UserFilterField.fromString(field.toLowerCase());
+        this.filterField = GroupFilterField.fromString(field.toLowerCase());
 
         // TODO: is this needed anymore? maybe for extensions!
         this.splitKeys = splitKey(field); // Split keys for handling complex
@@ -93,7 +97,7 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
     }
 
     @Override
-    public Predicate createPredicateAndJoin(AbstractQuery<Long> query, Root<UserEntity> root) {
+    public Predicate createPredicateAndJoin(AbstractQuery<Long> query, Root<GroupEntity> root) {
         return filterField.addFilter(query, root, constraint, value, em.getCriteriaBuilder());
     }
 
