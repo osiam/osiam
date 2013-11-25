@@ -36,8 +36,9 @@ public class TypeErrorMessageTransformer implements ErrorMessageTransformer {
      */
     private String loadEnumConstAsStringByClassName(String enumName) {
         try {
-            Class<? extends Enum> clazz = (Class<? extends Enum>) Class.forName(enumName);
-            Enum[] enumConstants = clazz.getEnumConstants();
+            @SuppressWarnings("unchecked")
+            Class<? extends Enum<?>> clazz = (Class<? extends Enum<?>>) Class.forName(enumName);
+            Enum<?>[] enumConstants = clazz.getEnumConstants();
             return combineEnumConstantsToString(enumConstants).substring(2);
         } catch (Exception e) {
             return null;
@@ -52,9 +53,9 @@ public class TypeErrorMessageTransformer implements ErrorMessageTransformer {
      * @param enumConstants the array of enums to combine
      * @return combined string list of enums separated by comma
      */
-    private String combineEnumConstantsToString(Enum[] enumConstants) {
+    private String combineEnumConstantsToString(Enum<?>[] enumConstants) {
         StringBuffer buf = new StringBuffer();
-        for (Enum e : enumConstants) {
+        for (Enum<?> e : enumConstants) {
             buf.append(", ");
             buf.append(e.toString());
         }

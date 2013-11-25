@@ -11,7 +11,7 @@ import javax.persistence.criteria.Root;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.GroupEntity_;
 
-enum GroupFilterField {
+enum GroupFilterField implements FilterField<GroupEntity> {
 
     DISPLAYNAME("displayname") {
         @Override
@@ -44,8 +44,5 @@ enum GroupFilterField {
     public static GroupFilterField fromString(String name) {
         return stringToEnum.get(name);
     }
-
-    public abstract Predicate addFilter(AbstractQuery<Long> query, Root<GroupEntity> root,
-            FilterConstraint constraint, String value, CriteriaBuilder cb);
 
 }

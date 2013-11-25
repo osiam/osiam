@@ -22,7 +22,7 @@ import org.osiam.storage.entities.PhotoEntity_;
 import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.entities.UserEntity_;
 
-enum UserFilterField {
+enum UserFilterField implements FilterField<UserEntity> {
 
     USERNAME("username") {
         @Override
@@ -278,9 +278,6 @@ enum UserFilterField {
     public static UserFilterField fromString(String name) {
         return stringToEnum.get(name);
     }
-
-    public abstract Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root,
-            FilterConstraint constraint, String value, CriteriaBuilder cb);
 
     @SuppressWarnings("unchecked")
     protected <T> SetJoin<UserEntity, T> createOrGetJoin(String alias, Root<UserEntity> root,

@@ -14,11 +14,11 @@ import org.osiam.storage.entities.InternalIdSkeleton;
 import org.osiam.storage.entities.InternalIdSkeleton_;
 import org.osiam.storage.entities.MetaEntity_;
 
-enum ResourceFilterField {
+enum ResourceFilterField implements FilterField<> {
 
     EXTERNALID("externalid") {
         @Override
-        public Predicate addFilter(AbstractQuery<Long> query, Root<InternalIdSkeleton> root,
+        public Predicate addFilter(AbstractQuery<Long> query, Root<? extends InternalIdSkeleton> root,
                 FilterConstraint constraint, String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(InternalIdSkeleton_.externalId), value, cb);
         }
@@ -74,8 +74,5 @@ enum ResourceFilterField {
     public static ResourceFilterField fromString(String name) {
         return stringToEnum.get(name);
     }
-
-    public abstract Predicate addFilter(AbstractQuery<Long> query, Root<InternalIdSkeleton> root,
-            FilterConstraint constraint, String value, CriteriaBuilder cb);
 
 }

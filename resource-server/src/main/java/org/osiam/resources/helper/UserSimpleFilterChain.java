@@ -49,7 +49,8 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
 
     private final List<String> splitKeys;
 
-    private final UserFilterField filterField;
+    private final FilterField<UserEntity> filterFieldUser;
+    private final FilterField<InternalIdSkeleton> filterFieldResource;
     private final EntityManager em;
 
     public UserSimpleFilterChain(EntityManager em, String filter) {
@@ -69,7 +70,8 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
                                                                                // constant
                                                                                // for
                                                                                // number
-        this.filterField = UserFilterField.fromString(field.toLowerCase());
+        this.filterFieldUser = UserFilterField.fromString(field.toLowerCase());
+        this.filterFieldResource = ResourceFilterField.fromString(field.toLowerCase());
 
         // TODO: is this needed anymore? maybe for extensions!
         this.splitKeys = splitKey(field); // Split keys for handling complex
@@ -94,7 +96,13 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
 
     @Override
     public Predicate createPredicateAndJoin(AbstractQuery<Long> query, Root<UserEntity> root) {
-        return filterField.addFilter(query, root, constraint, value, em.getCriteriaBuilder());
+        if(filterFieldUser != null) {
+            return filterFieldUser.addFilter(query, root, constraint, value, em.getCriteriaBuilder());
+        } else if (filterFieldResource != null) {
+            return filterFieldResource.addFilter(query, (Root<InternalIdSkeleton>) root, constraint, value, em.getCriteriaBuilder());
+        } else {
+            throw new IllegalArgumentException("Filtering not possible. Field '" + field + "' not available.");
+        }
     }
 
 }
