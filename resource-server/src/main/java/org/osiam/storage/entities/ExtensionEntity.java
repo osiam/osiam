@@ -19,7 +19,7 @@ public class ExtensionEntity {
     private String urn;
 
     @OneToMany(mappedBy = "extension")
-    private Set<ExtensionFieldEntity> fields;
+    private Set<ExtensionFieldEntity> fields = new HashSet<>();
 
     public long getInternalId() {
         return internalId;
@@ -42,6 +42,15 @@ public class ExtensionEntity {
             fields = new HashSet<>();
         }
         return fields;
+    }
+
+    public ExtensionFieldEntity getFieldForName(String fieldName) {
+        for (ExtensionFieldEntity field : fields) {
+            if (field.getName().equals(fieldName)) {
+                return field;
+            }
+        }
+        throw new IllegalArgumentException("Field " + fieldName + " not available in extension with URN " + urn);
     }
 
     public void setFields(Set<ExtensionFieldEntity> extensionFields) {
