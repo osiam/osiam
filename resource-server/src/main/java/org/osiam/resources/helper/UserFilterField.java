@@ -1,5 +1,6 @@
 package org.osiam.resources.helper;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,10 +13,12 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 import javax.persistence.metamodel.SetAttribute;
 
+import org.joda.time.format.ISODateTimeFormat;
 import org.osiam.storage.entities.EmailEntity;
 import org.osiam.storage.entities.EmailEntity.CanonicalEmailTypes;
 import org.osiam.storage.entities.EmailEntity_;
 import org.osiam.storage.entities.ImEntity_;
+import org.osiam.storage.entities.MetaEntity_;
 import org.osiam.storage.entities.NameEntity_;
 import org.osiam.storage.entities.PhoneNumberEntity_;
 import org.osiam.storage.entities.PhotoEntity_;
@@ -23,7 +26,40 @@ import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.entities.UserEntity_;
 
 enum UserFilterField implements FilterField<UserEntity> {
-
+    EXTERNALID("externalid") {
+        @Override
+        public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root,
+                FilterConstraint constraint, String value, CriteriaBuilder cb) {
+            return constraint.createPredicateForStringField(root.get(UserEntity_.externalId), value, cb);
+        }
+    },
+    META_CREATED("meta.created") {
+        @Override
+        public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root,
+                FilterConstraint constraint, String value, CriteriaBuilder cb) {
+            Date date = ISODateTimeFormat.dateTimeParser().parseDateTime(value).toDate();
+            return constraint.createPredicateForDateField(root.get(UserEntity_.meta).get(MetaEntity_.created),
+                    date, cb);
+        }
+    },
+    META_LASTMODIFIED("meta.lastmodified") {
+        @Override
+        public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root,
+                FilterConstraint constraint, String value, CriteriaBuilder cb) {
+            Date date = ISODateTimeFormat.dateTimeParser().parseDateTime(value).toDate();
+            return constraint.createPredicateForDateField(
+                    root.get(UserEntity_.meta).get(MetaEntity_.lastModified),
+                    date, cb);
+        }
+    },
+    META_LOCATION("meta.location") {
+        @Override
+        public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root,
+                FilterConstraint constraint, String value, CriteriaBuilder cb) {
+            return constraint.createPredicateForStringField(root.get(UserEntity_.meta)
+                    .get(MetaEntity_.location), value, cb);
+        }
+    },
     USERNAME("username") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
