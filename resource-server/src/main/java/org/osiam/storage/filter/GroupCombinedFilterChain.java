@@ -20,7 +20,6 @@ package org.osiam.storage.filter;
 
 import org.osiam.storage.entities.GroupEntity;
 
-import javax.persistence.EntityManager;
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
@@ -36,10 +35,10 @@ public class GroupCombinedFilterChain implements FilterChain<GroupEntity> {
     private final Combiner combinedWith;
     private final FilterChain<GroupEntity> rightTerm;
 
-    private final EntityManager em;
+    private final CriteriaBuilder criteriaBuilder;
 
-    public GroupCombinedFilterChain(GroupFilterParser filterParser, String filter) {
-        this.em = filterParser.entityManager;
+    public GroupCombinedFilterChain(FilterParser<GroupEntity> filterParser, String filter) {
+        this.criteriaBuilder = filterParser.getEntityManager().getCriteriaBuilder();
         Matcher matcher = COMBINED_FILTER_CHAIN.matcher(filter);
         if (!matcher.matches()) {
             throw new IllegalArgumentException(filter + " is not a complex filter string");
@@ -51,7 +50,7 @@ public class GroupCombinedFilterChain implements FilterChain<GroupEntity> {
 
     @Override
     public Predicate createPredicateAndJoin(AbstractQuery<Long> query, Root<GroupEntity> root) {
-        return combinedWith.addFilter(query, root, em.getCriteriaBuilder(), leftTerm, rightTerm);
+        return combinedWith.addFilter(query, root, criteriaBuilder, leftTerm, rightTerm);
 
     }
 

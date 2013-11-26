@@ -27,7 +27,7 @@ import javax.persistence.PersistenceContext;
 public class GroupFilterParser implements FilterParser<GroupEntity> {
 
     @PersistenceContext
-    EntityManager entityManager;
+    private EntityManager entityManager;
 
 
     @Override
@@ -35,7 +35,12 @@ public class GroupFilterParser implements FilterParser<GroupEntity> {
         if (UserCombinedFilterChain.COMBINED_FILTER_CHAIN.matcher(filterString).matches()) {
             return new GroupCombinedFilterChain(this, filterString);
         }
-        return new GroupSimpleFilterChain(entityManager, filterString);
+        return new GroupSimpleFilterChain(this, filterString);
 
+    }
+
+    @Override
+    public EntityManager getEntityManager() {
+        return entityManager;
     }
 }

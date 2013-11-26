@@ -19,8 +19,8 @@ package org.osiam.storage.filter;
 
 import org.osiam.storage.entities.GroupEntity;
 
-import javax.persistence.EntityManager;
 import javax.persistence.criteria.AbstractQuery;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
@@ -53,35 +53,23 @@ public class GroupSimpleFilterChain implements FilterChain<GroupEntity> {
     private final List<String> splitKeys;
 
     private final GroupFilterField filterField;
-    private final EntityManager em;
+    private final CriteriaBuilder criteriaBuilder;
 
-    public GroupSimpleFilterChain(EntityManager em, String filter) {
+    public GroupSimpleFilterChain(FilterParser<GroupEntity> filterParser, String filter) {
         Matcher matcher = SIMPLE_CHAIN_PATTERN.matcher(filter);
         if (!matcher.matches()) {
             throw new IllegalArgumentException(filter + " is not a simple filter string");
         }
 
-        this.em = em;
+        this.criteriaBuilder = filterParser.getEntityManager().getCriteriaBuilder();
         this.field = matcher.group(1).trim();
-        this.constraint = FilterConstraint.stringToEnum.get(matcher.group(2)); // NOSONAR
-        // -
-        // no
-        // need
-        // to
-        // make
-        // constant
-        // for
-        // number
+        this.constraint = FilterConstraint.stringToEnum.get(matcher.group(2)); // NOSONAR - no need to make constant for number
         this.filterField = GroupFilterField.fromString(field.toLowerCase());
 
         // TODO: is this needed anymore? maybe for extensions!
-        this.splitKeys = splitKey(field); // Split keys for handling complex
-        // types
+        this.splitKeys = splitKey(field); // Split keys for handling complex types
 
-        this.value = matcher.group(3).trim().replace("\"", ""); // NOSONAR - no
-        // need to make
-        // constant for
-        // number
+        this.value = matcher.group(3).trim().replace("\"", ""); // NOSONAR - no need to make constant for number
     }
 
     private List<String> splitKey(String key) {
@@ -97,7 +85,7 @@ public class GroupSimpleFilterChain implements FilterChain<GroupEntity> {
 
     @Override
     public Predicate createPredicateAndJoin(AbstractQuery<Long> query, Root<GroupEntity> root) {
-        return filterField.addFilter(query, root, constraint, value, em.getCriteriaBuilder());
+        return filterField.addFilter(query, root, constraint, value, criteriaBuilder);
     }
 
 }

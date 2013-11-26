@@ -20,7 +20,6 @@ package org.osiam.storage.filter;
 
 import org.osiam.storage.entities.UserEntity;
 
-import javax.persistence.EntityManager;
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
@@ -40,10 +39,10 @@ public class UserCombinedFilterChain implements FilterChain<UserEntity> {
     private final Combiner combinedWith;
     private final FilterChain<UserEntity> rightTerm;
 
-    private final EntityManager em;
+    private final CriteriaBuilder criteriaBuilder;
 
-    public UserCombinedFilterChain(UserFilterParser filterParser, String filter) {
-        this.em = filterParser.entityManager;
+    public UserCombinedFilterChain(FilterParser<UserEntity> filterParser, String filter) {
+        this.criteriaBuilder = filterParser.getEntityManager().getCriteriaBuilder();
         Matcher matcher = COMBINED_FILTER_CHAIN.matcher(filter);
         if (!matcher.matches()) {
             throw new IllegalArgumentException(filter + " is not a complex filter string");
@@ -55,7 +54,7 @@ public class UserCombinedFilterChain implements FilterChain<UserEntity> {
 
     @Override
     public Predicate createPredicateAndJoin(AbstractQuery<Long> query, Root<UserEntity> root) {
-        return combinedWith.addFilter(query, root, em.getCriteriaBuilder(), leftTerm, rightTerm);
+        return combinedWith.addFilter(query, root, criteriaBuilder, leftTerm, rightTerm);
 
     }
 

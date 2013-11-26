@@ -22,8 +22,12 @@ import org.osiam.storage.filter.UserFilterParser
 import org.osiam.storage.filter.UserSimpleFilterChain
 import spock.lang.Specification
 
+import javax.persistence.EntityManager
+
 class FilteredSearchSpec extends Specification {
-    def parser = new UserFilterParser()
+
+    EntityManager em = Mock()
+    def parser = new UserFilterParser(entityManager: em)
 
     def 'should parse equals (eq)'() {
         when:

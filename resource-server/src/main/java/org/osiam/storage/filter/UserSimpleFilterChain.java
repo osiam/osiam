@@ -19,8 +19,8 @@ package org.osiam.storage.filter;
 
 import org.osiam.storage.entities.UserEntity;
 
-import javax.persistence.EntityManager;
 import javax.persistence.criteria.AbstractQuery;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
@@ -33,6 +33,7 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
 
     private static final Pattern SIMPLE_CHAIN_PATTERN = Pattern.compile("(\\S+) (" + createOrConstraints()
             + ")[ ]??([\\S ]*?)");
+
 
     private static String createOrConstraints() {
         StringBuilder sb = new StringBuilder();
@@ -47,22 +48,24 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
     }
 
     private final String field;
-    private final FilterConstraint constraint;
-    private final String value; // TODO: strip quotes around the field
+
+    private final String value;
 
     private final List<String> splitKeys;
 
+    private final FilterConstraint constraint;
+
     private final FilterField<UserEntity> filterField;
 
-    private final EntityManager em;
+    private final CriteriaBuilder criteriaBuilder;
 
-    public UserSimpleFilterChain(EntityManager em, String filter) {
+    public UserSimpleFilterChain(FilterParser<UserEntity> filterParser, String filter) {
         Matcher matcher = SIMPLE_CHAIN_PATTERN.matcher(filter);
         if (!matcher.matches()) {
             throw new IllegalArgumentException(filter + " is not a simple filter string");
         }
 
-        this.em = em;
+        this.criteriaBuilder = filterParser.getEntityManager().getCriteriaBuilder();
 
         field = matcher.group(1).trim();
         filterField = UserFilterField.fromString(field.toLowerCase());
@@ -89,7 +92,7 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
     @Override
     public Predicate createPredicateAndJoin(AbstractQuery<Long> query, Root<UserEntity> root) {
         if (filterField != null) {
-            return filterField.addFilter(query, root, constraint, value, em.getCriteriaBuilder());
+            return filterField.addFilter(query, root, constraint, value, criteriaBuilder);
         } else {
             throw new IllegalArgumentException("Filtering not possible. Field '" + field + "' not available.");
         }
