@@ -28,6 +28,7 @@ import org.osiam.resources.helper.FilterParser;
 import org.osiam.resources.helper.GroupFilterParser;
 import org.osiam.resources.scim.Constants;
 import org.osiam.storage.entities.GroupEntity;
+import org.osiam.storage.entities.GroupEntity_;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +36,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import javax.inject.Inject;
+import javax.persistence.metamodel.SingularAttribute;
 
 
 @Repository
@@ -90,5 +92,10 @@ public class GroupDao extends ResourceDao<GroupEntity> implements GenericDao<Gro
     @Override
     protected Class<GroupEntity> getResourceClass() {
         return GroupEntity.class;
+    }
+
+    @Override
+    protected SingularAttribute<? super GroupEntity, ?> getDefaultSortByField() {
+        return GroupEntity_.displayName;
     }
 }

@@ -29,11 +29,14 @@ import org.osiam.resources.helper.UserFilterParser;
 import org.osiam.resources.scim.Constants;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.UserEntity;
+import org.osiam.storage.entities.UserEntity_;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import javax.persistence.Query;
+import javax.persistence.metamodel.SingularAttribute;
+
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -98,6 +101,11 @@ public class UserDao extends ResourceDao<UserEntity> implements GenericDao<UserE
     @Override
     protected String getCoreSchema() {
         return Constants.USER_CORE_SCHEMA;
+    }
+
+    @Override
+    protected SingularAttribute<? super UserEntity, ?> getDefaultSortByField() {
+        return UserEntity_.userName;
     }
 
 }
