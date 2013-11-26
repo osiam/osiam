@@ -89,7 +89,7 @@ class ExtensionConverterSpec extends Specification {
 
     private def createExtension(def urn) {
         def fixtureData = fixtures[urn]
-        def fields = fixtureData.collect { new ExtensionFieldEntity(name: it.fieldname) }
+        def fields = fixtureData.collect { new ExtensionFieldEntity(name: it.fieldname, type : it.type) }
         def extension = new ExtensionEntity(urn: urn, fields: fields as Set)
         extension
     }

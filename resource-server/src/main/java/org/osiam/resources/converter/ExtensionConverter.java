@@ -9,6 +9,7 @@ import org.osiam.storage.entities.ExtensionFieldValueEntity;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -32,9 +33,9 @@ public class ExtensionConverter implements Converter<Set<Extension>, Set<Extensi
             for (ExtensionFieldEntity field : extensionEntity.getFields()) {
                 if (extension.isFieldPresent(field.getName())) {
                     ExtensionFieldValueEntity value = new ExtensionFieldValueEntity();
-                    // This is a shortcut that only works because we know that the field values are always
-                    // stored as string.
-                    value.setValue(extension.getField(field.getName(), ExtensionFieldType.STRING));
+                    
+                    String typeCheckedStringValue = getTypeCheckedStringValue(field.getType(), field.getName(), extension);
+                    value.setValue(typeCheckedStringValue);
                     value.setExtensionField(field);
                     result.add(value);
                 }
@@ -44,6 +45,11 @@ public class ExtensionConverter implements Converter<Set<Extension>, Set<Extensi
         return result;
     }
 
+    private <T> String getTypeCheckedStringValue(ExtensionFieldType<T> type, String fieldName, Extension extension) {
+    	T value = extension.getField(fieldName, type);
+    	return type.toString(value);
+    }
+    
     public Set<Extension> toScim(Set<ExtensionFieldValueEntity> entity) {
         if (entity == null) {
             return null;
