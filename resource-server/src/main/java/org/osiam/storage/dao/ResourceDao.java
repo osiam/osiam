@@ -28,12 +28,15 @@ import org.osiam.resources.helper.FilterChain;
 import org.osiam.resources.helper.FilterParser;
 import org.osiam.storage.entities.InternalIdSkeleton;
 import org.osiam.storage.entities.InternalIdSkeleton_;
+import org.osiam.storage.entities.UserEntity_;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
+import javax.persistence.metamodel.SingularAttribute;
+
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -50,13 +53,15 @@ public abstract class ResourceDao<T extends InternalIdSkeleton> {
         return getSingleInternalIdSkeleton(query, id);
     }
 
-    @SuppressWarnings("unchecked")
     protected T getSingleInternalIdSkeleton(Query query, String identifier) {
-        List result = query.getResultList();
+        @SuppressWarnings("unchecked")
+        List<T> result = query.getResultList();
+        
         if (result.isEmpty()) {
             throw new ResourceNotFoundException("Resource " + identifier + " not found.");
         }
-        return (T) result.get(0);
+        
+        return result.get(0);
     }
 
     protected SearchResult<T> search(Class<T> clazz, String filter, int count, int startIndex, String sortBy,
@@ -80,13 +85,26 @@ public abstract class ResourceDao<T extends InternalIdSkeleton> {
         resourceQuery.select(resourceRoot).where(
                 cb.in(resourceRoot.get(InternalIdSkeleton_.internalId)).value(internalIdQuery));
 
-        Expression<?> sortByField = resourceRoot.get(sortBy);
-        Order order;
+        Expression<?> sortByField = resourceRoot.get(getDefaultSortByField());
+
+        if (sortBy != null && !sortBy.isEmpty()) {
+
+            String[] sortSplit = sortBy.split("\\.");
+
+            if (sortBy.length() == 1) {
+                sortByField = resourceRoot.get(sortSplit[0]);
+            } else if (sortSplit.length == 2) {
+                sortByField = resourceRoot.get(sortSplit[0]).get(sortSplit[1]);
+            }
+        }
+
+        // default order is ascending
+        Order order = cb.asc(sortByField);
+
         if (sortOrder.equalsIgnoreCase("descending")) {
             order = cb.desc(sortByField);
-        } else {
-            order = cb.asc(sortByField);
         }
+
         resourceQuery.orderBy(order);
 
         TypedQuery<T> query = em.createQuery(resourceQuery);
@@ -98,7 +116,6 @@ public abstract class ResourceDao<T extends InternalIdSkeleton> {
 
         long totalResult = getTotalResults(clazz, internalIdQuery);
 
-        // TODO: Replace this SearchResult with some other value class and build the SCIMSearchResult one layer up
         return new SearchResult<>(results, totalResult);
     }
 
@@ -115,6 +132,8 @@ public abstract class ResourceDao<T extends InternalIdSkeleton> {
 
         return total;
     }
+    
+    protected abstract SingularAttribute<? super T,?> getDefaultSortByField();
 
     protected abstract FilterParser<T> getFilterParser();
 

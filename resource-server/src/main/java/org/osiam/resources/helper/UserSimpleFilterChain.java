@@ -54,6 +54,7 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
     private final List<String> splitKeys;
 
     private final FilterField<UserEntity> filterField;
+
     private final EntityManager em;
 
     public UserSimpleFilterChain(EntityManager em, String filter) {
@@ -94,5 +95,5 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
             throw new IllegalArgumentException("Filtering not possible. Field '" + field + "' not available.");
         }
     }
-
+    
 }
