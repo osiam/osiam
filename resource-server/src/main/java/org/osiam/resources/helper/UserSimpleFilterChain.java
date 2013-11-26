@@ -17,14 +17,18 @@
 
 package org.osiam.resources.helper;
 
-import org.osiam.storage.entities.*;
-
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.*;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.AbstractQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import org.osiam.storage.entities.UserEntity;
 
 public class UserSimpleFilterChain implements FilterChain<UserEntity> {
 
@@ -49,8 +53,7 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
 
     private final List<String> splitKeys;
 
-    private final FilterField<UserEntity> filterFieldUser;
-    private final FilterField<InternalIdSkeleton> filterFieldResource;
+    private final FilterField<UserEntity> filterField;
     private final EntityManager em;
 
     public UserSimpleFilterChain(EntityManager em, String filter) {
@@ -60,27 +63,16 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
         }
 
         this.em = em;
-        this.field = matcher.group(1).trim();
-        this.constraint = FilterConstraint.stringToEnum.get(matcher.group(2)); // NOSONAR
-                                                                               // -
-                                                                               // no
-                                                                               // need
-                                                                               // to
-                                                                               // make
-                                                                               // constant
-                                                                               // for
-                                                                               // number
-        this.filterFieldUser = UserFilterField.fromString(field.toLowerCase());
-        this.filterFieldResource = ResourceFilterField.fromString(field.toLowerCase());
+        
+        field = matcher.group(1).trim();
+        filterField = UserFilterField.fromString(field.toLowerCase());
+        
+        String constraintName = matcher.group(2); // NOSONAR - no need to make constant for number
+        constraint = FilterConstraint.stringToEnum.get(constraintName);
 
         // TODO: is this needed anymore? maybe for extensions!
-        this.splitKeys = splitKey(field); // Split keys for handling complex
-                                          // types
-
-        this.value = matcher.group(3).trim().replace("\"", ""); // NOSONAR - no
-                                                                // need to make
-                                                                // constant for
-                                                                // number
+        splitKeys = splitKey(field);
+        value = matcher.group(3).trim().replace("\"", ""); // NOSONAR - no need to make constant for number
     }
 
     private List<String> splitKey(String key) {
@@ -96,10 +88,8 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
 
     @Override
     public Predicate createPredicateAndJoin(AbstractQuery<Long> query, Root<UserEntity> root) {
-        if(filterFieldUser != null) {
-            return filterFieldUser.addFilter(query, root, constraint, value, em.getCriteriaBuilder());
-        } else if (filterFieldResource != null) {
-            return filterFieldResource.addFilter(query, (Root<InternalIdSkeleton>) root, constraint, value, em.getCriteriaBuilder());
+        if (filterField != null) {
+            return filterField.addFilter(query, root, constraint, value, em.getCriteriaBuilder());
         } else {
             throw new IllegalArgumentException("Filtering not possible. Field '" + field + "' not available.");
         }
