@@ -76,17 +76,28 @@ public abstract class ResourceDao<T extends InternalIdSkeleton> {
             Predicate predicate = filterChain.createPredicateAndJoin(internalIdQuery, internalIdRoot);
             internalIdQuery.where(predicate);
         }
-
         resourceQuery.select(resourceRoot).where(
                 cb.in(resourceRoot.get(InternalIdSkeleton_.internalId)).value(internalIdQuery));
 
-        Expression<?> sortByField = resourceRoot.get(sortBy);
-        Order order;
+        Expression<?> sortByField = resourceRoot.get("userName");
+
+        if (sortBy != null && !sortBy.isEmpty()) {
+
+            String[] sortSplit = sortBy.split("\\.");
+
+            if (sortBy.length() == 1) {
+                sortByField = resourceRoot.get(sortSplit[0]);
+            } else if (sortSplit.length == 2) {
+                sortByField = resourceRoot.get(sortSplit[0]).get(sortSplit[1]);
+            }
+        }
+
+        Order order = cb.asc(sortByField);
+
         if (sortOrder.equalsIgnoreCase("descending")) {
             order = cb.desc(sortByField);
-        } else {
-            order = cb.asc(sortByField);
         }
+
         resourceQuery.orderBy(order);
 
         TypedQuery<T> query = em.createQuery(resourceQuery);
@@ -98,7 +109,6 @@ public abstract class ResourceDao<T extends InternalIdSkeleton> {
 
         long totalResult = getTotalResults(clazz, internalIdQuery);
 
-        // TODO: Replace this SearchResult with some other value class and build the SCIMSearchResult one layer up
         return new SearchResult<>(results, totalResult);
     }
 
