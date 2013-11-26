@@ -1,19 +1,17 @@
-package org.osiam.resources.helper;
-
-import java.util.Date;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
+package org.osiam.storage.filter;
 
 import org.osiam.resources.exceptions.InvalidConstraintException;
 import org.osiam.storage.entities.EmailEntity.CanonicalEmailTypes;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 public enum FilterConstraint {
     EQUALS("eq") {
-
         @Override
         public Predicate createPredicateForStringField(Path<String> path, String value, CriteriaBuilder cb) {
             return cb.equal(path, value);
@@ -31,13 +29,12 @@ public enum FilterConstraint {
 
         @Override
         public Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path, CanonicalEmailTypes value,
-                CriteriaBuilder cb) {
+                                                          CriteriaBuilder cb) {
             return cb.equal(path, value);
         }
 
     },
     CONTAINS("co") {
-
         @Override
         public Predicate createPredicateForStringField(Path<String> path, String value, CriteriaBuilder cb) {
             return cb.like(path, "%" + value + "%");
@@ -55,7 +52,7 @@ public enum FilterConstraint {
 
         @Override
         public Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path, CanonicalEmailTypes value,
-                CriteriaBuilder cb) {
+                                                          CriteriaBuilder cb) {
             throw new InvalidConstraintException(toString());
         }
 
@@ -78,7 +75,7 @@ public enum FilterConstraint {
 
         @Override
         public Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path, CanonicalEmailTypes value,
-                CriteriaBuilder cb) {
+                                                          CriteriaBuilder cb) {
             throw new InvalidConstraintException(toString());
         }
     },
@@ -100,12 +97,11 @@ public enum FilterConstraint {
 
         @Override
         public Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path, CanonicalEmailTypes value,
-                CriteriaBuilder cb) {
+                                                          CriteriaBuilder cb) {
             return cb.isNotNull(path);
         }
     },
     GREATER_THAN("gt") {
-
         @Override
         public Predicate createPredicateForStringField(Path<String> path, String value, CriteriaBuilder cb) {
             return cb.greaterThan(path, value);
@@ -123,11 +119,11 @@ public enum FilterConstraint {
 
         @Override
         public Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path, CanonicalEmailTypes value,
-                CriteriaBuilder cb) {
-            throw new InvalidConstraintException(toString());        }
+                                                          CriteriaBuilder cb) {
+            throw new InvalidConstraintException(toString());
+        }
     },
     GREATER_EQUALS("ge") {
-
         @Override
         public Predicate createPredicateForStringField(Path<String> path, String value, CriteriaBuilder cb) {
             return cb.greaterThanOrEqualTo(path, value);
@@ -145,12 +141,11 @@ public enum FilterConstraint {
 
         @Override
         public Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path, CanonicalEmailTypes value,
-                CriteriaBuilder cb) {
+                                                          CriteriaBuilder cb) {
             throw new InvalidConstraintException(toString());
         }
     },
     LESS_THAN("lt") {
-
         @Override
         public Predicate createPredicateForStringField(Path<String> path, String value, CriteriaBuilder cb) {
             return cb.lessThan(path, value);
@@ -168,11 +163,11 @@ public enum FilterConstraint {
 
         @Override
         public Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path, CanonicalEmailTypes value,
-                CriteriaBuilder cb) {
-            throw new InvalidConstraintException(toString());        }
+                                                          CriteriaBuilder cb) {
+            throw new InvalidConstraintException(toString());
+        }
     },
     LESS_EQUALS("le") {
-
         public Predicate createPredicateForStringField(Path<String> path, String value, CriteriaBuilder cb) {
             return cb.lessThanOrEqualTo(path, value);
         }
@@ -189,8 +184,9 @@ public enum FilterConstraint {
 
         @Override
         public Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path, CanonicalEmailTypes value,
-                CriteriaBuilder cb) {
-            throw new InvalidConstraintException(toString());        }
+                                                          CriteriaBuilder cb) {
+            throw new InvalidConstraintException(toString());
+        }
     };
 
     static Map<String, FilterConstraint> stringToEnum = new ConcurrentHashMap<>();

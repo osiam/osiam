@@ -24,11 +24,10 @@
 package org.osiam.storage.dao;
 
 import org.osiam.resources.exceptions.ResourceNotFoundException;
-import org.osiam.resources.helper.FilterChain;
-import org.osiam.resources.helper.FilterParser;
 import org.osiam.storage.entities.InternalIdSkeleton;
 import org.osiam.storage.entities.InternalIdSkeleton_;
-import org.osiam.storage.entities.UserEntity_;
+import org.osiam.storage.filter.FilterChain;
+import org.osiam.storage.filter.FilterParser;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -36,7 +35,6 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.persistence.metamodel.SingularAttribute;
-
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -56,11 +54,11 @@ public abstract class ResourceDao<T extends InternalIdSkeleton> {
     protected T getSingleInternalIdSkeleton(Query query, String identifier) {
         @SuppressWarnings("unchecked")
         List<T> result = query.getResultList();
-        
+
         if (result.isEmpty()) {
             throw new ResourceNotFoundException("Resource " + identifier + " not found.");
         }
-        
+
         return result.get(0);
     }
 
@@ -132,8 +130,8 @@ public abstract class ResourceDao<T extends InternalIdSkeleton> {
 
         return total;
     }
-    
-    protected abstract SingularAttribute<? super T,?> getDefaultSortByField();
+
+    protected abstract SingularAttribute<? super T, ?> getDefaultSortByField();
 
     protected abstract FilterParser<T> getFilterParser();
 

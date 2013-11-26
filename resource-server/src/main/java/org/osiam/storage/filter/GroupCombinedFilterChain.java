@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.osiam.resources.helper;
+package org.osiam.storage.filter;
 
 
 import org.osiam.storage.entities.GroupEntity;

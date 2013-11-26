@@ -24,11 +24,11 @@
 package org.osiam.storage.dao
 
 import org.osiam.resources.exceptions.ResourceNotFoundException
-import org.osiam.resources.helper.UserFilterParser
 import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.InternalIdSkeleton
 import org.osiam.storage.entities.RolesEntity
 import org.osiam.storage.entities.UserEntity
+import org.osiam.storage.filter.UserFilterParser
 import spock.lang.Specification
 
 import javax.persistence.EntityManager

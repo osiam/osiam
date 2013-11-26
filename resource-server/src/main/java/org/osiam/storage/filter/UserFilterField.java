@@ -1,42 +1,27 @@
-package org.osiam.resources.helper;
+package org.osiam.storage.filter;
 
+import org.joda.time.format.ISODateTimeFormat;
+import org.osiam.storage.entities.*;
+import org.osiam.storage.entities.EmailEntity.CanonicalEmailTypes;
+
+import javax.persistence.criteria.*;
+import javax.persistence.metamodel.SetAttribute;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.persistence.criteria.AbstractQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.SetJoin;
-import javax.persistence.metamodel.SetAttribute;
-
-import org.joda.time.format.ISODateTimeFormat;
-import org.osiam.storage.entities.EmailEntity;
-import org.osiam.storage.entities.EmailEntity.CanonicalEmailTypes;
-import org.osiam.storage.entities.EmailEntity_;
-import org.osiam.storage.entities.ImEntity_;
-import org.osiam.storage.entities.MetaEntity_;
-import org.osiam.storage.entities.NameEntity_;
-import org.osiam.storage.entities.PhoneNumberEntity_;
-import org.osiam.storage.entities.PhotoEntity_;
-import org.osiam.storage.entities.UserEntity;
-import org.osiam.storage.entities.UserEntity_;
 
 enum UserFilterField implements FilterField<UserEntity> {
     EXTERNALID("externalid") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root,
-                FilterConstraint constraint, String value, CriteriaBuilder cb) {
+                                   FilterConstraint constraint, String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(UserEntity_.externalId), value, cb);
         }
     },
     META_CREATED("meta.created") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root,
-                FilterConstraint constraint, String value, CriteriaBuilder cb) {
+                                   FilterConstraint constraint, String value, CriteriaBuilder cb) {
             Date date = ISODateTimeFormat.dateTimeParser().parseDateTime(value).toDate();
             return constraint.createPredicateForDateField(root.get(UserEntity_.meta).get(MetaEntity_.created),
                     date, cb);
@@ -45,7 +30,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     META_LASTMODIFIED("meta.lastmodified") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root,
-                FilterConstraint constraint, String value, CriteriaBuilder cb) {
+                                   FilterConstraint constraint, String value, CriteriaBuilder cb) {
             Date date = ISODateTimeFormat.dateTimeParser().parseDateTime(value).toDate();
             return constraint.createPredicateForDateField(
                     root.get(UserEntity_.meta).get(MetaEntity_.lastModified),
@@ -55,7 +40,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     META_LOCATION("meta.location") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root,
-                FilterConstraint constraint, String value, CriteriaBuilder cb) {
+                                   FilterConstraint constraint, String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(UserEntity_.meta)
                     .get(MetaEntity_.location), value, cb);
         }
@@ -63,7 +48,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     USERNAME("username") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(UserEntity_.userName), value, cb);
         }
 
@@ -71,7 +56,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     DISPLAYNAME("displayname") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(UserEntity_.displayName), value, cb);
         }
 
@@ -79,7 +64,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     NICKNAME("nickname") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(UserEntity_.nickName), value, cb);
         }
 
@@ -87,7 +72,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     PROFILEURL("profileurl") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(UserEntity_.profileUrl), value, cb);
         }
 
@@ -95,7 +80,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     TITLE("title") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(UserEntity_.title), value, cb);
         }
 
@@ -103,7 +88,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     PREFERREDLANGUAGE("preferredlanguage") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(UserEntity_.preferredLanguage), value, cb);
         }
 
@@ -111,7 +96,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     LOCALE("locale") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(UserEntity_.locale), value, cb);
         }
 
@@ -119,7 +104,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     TIMEZONE("timezone") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(UserEntity_.timezone), value, cb);
         }
 
@@ -127,7 +112,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     ACTIVE("active") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
             return constraint.createPredicateForBooleanField(root.get(UserEntity_.active), Boolean.valueOf(value),
                     cb);
         }
@@ -136,7 +121,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     NAME_FORMATTED("name.formatted") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(UserEntity_.name).get(NameEntity_.formatted),
                     value, cb);
         }
@@ -145,7 +130,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     NAME_FAMILYNAME("name.familyname") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(UserEntity_.name).get(NameEntity_.familyName),
                     value, cb);
         }
@@ -154,7 +139,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     NAME_GIVENNAME("name.givenname") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(UserEntity_.name).get(NameEntity_.givenName),
                     value, cb);
         }
@@ -163,7 +148,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     NAME_MIDDLENAME("name.middlename") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(UserEntity_.name).get(NameEntity_.middleName),
                     value, cb);
         }
@@ -172,7 +157,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     NAME_HONORIFICPREFIX("name.honorificprefix") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(
                     root.get(UserEntity_.name).get(NameEntity_.honorificPrefix), value, cb);
         }
@@ -181,7 +166,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     NAME_HONORIFICSUFFIX("name.honorificsuffix") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(
                     root.get(UserEntity_.name).get(NameEntity_.honorificSuffix), value, cb);
         }
@@ -190,7 +175,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     EMAILS("emails") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
 
             SetJoin<UserEntity, EmailEntity> join = createOrGetJoin("emails", root, UserEntity_.emails);
             return constraint.createPredicateForStringField(join.get(EmailEntity_.value), value, cb);
@@ -200,7 +185,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     EMAILS_VALUE("emails.value") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
 
             SetJoin<UserEntity, EmailEntity> join = createOrGetJoin("emails", root, UserEntity_.emails);
             return constraint.createPredicateForStringField(join.get(EmailEntity_.value), value, cb);
@@ -211,12 +196,12 @@ enum UserFilterField implements FilterField<UserEntity> {
     EMAILS_TYPE("emails.type") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
             CanonicalEmailTypes emailType;
-            if(constraint == FilterConstraint.PRESENT && (value == null || value.isEmpty())){
+            if (constraint == FilterConstraint.PRESENT && (value == null || value.isEmpty())) {
                 emailType = null;
-            }else{
-                emailType = CanonicalEmailTypes.valueOf(value); 
+            } else {
+                emailType = CanonicalEmailTypes.valueOf(value);
             }
             SetJoin<UserEntity, EmailEntity> join = createOrGetJoin("emails", root, UserEntity_.emails);
             return constraint.createPredicateForEmailTypeField(join.get(EmailEntity_.type),
@@ -227,7 +212,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     EMAILS_PRIMARY("emails.primary") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
 
             SetJoin<UserEntity, EmailEntity> join = createOrGetJoin("emails", root, UserEntity_.emails);
             return constraint.createPredicateForBooleanField(join.get(EmailEntity_.primary),
@@ -239,7 +224,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     PHONENUMBERS("phoneNumbers") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, EmailEntity> join = createOrGetJoin("phoneNumbers", root, UserEntity_.emails);
             return constraint.createPredicateForStringField(join.get(PhoneNumberEntity_.value), value, cb);
         }
@@ -248,7 +233,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     PHONENUMBERS_VALUE("phonenumbers.value") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, EmailEntity> join = createOrGetJoin("phoneNumbers", root, UserEntity_.emails);
             return constraint.createPredicateForStringField(join.get(PhoneNumberEntity_.value), value, cb);
         }
@@ -257,7 +242,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     IMS("ims") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, EmailEntity> join = createOrGetJoin("ims", root, UserEntity_.emails);
             return constraint.createPredicateForStringField(join.get(ImEntity_.value), value, cb);
 
@@ -267,7 +252,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     IMS_VALUE("ims.value") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, EmailEntity> join = createOrGetJoin("ims", root, UserEntity_.emails);
             return constraint.createPredicateForStringField(join.get(ImEntity_.value), value, cb);
         }
@@ -276,7 +261,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     PHOTOS("photos") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, EmailEntity> join = createOrGetJoin("photos", root, UserEntity_.emails);
             return constraint.createPredicateForStringField(join.get(PhotoEntity_.value), value, cb);
 
@@ -285,7 +270,7 @@ enum UserFilterField implements FilterField<UserEntity> {
     PHOTOS_VALUE("photos.value") {
         @Override
         public Predicate addFilter(AbstractQuery<Long> query, Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
+                                   String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, EmailEntity> join = createOrGetJoin("photos", root, UserEntity_.emails);
             return constraint.createPredicateForStringField(join.get(PhotoEntity_.value), value, cb);
 
@@ -317,7 +302,7 @@ enum UserFilterField implements FilterField<UserEntity> {
 
     @SuppressWarnings("unchecked")
     protected <T> SetJoin<UserEntity, T> createOrGetJoin(String alias, Root<UserEntity> root,
-            SetAttribute<UserEntity, T> attribute) {
+                                                         SetAttribute<UserEntity, T> attribute) {
         SetJoin<UserEntity, T> join = null;
         for (Join<UserEntity, ?> currentJoin : root.getJoins()) {
             if (currentJoin.getAlias().equals(alias)) {

@@ -24,19 +24,18 @@
 package org.osiam.storage.dao;
 
 import org.osiam.resources.exceptions.ResourceNotFoundException;
-import org.osiam.resources.helper.FilterParser;
-import org.osiam.resources.helper.UserFilterParser;
 import org.osiam.resources.scim.Constants;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.entities.UserEntity_;
+import org.osiam.storage.filter.FilterParser;
+import org.osiam.storage.filter.UserFilterParser;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import javax.persistence.Query;
 import javax.persistence.metamodel.SingularAttribute;
-
 import java.util.Set;
 import java.util.logging.Level;
 

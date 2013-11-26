@@ -1,5 +1,9 @@
 package org.osiam.resources.helper
 
+import org.osiam.storage.filter.FilterConstraint
+import org.osiam.storage.filter.UserCombinedFilterChain
+import org.osiam.storage.filter.UserFilterParser
+import org.osiam.storage.filter.UserSimpleFilterChain
 import spock.lang.Specification
 
 import javax.persistence.EntityManager

@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.osiam.resources.helper;
+package org.osiam.storage.filter;
+
+import org.osiam.storage.entities.UserEntity;
+import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.osiam.storage.entities.GroupEntity;
-import org.springframework.stereotype.Service;
-
 @Service
-public class GroupFilterParser implements FilterParser<GroupEntity> {
+public class UserFilterParser implements FilterParser<UserEntity> {
 
     @PersistenceContext
     EntityManager entityManager;
 
 
     @Override
-    public FilterChain<GroupEntity> parse(String filterString) {
+    public FilterChain<UserEntity> parse(String filterString) {
         if (UserCombinedFilterChain.COMBINED_FILTER_CHAIN.matcher(filterString).matches()) {
-            return new GroupCombinedFilterChain(this, filterString);
+            return new UserCombinedFilterChain(this, filterString);
         }
-        return new GroupSimpleFilterChain(entityManager, filterString);
+        return new UserSimpleFilterChain(entityManager, filterString);
 
     }
 }

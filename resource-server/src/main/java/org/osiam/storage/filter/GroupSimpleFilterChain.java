@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.osiam.resources.helper;
+package org.osiam.storage.filter;
 
+import org.osiam.storage.entities.GroupEntity;
+
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.AbstractQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.AbstractQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
-import org.osiam.storage.entities.UserEntity;
-
-public class UserSimpleFilterChain implements FilterChain<UserEntity> {
+public class GroupSimpleFilterChain implements FilterChain<GroupEntity> {
 
     private static final Pattern SIMPLE_CHAIN_PATTERN = Pattern.compile("(\\S+) (" + createOrConstraints()
             + ")[ ]??([\\S ]*?)");
@@ -53,27 +52,36 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
 
     private final List<String> splitKeys;
 
-    private final FilterField<UserEntity> filterField;
-
+    private final GroupFilterField filterField;
     private final EntityManager em;
 
-    public UserSimpleFilterChain(EntityManager em, String filter) {
+    public GroupSimpleFilterChain(EntityManager em, String filter) {
         Matcher matcher = SIMPLE_CHAIN_PATTERN.matcher(filter);
         if (!matcher.matches()) {
             throw new IllegalArgumentException(filter + " is not a simple filter string");
         }
 
         this.em = em;
-        
-        field = matcher.group(1).trim();
-        filterField = UserFilterField.fromString(field.toLowerCase());
-        
-        String constraintName = matcher.group(2); // NOSONAR - no need to make constant for number
-        constraint = FilterConstraint.stringToEnum.get(constraintName);
+        this.field = matcher.group(1).trim();
+        this.constraint = FilterConstraint.stringToEnum.get(matcher.group(2)); // NOSONAR
+        // -
+        // no
+        // need
+        // to
+        // make
+        // constant
+        // for
+        // number
+        this.filterField = GroupFilterField.fromString(field.toLowerCase());
 
         // TODO: is this needed anymore? maybe for extensions!
-        splitKeys = splitKey(field);
-        value = matcher.group(3).trim().replace("\"", ""); // NOSONAR - no need to make constant for number
+        this.splitKeys = splitKey(field); // Split keys for handling complex
+        // types
+
+        this.value = matcher.group(3).trim().replace("\"", ""); // NOSONAR - no
+        // need to make
+        // constant for
+        // number
     }
 
     private List<String> splitKey(String key) {
@@ -88,12 +96,8 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
     }
 
     @Override
-    public Predicate createPredicateAndJoin(AbstractQuery<Long> query, Root<UserEntity> root) {
-        if (filterField != null) {
-            return filterField.addFilter(query, root, constraint, value, em.getCriteriaBuilder());
-        } else {
-            throw new IllegalArgumentException("Filtering not possible. Field '" + field + "' not available.");
-        }
+    public Predicate createPredicateAndJoin(AbstractQuery<Long> query, Root<GroupEntity> root) {
+        return filterField.addFilter(query, root, constraint, value, em.getCriteriaBuilder());
     }
-    
+
 }

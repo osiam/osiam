@@ -24,19 +24,18 @@
 package org.osiam.storage.dao;
 
 import org.osiam.resources.exceptions.ResourceNotFoundException;
-import org.osiam.resources.helper.FilterParser;
-import org.osiam.resources.helper.GroupFilterParser;
 import org.osiam.resources.scim.Constants;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.GroupEntity_;
+import org.osiam.storage.filter.FilterParser;
+import org.osiam.storage.filter.GroupFilterParser;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Set;
-import java.util.logging.Level;
-
 import javax.inject.Inject;
 import javax.persistence.metamodel.SingularAttribute;
+import java.util.Set;
+import java.util.logging.Level;
 
 
 @Repository
@@ -45,7 +44,7 @@ public class GroupDao extends ResourceDao<GroupEntity> implements GenericDao<Gro
 
     @Inject
     private GroupFilterParser filterParser;
-    
+
     @Override
     public void create(GroupEntity group) {
         em.persist(group);
