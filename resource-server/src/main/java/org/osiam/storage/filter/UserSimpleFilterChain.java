@@ -1,31 +1,15 @@
-/*
- * Copyright 2013
- *     tarent AG
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.osiam.storage.filter;
 
+import org.osiam.storage.dao.ExtensionDao;
+import org.osiam.storage.entities.ExtensionEntity;
+import org.osiam.storage.entities.ExtensionFieldEntity;
 import org.osiam.storage.entities.UserEntity;
 
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,48 +35,62 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
 
     private final String value;
 
-    private final List<String> splitKeys;
-
     private final FilterConstraint constraint;
 
-    private final FilterField<UserEntity> filterField;
+    private final FilterField<UserEntity> userFilterField;
 
+    private ExtensionFilterField extensionFilterField;
+
+    private final ExtensionDao extensionDao;
     private final CriteriaBuilder criteriaBuilder;
 
-    public UserSimpleFilterChain(FilterParser<UserEntity> filterParser, String filter) {
+    public UserSimpleFilterChain(UserFilterParser filterParser, String filter) {
         Matcher matcher = SIMPLE_CHAIN_PATTERN.matcher(filter);
         if (!matcher.matches()) {
             throw new IllegalArgumentException(filter + " is not a simple filter string");
         }
 
         this.criteriaBuilder = filterParser.getEntityManager().getCriteriaBuilder();
-
+        this.extensionDao = filterParser.extensionDao;
         field = matcher.group(1).trim();
-        filterField = UserFilterField.fromString(field.toLowerCase());
+
+        userFilterField = UserFilterField.fromString(field.toLowerCase());
+
+        // It's not a known user field, so try to build a extension filter
+        if (userFilterField == null) {
+            extensionFilterField = getExtensionFilterField(field.toLowerCase());
+        }
 
         String constraintName = matcher.group(2); // NOSONAR - no need to make constant for number
         constraint = FilterConstraint.stringToEnum.get(constraintName);
 
-        // TODO: is this needed anymore? maybe for extensions!
-        splitKeys = splitKey(field);
         value = matcher.group(3).trim().replace("\"", ""); // NOSONAR - no need to make constant for number
     }
 
-    private List<String> splitKey(String key) {
-        List<String> split;
-        if (key.contains(".")) {
-            split = Arrays.asList(key.split("\\."));
-        } else {
-            split = new ArrayList<>();
-            split.add(key);
+    private ExtensionFilterField getExtensionFilterField(String fieldString) {
+        int lastIndexOf = fieldString.lastIndexOf('.');
+        if (lastIndexOf == -1) {
+            throw new IllegalArgumentException("Filtering not possible. Field '" + field + "' not available.");
         }
-        return split;
+
+        String urn = fieldString.substring(0, lastIndexOf);
+        String fieldName = fieldString.substring(lastIndexOf - 1);
+        final ExtensionEntity extension;
+        try {
+            extension = extensionDao.getExtensionByUrn(urn);
+        } catch (NoResultException ex) {
+            throw new IllegalArgumentException("Filtering not possible. Field '" + field + "' not available.", ex);
+        }
+        final ExtensionFieldEntity fieldEntity = extension.getFieldForName(fieldName);
+        return new ExtensionFilterField(urn, fieldEntity);
     }
 
     @Override
     public Predicate createPredicateAndJoin(AbstractQuery<Long> query, Root<UserEntity> root) {
-        if (filterField != null) {
-            return filterField.addFilter(query, root, constraint, value, criteriaBuilder);
+        if (userFilterField != null) {
+            return userFilterField.addFilter(query, root, constraint, value, criteriaBuilder);
+        } else if (extensionFilterField != null) {
+            return null;
         } else {
             throw new IllegalArgumentException("Filtering not possible. Field '" + field + "' not available.");
         }
