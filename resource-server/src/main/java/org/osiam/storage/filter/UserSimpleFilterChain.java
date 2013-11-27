@@ -17,34 +17,19 @@
 
 package org.osiam.storage.filter;
 
-import org.osiam.storage.entities.UserEntity;
-
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.AbstractQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import org.osiam.storage.dao.ExtensionDao;
+import org.osiam.storage.entities.UserEntity;
 
 public class UserSimpleFilterChain implements FilterChain<UserEntity> {
-
-    private static final Pattern SIMPLE_CHAIN_PATTERN = Pattern.compile("(\\S+) (" + createOrConstraints()
-            + ")[ ]??([\\S ]*?)");
-
-    private static String createOrConstraints() {
-        StringBuilder sb = new StringBuilder();
-        for (FilterConstraint constraint : FilterConstraint.values()) {
-            if (sb.length() != 0) {
-                sb.append("|");
-            }
-            sb.append(constraint.toString());
-        }
-        return sb.toString();
-
-    }
 
     private final String field;
     private final FilterConstraint constraint;
@@ -55,14 +40,16 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
     private final FilterField<UserEntity> filterField;
 
     private final EntityManager em;
+    private final ExtensionDao extensionDao;
 
-    public UserSimpleFilterChain(EntityManager em, String filter) {
-        Matcher matcher = SIMPLE_CHAIN_PATTERN.matcher(filter);
+    public UserSimpleFilterChain(EntityManager em, ExtensionDao extensionDao, String filter) {
+        Matcher matcher = FilterParser.SIMPLE_FILTER_PATTERN.matcher(filter);
         if (!matcher.matches()) {
             throw new IllegalArgumentException(filter + " is not a simple filter string");
         }
 
         this.em = em;
+        this.extensionDao = extensionDao;
 
         field = matcher.group(1).trim();
         filterField = UserFilterField.fromString(field.toLowerCase());
@@ -87,9 +74,9 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
     }
 
     @Override
-    public Predicate createPredicateAndJoin(AbstractQuery<Long> query, Root<UserEntity> root) {
+    public Predicate createPredicateAndJoin(Root<UserEntity> root) {
         if (filterField != null) {
-            return filterField.addFilter(query, root, constraint, value, em.getCriteriaBuilder());
+            return filterField.addFilter(root, constraint, value, em.getCriteriaBuilder());
         } else {
             throw new IllegalArgumentException("Filtering not possible. Field '" + field + "' not available.");
         }

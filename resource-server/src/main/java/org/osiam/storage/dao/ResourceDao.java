@@ -63,7 +63,7 @@ public abstract class ResourceDao<T extends InternalIdSkeleton> {
     }
 
     protected SearchResult<T> search(Class<T> clazz, String filter, int count, int startIndex, String sortBy,
-                                     String sortOrder) {
+            String sortOrder) {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -75,8 +75,7 @@ public abstract class ResourceDao<T extends InternalIdSkeleton> {
         internalIdQuery.select(internalIdRoot.get(InternalIdSkeleton_.internalId));
 
         if (filter != null && !filter.isEmpty()) {
-            FilterChain<T> filterChain = getFilterParser().parse(filter);
-            Predicate predicate = filterChain.createPredicateAndJoin(internalIdQuery, internalIdRoot);
+            Predicate predicate = getFilterParser().createPredicateAndJoin(filter, internalIdRoot);
             internalIdQuery.where(predicate);
         }
 

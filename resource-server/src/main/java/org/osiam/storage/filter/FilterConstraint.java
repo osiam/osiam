@@ -1,14 +1,15 @@
 package org.osiam.storage.filter;
 
-import org.osiam.resources.exceptions.InvalidConstraintException;
-import org.osiam.storage.entities.EmailEntity.CanonicalEmailTypes;
+import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
-import java.util.Date;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+
+import org.osiam.resources.exceptions.InvalidConstraintException;
+import org.osiam.storage.entities.EmailEntity.CanonicalEmailTypes;
 
 public enum FilterConstraint {
     EQUALS("eq") {

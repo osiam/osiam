@@ -17,12 +17,11 @@
 
 package org.osiam.storage.filter;
 
-import org.osiam.storage.entities.InternalIdSkeleton;
-
-import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.osiam.storage.entities.InternalIdSkeleton;
+
 public interface FilterChain<T extends InternalIdSkeleton> {
-    Predicate createPredicateAndJoin(AbstractQuery<Long> query, Root<T> root);
+    Predicate createPredicateAndJoin(Root<T> root);
 }

@@ -17,25 +17,21 @@
 
 package org.osiam.storage.filter;
 
+import javax.inject.Inject;
+
+import org.osiam.storage.dao.ExtensionDao;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 @Service
-public class UserFilterParser implements FilterParser<UserEntity> {
+public class UserFilterParser extends FilterParser<UserEntity> {
 
-    @PersistenceContext
-    EntityManager entityManager;
-
+    @Inject
+    ExtensionDao extensionDao;
 
     @Override
-    public FilterChain<UserEntity> parse(String filterString) {
-        if (UserCombinedFilterChain.COMBINED_FILTER_CHAIN.matcher(filterString).matches()) {
-            return new UserCombinedFilterChain(this, filterString);
-        }
-        return new UserSimpleFilterChain(entityManager, filterString);
-
+    protected FilterChain<UserEntity> createFilterChain(String filter) {
+        return new UserSimpleFilterChain(entityManager, extensionDao, filter);
     }
+
 }

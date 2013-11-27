@@ -17,34 +17,18 @@
 
 package org.osiam.storage.filter;
 
-import org.osiam.storage.entities.GroupEntity;
-
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.AbstractQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import org.osiam.storage.entities.GroupEntity;
 
 public class GroupSimpleFilterChain implements FilterChain<GroupEntity> {
-
-    private static final Pattern SIMPLE_CHAIN_PATTERN = Pattern.compile("(\\S+) (" + createOrConstraints()
-            + ")[ ]??([\\S ]*?)");
-
-    private static String createOrConstraints() {
-        StringBuilder sb = new StringBuilder();
-        for (FilterConstraint constraint : FilterConstraint.values()) {
-            if (sb.length() != 0) {
-                sb.append("|");
-            }
-            sb.append(constraint.toString());
-        }
-        return sb.toString();
-
-    }
 
     private final String field;
     private final FilterConstraint constraint;
@@ -56,7 +40,7 @@ public class GroupSimpleFilterChain implements FilterChain<GroupEntity> {
     private final EntityManager em;
 
     public GroupSimpleFilterChain(EntityManager em, String filter) {
-        Matcher matcher = SIMPLE_CHAIN_PATTERN.matcher(filter);
+        Matcher matcher = FilterParser.SIMPLE_FILTER_PATTERN.matcher(filter);
         if (!matcher.matches()) {
             throw new IllegalArgumentException(filter + " is not a simple filter string");
         }
@@ -96,8 +80,8 @@ public class GroupSimpleFilterChain implements FilterChain<GroupEntity> {
     }
 
     @Override
-    public Predicate createPredicateAndJoin(AbstractQuery<Long> query, Root<GroupEntity> root) {
-        return filterField.addFilter(query, root, constraint, value, em.getCriteriaBuilder());
+    public Predicate createPredicateAndJoin(Root<GroupEntity> root) {
+        return filterField.addFilter(root, constraint, value, em.getCriteriaBuilder());
     }
 
 }

@@ -20,22 +20,12 @@ package org.osiam.storage.filter;
 import org.osiam.storage.entities.GroupEntity;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 @Service
-public class GroupFilterParser implements FilterParser<GroupEntity> {
-
-    @PersistenceContext
-    EntityManager entityManager;
-
+public class GroupFilterParser extends FilterParser<GroupEntity> {
 
     @Override
-    public FilterChain<GroupEntity> parse(String filterString) {
-        if (UserCombinedFilterChain.COMBINED_FILTER_CHAIN.matcher(filterString).matches()) {
-            return new GroupCombinedFilterChain(this, filterString);
-        }
-        return new GroupSimpleFilterChain(entityManager, filterString);
-
+    protected FilterChain<GroupEntity> createFilterChain(String filter) {
+        return new GroupSimpleFilterChain(entityManager, filter);
     }
+
 }

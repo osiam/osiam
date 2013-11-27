@@ -34,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import javax.persistence.metamodel.SingularAttribute;
+
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -60,6 +61,7 @@ public class GroupDao extends ResourceDao<GroupEntity> implements GenericDao<Gro
         }
     }
 
+    @Override
     public void delete(String id) {
         GroupEntity groupEntity = getById(id);
         Set<GroupEntity> groups = groupEntity.getGroups();
@@ -69,6 +71,7 @@ public class GroupDao extends ResourceDao<GroupEntity> implements GenericDao<Gro
         em.remove(groupEntity);
     }
 
+    @Override
     public GroupEntity update(GroupEntity entity) {
         return em.merge(entity);
     }
