@@ -1,16 +1,15 @@
 package org.osiam.storage.filter;
 
-import java.util.regex.Matcher;
+import org.osiam.storage.dao.ExtensionDao;
+import org.osiam.storage.entities.ExtensionEntity;
+import org.osiam.storage.entities.ExtensionFieldEntity;
+import org.osiam.storage.entities.UserEntity;
 
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
-import org.osiam.storage.dao.ExtensionDao;
-import org.osiam.storage.entities.ExtensionEntity;
-import org.osiam.storage.entities.ExtensionFieldEntity;
-import org.osiam.storage.entities.UserEntity;
+import java.util.regex.Matcher;
 
 public class UserSimpleFilterChain implements FilterChain<UserEntity> {
 
@@ -59,7 +58,7 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
         }
 
         String urn = fieldString.substring(0, lastIndexOf);
-        String fieldName = fieldString.substring(lastIndexOf - 1);
+        String fieldName = fieldString.substring(lastIndexOf + 1);
         final ExtensionEntity extension;
         try {
             extension = extensionDao.getExtensionByUrn(urn);
