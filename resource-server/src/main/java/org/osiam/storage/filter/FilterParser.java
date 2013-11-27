@@ -41,7 +41,7 @@ public abstract class FilterParser<T extends InternalIdSkeleton> {
 
         push(filterString, filterFragments);
 
-        while(!filterFragments.isEmpty()) {
+        while (!filterFragments.isEmpty()) {
             String filterFragment = pop(filterFragments);
 
             Matcher matcherCombined = COMBINED_FILTER_PATTERN.matcher(filterFragment);
@@ -54,9 +54,10 @@ public abstract class FilterParser<T extends InternalIdSkeleton> {
                 // safe to ignore - if the string is no combiner then we are not interested in it
             }
 
-            if(matcherCombined.matches()) {
+            if (matcherCombined.matches()) {
                 String leftTerm = matcherCombined.group(1); // NOSONAR - no need to make constant for number
-                String combinedWith = matcherCombined.group(2).toUpperCase(Locale.ENGLISH); // NOSONAR - no need to make constant for number
+                String combinedWith = matcherCombined.group(2).toUpperCase(Locale.ENGLISH); // NOSONAR - no need to make
+                                                                                            // constant for number
                 String rightTerm = matcherCombined.group(3); // NOSONAR - no need to make constant for number
 
                 push(combinedWith, filterFragments);

@@ -19,7 +19,6 @@ package org.osiam.storage.filter;
 
 import java.util.regex.Matcher;
 
-import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -43,7 +42,8 @@ public class GroupSimpleFilterChain implements FilterChain<GroupEntity> {
 
         this.criteriaBuilder = criteriaBuilder;
         field = matcher.group(1).trim();
-        constraint = FilterConstraint.stringToEnum.get(matcher.group(2)); // NOSONAR - no need to make constant for number
+        constraint = FilterConstraint.stringToEnum.get(matcher.group(2)); // NOSONAR - no need to make constant for
+                                                                          // number
         filterField = GroupFilterField.fromString(field.toLowerCase());
 
         value = matcher.group(3).trim().replace("\"", ""); // NOSONAR - no need to make constant for number
