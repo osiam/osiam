@@ -25,7 +25,7 @@ public class GroupFilterParser extends FilterParser<GroupEntity> {
 
     @Override
     protected FilterChain<GroupEntity> createFilterChain(String filter) {
-        return new GroupSimpleFilterChain(entityManager, filter);
+        return new GroupSimpleFilterChain(entityManager.getCriteriaBuilder(), filter);
     }
 
 }

@@ -1,25 +1,15 @@
 package org.osiam.storage.filter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import org.osiam.storage.dao.ExtensionDao;
-import org.osiam.storage.entities.ExtensionEntity;
-import org.osiam.storage.entities.ExtensionFieldEntity;
-import org.osiam.storage.entities.UserEntity;
+import java.util.regex.Matcher;
 
 import javax.persistence.NoResultException;
-import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.regex.Matcher;
-
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 import org.osiam.storage.dao.ExtensionDao;
+import org.osiam.storage.entities.ExtensionEntity;
+import org.osiam.storage.entities.ExtensionFieldEntity;
 import org.osiam.storage.entities.UserEntity;
 
 public class UserSimpleFilterChain implements FilterChain<UserEntity> {
@@ -34,19 +24,17 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
 
     private ExtensionFilterField extensionFilterField;
 
-    private final EntityManager em;
     private final ExtensionDao extensionDao;
     private final CriteriaBuilder criteriaBuilder;
 
-    public UserSimpleFilterChain(EntityManager em, ExtensionDao extensionDao, String filter) {
+    public UserSimpleFilterChain(CriteriaBuilder criteriaBuilder, ExtensionDao extensionDao, String filter) {
         Matcher matcher = FilterParser.SIMPLE_FILTER_PATTERN.matcher(filter);
 
         if (!matcher.matches()) {
             throw new IllegalArgumentException(filter + " is not a simple filter string");
         }
 
-        this.em = em;
-        this.criteriaBuilder = em.getCriteriaBuilder();
+        this.criteriaBuilder = criteriaBuilder;
         this.extensionDao = extensionDao;
 
         field = matcher.group(1).trim();

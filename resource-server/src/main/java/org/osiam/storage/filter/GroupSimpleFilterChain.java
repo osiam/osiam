@@ -35,13 +35,13 @@ public class GroupSimpleFilterChain implements FilterChain<GroupEntity> {
     private final GroupFilterField filterField;
     private final CriteriaBuilder criteriaBuilder;
 
-    public GroupSimpleFilterChain(EntityManager em, String filter) {
+    public GroupSimpleFilterChain(CriteriaBuilder criteriaBuilder, String filter) {
         Matcher matcher = FilterParser.SIMPLE_FILTER_PATTERN.matcher(filter);
         if (!matcher.matches()) {
             throw new IllegalArgumentException(filter + " is not a simple filter string");
         }
 
-        criteriaBuilder = em.getCriteriaBuilder();
+        this.criteriaBuilder = criteriaBuilder;
         field = matcher.group(1).trim();
         constraint = FilterConstraint.stringToEnum.get(matcher.group(2)); // NOSONAR - no need to make constant for number
         filterField = GroupFilterField.fromString(field.toLowerCase());

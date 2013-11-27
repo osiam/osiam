@@ -31,7 +31,7 @@ public class UserFilterParser extends FilterParser<UserEntity> {
 
     @Override
     protected FilterChain<UserEntity> createFilterChain(String filter) {
-        return new UserSimpleFilterChain(entityManager, extensionDao, filter);
+        return new UserSimpleFilterChain(entityManager.getCriteriaBuilder(), extensionDao, filter);
     }
 
 }
