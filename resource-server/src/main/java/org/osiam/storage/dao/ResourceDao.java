@@ -23,20 +23,26 @@
 
 package org.osiam.storage.dao;
 
-import org.osiam.resources.exceptions.ResourceNotFoundException;
-import org.osiam.storage.entities.InternalIdSkeleton;
-import org.osiam.storage.entities.InternalIdSkeleton_;
-import org.osiam.storage.filter.FilterChain;
-import org.osiam.storage.filter.FilterParser;
+import java.util.List;
+import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.SingularAttribute;
-import java.util.List;
-import java.util.logging.Logger;
+
+import org.osiam.resources.exceptions.ResourceNotFoundException;
+import org.osiam.storage.entities.InternalIdSkeleton;
+import org.osiam.storage.entities.InternalIdSkeleton_;
+import org.osiam.storage.filter.FilterParser;
 
 public abstract class ResourceDao<T extends InternalIdSkeleton> {
 
