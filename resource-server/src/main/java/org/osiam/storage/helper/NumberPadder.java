@@ -49,7 +49,7 @@ public class NumberPadder {
         // if we have a negativ number ("-" at the first position) we will add 0.
         // If we have a positiv number we will add -1. For this we use the indexOf
         if (integralPart.length() > (PAD_LENGTH + integralPart.indexOf("-"))) {
-            throw new IllegalArgumentException("The given value has over " + PAD_LENGTH + " digits.");
+            throw new IllegalArgumentException("The given value has more than " + (PAD_LENGTH - 1) + " digits.");
         }
 
         BigInteger integralValue = new BigInteger(integralPart).add(BIG_OFFSET);
