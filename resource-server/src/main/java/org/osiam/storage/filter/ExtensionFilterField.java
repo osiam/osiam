@@ -1,20 +1,9 @@
 package org.osiam.storage.filter;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.SetJoin;
-import javax.persistence.metamodel.SetAttribute;
+import org.osiam.storage.entities.*;
 
-import org.osiam.storage.entities.ExtensionEntity_;
-import org.osiam.storage.entities.ExtensionFieldEntity;
-import org.osiam.storage.entities.ExtensionFieldEntity_;
-import org.osiam.storage.entities.ExtensionFieldValueEntity;
-import org.osiam.storage.entities.ExtensionFieldValueEntity_;
-import org.osiam.storage.entities.UserEntity;
-import org.osiam.storage.entities.UserEntity_;
+import javax.persistence.criteria.*;
+import javax.persistence.metamodel.SetAttribute;
 
 public class ExtensionFilterField {
 
@@ -27,7 +16,7 @@ public class ExtensionFilterField {
     }
 
     public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
-            String value, CriteriaBuilder cb) {
+                               String value, CriteriaBuilder cb) {
 
         final SetJoin<UserEntity, ExtensionFieldValueEntity> join = createOrGetJoin(aliasForUrn(urn),
                 root, UserEntity_.extensionFieldValues);
@@ -42,12 +31,17 @@ public class ExtensionFilterField {
     }
 
     private String aliasForUrn(String urn) {
-        return String.valueOf(urn.hashCode());
+        int hashCode = urn.hashCode();
+        if (hashCode < 0) {
+            hashCode *= -1;
+        }
+
+        return "extensionAlias" + String.valueOf(hashCode);
     }
 
     @SuppressWarnings("unchecked")
     protected <T> SetJoin<UserEntity, T> createOrGetJoin(String alias, Root<UserEntity> root,
-            SetAttribute<UserEntity, T> attribute) {
+                                                         SetAttribute<UserEntity, T> attribute) {
 
         for (Join<UserEntity, ?> currentJoin : root.getJoins()) {
             if (currentJoin.getAlias().equals(alias)) {
