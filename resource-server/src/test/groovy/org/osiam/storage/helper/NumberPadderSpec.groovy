@@ -31,24 +31,25 @@ class NumberPadderSpec extends Specification {
     NumberPadder numberPadder = new NumberPadder()
 
     @Unroll
-    def 'convert #inputValue to padd number with the value #expectedValue'(){
+    def 'padding #inputValue results in #expectedValue'(){
         expect:
         numberPadder.pad(inputValue) == expectedValue
 
         where:
-        inputValue             | expectedValue
-        '1000'                 | '100000000000000001000'
-        '1000.4'               | '100000000000000001000.4'
-        '0'                    | '100000000000000000000'
-        '0.0'                  | '100000000000000000000.0'
-        '10000000000000001000' | '110000000000000001000'
+        inputValue              | expectedValue
+        '1000'                  | '100000000000000001000'
+        '1000.4'                | '100000000000000001000.4'
+        '0'                     | '100000000000000000000'
+        '0.0'                   | '100000000000000000000.0'
+        '10000000000000001000'  | '110000000000000001000'
         '-1000'                 | '099999999999999999000'
         '-1000.4'               | '099999999999999999000.4'
         '-10000000000000001000' | '089999999999999999000'
-        '99999999999999999999' | '199999999999999999999'
+        '99999999999999999999'  | '199999999999999999999'
+        '-99999999999999999999' | '000000000000000000001'
     }
 
-    def 'too long number raises exception'(){
+    def 'padding a number that is too big raises exception'(){
         given:
         def number = '100002000030000400005'
 
@@ -59,23 +60,34 @@ class NumberPadderSpec extends Specification {
         thrown (IllegalArgumentException)
     }
 
+    def 'padding a negative number that is too big raises exception'(){
+        given:
+        def number = '-100002000030000400005'
+
+        when:
+        numberPadder.pad(number)
+
+        then:
+        thrown (IllegalArgumentException)
+    }
+
     @Unroll
-    def 'convert #inputValue to unpadd number with the value #expectedValue'(){
+    def 'unpadding #inputValue results in #expectedValue'(){
         expect:
         numberPadder.unpad(inputValue) == expectedValue
 
         where:
-        inputValue             | expectedValue
-        '100000000000000000001' |'1'
-        '100000000000000001000' |'1000'
-        '100000000000000001000.4' |'1000.4'
-        '100000000000000000000' | '0'
-        '100000000000000000000.0' |'0.0'
-        '110000000000000001000' | '10000000000000001000'
-        '099999999999999999000' | '-1000'
+        inputValue                | expectedValue
+        '100000000000000000001'   | '1'
+        '100000000000000001000'   | '1000'
+        '100000000000000001000.4' | '1000.4'
+        '100000000000000000000'   | '0'
+        '100000000000000000000.0' | '0.0'
+        '110000000000000001000'   | '10000000000000001000'
+        '099999999999999999000'   | '-1000'
         '099999999999999999000.4' | '-1000.4'
-        '089999999999999999000' | '-10000000000000001000'
-        '199999999999999999999' |'99999999999999999999'
+        '089999999999999999000'   | '-10000000000000001000'
+        '199999999999999999999'   | '99999999999999999999'
+        '000000000000000000001'   | '-99999999999999999999'
     }
-
 }
