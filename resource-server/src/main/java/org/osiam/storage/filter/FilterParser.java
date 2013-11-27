@@ -29,7 +29,6 @@ public abstract class FilterParser<T extends InternalIdSkeleton> {
             sb.append(constraint.toString());
         }
         return sb.toString();
-
     }
 
     @PersistenceContext
