@@ -23,16 +23,9 @@
 
 package org.osiam.storage.entities
 
-import org.osiam.storage.entities.ManagerEntity
 import spock.lang.Specification
 
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 15.03.13
- * Time: 16:21
- * To change this template use File | Settings | File Templates.
- */
+
 class ManagerEntitySpec extends Specification {
 
     ManagerEntity managerEntity = new ManagerEntity()

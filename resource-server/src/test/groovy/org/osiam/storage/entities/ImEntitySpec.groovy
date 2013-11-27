@@ -23,18 +23,9 @@
 
 package org.osiam.storage.entities
 
-import org.osiam.resources.scim.MultiValuedAttribute
-import org.osiam.storage.entities.ImEntity
-import org.osiam.storage.entities.UserEntity
 import spock.lang.Specification
 
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 15.03.13
- * Time: 15:07
- * To change this template use File | Settings | File Templates.
- */
+
 class ImEntitySpec extends Specification {
 
     ImEntity imsEntity = new ImEntity()
@@ -80,5 +71,4 @@ class ImEntitySpec extends Specification {
         then:
         imsEntity.getMultiValueId() == 1234
     }
-
 }

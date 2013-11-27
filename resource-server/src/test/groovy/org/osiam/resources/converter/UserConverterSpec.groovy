@@ -1,24 +1,48 @@
+/*
+ * Copyright (C) 2013 tarent AG
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package org.osiam.resources.converter
 
 import org.osiam.resources.scim.*
 import org.osiam.storage.dao.UserDao
 import org.osiam.storage.entities.*
+
 import spock.lang.Specification
 
 class UserConverterSpec extends Specification {
 
     Map fixtures = [displayName: 'displayName',
-            externalId: 'externalId',
-            locale: 'locale',
-            nickName: 'nickName',
-            password: 'password',
-            preferredLanguage: 'preferredLanguage',
-            profileUrl: 'profileURL',
-            timezone: 'timeZone',
-            title: 'title',
-            userName: 'userName',
-            userType: 'userType',
-            active: true]
+        externalId: 'externalId',
+        locale: 'locale',
+        nickName: 'nickName',
+        password: 'password',
+        preferredLanguage: 'preferredLanguage',
+        profileUrl: 'profileURL',
+        timezone: 'timeZone',
+        title: 'title',
+        userName: 'userName',
+        userType: 'userType',
+        active: true]
 
     X509CertificateConverter x509CertificateConverter = Mock()
     RoleConverter roleConverter = Mock()
@@ -35,17 +59,17 @@ class UserConverterSpec extends Specification {
     UserDao userDao = Mock()
 
     UserConverter userConverter = new UserConverter(
-            x509CertificateConverter: x509CertificateConverter,
-            roleConverter: roleConverter,
-            photoConverter: photoConverter,
-            phoneNumberConverter: phoneNumberConverter,
-            imConverter: imConverter,
-            entitlementConverter: entitlementConverter,
-            emailConverter: emailConverter,
-            addressConverter: addressConverter,
-            nameConverter: nameConverter,
-            extensionConverter: extensionConverter,
-            metaConverter: metaConverter,
+    x509CertificateConverter: x509CertificateConverter,
+    roleConverter: roleConverter,
+    photoConverter: photoConverter,
+    phoneNumberConverter: phoneNumberConverter,
+    imConverter: imConverter,
+    entitlementConverter: entitlementConverter,
+    emailConverter: emailConverter,
+    addressConverter: addressConverter,
+    nameConverter: nameConverter,
+    extensionConverter: extensionConverter,
+    metaConverter: metaConverter,
     )
 
     def 'converting user entity to scim works as expected'() {
@@ -163,7 +187,8 @@ class UserConverterSpec extends Specification {
         userEntity.setPhotos([Mock(PhotoEntity)] as Set<PhotoEntity>)
         userEntity.setRoles([Mock(RolesEntity)] as Set<RolesEntity>)
         userEntity.setX509Certificates([Mock(X509CertificateEntity)] as Set<X509CertificateEntity>)
-        userEntity.setUserExtensions([Mock(ExtensionFieldValueEntity)] as Set<ExtensionFieldValueEntity>)
+        userEntity.setUserExtensions([
+            Mock(ExtensionFieldValueEntity)] as Set<ExtensionFieldValueEntity>)
         userEntity.setMeta(Mock(MetaEntity))
 
         return userEntity

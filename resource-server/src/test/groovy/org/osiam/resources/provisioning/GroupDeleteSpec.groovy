@@ -21,17 +21,16 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
-
 package org.osiam.resources.provisioning
+
+import javax.persistence.EntityManager
+import javax.persistence.Query
 
 import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.storage.dao.GroupDao
 import org.osiam.storage.entities.GroupEntity
-import spock.lang.Specification
 
-import javax.persistence.EntityManager
-import javax.persistence.Query
+import spock.lang.Specification
 
 class GroupDeleteSpec extends Specification {
     EntityManager em = Mock(EntityManager)
@@ -49,8 +48,6 @@ class GroupDeleteSpec extends Specification {
         1 * em.createNamedQuery("getById") >> query
         1 * query.getResultList() >> []
         thrown(ResourceNotFoundException)
-
-
     }
 
     def "should not throw any Exception when trying to delete known group"() {
@@ -62,8 +59,5 @@ class GroupDeleteSpec extends Specification {
         1 * em.createNamedQuery("getById") >> query
         1 * query.getResultList() >> [entity]
         1 * em.remove(entity)
-
     }
-
-
 }

@@ -23,16 +23,9 @@
 
 package org.osiam.storage.entities
 
-import org.osiam.storage.entities.MetaEntity
 import spock.lang.Specification
 
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 15.03.13
- * Time: 15:40
- * To change this template use File | Settings | File Templates.
- */
+
 class MetaEntitySpec extends Specification {
 
     MetaEntity metaEntity = new MetaEntity()
@@ -60,7 +53,6 @@ class MetaEntitySpec extends Specification {
 
         then:
         metaEntity.getCreated() == null
-
     }
 
     def "setter and getter for the modified field should be present"() {

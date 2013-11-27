@@ -1,3 +1,26 @@
+/*
+ * Copyright (C) 2013 tarent AG
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package org.osiam.resources.converter
 
 import org.joda.time.format.ISODateTimeFormat
@@ -7,6 +30,7 @@ import org.osiam.storage.dao.ExtensionDao
 import org.osiam.storage.entities.ExtensionEntity
 import org.osiam.storage.entities.ExtensionFieldEntity
 import org.osiam.storage.entities.ExtensionFieldValueEntity
+
 import spock.lang.Specification
 
 class ExtensionConverterSpec extends Specification {
@@ -23,12 +47,12 @@ class ExtensionConverterSpec extends Specification {
             [fieldname: 'size', valueAsString: '1.78', value: new BigDecimal('1.78'), type: ExtensionFieldType.DECIMAL],
             [fieldname: 'numberChildren', valueAsString: '2', value: BigInteger.valueOf(2), type: ExtensionFieldType.INTEGER],
             [fieldname: 'birth', valueAsString: '2008-01-23T04:56:22.000Z',
-                    value: new Date(ISODateTimeFormat.dateTime().withZoneUTC().parseDateTime("2008-01-23T04:56:22.000Z").getMillis())
-                    , type: ExtensionFieldType.DATE_TIME],
+                value: new Date(ISODateTimeFormat.dateTime().withZoneUTC().parseDateTime("2008-01-23T04:56:22.000Z").getMillis())
+                , type: ExtensionFieldType.DATE_TIME],
             [fieldname: 'newsletter', valueAsString: 'true', value: true, type: ExtensionFieldType.BOOLEAN]
-    ], (URN2): [
+        ], (URN2): [
             [fieldname: 'favoredPet', valueAsString: 'doc', value: 'doc', type: ExtensionFieldType.STRING],
-    ]]
+        ]]
 
     def 'convert extensionEntity set to scim extension set works'() {
         given:

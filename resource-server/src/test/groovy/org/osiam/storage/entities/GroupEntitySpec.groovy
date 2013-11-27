@@ -23,17 +23,9 @@
 
 package org.osiam.storage.entities
 
-import org.osiam.resources.scim.Group
-import org.osiam.resources.scim.MultiValuedAttribute
 import spock.lang.Specification
 
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 15.03.13
- * Time: 14:05
- * To change this template use File | Settings | File Templates.
- */
+
 class GroupEntitySpec extends Specification {
 
     GroupEntity groupEntity = new GroupEntity()

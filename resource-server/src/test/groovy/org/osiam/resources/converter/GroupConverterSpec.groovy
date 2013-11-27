@@ -1,3 +1,26 @@
+/*
+ * Copyright (C) 2013 tarent AG
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package org.osiam.resources.converter
 
 import org.osiam.resources.exceptions.ResourceNotFoundException
@@ -8,18 +31,19 @@ import org.osiam.storage.dao.UserDao
 import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.MetaEntity
 import org.osiam.storage.entities.UserEntity
+
 import spock.lang.Specification
 
 class GroupConverterSpec extends Specification {
 
     Map fixtures = [displayName: 'displayName',
-            externalId: 'externalId'
+        externalId: 'externalId'
     ]
 
     def memberUuidFixtures = [
-            user: 'c2b4f6d0-7028-4f8d-b78a-bb4d3eadc5bd',
-            group: '0c60179c-0b9c-4cad-a918-4ec59bbab173',
-            'non-existant': 'e75522d8-2b4d-4b60-bb92-6c6cda8faaea']
+        user: 'c2b4f6d0-7028-4f8d-b78a-bb4d3eadc5bd',
+        group: '0c60179c-0b9c-4cad-a918-4ec59bbab173',
+        'non-existant': 'e75522d8-2b4d-4b60-bb92-6c6cda8faaea']
 
     private GroupDao groupDao = Mock()
     private UserDao userDao = Mock()

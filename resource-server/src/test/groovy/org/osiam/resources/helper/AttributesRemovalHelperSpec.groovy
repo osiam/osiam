@@ -1,3 +1,26 @@
+/*
+ * Copyright (C) 2013 tarent AG
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package org.osiam.resources.helper
 
 import org.joda.time.DateTime
@@ -5,15 +28,10 @@ import org.joda.time.format.ISODateTimeFormat
 import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.SCIMSearchResult
 import org.osiam.resources.scim.User
+
 import spock.lang.Specification
 
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 15.05.13
- * Time: 17:31
- * To change this template use File | Settings | File Templates.
- */
+
 class AttributesRemovalHelperSpec extends Specification {
 
     def attributesRemovalHelperTest = new AttributesRemovalHelper()
@@ -43,7 +61,8 @@ class AttributesRemovalHelperSpec extends Specification {
 
     def "should return Json string with additional values for searches on users, groups and filtering for userName"() {
         given:
-        def user = new User.Builder("username").setSchemas(["schemas:urn:scim:schemas:core:1.0"] as Set).build()
+        def user = new User.Builder("username").setSchemas([
+            "schemas:urn:scim:schemas:core:1.0"] as Set).build()
         def userList = [user] as List<User>
         def parameterMapMock = Mock(Map)
         def attributes = ["userName"] as String[]
@@ -67,7 +86,8 @@ class AttributesRemovalHelperSpec extends Specification {
 
     def "should not filter the search result if attributes are empty"() {
         given:
-        def user = new User.Builder("username").setSchemas(["schemas:urn:scim:schemas:core:1.0"] as Set).build()
+        def user = new User.Builder("username").setSchemas([
+            "schemas:urn:scim:schemas:core:1.0"] as Set).build()
         def userList = [user] as List<User>
         def parameterMapMock = Mock(Map)
         def attributes = [] as String[]
@@ -86,13 +106,16 @@ class AttributesRemovalHelperSpec extends Specification {
         result.startIndex == 0
         result.itemsPerPage == 0
         result.totalResults == 1337
-        result.getResources() == [["schemas": ["schemas:urn:scim:schemas:core:1.0"], "userName": "username"]] as List
-
+        result.getResources() == [
+            ["schemas": [
+                    "schemas:urn:scim:schemas:core:1.0"
+                ], "userName": "username"]] as List
     }
 
     def "should return only data of a complex type"() {
         given:
-        def set = ["schemas:urn:scim:schemas:core:1.0"] as Set
+        def set = [
+            "schemas:urn:scim:schemas:core:1.0"] as Set
         String[] pA = ["meta", "created"]
         def param = ["attributes": pA, "count": 23, "startIndex": 23]
 
@@ -112,7 +135,7 @@ class AttributesRemovalHelperSpec extends Specification {
         result.itemsPerPage == 23
         result.totalResults == 1
         result.getResources() == [[meta: [created: created]]] as List
-        result.getSchemas() == ['schemas:urn:scim:schemas:core:1.0'] as Set
-
+        result.getSchemas() == [
+            'schemas:urn:scim:schemas:core:1.0'] as Set
     }
 }
