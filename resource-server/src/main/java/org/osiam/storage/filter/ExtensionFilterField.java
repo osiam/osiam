@@ -24,9 +24,8 @@ public class ExtensionFilterField {
                 join.get(ExtensionFieldValueEntity_.value),
                 value, field, cb);
         Predicate joinOnPredicate = cb.equal(join.get(ExtensionFieldValueEntity_.extensionField)
-                .get(ExtensionFieldEntity_.extension)
-                .get(ExtensionEntity_.urn)
-                , urn);
+                .get(ExtensionFieldEntity_.internalId)
+                , field.getInternalId());
         return cb.and(filterPredicate, joinOnPredicate);
     }
 
