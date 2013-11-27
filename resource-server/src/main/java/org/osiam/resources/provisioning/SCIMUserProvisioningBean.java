@@ -35,11 +35,13 @@ import org.osiam.storage.entities.ExtensionEntity;
 import org.osiam.storage.entities.ExtensionFieldEntity;
 import org.osiam.storage.entities.ExtensionFieldValueEntity;
 import org.osiam.storage.entities.UserEntity;
+import org.osiam.storage.helper.NumberPadder;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -60,6 +62,9 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
 
     @Inject
     private PasswordEncoder passwordEncoder;
+
+    @Inject
+    NumberPadder numberPadder;
 
     @Override
     protected GenericDao<UserEntity> getDao() {
@@ -171,6 +176,10 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
             String newValue = updatedExtension.getField(fieldName, ExtensionFieldType.STRING);
             if (newValue == null) {
                 continue;
+            }
+
+            if(extensionField.getType() == ExtensionFieldType.INTEGER || extensionField.getType() == ExtensionFieldType.DECIMAL) {
+                newValue = numberPadder.pad(newValue);
             }
 
             extensionFieldValue.setValue(newValue);
