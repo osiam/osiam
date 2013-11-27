@@ -91,5 +91,4 @@ public abstract class FilterParser<T extends InternalIdSkeleton> {
     protected <E> E pop(ArrayList<E> stack) {
         return stack.remove(stack.size() - 1);
     }
-
 }

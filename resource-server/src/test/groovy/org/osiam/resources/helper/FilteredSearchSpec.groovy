@@ -17,6 +17,8 @@
 
 package org.osiam.resources.helper
 
+import javax.persistence.EntityManager
+
 import org.osiam.storage.filter.FilterConstraint
 import org.osiam.storage.filter.UserFilterParser
 import org.osiam.storage.filter.UserSimpleFilterChain
@@ -24,9 +26,12 @@ import org.osiam.storage.filter.UserSimpleFilterChain
 import spock.lang.Ignore
 import spock.lang.Specification
 
+
 @Ignore('Api change in progress')
 class FilteredSearchSpec extends Specification {
-    def parser = new UserFilterParser()
+
+    EntityManager em = Mock()
+    def parser = new UserFilterParser(entityManager: em)
 
     def 'should parse equals (eq)'() {
         when:
