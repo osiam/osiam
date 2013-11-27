@@ -106,7 +106,6 @@ public enum FilterConstraint {
             return createPredicateForStringField(path, value, cb);
         }
     },
-
     PRESENT("pr") {
         @Override
         public Predicate createPredicateForStringField(Path<String> path, String value, CriteriaBuilder cb) {
@@ -137,7 +136,6 @@ public enum FilterConstraint {
             return createPredicateForStringField(path, value, cb);
         }
     },
-
     GREATER_THAN("gt") {
         @Override
         public Predicate createPredicateForStringField(Path<String> path, String value, CriteriaBuilder cb) {

@@ -90,7 +90,7 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
         if (userFilterField != null) {
             return userFilterField.addFilter(query, root, constraint, value, criteriaBuilder);
         } else if (extensionFilterField != null) {
-            return null;
+            return extensionFilterField.addFilter(root, constraint, value, criteriaBuilder);
         } else {
             throw new IllegalArgumentException("Filtering not possible. Field '" + field + "' not available.");
         }

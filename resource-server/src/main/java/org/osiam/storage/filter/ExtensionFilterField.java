@@ -20,7 +20,13 @@ public class ExtensionFilterField {
 
         final SetJoin<UserEntity, ExtensionFieldValueEntity> join = createOrGetJoin(aliasForUrn(urn),
                 root, UserEntity_.extensionFieldValues);
-        return constraint.createPredicateForStringField(join.get(ExtensionFieldValueEntity_.value), value, cb);
+        Predicate filterPredicate = constraint.createPredicateForExtensionField(join.get(ExtensionFieldValueEntity_.value),
+                value, field, cb);
+        Predicate joinOnPredicate = cb.equal(join.get(ExtensionFieldValueEntity_.extensionField)
+                .get(ExtensionFieldEntity_.extension)
+                .get(ExtensionEntity_.urn)
+                , urn);
+        return cb.and(filterPredicate, joinOnPredicate);
     }
 
     private String aliasForUrn(String urn) {

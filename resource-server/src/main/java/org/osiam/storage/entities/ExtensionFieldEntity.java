@@ -3,6 +3,9 @@ package org.osiam.storage.entities;
 import org.osiam.resources.scim.ExtensionFieldType;
 
 import javax.persistence.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Defines a field in a scim-extension.
@@ -80,6 +83,10 @@ public class ExtensionFieldEntity {
         isRequired = required;
     }
 
+    public boolean isConstrainedValid(String constraint) {
+        return !invalidTypeForConstraint.contains(new ConstraintAndType(type, constraint));
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -118,10 +125,30 @@ public class ExtensionFieldEntity {
         return true;
     }
 
-    public boolean isConstrainedValid(String constraint) {
-        return false;
-        //return !invalidTypeForConstraintSet.contains(new ConstraintAndType(type, constraint));
-    }
+    private static Set<ConstraintAndType> invalidTypeForConstraint = new HashSet<>(Arrays.asList(
+            new ConstraintAndType(ExtensionFieldType.INTEGER, "co"),
+            new ConstraintAndType(ExtensionFieldType.INTEGER, "sw"),
+            new ConstraintAndType(ExtensionFieldType.DECIMAL, "co"),
+            new ConstraintAndType(ExtensionFieldType.DECIMAL, "sw"),
+            new ConstraintAndType(ExtensionFieldType.BOOLEAN, "co"),
+            new ConstraintAndType(ExtensionFieldType.BOOLEAN, "sw"),
+            new ConstraintAndType(ExtensionFieldType.BOOLEAN, "gt"),
+            new ConstraintAndType(ExtensionFieldType.BOOLEAN, "ge"),
+            new ConstraintAndType(ExtensionFieldType.BOOLEAN, "lt"),
+            new ConstraintAndType(ExtensionFieldType.BOOLEAN, "le"),
+            new ConstraintAndType(ExtensionFieldType.DATE_TIME, "co"),
+            new ConstraintAndType(ExtensionFieldType.DATE_TIME, "sw"),
+            new ConstraintAndType(ExtensionFieldType.BINARY, "co"),
+            new ConstraintAndType(ExtensionFieldType.BINARY, "sw"),
+            new ConstraintAndType(ExtensionFieldType.BINARY, "gt"),
+            new ConstraintAndType(ExtensionFieldType.BINARY, "ge"),
+            new ConstraintAndType(ExtensionFieldType.BINARY, "lt"),
+            new ConstraintAndType(ExtensionFieldType.BINARY, "le"),
+            new ConstraintAndType(ExtensionFieldType.REFERENCE, "gt"),
+            new ConstraintAndType(ExtensionFieldType.REFERENCE, "ge"),
+            new ConstraintAndType(ExtensionFieldType.REFERENCE, "lt"),
+            new ConstraintAndType(ExtensionFieldType.REFERENCE, "le")
+    ));
 
     private static class ConstraintAndType {
         final ExtensionFieldType<?> type;
