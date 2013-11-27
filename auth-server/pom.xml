@@ -284,6 +284,11 @@
             <artifactId>osiam-interaction-model</artifactId>
             <version>0.12-SNAPSHOT</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.osiam</groupId>
+            <artifactId>scim-schema</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
