@@ -21,17 +21,21 @@ import javax.inject.Inject;
 
 import org.osiam.storage.dao.ExtensionDao;
 import org.osiam.storage.entities.UserEntity;
+import org.osiam.storage.helper.NumberPadder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserFilterParser extends FilterParser<UserEntity> {
 
     @Inject
-    ExtensionDao extensionDao;
+    private ExtensionDao extensionDao;
+
+    @Inject
+    private NumberPadder numberPadder;
 
     @Override
     protected FilterChain<UserEntity> createFilterChain(String filter) {
-        return new UserSimpleFilterChain(entityManager.getCriteriaBuilder(), extensionDao, filter);
+        return new UserSimpleFilterChain(entityManager.getCriteriaBuilder(), extensionDao, filter, numberPadder);
     }
 
 }

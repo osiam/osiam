@@ -4,11 +4,13 @@ import org.osiam.storage.dao.ExtensionDao;
 import org.osiam.storage.entities.ExtensionEntity;
 import org.osiam.storage.entities.ExtensionFieldEntity;
 import org.osiam.storage.entities.UserEntity;
+import org.osiam.storage.helper.NumberPadder;
 
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
 import java.util.regex.Matcher;
 
 public class UserSimpleFilterChain implements FilterChain<UserEntity> {
@@ -25,8 +27,10 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
 
     private final ExtensionDao extensionDao;
     private final CriteriaBuilder criteriaBuilder;
+    private final NumberPadder numberPadder;
 
-    public UserSimpleFilterChain(CriteriaBuilder criteriaBuilder, ExtensionDao extensionDao, String filter) {
+
+    public UserSimpleFilterChain(CriteriaBuilder criteriaBuilder, ExtensionDao extensionDao, String filter, NumberPadder numberPadder) {
         Matcher matcher = FilterParser.SIMPLE_FILTER_PATTERN.matcher(filter);
 
         if (!matcher.matches()) {
@@ -35,6 +39,7 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
 
         this.criteriaBuilder = criteriaBuilder;
         this.extensionDao = extensionDao;
+        this.numberPadder = numberPadder;
 
         field = matcher.group(1).trim();
 
@@ -66,7 +71,7 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
             throw new IllegalArgumentException("Filtering not possible. Field '" + field + "' not available.", ex);
         }
         final ExtensionFieldEntity fieldEntity = extension.getFieldForName(fieldName);
-        return new ExtensionFilterField(urn, fieldEntity);
+        return new ExtensionFilterField(urn, fieldEntity, numberPadder);
     }
 
     @Override
