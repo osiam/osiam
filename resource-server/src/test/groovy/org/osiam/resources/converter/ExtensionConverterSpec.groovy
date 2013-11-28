@@ -30,6 +30,7 @@ import org.osiam.storage.dao.ExtensionDao
 import org.osiam.storage.entities.ExtensionEntity
 import org.osiam.storage.entities.ExtensionFieldEntity
 import org.osiam.storage.entities.ExtensionFieldValueEntity
+import org.osiam.storage.helper.NumberPadder
 
 import spock.lang.Specification
 
@@ -38,9 +39,10 @@ class ExtensionConverterSpec extends Specification {
     private static String URN1 = "urn:org.osiam.extensions:Test01:1.0"
     private static String URN2 = "urn:org.osiam.extensions:Test02:1.0"
 
-    private ExtensionDao extensionDao = Mock();
+    private ExtensionDao extensionDao = Mock()
+    private NumberPadder numberPadder = Mock()
 
-    private ExtensionConverter converter = new ExtensionConverter(extensionDao: extensionDao);
+    private ExtensionConverter converter = new ExtensionConverter(extensionDao: extensionDao, numberPadder: numberPadder)
 
     Map fixtures = [(URN1): [
             [fieldname: 'gender', valueAsString: 'male', value: 'male', type: ExtensionFieldType.STRING],
@@ -63,7 +65,8 @@ class ExtensionConverterSpec extends Specification {
         Set<Extension> extensions = converter.toScim(extensionFieldValueEntitySet)
 
         then:
-        extensions.equals(scimExtensionSet)
+        1 * numberPadder.unpad('1.78') >> '1.78'
+        1 * numberPadder.unpad('2') >> '2'
         extensions == scimExtensionSet
     }
 
@@ -79,6 +82,8 @@ class ExtensionConverterSpec extends Specification {
         then:
         1 * extensionDao.getExtensionByUrn(URN1) >> extensionMap[URN1]
         1 * extensionDao.getExtensionByUrn(URN2) >> extensionMap[URN2]
+        1 * numberPadder.pad('1.78') >> '1.78'
+        1 * numberPadder.pad('2') >> '2'
         extensions == extensionFieldValueEntitySet
     }
 
@@ -119,32 +124,32 @@ class ExtensionConverterSpec extends Specification {
     }
 
     def addNameValuePairToExtensionEntity(ExtensionEntity extensionEntity, String name, String value) {
-        ExtensionFieldEntity fieldEntity = new ExtensionFieldEntity();
-        fieldEntity.setName(name);
+        ExtensionFieldEntity fieldEntity = new ExtensionFieldEntity()
+        fieldEntity.setName(name)
 
-        ExtensionFieldValueEntity valueEntity = new ExtensionFieldValueEntity();
-        valueEntity.setValue(value);
-        valueEntity.setExtensionField(fieldEntity);
+        ExtensionFieldValueEntity valueEntity = new ExtensionFieldValueEntity()
+        valueEntity.setValue(value)
+        valueEntity.setExtensionField(fieldEntity)
 
-        fieldEntity.setExtension(extensionEntity);
+        fieldEntity.setExtension(extensionEntity)
     }
 
     def Set<ExtensionFieldValueEntity> getFilledExtensionEntity(Map fixtures, String... urns) {
 
-        Set<ExtensionFieldValueEntity> extensionFieldValueEntitySet = new HashSet<>();
+        Set<ExtensionFieldValueEntity> extensionFieldValueEntitySet = new HashSet<>()
 
         for (urn in urns) {
-            ExtensionEntity entity = new ExtensionEntity();
-            entity.setUrn(urn);
+            ExtensionEntity entity = new ExtensionEntity()
+            entity.setUrn(urn)
 
             def fixture = fixtures.get(urn)
             for (field in fixture) {
                 ExtensionFieldValueEntity valueEntity = getFieldToEntityValueSet(entity, field.get('fieldname'), field.get('valueAsString'), field.get('type'))
-                extensionFieldValueEntitySet.add(valueEntity);
+                extensionFieldValueEntitySet.add(valueEntity)
             }
         }
 
-        return extensionFieldValueEntitySet;
+        return extensionFieldValueEntitySet
     }
 
     def Set<Extension> getFilledScimExtension(Map fixtures, String... urns) {
@@ -166,13 +171,13 @@ class ExtensionConverterSpec extends Specification {
     }
 
     def ExtensionFieldValueEntity getFieldToEntityValueSet(ExtensionEntity extensionEntity, String name, String value, ExtensionFieldType type) {
-        ExtensionFieldEntity fieldEntity = new ExtensionFieldEntity();
-        fieldEntity.setName(name);
+        ExtensionFieldEntity fieldEntity = new ExtensionFieldEntity()
+        fieldEntity.setName(name)
         fieldEntity.setType(type)
 
-        ExtensionFieldValueEntity valueEntity = new ExtensionFieldValueEntity();
-        valueEntity.setValue(value);
-        fieldEntity.setExtension(extensionEntity);
+        ExtensionFieldValueEntity valueEntity = new ExtensionFieldValueEntity()
+        valueEntity.setValue(value)
+        fieldEntity.setExtension(extensionEntity)
         valueEntity.setExtensionField(fieldEntity)
 
         return valueEntity
