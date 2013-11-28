@@ -23,12 +23,11 @@
 
 package org.osiam.storage.helper;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
+import com.google.common.base.Strings;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Strings;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 @Service
 public class NumberPadder {
@@ -39,9 +38,8 @@ public class NumberPadder {
 
     /**
      * Adds an offset and padding to a number
-     * 
-     * @param value
-     *            the number as {@link String}
+     *
+     * @param value the number as {@link String}
      * @return
      */
     public String pad(String value) {
@@ -49,9 +47,9 @@ public class NumberPadder {
         String fractionalPart = "";
 
         if (value.contains(".")) {
-            int indexOfDecimalSeperator = value.indexOf(".");
-            integralPart = value.substring(0, indexOfDecimalSeperator);
-            fractionalPart = value.substring(indexOfDecimalSeperator);
+            int indexOfDecimalSeparator = value.indexOf(".");
+            integralPart = value.substring(0, indexOfDecimalSeparator);
+            fractionalPart = value.substring(indexOfDecimalSeparator);
         }
 
         // if we have a negative number ("-" at the first position) we will add 0.
@@ -68,9 +66,8 @@ public class NumberPadder {
 
     /**
      * Removes the offset and padding from a number
-     * 
-     * @param value
-     *            the padded number as {@link String}
+     *
+     * @param value the padded number as {@link String}
      * @return
      */
     public String unpad(String value) {
