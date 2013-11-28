@@ -45,6 +45,7 @@ public class NumberPadder {
     public String pad(String value) {
         String integralPart = value;
         String fractionalPart = "";
+
         if (value.contains(".")) {
             int indexOfDecimalSeperator = value.indexOf(".");
             integralPart = value.substring(0, indexOfDecimalSeperator);
@@ -57,9 +58,7 @@ public class NumberPadder {
             throw new IllegalArgumentException("The given value has more than " + (PAD_LENGTH - 1) + " digits.");
         }
 
-        BigInteger integralValue = new BigInteger(integralPart).add(BIG_OFFSET);
-        integralPart = integralValue.toString();
-
+        integralPart = new BigInteger(integralPart).add(BIG_OFFSET).toString();
         integralPart = Strings.padStart(integralPart, PAD_LENGTH, '0');
 
         return integralPart + fractionalPart;
