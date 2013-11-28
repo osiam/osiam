@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
@@ -72,6 +73,11 @@ enum UserFilterField implements FilterField<UserEntity> {
                 FilterConstraint constraint, String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(UserEntity_.externalId), value, cb);
         }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            return root.get(UserEntity_.externalId);
+        }
     },
     META_CREATED("meta.created") {
         @Override
@@ -80,6 +86,11 @@ enum UserFilterField implements FilterField<UserEntity> {
             Date date = ISODateTimeFormat.dateTimeParser().parseDateTime(value).toDate();
             return constraint.createPredicateForDateField(root.get(UserEntity_.meta).get(MetaEntity_.created),
                     date, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            return root.get(UserEntity_.meta).get(MetaEntity_.created);
         }
     },
     META_LASTMODIFIED("meta.lastmodified") {
@@ -91,6 +102,11 @@ enum UserFilterField implements FilterField<UserEntity> {
                     root.get(UserEntity_.meta).get(MetaEntity_.lastModified),
                     date, cb);
         }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            return root.get(UserEntity_.meta).get(MetaEntity_.lastModified);
+        }
     },
     META_LOCATION("meta.location") {
         @Override
@@ -99,12 +115,22 @@ enum UserFilterField implements FilterField<UserEntity> {
             return constraint.createPredicateForStringField(root.get(UserEntity_.meta)
                     .get(MetaEntity_.location), value, cb);
         }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            return root.get(UserEntity_.meta).get(MetaEntity_.location);
+        }
     },
     USERNAME("username") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(UserEntity_.userName), value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            return root.get(UserEntity_.userName);
         }
 
     },
@@ -115,12 +141,22 @@ enum UserFilterField implements FilterField<UserEntity> {
             return constraint.createPredicateForStringField(root.get(UserEntity_.displayName), value, cb);
         }
 
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            return root.get(UserEntity_.displayName);
+        }
+
     },
     NICKNAME("nickname") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(UserEntity_.nickName), value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            return root.get(UserEntity_.nickName);
         }
 
     },
@@ -131,12 +167,22 @@ enum UserFilterField implements FilterField<UserEntity> {
             return constraint.createPredicateForStringField(root.get(UserEntity_.profileUrl), value, cb);
         }
 
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            return root.get(UserEntity_.profileUrl);
+        }
+
     },
     TITLE("title") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(UserEntity_.title), value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            return root.get(UserEntity_.title);
         }
 
     },
@@ -147,12 +193,22 @@ enum UserFilterField implements FilterField<UserEntity> {
             return constraint.createPredicateForStringField(root.get(UserEntity_.userType), value, cb);
         }
 
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            return root.get(UserEntity_.userType);
+        }
+
     },
     PREFERREDLANGUAGE("preferredlanguage") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(UserEntity_.preferredLanguage), value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            return root.get(UserEntity_.preferredLanguage);
         }
 
     },
@@ -163,12 +219,22 @@ enum UserFilterField implements FilterField<UserEntity> {
             return constraint.createPredicateForStringField(root.get(UserEntity_.locale), value, cb);
         }
 
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            return root.get(UserEntity_.locale);
+        }
+
     },
     TIMEZONE("timezone") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(UserEntity_.timezone), value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            return root.get(UserEntity_.timezone);
         }
 
     },
@@ -180,6 +246,11 @@ enum UserFilterField implements FilterField<UserEntity> {
                     cb);
         }
 
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            return root.get(UserEntity_.active);
+        }
+
     },
     NAME_FORMATTED("name.formatted") {
         @Override
@@ -187,6 +258,11 @@ enum UserFilterField implements FilterField<UserEntity> {
                 String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(UserEntity_.name).get(NameEntity_.formatted),
                     value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            return root.get(UserEntity_.name).get(NameEntity_.formatted);
         }
 
     },
@@ -198,6 +274,11 @@ enum UserFilterField implements FilterField<UserEntity> {
                     value, cb);
         }
 
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            return root.get(UserEntity_.name).get(NameEntity_.familyName);
+        }
+
     },
     NAME_GIVENNAME("name.givenname") {
         @Override
@@ -205,6 +286,11 @@ enum UserFilterField implements FilterField<UserEntity> {
                 String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(UserEntity_.name).get(NameEntity_.givenName),
                     value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            return root.get(UserEntity_.name).get(NameEntity_.givenName);
         }
 
     },
@@ -216,6 +302,11 @@ enum UserFilterField implements FilterField<UserEntity> {
                     value, cb);
         }
 
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            return root.get(UserEntity_.name).get(NameEntity_.middleName);
+        }
+
     },
     NAME_HONORIFICPREFIX("name.honorificprefix") {
         @Override
@@ -225,6 +316,11 @@ enum UserFilterField implements FilterField<UserEntity> {
                     root.get(UserEntity_.name).get(NameEntity_.honorificPrefix), value, cb);
         }
 
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            return root.get(UserEntity_.name).get(NameEntity_.honorificPrefix);
+        }
+
     },
     NAME_HONORIFICSUFFIX("name.honorificsuffix") {
         @Override
@@ -232,6 +328,11 @@ enum UserFilterField implements FilterField<UserEntity> {
                 String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(
                     root.get(UserEntity_.name).get(NameEntity_.honorificSuffix), value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            return root.get(UserEntity_.name).get(NameEntity_.honorificSuffix);
         }
 
     },
@@ -244,6 +345,11 @@ enum UserFilterField implements FilterField<UserEntity> {
             return constraint.createPredicateForStringField(join.get(EmailEntity_.value), value, cb);
         }
 
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
+
     },
     EMAILS_VALUE("emails.value") {
         @Override
@@ -252,6 +358,11 @@ enum UserFilterField implements FilterField<UserEntity> {
 
             SetJoin<UserEntity, EmailEntity> join = createOrGetJoin("emails", root, UserEntity_.emails);
             return constraint.createPredicateForStringField(join.get(EmailEntity_.value), value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
         }
 
     },
@@ -270,6 +381,11 @@ enum UserFilterField implements FilterField<UserEntity> {
                     emailType, cb);
         }
 
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
+
     },
     EMAILS_PRIMARY("emails.primary") {
         @Override
@@ -281,6 +397,11 @@ enum UserFilterField implements FilterField<UserEntity> {
                     Boolean.valueOf(value), cb);
         }
 
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
+
     },
     PHONENUMBERS("phoneNumbers") {
         @Override
@@ -290,6 +411,11 @@ enum UserFilterField implements FilterField<UserEntity> {
                     UserEntity_.phoneNumbers);
             return constraint.createPredicateForStringField(join.get(PhoneNumberEntity_.value), value, cb);
         }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
     },
     PHONENUMBERS_VALUE("phonenumbers.value") {
         @Override
@@ -298,6 +424,11 @@ enum UserFilterField implements FilterField<UserEntity> {
             SetJoin<UserEntity, PhoneNumberEntity> join = createOrGetJoin("phoneNumbers", root,
                     UserEntity_.phoneNumbers);
             return constraint.createPredicateForStringField(join.get(PhoneNumberEntity_.value), value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
         }
     },
     PHONENUMBERS_TYPE("phonenumbers.type") {
@@ -315,6 +446,11 @@ enum UserFilterField implements FilterField<UserEntity> {
             return constraint.createPredicateForPhoneNumberTypeField(join.get(PhoneNumberEntity_.type),
                     phoneNumberType, cb);
         }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
     },
     IMS("ims") {
         @Override
@@ -324,6 +460,11 @@ enum UserFilterField implements FilterField<UserEntity> {
             return constraint.createPredicateForStringField(join.get(ImEntity_.value), value, cb);
 
         }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
     },
     IMS_VALUE("ims.value") {
         @Override
@@ -331,6 +472,11 @@ enum UserFilterField implements FilterField<UserEntity> {
                 String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, ImEntity> join = createOrGetJoin("ims", root, UserEntity_.ims);
             return constraint.createPredicateForStringField(join.get(ImEntity_.value), value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
         }
 
     },
@@ -348,6 +494,11 @@ enum UserFilterField implements FilterField<UserEntity> {
             return constraint.createPredicateForImTypeField(join.get(ImEntity_.type),
                     imType, cb);
         }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
     },
     PHOTOS("photos") {
         @Override
@@ -357,6 +508,11 @@ enum UserFilterField implements FilterField<UserEntity> {
             return constraint.createPredicateForStringField(join.get(PhotoEntity_.value), value, cb);
 
         }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
     },
     PHOTOS_VALUE("photos.value") {
         @Override
@@ -365,6 +521,11 @@ enum UserFilterField implements FilterField<UserEntity> {
             SetJoin<UserEntity, PhotoEntity> join = createOrGetJoin("photos", root, UserEntity_.photos);
             return constraint.createPredicateForStringField(join.get(PhotoEntity_.value), value, cb);
 
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
         }
     },
     PHOTOS_TYPE("photos.type") {
@@ -381,6 +542,11 @@ enum UserFilterField implements FilterField<UserEntity> {
             return constraint.createPredicateForPhotoTypeField(join.get(PhotoEntity_.type),
                     photoType, cb);
         }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
     },
     ADDRESS_REGION("address.region") {
         @Override
@@ -388,6 +554,11 @@ enum UserFilterField implements FilterField<UserEntity> {
             SetJoin<UserEntity, AddressEntity> join = createOrGetJoin("addresses", root,
                     UserEntity_.addresses);
             return constraint.createPredicateForStringField(join.get(AddressEntity_.region), value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
         }
     },
     ADDRESS_STREETADDRESS("address.streetaddress") {
@@ -397,6 +568,11 @@ enum UserFilterField implements FilterField<UserEntity> {
                     UserEntity_.addresses);
             return constraint.createPredicateForStringField(join.get(AddressEntity_.streetAddress), value, cb);
         }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
     },
     ADDRESS_FORMATTED("address.formatted") {
         @Override
@@ -404,6 +580,11 @@ enum UserFilterField implements FilterField<UserEntity> {
             SetJoin<UserEntity, AddressEntity> join = createOrGetJoin("addresses", root,
                     UserEntity_.addresses);
             return constraint.createPredicateForStringField(join.get(AddressEntity_.formatted), value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
         }
     },
     ADDRESS_POSTALCODE("address.postalcode") {
@@ -413,6 +594,11 @@ enum UserFilterField implements FilterField<UserEntity> {
                     UserEntity_.addresses);
             return constraint.createPredicateForStringField(join.get(AddressEntity_.postalCode), value, cb);
         }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
     },
     ADDRESS_LOCALITY("address.locality") {
         @Override
@@ -420,6 +606,11 @@ enum UserFilterField implements FilterField<UserEntity> {
             SetJoin<UserEntity, AddressEntity> join = createOrGetJoin("addresses", root,
                     UserEntity_.addresses);
             return constraint.createPredicateForStringField(join.get(AddressEntity_.locality), value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
         }
     },
     ADDRESS_TYPE("address.type") {
@@ -435,6 +626,11 @@ enum UserFilterField implements FilterField<UserEntity> {
             return constraint.createPredicateForAddressTypeField(join.get(AddressEntity_.type),
                     addressType, cb);
         }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
     },
     ADDRESS_COUNTRY("address.country") {
         @Override
@@ -442,6 +638,11 @@ enum UserFilterField implements FilterField<UserEntity> {
             SetJoin<UserEntity, AddressEntity> join = createOrGetJoin("addresses", root,
                     UserEntity_.addresses);
             return constraint.createPredicateForStringField(join.get(AddressEntity_.country), value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
         }
     },
     ENTITLEMENTS("entitlements") {
@@ -452,6 +653,11 @@ enum UserFilterField implements FilterField<UserEntity> {
                     UserEntity_.entitlements);
             return constraint.createPredicateForStringField(join.get(EntitlementsEntity_.value), value, cb);
         }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
     },
     ENTITLEMENTS_VALUE("entitlements.value") {
         @Override
@@ -460,6 +666,11 @@ enum UserFilterField implements FilterField<UserEntity> {
             SetJoin<UserEntity, EntitlementsEntity> join = createOrGetJoin("entitlements", root,
                     UserEntity_.entitlements);
             return constraint.createPredicateForStringField(join.get(EntitlementsEntity_.value), value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
         }
     },
     ROLES("roles") {
@@ -470,6 +681,11 @@ enum UserFilterField implements FilterField<UserEntity> {
                     UserEntity_.roles);
             return constraint.createPredicateForStringField(join.get(RolesEntity_.value), value, cb);
         }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
     },
     ROLES_VALUE("roles.value") {
         @Override
@@ -478,6 +694,11 @@ enum UserFilterField implements FilterField<UserEntity> {
             SetJoin<UserEntity, RolesEntity> join = createOrGetJoin("roles", root,
                     UserEntity_.roles);
             return constraint.createPredicateForStringField(join.get(RolesEntity_.value), value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
         }
     },
     X509CERTIFICATES("x509certificates") {
@@ -488,6 +709,11 @@ enum UserFilterField implements FilterField<UserEntity> {
                     UserEntity_.x509Certificates);
             return constraint.createPredicateForStringField(join.get(X509CertificateEntity_.value), value, cb);
         }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
     },
     X509CERTIFICATES_VALUE("x509certificates.value") {
         @Override
@@ -496,6 +722,11 @@ enum UserFilterField implements FilterField<UserEntity> {
             SetJoin<UserEntity, X509CertificateEntity> join = createOrGetJoin("x509Certificates", root,
                     UserEntity_.x509Certificates);
             return constraint.createPredicateForStringField(join.get(X509CertificateEntity_.value), value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
         }
     },
     GROUPS("groups") {
@@ -506,6 +737,11 @@ enum UserFilterField implements FilterField<UserEntity> {
                     UserEntity_.groups);
             return constraint.createPredicateForStringField(join.get(GroupEntity_.id), value, cb);
         }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
     },
     GROUPS_VALUE("groups.value") {
         @Override
@@ -515,6 +751,11 @@ enum UserFilterField implements FilterField<UserEntity> {
                     UserEntity_.groups);
             return constraint.createPredicateForStringField(join.get(GroupEntity_.id), value, cb);
         }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
     },
     GROUPS_DISPLAY("groups.display") {
         @Override
@@ -523,6 +764,11 @@ enum UserFilterField implements FilterField<UserEntity> {
             SetJoin<UserEntity, GroupEntity> join = createOrGetJoinForGroups("groups", root,
                     UserEntity_.groups);
             return constraint.createPredicateForStringField(join.get(GroupEntity_.displayName), value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
         }
     };
 
@@ -538,6 +784,10 @@ enum UserFilterField implements FilterField<UserEntity> {
 
     private UserFilterField(String name) {
         this.name = name;
+    }
+
+    protected RuntimeException handleSortByFieldNotSupported(String fieldName) {
+        throw new RuntimeException("Sorting by " + fieldName + " is not supported yet");
     }
 
     @Override

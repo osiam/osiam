@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -105,6 +106,14 @@ public abstract class FilterParser<T extends InternalIdSkeleton> {
 
         return predicates.get(0);
     }
+
+    public Expression<?> createSortByField(String sortBy, Root<T> root) {
+        FilterField<T> filterField = getFilterField(sortBy);
+
+        return filterField.createSortByField(root, entityManager.getCriteriaBuilder());
+    }
+
+    protected abstract FilterField<T> getFilterField(String sortBy);
 
     protected abstract FilterChain<T> createFilterChain(String filter);
 

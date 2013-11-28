@@ -91,14 +91,7 @@ public abstract class ResourceDao<T extends InternalIdSkeleton> {
         Expression<?> sortByField = resourceRoot.get(getDefaultSortByField());
 
         if (sortBy != null && !sortBy.isEmpty()) {
-
-            String[] sortSplit = sortBy.split("\\.");
-
-            if (sortBy.length() == 1) {
-                sortByField = resourceRoot.get(sortSplit[0]);
-            } else if (sortSplit.length == 2) {
-                sortByField = resourceRoot.get(sortSplit[0]).get(sortSplit[1]);
-            }
+            sortByField = getFilterParser().createSortByField(sortBy, resourceRoot);
         }
 
         // default order is ascending

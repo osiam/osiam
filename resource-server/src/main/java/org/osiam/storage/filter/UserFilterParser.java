@@ -38,4 +38,9 @@ public class UserFilterParser extends FilterParser<UserEntity> {
         return new UserSimpleFilterChain(entityManager.getCriteriaBuilder(), extensionDao, filter, numberPadder);
     }
 
+    @Override
+    protected FilterField<UserEntity> getFilterField(String sortBy) {
+        return UserFilterField.valueOf(sortBy);
+    }
+
 }

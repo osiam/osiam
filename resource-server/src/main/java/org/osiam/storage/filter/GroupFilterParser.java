@@ -34,4 +34,9 @@ public class GroupFilterParser extends FilterParser<GroupEntity> {
         return new GroupSimpleFilterChain(entityManager.getCriteriaBuilder(), filter);
     }
 
+    @Override
+    protected FilterField<GroupEntity> getFilterField(String sortBy) {
+        return GroupFilterField.valueOf(sortBy);
+    }
+
 }
