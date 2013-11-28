@@ -25,9 +25,9 @@ package org.osiam.resources.helper
 
 import javax.persistence.EntityManager
 
-import org.osiam.storage.filter.FilterConstraint
-import org.osiam.storage.filter.UserFilterParser
-import org.osiam.storage.filter.UserSimpleFilterChain
+import org.osiam.storage.query.FilterConstraint
+import org.osiam.storage.query.UserFilterParser
+import org.osiam.storage.query.UserSimpleFilterChain
 
 import spock.lang.Ignore
 import spock.lang.Specification
