@@ -37,6 +37,11 @@ public class NumberPadder {
     private static final BigInteger BIG_OFFSET = new BigInteger(OFFSET);
     private static final int PAD_LENGTH = OFFSET.length();
 
+    /**
+     * Adds an offset and padding to a number
+     * @param value the number as {@link String}
+     * @return
+     */
     public String pad(String value) {
         String integralPart = value;
         String fractionalPart = "";
@@ -46,8 +51,8 @@ public class NumberPadder {
             fractionalPart = value.substring(indexOfDecimalSeperator);
         }
 
-        // if we have a negativ number ("-" at the first position) we will add 0.
-        // If we have a positiv number we will add -1. For this we use the indexOf
+        // if we have a negative number ("-" at the first position) we will add 0.
+        // If we have a positive number we will add -1. For this we use the indexOf
         if (integralPart.length() > (PAD_LENGTH + integralPart.indexOf("-"))) {
             throw new IllegalArgumentException("The given value has more than " + (PAD_LENGTH - 1) + " digits.");
         }
@@ -60,6 +65,11 @@ public class NumberPadder {
         return integralPart + fractionalPart;
     }
 
+    /**
+     * Removes the offset and padding from a number
+     * @param value the padded number as {@link String}
+     * @return
+     */
     public String unpad(String value) {
         BigDecimal decimalValue = new BigDecimal(value);
         BigDecimal returnDecimalValue = new BigDecimal(decimalValue.toBigInteger().subtract(BIG_OFFSET));
