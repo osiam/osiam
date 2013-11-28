@@ -40,7 +40,7 @@ public class NumberPadder {
      * Adds an offset and padding to a number
      *
      * @param value the number as {@link String}
-     * @return
+     * @return the padded string with the added offset.
      */
     public String pad(String value) {
         String integralPart = value;
@@ -52,8 +52,8 @@ public class NumberPadder {
             fractionalPart = value.substring(indexOfDecimalSeparator);
         }
 
-        // if we have a negative number ("-" at the first position) we will add 0.
-        // If we have a positive number we will add -1. For this we use the indexOf
+        // The max allowed length of the integral part depends on the presence of a '-' as first character.
+        // If it is present 21 characters are allowed, otherwise 20 (This is done by applying indexOf magic).
         if (integralPart.length() > (PAD_LENGTH + integralPart.indexOf("-"))) {
             throw new IllegalArgumentException("The given value has more than " + (PAD_LENGTH - 1) + " digits.");
         }
@@ -68,14 +68,14 @@ public class NumberPadder {
      * Removes the offset and padding from a number
      *
      * @param value the padded number as {@link String}
-     * @return
+     * @return the number decreased by offset and leading '0's removed
      */
     public String unpad(String value) {
         BigDecimal decimalValue = new BigDecimal(value);
         BigDecimal returnDecimalValue = new BigDecimal(decimalValue.toBigInteger().subtract(BIG_OFFSET));
         BigDecimal signum = new BigDecimal(returnDecimalValue.signum());
-        BigDecimal addition = decimalValue.remainder(BigDecimal.ONE).multiply(signum);
-        returnDecimalValue = returnDecimalValue.add(addition);
+        BigDecimal fractionalPart = decimalValue.remainder(BigDecimal.ONE).multiply(signum);
+        returnDecimalValue = returnDecimalValue.add(fractionalPart);
         return returnDecimalValue.toString();
     }
 }
