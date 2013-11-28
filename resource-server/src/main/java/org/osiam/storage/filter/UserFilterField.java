@@ -13,16 +13,34 @@ import javax.persistence.criteria.SetJoin;
 import javax.persistence.metamodel.SetAttribute;
 
 import org.joda.time.format.ISODateTimeFormat;
+import org.osiam.storage.entities.AddressEntity;
+import org.osiam.storage.entities.AddressEntity.CanonicalAddressTypes;
+import org.osiam.storage.entities.AddressEntity_;
 import org.osiam.storage.entities.EmailEntity;
 import org.osiam.storage.entities.EmailEntity.CanonicalEmailTypes;
+import org.osiam.storage.entities.EnterpriseEntity_;
+import org.osiam.storage.entities.EntitlementsEntity;
+import org.osiam.storage.entities.EntitlementsEntity_;
+import org.osiam.storage.entities.GroupEntity;
+import org.osiam.storage.entities.ImEntity.CanonicalImTypes;
+import org.osiam.storage.entities.InternalIdSkeleton;
+import org.osiam.storage.entities.PhoneNumberEntity.CanonicalPhoneNumberTypes;
 import org.osiam.storage.entities.EmailEntity_;
+import org.osiam.storage.entities.ImEntity;
 import org.osiam.storage.entities.ImEntity_;
 import org.osiam.storage.entities.MetaEntity_;
 import org.osiam.storage.entities.NameEntity_;
+import org.osiam.storage.entities.PhoneNumberEntity;
 import org.osiam.storage.entities.PhoneNumberEntity_;
+import org.osiam.storage.entities.PhotoEntity;
+import org.osiam.storage.entities.RolesEntity;
+import org.osiam.storage.entities.PhotoEntity.CanonicalPhotoTypes;
 import org.osiam.storage.entities.PhotoEntity_;
+import org.osiam.storage.entities.RolesEntity_;
 import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.entities.UserEntity_;
+import org.osiam.storage.entities.X509CertificateEntity;
+import org.osiam.storage.entities.X509CertificateEntity_;
 
 enum UserFilterField implements FilterField<UserEntity> {
     EXTERNALID("externalid") {
@@ -96,6 +114,14 @@ enum UserFilterField implements FilterField<UserEntity> {
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(UserEntity_.title), value, cb);
+        }
+
+    },
+    USERTYPE("usertype") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
+                String value, CriteriaBuilder cb) {
+            return constraint.createPredicateForStringField(root.get(UserEntity_.userType), value, cb);
         }
 
     },
@@ -206,7 +232,6 @@ enum UserFilterField implements FilterField<UserEntity> {
         }
 
     },
-
     EMAILS_TYPE("emails.type") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
@@ -234,49 +259,75 @@ enum UserFilterField implements FilterField<UserEntity> {
         }
 
     },
-
     PHONENUMBERS("phoneNumbers") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            SetJoin<UserEntity, EmailEntity> join = createOrGetJoin("phoneNumbers", root, UserEntity_.emails);
+            SetJoin<UserEntity, PhoneNumberEntity> join = createOrGetJoin("phoneNumbers", root, UserEntity_.phoneNumbers);
             return constraint.createPredicateForStringField(join.get(PhoneNumberEntity_.value), value, cb);
         }
     },
-
     PHONENUMBERS_VALUE("phonenumbers.value") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            SetJoin<UserEntity, EmailEntity> join = createOrGetJoin("phoneNumbers", root, UserEntity_.emails);
+            SetJoin<UserEntity, PhoneNumberEntity> join = createOrGetJoin("phoneNumbers", root, UserEntity_.phoneNumbers);
             return constraint.createPredicateForStringField(join.get(PhoneNumberEntity_.value), value, cb);
         }
     },
-
+    PHONENUMBERS_TYPE("phonenumbers.type") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
+                String value, CriteriaBuilder cb) {
+            CanonicalPhoneNumberTypes phoneNumberType;
+            if (constraint == FilterConstraint.PRESENT && (value == null || value.isEmpty())) {
+                phoneNumberType = null;
+            } else {
+                phoneNumberType = CanonicalPhoneNumberTypes.valueOf(value);
+            }
+            SetJoin<UserEntity, PhoneNumberEntity> join = createOrGetJoin("phoneNumbers", root, UserEntity_.phoneNumbers);
+            return constraint.createPredicateForPhoneNumberTypeField(join.get(PhoneNumberEntity_.type),
+                    phoneNumberType, cb);
+        }
+    },
     IMS("ims") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            SetJoin<UserEntity, EmailEntity> join = createOrGetJoin("ims", root, UserEntity_.emails);
+            SetJoin<UserEntity, ImEntity> join = createOrGetJoin("ims", root, UserEntity_.ims);
             return constraint.createPredicateForStringField(join.get(ImEntity_.value), value, cb);
 
         }
     },
-
     IMS_VALUE("ims.value") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            SetJoin<UserEntity, EmailEntity> join = createOrGetJoin("ims", root, UserEntity_.emails);
+            SetJoin<UserEntity, ImEntity> join = createOrGetJoin("ims", root, UserEntity_.ims);
             return constraint.createPredicateForStringField(join.get(ImEntity_.value), value, cb);
         }
 
+    },
+    IMS_TYPE("ims.type") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
+                String value, CriteriaBuilder cb) {
+            CanonicalImTypes imType;
+            if (constraint == FilterConstraint.PRESENT && (value == null || value.isEmpty())) {
+                imType = null;
+            } else {
+                imType = CanonicalImTypes.valueOf(value);
+            }
+            SetJoin<UserEntity, ImEntity> join = createOrGetJoin("ims", root, UserEntity_.ims);
+            return constraint.createPredicateForImTypeField(join.get(ImEntity_.type),
+                    imType, cb);
+        }
     },
     PHOTOS("photos") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            SetJoin<UserEntity, EmailEntity> join = createOrGetJoin("photos", root, UserEntity_.emails);
+            SetJoin<UserEntity, PhotoEntity> join = createOrGetJoin("photos", root, UserEntity_.photos);
             return constraint.createPredicateForStringField(join.get(PhotoEntity_.value), value, cb);
 
         }
@@ -285,9 +336,140 @@ enum UserFilterField implements FilterField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            SetJoin<UserEntity, EmailEntity> join = createOrGetJoin("photos", root, UserEntity_.emails);
+            SetJoin<UserEntity, PhotoEntity> join = createOrGetJoin("photos", root, UserEntity_.photos);
             return constraint.createPredicateForStringField(join.get(PhotoEntity_.value), value, cb);
 
+        }
+    },
+    PHOTOS_TYPE("photos.type") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
+                String value, CriteriaBuilder cb) {
+            CanonicalPhotoTypes photoType;
+            if (constraint == FilterConstraint.PRESENT && (value == null || value.isEmpty())) {
+                photoType = null;
+            } else {
+                photoType = CanonicalPhotoTypes.valueOf(value);
+            }
+            SetJoin<UserEntity, PhotoEntity> join = createOrGetJoin("photos", root, UserEntity_.photos);
+            return constraint.createPredicateForPhotoTypeField(join.get(PhotoEntity_.type),
+                    photoType, cb);
+        }
+    },
+    ADDRESS_REGION("address.region"){
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
+            SetJoin<UserEntity, AddressEntity> join = createOrGetJoin("addresses", root,
+                    UserEntity_.addresses);
+            return constraint.createPredicateForStringField(join.get(AddressEntity_.region), value, cb);
+        }
+    },
+    ADDRESS_STREETADDRESS("address.streetaddress"){
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
+            SetJoin<UserEntity, AddressEntity> join = createOrGetJoin("addresses", root,
+                    UserEntity_.addresses);
+            return constraint.createPredicateForStringField(join.get(AddressEntity_.streetAddress), value, cb);
+        }
+    },
+    ADDRESS_FORMATTED("address.formatted"){
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
+            SetJoin<UserEntity, AddressEntity> join = createOrGetJoin("addresses", root,
+                    UserEntity_.addresses);
+            return constraint.createPredicateForStringField(join.get(AddressEntity_.formatted), value, cb);
+        }
+    },
+    ADDRESS_POSTALCODE("address.postalcode"){
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
+            SetJoin<UserEntity, AddressEntity> join = createOrGetJoin("addresses", root,
+                    UserEntity_.addresses);
+            return constraint.createPredicateForStringField(join.get(AddressEntity_.postalCode), value, cb);
+        }
+    },
+    ADDRESS_LOCALITY("address.locality"){
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
+            SetJoin<UserEntity, AddressEntity> join = createOrGetJoin("addresses", root,
+                    UserEntity_.addresses);
+            return constraint.createPredicateForStringField(join.get(AddressEntity_.locality), value, cb);
+        }
+    },
+    ADDRESS_TYPE("address.type"){
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
+            CanonicalAddressTypes addressType;
+            if (constraint == FilterConstraint.PRESENT && (value == null || value.isEmpty())) {
+                addressType = null;
+            } else {
+                addressType = CanonicalAddressTypes.valueOf(value);
+            }
+            SetJoin<UserEntity, AddressEntity> join = createOrGetJoin("addresses", root, UserEntity_.addresses);
+            return constraint.createPredicateForAddressTypeField(join.get(AddressEntity_.type),
+                    addressType, cb);
+        }
+    },
+    ADDRESS_COUNTRY("address.country"){
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
+            SetJoin<UserEntity, AddressEntity> join = createOrGetJoin("addresses", root,
+                    UserEntity_.addresses);
+            return constraint.createPredicateForStringField(join.get(AddressEntity_.country), value, cb);
+        }
+    },
+    ENTITLEMENTS("entitlements") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
+                String value, CriteriaBuilder cb) {
+            SetJoin<UserEntity, EntitlementsEntity> join = createOrGetJoin("entitlements", root,
+                    UserEntity_.entitlements);
+            return constraint.createPredicateForStringField(join.get(EntitlementsEntity_.value), value, cb);
+        }
+    },
+    ENTITLEMENTS_VALUE("entitlements.value") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
+                String value, CriteriaBuilder cb) {
+            SetJoin<UserEntity, EntitlementsEntity> join = createOrGetJoin("entitlements", root,
+                    UserEntity_.entitlements);
+            return constraint.createPredicateForStringField(join.get(EntitlementsEntity_.value), value, cb);
+        }
+    },
+    ROLES("roles") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
+                String value, CriteriaBuilder cb) {
+            SetJoin<UserEntity, RolesEntity> join = createOrGetJoin("roles", root,
+                    UserEntity_.roles);
+            return constraint.createPredicateForStringField(join.get(RolesEntity_.value), value, cb);
+        }
+    },
+    ROLES_VALUE("roles.value") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
+                String value, CriteriaBuilder cb) {
+            SetJoin<UserEntity, RolesEntity> join = createOrGetJoin("roles", root,
+                    UserEntity_.roles);
+            return constraint.createPredicateForStringField(join.get(RolesEntity_.value), value, cb);
+        }
+    },
+    X509CERTIFICATES("x509certificates") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
+                String value, CriteriaBuilder cb) {
+            SetJoin<UserEntity, X509CertificateEntity> join = createOrGetJoin("x509Certificates", root,
+                    UserEntity_.x509Certificates);
+            return constraint.createPredicateForStringField(join.get(X509CertificateEntity_.value), value, cb);
+        }
+    },
+    X509CERTIFICATES_VALUE("x509certificates.value") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
+                String value, CriteriaBuilder cb) {
+            SetJoin<UserEntity, X509CertificateEntity> join = createOrGetJoin("x509Certificates", root,
+                    UserEntity_.x509Certificates);
+            return constraint.createPredicateForStringField(join.get(X509CertificateEntity_.value), value, cb);
         }
     };
 
@@ -330,4 +512,5 @@ enum UserFilterField implements FilterField<UserEntity> {
         }
         return join;
     }
+
 }
