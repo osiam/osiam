@@ -110,17 +110,16 @@ enum GroupFilterField implements FilterField<GroupEntity> {
     @SuppressWarnings("unchecked")
     protected <T> SetJoin<GroupEntity, T> createOrGetJoin(String alias, Root<GroupEntity> root,
             SetAttribute<GroupEntity, T> attribute) {
-        SetJoin<GroupEntity, T> join = null;
+
         for (Join<GroupEntity, ?> currentJoin : root.getJoins()) {
             if (currentJoin.getAlias().equals(alias)) {
-                join = (SetJoin<GroupEntity, T>) currentJoin;
-                break;
+                return (SetJoin<GroupEntity, T>) currentJoin;
             }
         }
-        if (join == null) {
-            join = root.join(attribute, JoinType.LEFT);
-            join.alias(alias);
-        }
+
+        final SetJoin<GroupEntity, T> join = root.join(attribute, JoinType.LEFT);
+        join.alias(alias);
+
         return join;
     }
 

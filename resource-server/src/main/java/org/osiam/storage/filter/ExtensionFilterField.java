@@ -55,8 +55,10 @@ public class ExtensionFilterField {
                 return (SetJoin<UserEntity, T>) currentJoin;
             }
         }
+
         final SetJoin<UserEntity, T> join = root.join(attribute, JoinType.LEFT);
         join.alias(alias);
+
         return join;
     }
 }

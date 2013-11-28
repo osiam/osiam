@@ -18,24 +18,24 @@ import org.osiam.storage.entities.AddressEntity.CanonicalAddressTypes;
 import org.osiam.storage.entities.AddressEntity_;
 import org.osiam.storage.entities.EmailEntity;
 import org.osiam.storage.entities.EmailEntity.CanonicalEmailTypes;
-import org.osiam.storage.entities.EnterpriseEntity_;
+import org.osiam.storage.entities.EmailEntity_;
 import org.osiam.storage.entities.EntitlementsEntity;
 import org.osiam.storage.entities.EntitlementsEntity_;
 import org.osiam.storage.entities.GroupEntity;
-import org.osiam.storage.entities.ImEntity.CanonicalImTypes;
-import org.osiam.storage.entities.InternalIdSkeleton;
-import org.osiam.storage.entities.PhoneNumberEntity.CanonicalPhoneNumberTypes;
-import org.osiam.storage.entities.EmailEntity_;
+import org.osiam.storage.entities.GroupEntity_;
 import org.osiam.storage.entities.ImEntity;
+import org.osiam.storage.entities.ImEntity.CanonicalImTypes;
 import org.osiam.storage.entities.ImEntity_;
+import org.osiam.storage.entities.InternalIdSkeleton;
 import org.osiam.storage.entities.MetaEntity_;
 import org.osiam.storage.entities.NameEntity_;
 import org.osiam.storage.entities.PhoneNumberEntity;
+import org.osiam.storage.entities.PhoneNumberEntity.CanonicalPhoneNumberTypes;
 import org.osiam.storage.entities.PhoneNumberEntity_;
 import org.osiam.storage.entities.PhotoEntity;
-import org.osiam.storage.entities.RolesEntity;
 import org.osiam.storage.entities.PhotoEntity.CanonicalPhotoTypes;
 import org.osiam.storage.entities.PhotoEntity_;
+import org.osiam.storage.entities.RolesEntity;
 import org.osiam.storage.entities.RolesEntity_;
 import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.entities.UserEntity_;
@@ -474,6 +474,15 @@ enum UserFilterField implements FilterField<UserEntity> {
                     UserEntity_.x509Certificates);
             return constraint.createPredicateForStringField(join.get(X509CertificateEntity_.value), value, cb);
         }
+    },
+    GROUPS("groups") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
+                String value, CriteriaBuilder cb) {
+            SetJoin<UserEntity, GroupEntity> join = createOrGetJoinForGroups("groups", root,
+                    UserEntity_.groups);
+            return constraint.createPredicateForStringField(join.get(GroupEntity_.id), value, cb);
+        }
     };
 
     private static final Map<String, UserFilterField> stringToEnum = new HashMap<>();
@@ -502,17 +511,32 @@ enum UserFilterField implements FilterField<UserEntity> {
     @SuppressWarnings("unchecked")
     protected <T> SetJoin<UserEntity, T> createOrGetJoin(String alias, Root<UserEntity> root,
             SetAttribute<UserEntity, T> attribute) {
-        SetJoin<UserEntity, T> join = null;
+
         for (Join<UserEntity, ?> currentJoin : root.getJoins()) {
             if (currentJoin.getAlias().equals(alias)) {
-                join = (SetJoin<UserEntity, T>) currentJoin;
-                break;
+                return (SetJoin<UserEntity, T>) currentJoin;
             }
         }
-        if (join == null) {
-            join = root.join(attribute, JoinType.LEFT);
-            join.alias(alias);
+
+        SetJoin<UserEntity, T> join = root.join(attribute, JoinType.LEFT);
+        join.alias(alias);
+
+        return join;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected SetJoin<UserEntity, GroupEntity> createOrGetJoinForGroups(String alias, Root<UserEntity> root,
+            SetAttribute<InternalIdSkeleton, GroupEntity> attribute) {
+
+        for (Join<UserEntity, ?> currentJoin : root.getJoins()) {
+            if (currentJoin.getAlias().equals(alias)) {
+                return (SetJoin<UserEntity, GroupEntity>) currentJoin;
+            }
         }
+
+        final SetJoin<UserEntity, GroupEntity> join = root.join(attribute, JoinType.LEFT);
+        join.alias(alias);
+
         return join;
     }
 
