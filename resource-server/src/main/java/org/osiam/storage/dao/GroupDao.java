@@ -23,20 +23,21 @@
 
 package org.osiam.storage.dao;
 
+import java.util.Set;
+import java.util.logging.Level;
+
+import javax.inject.Inject;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Root;
+
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.scim.Constants;
 import org.osiam.storage.entities.GroupEntity;
-import org.osiam.storage.entities.GroupEntity_;
 import org.osiam.storage.query.FilterParser;
 import org.osiam.storage.query.GroupFilterParser;
+import org.osiam.storage.query.GroupQueryField;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.inject.Inject;
-import javax.persistence.metamodel.SingularAttribute;
-
-import java.util.Set;
-import java.util.logging.Level;
 
 
 @Repository
@@ -97,7 +98,7 @@ public class GroupDao extends ResourceDao<GroupEntity> implements GenericDao<Gro
     }
 
     @Override
-    protected SingularAttribute<? super GroupEntity, ?> getDefaultSortByField() {
-        return GroupEntity_.displayName;
+    protected Expression<?> getDefaultSortByField(Root<GroupEntity> root) {
+        return GroupQueryField.DISPLAYNAME.createSortByField(root, em.getCriteriaBuilder());
     }
 }

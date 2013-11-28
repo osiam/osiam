@@ -23,22 +23,23 @@
 
 package org.osiam.storage.dao;
 
+import java.util.Set;
+import java.util.logging.Level;
+
+import javax.inject.Inject;
+import javax.persistence.Query;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Root;
+
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.scim.Constants;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.UserEntity;
-import org.osiam.storage.entities.UserEntity_;
 import org.osiam.storage.query.FilterParser;
 import org.osiam.storage.query.UserFilterParser;
+import org.osiam.storage.query.UserQueryField;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.inject.Inject;
-import javax.persistence.Query;
-import javax.persistence.metamodel.SingularAttribute;
-
-import java.util.Set;
-import java.util.logging.Level;
 
 @Repository
 @Transactional
@@ -104,8 +105,8 @@ public class UserDao extends ResourceDao<UserEntity> implements GenericDao<UserE
     }
 
     @Override
-    protected SingularAttribute<? super UserEntity, ?> getDefaultSortByField() {
-        return UserEntity_.userName;
+    protected Expression<?> getDefaultSortByField(Root<UserEntity> root) {
+        return UserQueryField.USERNAME.createSortByField(root, em.getCriteriaBuilder());
     }
 
 }

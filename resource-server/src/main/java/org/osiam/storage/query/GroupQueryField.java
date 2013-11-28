@@ -43,7 +43,7 @@ import org.osiam.storage.entities.InternalIdSkeleton;
 import org.osiam.storage.entities.InternalIdSkeleton_;
 import org.osiam.storage.entities.MetaEntity_;
 
-enum GroupQueryField implements QueryField<GroupEntity> {
+public enum GroupQueryField implements QueryField<GroupEntity> {
     EXTERNALID("externalid") {
         @Override
         public Predicate addFilter(Root<GroupEntity> root,

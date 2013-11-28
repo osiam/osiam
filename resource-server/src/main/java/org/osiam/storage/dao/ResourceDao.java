@@ -37,7 +37,6 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
-import javax.persistence.metamodel.SingularAttribute;
 
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.storage.entities.InternalIdSkeleton;
@@ -88,7 +87,7 @@ public abstract class ResourceDao<T extends InternalIdSkeleton> {
         resourceQuery.select(resourceRoot).where(
                 cb.in(resourceRoot.get(InternalIdSkeleton_.internalId)).value(internalIdQuery));
 
-        Expression<?> sortByField = resourceRoot.get(getDefaultSortByField());
+        Expression<?> sortByField = getDefaultSortByField(resourceRoot);
 
         if (sortBy != null && !sortBy.isEmpty()) {
             sortByField = getFilterParser().createSortByField(sortBy, resourceRoot);
@@ -128,7 +127,7 @@ public abstract class ResourceDao<T extends InternalIdSkeleton> {
         return total;
     }
 
-    protected abstract SingularAttribute<? super T, ?> getDefaultSortByField();
+    protected abstract Expression<?> getDefaultSortByField(Root<T> root);
 
     protected abstract FilterParser<T> getFilterParser();
 

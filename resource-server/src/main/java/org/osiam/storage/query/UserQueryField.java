@@ -66,7 +66,7 @@ import org.osiam.storage.entities.UserEntity_;
 import org.osiam.storage.entities.X509CertificateEntity;
 import org.osiam.storage.entities.X509CertificateEntity_;
 
-enum UserQueryField implements QueryField<UserEntity> {
+public enum UserQueryField implements QueryField<UserEntity> {
     EXTERNALID("externalid") {
         @Override
         public Predicate addFilter(Root<UserEntity> root,
