@@ -25,6 +25,9 @@ package org.osiam.resources.helper
 
 import javax.servlet.http.HttpServletRequest
 
+import org.osiam.storage.dao.ResourceDao
+
+import spock.lang.Ignore
 import spock.lang.Specification
 
 
@@ -33,6 +36,7 @@ class RequestParamHelperSpec extends Specification {
     def servletRequestMock = Mock(HttpServletRequest)
     def requestParamHelper = new RequestParamHelper()
 
+    @Ignore('default sort order is determined in ResourceDao now, move this test into dao specs')
     def "should exist default value if sortBy is null"() {
         given:
         servletRequestMock.getParameter("filter") >> "someFilter"
