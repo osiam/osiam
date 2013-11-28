@@ -127,7 +127,6 @@ public abstract class ResourceDao<T extends InternalIdSkeleton> {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> resourceQuery = cb.createQuery(Long.class);
         Root<T> resourceRoot = resourceQuery.from(clazz);
-        //  );
 
         resourceQuery.select(cb.count(resourceRoot)).where(cb.in(resourceRoot.get(InternalIdSkeleton_.internalId)).value(internalIdQuery));
 
