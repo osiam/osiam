@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.storage.filter;
+package org.osiam.storage.query;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -43,7 +43,7 @@ import org.osiam.storage.entities.InternalIdSkeleton;
 import org.osiam.storage.entities.InternalIdSkeleton_;
 import org.osiam.storage.entities.MetaEntity_;
 
-enum GroupFilterField implements FilterField<GroupEntity> {
+enum GroupQueryField implements QueryField<GroupEntity> {
     EXTERNALID("externalid") {
         @Override
         public Predicate addFilter(Root<GroupEntity> root,
@@ -139,17 +139,17 @@ enum GroupFilterField implements FilterField<GroupEntity> {
         }
     };
 
-    private static final Map<String, GroupFilterField> stringToEnum = new HashMap<>();
+    private static final Map<String, GroupQueryField> stringToEnum = new HashMap<>();
 
     static {
-        for (GroupFilterField filterField : values()) {
+        for (GroupQueryField filterField : values()) {
             stringToEnum.put(filterField.toString(), filterField);
         }
     }
 
     private final String name;
 
-    private GroupFilterField(String name) {
+    private GroupQueryField(String name) {
         this.name = name;
     }
 
@@ -158,7 +158,7 @@ enum GroupFilterField implements FilterField<GroupEntity> {
         return name;
     }
 
-    public static GroupFilterField fromString(String name) {
+    public static GroupQueryField fromString(String name) {
         return stringToEnum.get(name);
     }
 

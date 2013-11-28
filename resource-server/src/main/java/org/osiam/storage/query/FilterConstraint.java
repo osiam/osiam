@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.storage.filter;
+package org.osiam.storage.query;
 
 import java.util.Date;
 import java.util.Map;

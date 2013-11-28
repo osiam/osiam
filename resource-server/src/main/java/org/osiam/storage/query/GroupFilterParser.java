@@ -21,24 +21,22 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.storage.filter;
+package org.osiam.storage.query;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Predicate;
+import org.osiam.storage.entities.GroupEntity;
+import org.springframework.stereotype.Service;
 
-public enum Combiner {
-    AND {
-        @Override
-        public Predicate addFilter(CriteriaBuilder cb, Predicate leftTerm, Predicate rightTerm) {
-            return cb.and(leftTerm, rightTerm);
-        }
-    },
-    OR {
-        @Override
-        public Predicate addFilter(CriteriaBuilder cb, Predicate leftTerm, Predicate rightTerm) {
-            return cb.or(leftTerm, rightTerm);
-        }
-    };
+@Service
+public class GroupFilterParser extends FilterParser<GroupEntity> {
 
-    public abstract Predicate addFilter(CriteriaBuilder cb, Predicate leftTerm, Predicate rightTerm);
+    @Override
+    protected FilterChain<GroupEntity> createFilterChain(String filter) {
+        return new GroupSimpleFilterChain(entityManager.getCriteriaBuilder(), filter);
+    }
+
+    @Override
+    protected QueryField<GroupEntity> getFilterField(String sortBy) {
+        return GroupQueryField.valueOf(sortBy);
+    }
+
 }

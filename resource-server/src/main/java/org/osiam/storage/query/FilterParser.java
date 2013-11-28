@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.storage.filter;
+package org.osiam.storage.query;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -71,9 +71,9 @@ public abstract class FilterParser<T extends InternalIdSkeleton> {
             Matcher matcherCombined = COMBINED_FILTER_PATTERN.matcher(filterFragment);
             Matcher matcherSimple = SIMPLE_FILTER_PATTERN.matcher(filterFragment);
 
-            Combiner combiner = null;
+            FilterCombiner combiner = null;
             try {
-                combiner = Combiner.valueOf(filterFragment);
+                combiner = FilterCombiner.valueOf(filterFragment);
             } catch (IllegalArgumentException e) {
                 // safe to ignore - if the string is no combiner then we are not interested in it
             }
@@ -108,12 +108,12 @@ public abstract class FilterParser<T extends InternalIdSkeleton> {
     }
 
     public Expression<?> createSortByField(String sortBy, Root<T> root) {
-        FilterField<T> filterField = getFilterField(sortBy);
+        QueryField<T> filterField = getFilterField(sortBy);
 
         return filterField.createSortByField(root, entityManager.getCriteriaBuilder());
     }
 
-    protected abstract FilterField<T> getFilterField(String sortBy);
+    protected abstract QueryField<T> getFilterField(String sortBy);
 
     protected abstract FilterChain<T> createFilterChain(String filter);
 

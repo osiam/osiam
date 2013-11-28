@@ -27,8 +27,8 @@ import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.scim.Constants;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.GroupEntity_;
-import org.osiam.storage.filter.FilterParser;
-import org.osiam.storage.filter.GroupFilterParser;
+import org.osiam.storage.query.FilterParser;
+import org.osiam.storage.query.GroupFilterParser;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.storage.filter;
+package org.osiam.storage.query;
 
 import org.osiam.storage.dao.ExtensionDao;
 import org.osiam.storage.entities.ExtensionEntity;
@@ -44,9 +44,9 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
 
     private final FilterConstraint constraint;
 
-    private final FilterField<UserEntity> userFilterField;
+    private final QueryField<UserEntity> userFilterField;
 
-    private ExtensionFilterField extensionFilterField;
+    private ExtensionQueryField extensionFilterField;
 
     private final ExtensionDao extensionDao;
     private final CriteriaBuilder criteriaBuilder;
@@ -66,7 +66,7 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
 
         field = matcher.group(1).trim();
 
-        userFilterField = UserFilterField.fromString(field.toLowerCase());
+        userFilterField = UserQueryField.fromString(field.toLowerCase());
 
         // It's not a known user field, so try to build a extension filter
         if (userFilterField == null) {
@@ -79,7 +79,7 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
         value = matcher.group(3).trim().replace("\"", ""); // NOSONAR - no need to make constant for number
     }
 
-    private ExtensionFilterField getExtensionFilterField(String fieldString) {
+    private ExtensionQueryField getExtensionFilterField(String fieldString) {
         int lastIndexOf = fieldString.lastIndexOf('.');
         if (lastIndexOf == -1) {
             throw new IllegalArgumentException("Filtering not possible. Field '" + field + "' not available.");
@@ -94,7 +94,7 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
             throw new IllegalArgumentException("Filtering not possible. Field '" + field + "' not available.", ex);
         }
         final ExtensionFieldEntity fieldEntity = extension.getFieldForName(fieldName);
-        return new ExtensionFilterField(urn, fieldEntity, numberPadder);
+        return new ExtensionQueryField(urn, fieldEntity, numberPadder);
     }
 
     @Override

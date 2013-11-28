@@ -42,7 +42,7 @@ import javax.persistence.metamodel.SingularAttribute;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.storage.entities.InternalIdSkeleton;
 import org.osiam.storage.entities.InternalIdSkeleton_;
-import org.osiam.storage.filter.FilterParser;
+import org.osiam.storage.query.FilterParser;
 
 public abstract class ResourceDao<T extends InternalIdSkeleton> {
 

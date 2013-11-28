@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.storage.filter;
+package org.osiam.storage.query;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -66,7 +66,7 @@ import org.osiam.storage.entities.UserEntity_;
 import org.osiam.storage.entities.X509CertificateEntity;
 import org.osiam.storage.entities.X509CertificateEntity_;
 
-enum UserFilterField implements FilterField<UserEntity> {
+enum UserQueryField implements QueryField<UserEntity> {
     EXTERNALID("externalid") {
         @Override
         public Predicate addFilter(Root<UserEntity> root,
@@ -772,17 +772,17 @@ enum UserFilterField implements FilterField<UserEntity> {
         }
     };
 
-    private static final Map<String, UserFilterField> stringToEnum = new HashMap<>();
+    private static final Map<String, UserQueryField> stringToEnum = new HashMap<>();
 
     static {
-        for (UserFilterField filterField : values()) {
+        for (UserQueryField filterField : values()) {
             stringToEnum.put(filterField.toString(), filterField);
         }
     }
 
     private final String name;
 
-    private UserFilterField(String name) {
+    private UserQueryField(String name) {
         this.name = name;
     }
 
@@ -795,7 +795,7 @@ enum UserFilterField implements FilterField<UserEntity> {
         return name;
     }
 
-    public static UserFilterField fromString(String name) {
+    public static UserQueryField fromString(String name) {
         return stringToEnum.get(name);
     }
 

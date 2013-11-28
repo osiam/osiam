@@ -21,7 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.storage.filter;
+package org.osiam.storage.query;
 
 import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.storage.entities.*;
@@ -30,13 +30,13 @@ import org.osiam.storage.helper.NumberPadder;
 import javax.persistence.criteria.*;
 import javax.persistence.metamodel.SetAttribute;
 
-public class ExtensionFilterField {
+public class ExtensionQueryField {
 
     private final String urn;
     private final ExtensionFieldEntity field;
     private final NumberPadder numberPadder;
 
-    public ExtensionFilterField(String urn, ExtensionFieldEntity field, NumberPadder numberPadder) {
+    public ExtensionQueryField(String urn, ExtensionFieldEntity field, NumberPadder numberPadder) {
         this.urn = urn;
         this.field = field;
         this.numberPadder = numberPadder;

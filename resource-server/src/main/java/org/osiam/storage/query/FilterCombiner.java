@@ -21,18 +21,24 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.storage.filter;
+package org.osiam.storage.query;
 
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
-import org.osiam.storage.entities.InternalIdSkeleton;
+public enum FilterCombiner {
+    AND {
+        @Override
+        public Predicate addFilter(CriteriaBuilder cb, Predicate leftTerm, Predicate rightTerm) {
+            return cb.and(leftTerm, rightTerm);
+        }
+    },
+    OR {
+        @Override
+        public Predicate addFilter(CriteriaBuilder cb, Predicate leftTerm, Predicate rightTerm) {
+            return cb.or(leftTerm, rightTerm);
+        }
+    };
 
-public interface FilterField<T extends InternalIdSkeleton> {
-    Predicate addFilter(Root<T> root, FilterConstraint constraint, String value,
-            CriteriaBuilder cb);
-
-    Expression<?> createSortByField(Root<T> root, CriteriaBuilder cb);
+    public abstract Predicate addFilter(CriteriaBuilder cb, Predicate leftTerm, Predicate rightTerm);
 }

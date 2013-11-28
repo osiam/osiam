@@ -21,22 +21,18 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.storage.filter;
+package org.osiam.storage.query;
 
-import org.osiam.storage.entities.GroupEntity;
-import org.springframework.stereotype.Service;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
-@Service
-public class GroupFilterParser extends FilterParser<GroupEntity> {
+import org.osiam.storage.entities.InternalIdSkeleton;
 
-    @Override
-    protected FilterChain<GroupEntity> createFilterChain(String filter) {
-        return new GroupSimpleFilterChain(entityManager.getCriteriaBuilder(), filter);
-    }
+public interface QueryField<T extends InternalIdSkeleton> {
+    Predicate addFilter(Root<T> root, FilterConstraint constraint, String value,
+            CriteriaBuilder cb);
 
-    @Override
-    protected FilterField<GroupEntity> getFilterField(String sortBy) {
-        return GroupFilterField.valueOf(sortBy);
-    }
-
+    Expression<?> createSortByField(Root<T> root, CriteriaBuilder cb);
 }

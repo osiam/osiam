@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.osiam.storage.filter;
+package org.osiam.storage.query;
 
 import javax.inject.Inject;
 
@@ -39,8 +39,8 @@ public class UserFilterParser extends FilterParser<UserEntity> {
     }
 
     @Override
-    protected FilterField<UserEntity> getFilterField(String sortBy) {
-        return UserFilterField.valueOf(sortBy);
+    protected QueryField<UserEntity> getFilterField(String sortBy) {
+        return UserQueryField.valueOf(sortBy);
     }
 
 }

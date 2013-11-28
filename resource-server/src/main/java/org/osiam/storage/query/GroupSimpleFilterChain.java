@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.osiam.storage.filter;
+package org.osiam.storage.query;
 
 import java.util.regex.Matcher;
 
@@ -31,7 +31,7 @@ public class GroupSimpleFilterChain implements FilterChain<GroupEntity> {
     private final FilterConstraint constraint;
     private final String value;
 
-    private final GroupFilterField filterField;
+    private final GroupQueryField filterField;
     private final CriteriaBuilder criteriaBuilder;
 
     public GroupSimpleFilterChain(CriteriaBuilder criteriaBuilder, String filter) {
@@ -44,7 +44,7 @@ public class GroupSimpleFilterChain implements FilterChain<GroupEntity> {
         field = matcher.group(1).trim();
         constraint = FilterConstraint.stringToEnum.get(matcher.group(2)); // NOSONAR - no need to make constant for
                                                                           // number
-        filterField = GroupFilterField.fromString(field.toLowerCase());
+        filterField = GroupQueryField.fromString(field.toLowerCase());
 
         value = matcher.group(3).trim().replace("\"", ""); // NOSONAR - no need to make constant for number
     }
