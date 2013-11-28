@@ -483,6 +483,24 @@ enum UserFilterField implements FilterField<UserEntity> {
                     UserEntity_.groups);
             return constraint.createPredicateForStringField(join.get(GroupEntity_.id), value, cb);
         }
+    },
+    GROUPS_VALUE("groups.value") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
+                String value, CriteriaBuilder cb) {
+            SetJoin<UserEntity, GroupEntity> join = createOrGetJoinForGroups("groups", root,
+                    UserEntity_.groups);
+            return constraint.createPredicateForStringField(join.get(GroupEntity_.id), value, cb);
+        }
+    },
+    GROUPS_DISPLAY("groups.display") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
+                String value, CriteriaBuilder cb) {
+            SetJoin<UserEntity, GroupEntity> join = createOrGetJoinForGroups("groups", root,
+                    UserEntity_.groups);
+            return constraint.createPredicateForStringField(join.get(GroupEntity_.displayName), value, cb);
+        }
     };
 
     private static final Map<String, UserFilterField> stringToEnum = new HashMap<>();
