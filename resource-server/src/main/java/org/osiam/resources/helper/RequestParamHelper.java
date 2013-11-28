@@ -30,13 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.osiam.resources.scim.Constants;
 
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 15.05.13
- * Time: 13:25
- * To change this template use File | Settings | File Templates.
- */
 public class RequestParamHelper {
 
     public Map<String, Object> getRequestParameterValues(HttpServletRequest request) {
@@ -65,8 +58,12 @@ public class RequestParamHelper {
 
     private void validateCount(HttpServletRequest request, Map<String, Object> parameterMap) {
         int count = Constants.MAX_RESULT;
-        if (request.getParameter("count") != null) { count = Integer.parseInt(request.getParameter("count")); }
-        if (count <= 0) { throw new IllegalArgumentException("Negative count values are not allowed"); }
+        if (request.getParameter("count") != null) {
+            count = Integer.parseInt(request.getParameter("count"));
+        }
+        if (count <= 0) {
+            throw new IllegalArgumentException("Negative count values are not allowed");
+        }
         parameterMap.put("count", count);
     }
 }
