@@ -65,7 +65,7 @@ enum GroupFilterField implements FilterField<GroupEntity> {
             return constraint.createPredicateForStringField(root.get(GroupEntity_.displayName), value, cb);
         }
     },
-    MEMBERS("members"){
+    MEMBERS("members") {
 
         @Override
         public Predicate addFilter(Root<GroupEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
@@ -74,7 +74,7 @@ enum GroupFilterField implements FilterField<GroupEntity> {
             return constraint.createPredicateForStringField(join.get(InternalIdSkeleton_.id), value, cb);
         }
     },
-    MEMBERS_VALUE("members.value"){
+    MEMBERS_VALUE("members.value") {
 
         @Override
         public Predicate addFilter(Root<GroupEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
@@ -82,8 +82,7 @@ enum GroupFilterField implements FilterField<GroupEntity> {
                     GroupEntity_.members);
             return constraint.createPredicateForStringField(join.get(InternalIdSkeleton_.id), value, cb);
         }
-    }
-    ;
+    };
 
     private static final Map<String, GroupFilterField> stringToEnum = new HashMap<>();
 

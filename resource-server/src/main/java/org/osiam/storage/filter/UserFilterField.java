@@ -263,7 +263,8 @@ enum UserFilterField implements FilterField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            SetJoin<UserEntity, PhoneNumberEntity> join = createOrGetJoin("phoneNumbers", root, UserEntity_.phoneNumbers);
+            SetJoin<UserEntity, PhoneNumberEntity> join = createOrGetJoin("phoneNumbers", root,
+                    UserEntity_.phoneNumbers);
             return constraint.createPredicateForStringField(join.get(PhoneNumberEntity_.value), value, cb);
         }
     },
@@ -271,7 +272,8 @@ enum UserFilterField implements FilterField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            SetJoin<UserEntity, PhoneNumberEntity> join = createOrGetJoin("phoneNumbers", root, UserEntity_.phoneNumbers);
+            SetJoin<UserEntity, PhoneNumberEntity> join = createOrGetJoin("phoneNumbers", root,
+                    UserEntity_.phoneNumbers);
             return constraint.createPredicateForStringField(join.get(PhoneNumberEntity_.value), value, cb);
         }
     },
@@ -285,7 +287,8 @@ enum UserFilterField implements FilterField<UserEntity> {
             } else {
                 phoneNumberType = CanonicalPhoneNumberTypes.valueOf(value);
             }
-            SetJoin<UserEntity, PhoneNumberEntity> join = createOrGetJoin("phoneNumbers", root, UserEntity_.phoneNumbers);
+            SetJoin<UserEntity, PhoneNumberEntity> join = createOrGetJoin("phoneNumbers", root,
+                    UserEntity_.phoneNumbers);
             return constraint.createPredicateForPhoneNumberTypeField(join.get(PhoneNumberEntity_.type),
                     phoneNumberType, cb);
         }
@@ -356,7 +359,7 @@ enum UserFilterField implements FilterField<UserEntity> {
                     photoType, cb);
         }
     },
-    ADDRESS_REGION("address.region"){
+    ADDRESS_REGION("address.region") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, AddressEntity> join = createOrGetJoin("addresses", root,
@@ -364,7 +367,7 @@ enum UserFilterField implements FilterField<UserEntity> {
             return constraint.createPredicateForStringField(join.get(AddressEntity_.region), value, cb);
         }
     },
-    ADDRESS_STREETADDRESS("address.streetaddress"){
+    ADDRESS_STREETADDRESS("address.streetaddress") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, AddressEntity> join = createOrGetJoin("addresses", root,
@@ -372,7 +375,7 @@ enum UserFilterField implements FilterField<UserEntity> {
             return constraint.createPredicateForStringField(join.get(AddressEntity_.streetAddress), value, cb);
         }
     },
-    ADDRESS_FORMATTED("address.formatted"){
+    ADDRESS_FORMATTED("address.formatted") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, AddressEntity> join = createOrGetJoin("addresses", root,
@@ -380,7 +383,7 @@ enum UserFilterField implements FilterField<UserEntity> {
             return constraint.createPredicateForStringField(join.get(AddressEntity_.formatted), value, cb);
         }
     },
-    ADDRESS_POSTALCODE("address.postalcode"){
+    ADDRESS_POSTALCODE("address.postalcode") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, AddressEntity> join = createOrGetJoin("addresses", root,
@@ -388,7 +391,7 @@ enum UserFilterField implements FilterField<UserEntity> {
             return constraint.createPredicateForStringField(join.get(AddressEntity_.postalCode), value, cb);
         }
     },
-    ADDRESS_LOCALITY("address.locality"){
+    ADDRESS_LOCALITY("address.locality") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, AddressEntity> join = createOrGetJoin("addresses", root,
@@ -396,7 +399,7 @@ enum UserFilterField implements FilterField<UserEntity> {
             return constraint.createPredicateForStringField(join.get(AddressEntity_.locality), value, cb);
         }
     },
-    ADDRESS_TYPE("address.type"){
+    ADDRESS_TYPE("address.type") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
             CanonicalAddressTypes addressType;
@@ -410,7 +413,7 @@ enum UserFilterField implements FilterField<UserEntity> {
                     addressType, cb);
         }
     },
-    ADDRESS_COUNTRY("address.country"){
+    ADDRESS_COUNTRY("address.country") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, AddressEntity> join = createOrGetJoin("addresses", root,

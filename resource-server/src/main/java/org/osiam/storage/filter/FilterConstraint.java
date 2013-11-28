@@ -505,6 +505,6 @@ public enum FilterConstraint {
     public abstract Predicate createPredicateForImTypeField(Path<CanonicalImTypes> path, CanonicalImTypes value,
             CriteriaBuilder cb);
 
-    public abstract Predicate createPredicateForPhotoTypeField(Path<CanonicalPhotoTypes> path, CanonicalPhotoTypes value,
-            CriteriaBuilder cb);
+    public abstract Predicate createPredicateForPhotoTypeField(Path<CanonicalPhotoTypes> path,
+            CanonicalPhotoTypes value, CriteriaBuilder cb);
 }
