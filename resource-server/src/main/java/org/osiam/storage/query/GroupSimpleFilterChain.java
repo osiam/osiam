@@ -42,15 +42,18 @@ public class GroupSimpleFilterChain implements FilterChain<GroupEntity> {
 
         this.criteriaBuilder = criteriaBuilder;
         field = matcher.group(1).trim();
-        constraint = FilterConstraint.stringToEnum.get(matcher.group(2)); // NOSONAR - no need to make constant for
-                                                                          // number
+        constraint = FilterConstraint.stringToEnum.get(matcher.group(2)); // NOSONAR - not a magic number
         filterField = GroupQueryField.fromString(field.toLowerCase());
 
-        value = matcher.group(3).trim().replace("\"", ""); // NOSONAR - no need to make constant for number
+        value = matcher.group(3).trim().replace("\"", ""); // NOSONAR - not a magic number
     }
 
     @Override
     public Predicate createPredicateAndJoin(Root<GroupEntity> root) {
+        if (filterField == null) {
+            throw new IllegalArgumentException("Filtering not possible. Field '" + field + "' not available.");
+        }
+
         return filterField.addFilter(root, constraint, value, criteriaBuilder);
     }
 
