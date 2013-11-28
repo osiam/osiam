@@ -40,7 +40,7 @@ public class UserFilterParser extends FilterParser<UserEntity> {
 
     @Override
     protected QueryField<UserEntity> getFilterField(String sortBy) {
-        return UserQueryField.valueOf(sortBy);
+        return UserQueryField.fromString(sortBy.toLowerCase());
     }
 
 }

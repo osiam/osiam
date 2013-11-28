@@ -36,7 +36,7 @@ public class GroupFilterParser extends FilterParser<GroupEntity> {
 
     @Override
     protected QueryField<GroupEntity> getFilterField(String sortBy) {
-        return GroupQueryField.valueOf(sortBy);
+        return GroupQueryField.fromString(sortBy.toLowerCase());
     }
 
 }
