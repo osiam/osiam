@@ -110,6 +110,10 @@ public abstract class FilterParser<T extends InternalIdSkeleton> {
     public Expression<?> createSortByField(String sortBy, Root<T> root) {
         QueryField<T> filterField = getFilterField(sortBy);
 
+        if (filterField == null) {
+            throw new IllegalArgumentException("Sorting by " + sortBy + " is not suported.");
+        }
+
         return filterField.createSortByField(root, entityManager.getCriteriaBuilder());
     }
 
