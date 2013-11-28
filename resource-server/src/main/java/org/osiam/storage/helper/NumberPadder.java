@@ -39,7 +39,9 @@ public class NumberPadder {
 
     /**
      * Adds an offset and padding to a number
-     * @param value the number as {@link String}
+     * 
+     * @param value
+     *            the number as {@link String}
      * @return
      */
     public String pad(String value) {
@@ -66,7 +68,9 @@ public class NumberPadder {
 
     /**
      * Removes the offset and padding from a number
-     * @param value the padded number as {@link String}
+     * 
+     * @param value
+     *            the padded number as {@link String}
      * @return
      */
     public String unpad(String value) {
