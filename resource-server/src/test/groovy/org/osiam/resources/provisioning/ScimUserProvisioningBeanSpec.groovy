@@ -133,7 +133,7 @@ class ScimUserProvisioningBeanSpec extends Specification {
         1 * userDao.getById(idString) >> Mock(UserEntity)
     }
 
-    def 'replacing a user copies its unmodifieable values, i.e. internalId, meta and UUID'() {
+    def 'replacing a user copies its unmodifiable values, i.e. internalId, meta and UUID'() {
         given:
         def id = UUID.randomUUID()
         def idString = id.toString()
