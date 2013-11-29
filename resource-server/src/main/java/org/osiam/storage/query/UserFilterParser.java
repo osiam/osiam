@@ -17,6 +17,8 @@
 
 package org.osiam.storage.query;
 
+import java.util.Locale;
+
 import javax.inject.Inject;
 
 import org.osiam.storage.dao.ExtensionDao;
@@ -40,7 +42,7 @@ public class UserFilterParser extends FilterParser<UserEntity> {
 
     @Override
     protected QueryField<UserEntity> getFilterField(String sortBy) {
-        return UserQueryField.fromString(sortBy.toLowerCase());
+        return UserQueryField.fromString(sortBy.toLowerCase(Locale.ENGLISH));
     }
 
 }

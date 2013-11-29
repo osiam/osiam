@@ -101,11 +101,11 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
         // Decrease startIndex by 1 because scim pagination starts at 1 and JPA doesn't
         SearchResult<GroupEntity> result = getDao().search(filter, sortBy, sortOrder, count, startIndex - 1);
 
-        for (GroupEntity group : result.results) {
+        for (GroupEntity group : result.getResults()) {
             groups.add(groupConverter.toScim(group));
         }
 
-        return new SCIMSearchResult<>(groups, result.totalResults, count, startIndex, Constants.GROUP_CORE_SCHEMA);
+        return new SCIMSearchResult<>(groups, result.getTotalResults(), count, startIndex, Constants.GROUP_CORE_SCHEMA);
     }
 
     @Override

@@ -45,15 +45,16 @@ public class ExtensionQueryField {
     public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
             String value, CriteriaBuilder cb) {
 
+        String localeValue = value;
         if(field.getType() == ExtensionFieldType.INTEGER || field.getType() == ExtensionFieldType.DECIMAL) {
-            value = numberPadder.pad(value);
+            localeValue = numberPadder.pad(value);
         }
 
         final SetJoin<UserEntity, ExtensionFieldValueEntity> join = createOrGetJoin(aliasForUrn(urn),
                 root, UserEntity_.extensionFieldValues);
         Predicate filterPredicate = constraint.createPredicateForExtensionField(
                 join.get(ExtensionFieldValueEntity_.value),
-                value, field, cb);
+                localeValue, field, cb);
         Predicate joinOnPredicate = cb.equal(join.get(ExtensionFieldValueEntity_.extensionField)
                 .get(ExtensionFieldEntity_.internalId)
                 , field.getInternalId());
@@ -66,7 +67,7 @@ public class ExtensionQueryField {
             hashCode *= -1;
         }
 
-        return "extensionAlias" + String.valueOf(hashCode);
+        return "extensionAlias" + hashCode;
     }
 
     @SuppressWarnings("unchecked")

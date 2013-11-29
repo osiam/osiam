@@ -64,7 +64,7 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
     private PasswordEncoder passwordEncoder;
 
     @Inject
-    NumberPadder numberPadder;
+    private NumberPadder numberPadder;
 
     @Override
     protected GenericDao<UserEntity> getDao() {
@@ -126,12 +126,12 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
         // Decrease startIndex by 1 because scim pagination starts at 1 and JPA doesn't
         SearchResult<UserEntity> result = getDao().search(filter, sortBy, sortOrder, count, startIndex - 1);
 
-        for (UserEntity userEntity : result.results) {
+        for (UserEntity userEntity : result.getResults()) {
             User scimResultUser = userConverter.toScim(userEntity);
             users.add(User.Builder.generateForOutput(scimResultUser));
         }
 
-        return new SCIMSearchResult<>(users, result.totalResults, count, startIndex, Constants.USER_CORE_SCHEMA);
+        return new SCIMSearchResult<>(users, result.getTotalResults(), count, startIndex, Constants.USER_CORE_SCHEMA);
     }
 
     @Override
@@ -165,27 +165,35 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
             String fieldName = extensionField.getName();
             ExtensionFieldValueEntity extensionFieldValue = findExtensionFieldValue(extensionField, userEntity);
 
-            if (extensionFieldValue == null && !updatedExtension.isFieldPresent(fieldName)) {
+            boolean isFieldPresent = updatedExtension.isFieldPresent(fieldName);
+            if (extensionFieldValue == null && !isFieldPresent) {
                 continue;
-            } else if (extensionFieldValue == null && updatedExtension.isFieldPresent(fieldName)) {
+            } else if (extensionFieldValue == null && isFieldPresent) {
                 extensionFieldValue = new ExtensionFieldValueEntity();
-            } else if (extensionFieldValue != null && !updatedExtension.isFieldPresent(fieldName)) {
+            } else if (extensionFieldValue != null && !isFieldPresent) {
                 continue;
             }
 
-            String newValue = updatedExtension.getField(fieldName, ExtensionFieldType.STRING);
+            String newValue = getNewExtensionValue(extensionField, updatedExtension, fieldName);
             if (newValue == null) {
                 continue;
-            }
-
-            if(extensionField.getType() == ExtensionFieldType.INTEGER || extensionField.getType() == ExtensionFieldType.DECIMAL) {
-                newValue = numberPadder.pad(newValue);
             }
 
             extensionFieldValue.setValue(newValue);
             extensionFieldValue.setExtensionField(extensionField);
             userEntity.addOrUpdateExtensionValue(extensionFieldValue);
         }
+    }
+
+    private String getNewExtensionValue(ExtensionFieldEntity extensionField, Extension updatedExtension,
+            String fieldName) {
+        String newValue = updatedExtension.getField(fieldName, ExtensionFieldType.STRING);
+        if (newValue != null &&
+                (extensionField.getType() == ExtensionFieldType.INTEGER
+                || extensionField.getType() == ExtensionFieldType.DECIMAL)) {
+            newValue = numberPadder.pad(newValue);
+        }
+        return newValue;
     }
 
     private ExtensionFieldValueEntity findExtensionFieldValue(ExtensionFieldEntity extensionField, UserEntity userEntity) {
@@ -209,5 +217,3 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
     }
 
 }
-
-

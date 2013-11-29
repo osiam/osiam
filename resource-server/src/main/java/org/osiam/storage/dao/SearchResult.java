@@ -6,11 +6,19 @@ import java.util.List;
 
 public class SearchResult<T extends InternalIdSkeleton> {
 
-    public final List<T> results;
-    public final long totalResults;
+    private final List<T> results;
+    private final long totalResults;
 
     public SearchResult(List<T> results, long totalResults) {
         this.results = results;
         this.totalResults = totalResults;
+    }
+
+    public List<T> getResults(){
+        return results;
+    }
+
+    public long getTotalResults(){
+        return totalResults;
     }
 }

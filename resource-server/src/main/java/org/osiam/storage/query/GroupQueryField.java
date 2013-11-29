@@ -61,8 +61,7 @@ public enum GroupQueryField implements QueryField<GroupEntity> {
         public Predicate addFilter(Root<GroupEntity> root,
                 FilterConstraint constraint, String value, CriteriaBuilder cb) {
             Date date = ISODateTimeFormat.dateTimeParser().parseDateTime(value).toDate();
-            return constraint.createPredicateForDateField(root.get(GroupEntity_.meta).get(MetaEntity_.created),
-                    date, cb);
+            return constraint.createPredicateForDateField(root.get(GroupEntity_.meta).get(MetaEntity_.created), date, cb);  // NOSONAR - XEntity_.X will be filled by JPA provider
         }
 
         @Override
@@ -76,8 +75,7 @@ public enum GroupQueryField implements QueryField<GroupEntity> {
                 FilterConstraint constraint, String value, CriteriaBuilder cb) {
             Date date = ISODateTimeFormat.dateTimeParser().parseDateTime(value).toDate();
             return constraint.createPredicateForDateField(
-                    root.get(GroupEntity_.meta).get(MetaEntity_.lastModified),
-                    date, cb);
+                    root.get(GroupEntity_.meta).get(MetaEntity_.lastModified), date, cb); // NOSONAR - XEntity_.X will be filled by JPA provider
         }
 
         @Override
@@ -90,7 +88,7 @@ public enum GroupQueryField implements QueryField<GroupEntity> {
         public Predicate addFilter(Root<GroupEntity> root,
                 FilterConstraint constraint, String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(GroupEntity_.meta)
-                    .get(MetaEntity_.location), value, cb);
+                    .get(MetaEntity_.location), value, cb);  // NOSONAR - XEntity_.X will be filled by JPA provider
         }
 
         @Override
@@ -102,7 +100,7 @@ public enum GroupQueryField implements QueryField<GroupEntity> {
         @Override
         public Predicate addFilter(Root<GroupEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            return constraint.createPredicateForStringField(root.get(GroupEntity_.displayName), value, cb);
+            return constraint.createPredicateForStringField(root.get(GroupEntity_.displayName), value, cb);  // NOSONAR - XEntity_.X will be filled by JPA provider
         }
 
         @Override
@@ -114,8 +112,7 @@ public enum GroupQueryField implements QueryField<GroupEntity> {
 
         @Override
         public Predicate addFilter(Root<GroupEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
-            SetJoin<GroupEntity, InternalIdSkeleton> join = createOrGetJoin("members", root,
-                    GroupEntity_.members);
+            SetJoin<GroupEntity, InternalIdSkeleton> join = createOrGetJoin("members", root, GroupEntity_.members); // NOSONAR - XEntity_.X will be filled by JPA provider
             return constraint.createPredicateForStringField(join.get(InternalIdSkeleton_.id), value, cb);
         }
 
@@ -139,11 +136,11 @@ public enum GroupQueryField implements QueryField<GroupEntity> {
         }
     };
 
-    private static final Map<String, GroupQueryField> stringToEnum = new HashMap<>();
+    private static final Map<String, GroupQueryField> STRING_TO_ENUM = new HashMap<>();
 
     static {
         for (GroupQueryField filterField : values()) {
-            stringToEnum.put(filterField.toString(), filterField);
+            STRING_TO_ENUM.put(filterField.toString(), filterField);
         }
     }
 
@@ -159,11 +156,11 @@ public enum GroupQueryField implements QueryField<GroupEntity> {
     }
 
     public static GroupQueryField fromString(String name) {
-        return stringToEnum.get(name);
+        return STRING_TO_ENUM.get(name);
     }
 
     protected RuntimeException handleSortByFieldNotSupported(String fieldName) {
-        throw new RuntimeException("Sorting by " + fieldName + " is not supported yet");
+        throw new RuntimeException("Sorting by " + fieldName + " is not supported yet");// NOSONAR - will be removed after implementing
     }
 
     @SuppressWarnings("unchecked")

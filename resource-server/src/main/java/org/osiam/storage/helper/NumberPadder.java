@@ -47,14 +47,14 @@ public class NumberPadder {
         String fractionalPart = "";
 
         if (value.contains(".")) {
-            int indexOfDecimalSeparator = value.indexOf(".");
+            int indexOfDecimalSeparator = value.indexOf('.');
             integralPart = value.substring(0, indexOfDecimalSeparator);
             fractionalPart = value.substring(indexOfDecimalSeparator);
         }
 
         // The max allowed length of the integral part depends on the presence of a '-' as first character.
         // If it is present 21 characters are allowed, otherwise 20 (This is done by applying indexOf magic).
-        if (integralPart.length() > (PAD_LENGTH + integralPart.indexOf("-"))) {
+        if (integralPart.length() > (PAD_LENGTH + integralPart.indexOf('-'))) {
             throw new IllegalArgumentException("The given value has more than " + (PAD_LENGTH - 1) + " digits.");
         }
 

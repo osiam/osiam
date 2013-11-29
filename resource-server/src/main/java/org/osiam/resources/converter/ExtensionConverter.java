@@ -46,7 +46,7 @@ public class ExtensionConverter implements Converter<Set<Extension>, Set<Extensi
     private ExtensionDao extensionDao;
 
     @Inject
-    NumberPadder numberPadder;
+    private NumberPadder numberPadder;
 
     @Override
     public Set<ExtensionFieldValueEntity> fromScim(Set<Extension> extensions) {
