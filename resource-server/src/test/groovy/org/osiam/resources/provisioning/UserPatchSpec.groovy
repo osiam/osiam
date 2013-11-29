@@ -38,6 +38,7 @@ import org.osiam.storage.entities.EmailEntity
 import org.osiam.storage.entities.EntitlementsEntity
 import org.osiam.storage.entities.ExtensionEntity
 import org.osiam.storage.entities.ExtensionFieldEntity
+import org.osiam.storage.entities.ExtensionFieldValueEntity
 import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.ImEntity
 import org.osiam.storage.entities.NameEntity
@@ -46,6 +47,7 @@ import org.osiam.storage.entities.PhotoEntity
 import org.osiam.storage.entities.RolesEntity
 import org.osiam.storage.entities.UserEntity
 import org.osiam.storage.entities.X509CertificateEntity
+import org.osiam.storage.helper.NumberPadder
 import org.springframework.security.authentication.encoding.PasswordEncoder
 
 import spock.lang.Specification
@@ -56,17 +58,40 @@ class UserPatchSpec extends Specification {
     UserConverter userConverter = Mock()
     PasswordEncoder passwordEncoder = Mock()
     ExtensionDao extensionDao = Mock()
+    NumberPadder numberPadder = Mock()
 
     SCIMUserProvisioningBean scimUserProvisioningBean = new SCIMUserProvisioningBean(userDao: userDao,
-            userConverter: userConverter, passwordEncoder: passwordEncoder, extensionDao: extensionDao)
+            userConverter: userConverter, passwordEncoder: passwordEncoder, extensionDao: extensionDao,
+            numberPadder: numberPadder)
 
     def uuid = UUID.randomUUID()
     def uuidAsString = uuid.toString()
+    def extensionUrn = 'irrelevant'
+    def extensionFieldStringName = 'stringField'
+    def extensionFieldIntName = 'intField'
+    def extensionFieldDecimalName = 'decimalField'
+    ExtensionFieldEntity extensionFieldString
+    ExtensionFieldEntity extensionFieldInt
+    ExtensionFieldEntity extensionFieldDecimal
+    ExtensionEntity extensionEntity
     UserEntity entity = createEntityWithInternalId()
 
     def setup() {
         userDao.update(_) >> entity
         userConverter.fromScim(_) >> entity
+
+        extensionFieldString = new ExtensionFieldEntity(name: extensionFieldStringName, type: ExtensionFieldType.STRING)
+        extensionFieldInt = new ExtensionFieldEntity(name: extensionFieldIntName, type: ExtensionFieldType.INTEGER)
+        extensionFieldDecimal = new ExtensionFieldEntity(name: extensionFieldDecimalName, type: ExtensionFieldType.DECIMAL)
+
+        extensionEntity = new ExtensionEntity(urn: extensionUrn,
+                fields: [extensionFieldString, extensionFieldInt, extensionFieldDecimal] as Set)
+
+        extensionFieldString.setExtension(extensionEntity)
+        extensionFieldInt.setExtension(extensionEntity)
+        extensionFieldDecimal.setExtension(extensionEntity)
+
+        extensionDao.getExtensionByUrn(extensionUrn) >> extensionEntity
     }
 
     def 'should delete single attribute of a multi-value-attribute list'() {
@@ -337,19 +362,15 @@ class UserPatchSpec extends Specification {
         entity.getPassword() == hashedPassword
     }
 
-    def 'updating a user with extension set works' (){
+    def 'updating a user with an added extension field value works' (){
         given:
-        def urn = 'irrelevant'
-        def extensionFieldName = 'irrelevant'
         def extensionFieldValue = 'irrelevant'
 
-        Extension extension = new Extension(urn)
-        extension.addOrUpdateField(extensionFieldName, extensionFieldValue)
+        Extension extension = new Extension(extensionUrn)
+        extension.addOrUpdateField(extensionFieldStringName, extensionFieldValue)
         User user = new User.Builder('userName').addExtension(extension).build()
 
         userDao.getById(uuidAsString) >> entity
-        ExtensionFieldEntity extensionField = new ExtensionFieldEntity(name: extensionFieldName, type: ExtensionFieldType.STRING)
-        extensionDao.getExtensionByUrn(urn) >> new ExtensionEntity(urn: urn, fields: [extensionField] as Set)
 
         when:
         scimUserProvisioningBean.update(uuidAsString, user)
@@ -359,6 +380,83 @@ class UserPatchSpec extends Specification {
         entity.getUserExtensions().first().value == extensionFieldValue
     }
 
+    def 'updating a user with an extension ignores unknown fields' (){
+        given:
+        def extensionFieldNameUnknown = 'unknown'
+        def extensionFieldValue = 'irrelevant'
+
+        Extension extension = new Extension(extensionUrn)
+        extension.addOrUpdateField(extensionFieldNameUnknown, extensionFieldValue)
+        User user = new User.Builder('userName').addExtension(extension).build()
+
+        userDao.getById(uuidAsString) >> entity
+
+        when:
+        scimUserProvisioningBean.update(uuidAsString, user)
+
+        then:
+        entity.getUserExtensions().size() == 0
+    }
+
+    def 'updating a user ignores existing extension field values if no value is supplied for update for this field' (){
+        given:
+        def extensionFieldValue = 'irrelevant'
+        ExtensionFieldValueEntity extensionFieldValueEntity = new ExtensionFieldValueEntity(
+                extensionField: extensionFieldInt, user: entity, value: '123')
+        entity.extensionFieldValues = [extensionFieldValueEntity] as Set
+
+        Extension extension = new Extension(extensionUrn)
+        extension.addOrUpdateField(extensionFieldStringName, extensionFieldValue)
+        User user = new User.Builder('userName').addExtension(extension).build()
+
+        userDao.getById(uuidAsString) >> entity
+
+        when:
+        scimUserProvisioningBean.update(uuidAsString, user)
+
+        then:
+        entity.getUserExtensions().size() == 2
+        extensionFieldValueEntity.value == '123'
+    }
+
+    def 'updating a user ignores extension field value if it is null' (){
+        given:
+        def extensionFieldValue = 'irrelevant'
+
+        Extension extension = Mock()
+        extension.getUrn() >> extensionUrn
+        extension.isFieldPresent(extensionFieldStringName) >> true
+        extension.getField(extensionFieldStringName, ExtensionFieldType.STRING) >> null
+        User user = new User.Builder('userName').addExtension(extension).build()
+
+        userDao.getById(uuidAsString) >> entity
+
+        when:
+        scimUserProvisioningBean.update(uuidAsString, user)
+
+        then:
+        entity.getUserExtensions().size() == 0
+    }
+
+    def 'updating an extension field with type integer or decimal pads the supplied value'() {
+        given:
+        def extensionFieldValueInt = 123G
+        def extensionFieldValueDecimal = 123.45G
+
+        Extension extension = new Extension(extensionUrn)
+        extension.addOrUpdateField(extensionFieldIntName, extensionFieldValueInt)
+        extension.addOrUpdateField(extensionFieldDecimalName, extensionFieldValueDecimal)
+        User user = new User.Builder('userName').addExtension(extension).build()
+
+        userDao.getById(uuidAsString) >> entity
+
+        when:
+        scimUserProvisioningBean.update(uuidAsString, user)
+
+        then:
+        1 * numberPadder.pad('123')
+        1 * numberPadder.pad('123.45')
+    }
 
     def 'should ignore update when simple-attribute is in meta'() {
         given:
