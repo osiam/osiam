@@ -35,6 +35,7 @@ import org.osiam.storage.entities.UserEntity
 import spock.lang.Specification
 
 class GroupPatchSpec extends Specification {
+    static IRRELEVANT = 'irrelevant'
     def groupDao = Mock(GroupDao)
     def metaConverter = new MetaConverter()
     def groupConverter = new GroupConverter(metaConverter:metaConverter)
@@ -81,7 +82,7 @@ class GroupPatchSpec extends Specification {
 
     private void addListsToEntity(GroupEntity entity) {
         entity.addMember(new GroupEntity(id: groupId, displayName: "group"))
-        entity.addMember(new UserEntity(id: userId, displayName: "user"))
+        entity.addMember(new UserEntity(id: userId, displayName: "user", userName: IRRELEVANT))
     }
 
 
@@ -121,7 +122,7 @@ class GroupPatchSpec extends Specification {
     def "should delete and add a value to a multi-value-attribute list"() {
         def members = new HashSet()
         def newUuid = UUID.randomUUID().toString()
-        members.add(new MultiValuedAttribute.Builder().setValue(newUuid).setDisplay("narf").build())
+        members.add(new MultiValuedAttribute.Builder().setValue(newUuid).setDisplay(IRRELEVANT).build())
         members.add(new MultiValuedAttribute.Builder().setValue(userId.toString()).setOperation("delete").build())
         def group = new Group.Builder()
                 .setMembers(members)

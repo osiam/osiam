@@ -506,28 +506,19 @@ public class UserEntity extends InternalIdSkeleton {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (!super.equals(o)) {
+        if (o == null || getClass() != o.getClass()){
             return false;
         }
 
         UserEntity that = (UserEntity) o;
 
-        if (userName != null ? !userName.equals(that.userName) : that.userName != null) {
-            return false;
-        }
+        return userName.equals(that.userName);
 
-        return true;
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + (userName != null ? userName.hashCode() : 0);
-        return result;
+        return userName.hashCode();
     }
 
     @Override
