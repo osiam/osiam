@@ -43,18 +43,19 @@ public class ExtensionQueryField {
     }
 
     public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
-            String value, CriteriaBuilder cb) {
+                               String value, CriteriaBuilder cb) {
 
-        String localeValue = value;
-        if (field.getType() == ExtensionFieldType.INTEGER || field.getType() == ExtensionFieldType.DECIMAL) {
-            localeValue = numberPadder.pad(value);
+        if (constraint != FilterConstraint.PRESENT && (field.getType() == ExtensionFieldType.INTEGER ||
+                field.getType() == ExtensionFieldType.DECIMAL)) {
+
+            value = numberPadder.pad(value);  // NOSONAR - We want our modify our parameters
         }
 
         final SetJoin<UserEntity, ExtensionFieldValueEntity> join = createOrGetJoin(aliasForUrn(urn),
                 root, UserEntity_.extensionFieldValues);
         Predicate filterPredicate = constraint.createPredicateForExtensionField(
                 join.get(ExtensionFieldValueEntity_.value),
-                localeValue, field, cb);
+                value, field, cb);
         Predicate joinOnPredicate = cb.equal(join.get(ExtensionFieldValueEntity_.extensionField)
                 .get(ExtensionFieldEntity_.internalId)
                 , field.getInternalId());
@@ -72,7 +73,7 @@ public class ExtensionQueryField {
 
     @SuppressWarnings("unchecked")
     protected <T> SetJoin<UserEntity, T> createOrGetJoin(String alias, Root<UserEntity> root,
-            SetAttribute<UserEntity, T> attribute) {
+                                                         SetAttribute<UserEntity, T> attribute) {
 
         for (Join<UserEntity, ?> currentJoin : root.getJoins()) {
             if (currentJoin.getAlias().equals(alias)) {
