@@ -54,11 +54,11 @@ public class ExtensionQueryField {
         final SetJoin<UserEntity, ExtensionFieldValueEntity> join = createOrGetJoin(aliasForUrn(urn),
                 root, UserEntity_.extensionFieldValues);
         Predicate filterPredicate = constraint.createPredicateForExtensionField(
-                join.get(ExtensionFieldValueEntity_.value),
+                join.get(ExtensionFieldValueEntity_.value), // NOSONAR - XEntity_.X will be filled by JPA provider
                 value, field, cb);
         Predicate joinOnPredicate = cb.equal(join.get(ExtensionFieldValueEntity_.extensionField)
                 .get(ExtensionFieldEntity_.internalId)
-                , field.getInternalId());
+                , field.getInternalId()); // NOSONAR - XEntity_.X will be filled by JPA provider
         return cb.and(filterPredicate, joinOnPredicate);
     }
 

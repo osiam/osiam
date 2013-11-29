@@ -786,12 +786,12 @@ public enum UserQueryField implements QueryField<UserEntity> {
 
     private final String name;
 
-    private final static String EMAIL_ALIAS = "emails";
-    private final static String PHONENUMBERS_ALIAS = "phoneNumbers";
-    private final static String IMS_ALIAS = "ims";
-    private final static String PHOTOS_ALIAS = "photos";
-    private final static String ADDRESS_ALIAS = "addresses";
-    private final static String GROUPS_ALIAS = "groups";
+    private static final String EMAIL_ALIAS = "emails";
+    private static final String PHONENUMBERS_ALIAS = "phoneNumbers";
+    private static final String IMS_ALIAS = "ims";
+    private static final String PHOTOS_ALIAS = "photos";
+    private static final String ADDRESS_ALIAS = "addresses";
+    private static final String GROUPS_ALIAS = "groups";
 
     private UserQueryField(String name) {
         this.name = name;

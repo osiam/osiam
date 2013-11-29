@@ -209,8 +209,9 @@ public class ExtensionFieldEntity { // NOSONAR - will be constructed by jackson
 
         @Override
         public int hashCode() {
+            final int prime = 31;
             int result = type != null ? type.hashCode() : 0;
-            result = 31 * result + (constraint != null ? constraint.hashCode() : 0);
+            result = prime * result + (constraint != null ? constraint.hashCode() : 0);
             return result;
         }
     }

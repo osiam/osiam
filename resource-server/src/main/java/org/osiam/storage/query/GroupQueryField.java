@@ -61,7 +61,7 @@ public enum GroupQueryField implements QueryField<GroupEntity> {
         public Predicate addFilter(Root<GroupEntity> root,
                 FilterConstraint constraint, String value, CriteriaBuilder cb) {
             Date date = ISODateTimeFormat.dateTimeParser().parseDateTime(value).toDate();
-            return constraint.createPredicateForDateField(root.get(GroupEntity_.meta).get(MetaEntity_.created), date,
+            return constraint.createPredicateForDateField(root.get(GroupEntity_.meta).get(MetaEntity_.created), date,// NOSONAR
                     cb); // NOSONAR - XEntity_.X will be filled by JPA provider
         }
 
