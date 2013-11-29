@@ -24,6 +24,7 @@
 package org.osiam.storage.query;
 
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -484,16 +485,16 @@ public enum FilterConstraint {
         }
     };
 
-    static Map<String, FilterConstraint> stringToEnum = new ConcurrentHashMap<>();
+    private static Map<String, FilterConstraint> STRING_TO_ENUM = new ConcurrentHashMap<>();
 
     static {
         for (final FilterConstraint constraint : values()) {
-            stringToEnum.put(constraint.toString(), constraint);
+            STRING_TO_ENUM.put(constraint.toString(), constraint);
         }
     }
 
     public static FilterConstraint fromString(String name) {
-        return stringToEnum.get(name.toLowerCase());
+        return STRING_TO_ENUM.get(name.toLowerCase(Locale.ENGLISH));
     }
 
     @Override

@@ -39,7 +39,8 @@ public class NumberPadder {
     /**
      * Adds an offset and padding to a number
      *
-     * @param value the number as {@link String}
+     * @param value
+     *            the number as {@link String}
      * @return the padded string with the added offset.
      */
     public String pad(String value) {
@@ -47,14 +48,14 @@ public class NumberPadder {
         String fractionalPart = "";
 
         if (value.contains(".")) {
-            int indexOfDecimalSeparator = value.indexOf(".");
+            int indexOfDecimalSeparator = value.indexOf('.');
             integralPart = value.substring(0, indexOfDecimalSeparator);
             fractionalPart = value.substring(indexOfDecimalSeparator);
         }
 
         // The max allowed length of the integral part depends on the presence of a '-' as first character.
         // If it is present 21 characters are allowed, otherwise 20 (This is done by applying indexOf magic).
-        if (integralPart.length() > (PAD_LENGTH + integralPart.indexOf("-"))) {
+        if (integralPart.length() > (PAD_LENGTH + integralPart.indexOf('-'))) {
             throw new IllegalArgumentException("The given value has more than " + (PAD_LENGTH - 1) + " digits.");
         }
 
@@ -67,7 +68,8 @@ public class NumberPadder {
     /**
      * Removes the offset and padding from a number
      *
-     * @param value the padded number as {@link String}
+     * @param value
+     *            the padded number as {@link String}
      * @return the number decreased by offset and leading '0's removed
      */
     public String unpad(String value) {

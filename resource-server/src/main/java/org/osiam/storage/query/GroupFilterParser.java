@@ -23,6 +23,8 @@
 
 package org.osiam.storage.query;
 
+import java.util.Locale;
+
 import org.osiam.storage.entities.GroupEntity;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +38,7 @@ public class GroupFilterParser extends FilterParser<GroupEntity> {
 
     @Override
     protected QueryField<GroupEntity> getFilterField(String sortBy) {
-        return GroupQueryField.fromString(sortBy.toLowerCase());
+        return GroupQueryField.fromString(sortBy.toLowerCase(Locale.ENGLISH));
     }
 
 }

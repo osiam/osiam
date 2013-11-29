@@ -44,7 +44,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Service
-public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, GroupEntity> implements SCIMGroupProvisioning {
+public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, GroupEntity> implements
+        SCIMGroupProvisioning {
 
     private static final Logger LOGGER = Logger.getLogger(SCIMGroupProvisioningBean.class.getName());
 

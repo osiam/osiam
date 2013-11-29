@@ -57,7 +57,7 @@ public abstract class FilterParser<T extends InternalIdSkeleton> {
     }
 
     @PersistenceContext
-    protected EntityManager entityManager;
+    protected EntityManager entityManager; // NOSONAR - doesn't need to be private
 
     public Predicate createPredicateAndJoin(String filterString, Root<T> root) {
         List<String> filterFragments = new LinkedList<>();

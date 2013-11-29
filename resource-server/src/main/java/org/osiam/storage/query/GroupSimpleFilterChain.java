@@ -17,6 +17,7 @@
 
 package org.osiam.storage.query;
 
+import java.util.Locale;
 import java.util.regex.Matcher;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -42,8 +43,8 @@ public class GroupSimpleFilterChain implements FilterChain<GroupEntity> {
 
         this.criteriaBuilder = criteriaBuilder;
         field = matcher.group(1).trim();
-        constraint = FilterConstraint.stringToEnum.get(matcher.group(2)); // NOSONAR - not a magic number
-        filterField = GroupQueryField.fromString(field.toLowerCase());
+        constraint = FilterConstraint.fromString(matcher.group(2)); // NOSONAR - not a magic number
+        filterField = GroupQueryField.fromString(field.toLowerCase(Locale.ENGLISH));
 
         value = matcher.group(3).trim().replace("\"", ""); // NOSONAR - not a magic number
     }

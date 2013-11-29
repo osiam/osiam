@@ -126,7 +126,7 @@ public class NameEntity {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o) { // NOSONAR - Cyclomatic Complexity can be > 10
         if (this == o) {
             return true;
         }

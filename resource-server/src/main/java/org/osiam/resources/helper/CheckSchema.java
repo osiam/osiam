@@ -30,7 +30,6 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.osiam.resources.exceptions.SchemaUnknownException;
 import org.osiam.resources.scim.Constants;
 import org.osiam.resources.scim.Group;
-import org.osiam.resources.scim.Resource;
 import org.osiam.resources.scim.User;
 
 @Aspect
@@ -65,13 +64,13 @@ public class CheckSchema {
         if (group.getSchemas() == null || group.getSchemas().isEmpty()) {
             throw new SchemaUnknownException();
         }
-        
+
         for (String schema : group.getSchemas()) {
             if (Constants.GROUP_CORE_SCHEMA.equals(schema)) {
                 return;
             }
         }
-        
+
         throw new SchemaUnknownException();
     }
 
@@ -79,13 +78,13 @@ public class CheckSchema {
         if (user.getSchemas() == null || user.getSchemas().isEmpty()) {
             throw new SchemaUnknownException();
         }
-        
+
         for (String schema : user.getSchemas()) {
             if (Constants.USER_CORE_SCHEMA.equals(schema)) {
                 return;
             }
         }
-        
+
         throw new SchemaUnknownException();
     }
 }

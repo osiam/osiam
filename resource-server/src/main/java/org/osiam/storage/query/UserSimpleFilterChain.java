@@ -34,6 +34,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import java.util.Locale;
 import java.util.regex.Matcher;
 
 public class UserSimpleFilterChain implements FilterChain<UserEntity> {
@@ -52,8 +53,8 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
     private final CriteriaBuilder criteriaBuilder;
     private final NumberPadder numberPadder;
 
-
-    public UserSimpleFilterChain(CriteriaBuilder criteriaBuilder, ExtensionDao extensionDao, String filter, NumberPadder numberPadder) {
+    public UserSimpleFilterChain(CriteriaBuilder criteriaBuilder, ExtensionDao extensionDao, String filter,
+            NumberPadder numberPadder) {
         Matcher matcher = FilterParser.SIMPLE_FILTER_PATTERN.matcher(filter);
 
         if (!matcher.matches()) {
@@ -66,15 +67,16 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
 
         field = matcher.group(1).trim();
 
-        userFilterField = UserQueryField.fromString(field.toLowerCase());
+        userFilterField = UserQueryField.fromString(field.toLowerCase(Locale.ENGLISH));
 
         // It's not a known user field, so try to build a extension filter
         if (userFilterField == null) {
-            extensionFilterField = getExtensionFilterField(field.toLowerCase());
+            extensionFilterField = getExtensionFilterField(field.toLowerCase(Locale.ENGLISH));
         }
 
         String constraintName = matcher.group(2); // NOSONAR - no need to make constant for number
-        constraint = FilterConstraint.stringToEnum.get(constraintName);
+        constraint = FilterConstraint.fromString(constraintName);
+
 
         value = matcher.group(3).trim().replace("\"", ""); // NOSONAR - no need to make constant for number
     }

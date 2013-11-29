@@ -30,12 +30,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-
 /**
  * Defines a field in a scim-extension.
  */
 @Entity(name = "scim_extension_field")
-public class ExtensionFieldEntity {
+public class ExtensionFieldEntity { // NOSONAR - will be constructed by jackson
 
     @Id
     @GeneratedValue
@@ -91,11 +90,11 @@ public class ExtensionFieldEntity {
 
     @Column(name = "type")
     @Access(AccessType.PROPERTY)
-    private String getTypeAsString() {  // NOSONAR : This method is needed to serialize our type
-        return type.toString();         // NOSONAR : This method is needed to serialize our type
+    private String getTypeAsString() { // NOSONAR : This method is needed to serialize our type
+        return type.toString(); // NOSONAR : This method is needed to serialize our type
     }
 
-    private void setTypeAsString(String typeAsString) {  // NOSONAR : This method is needed to deserialize our type
+    private void setTypeAsString(String typeAsString) { // NOSONAR : This method is needed to deserialize our type
         type = ExtensionFieldType.valueOf(typeAsString); // NOSONAR : This method is needed to deserialize our type
     }
 
@@ -173,11 +172,11 @@ public class ExtensionFieldEntity {
             new ConstraintAndType(ExtensionFieldType.REFERENCE, "ge"),
             new ConstraintAndType(ExtensionFieldType.REFERENCE, "lt"),
             new ConstraintAndType(ExtensionFieldType.REFERENCE, "le")
-    ));
+            ));
 
-    private static class ConstraintAndType {
-        final ExtensionFieldType<?> type;
-        final String constraint;
+    private static class ConstraintAndType { // NOSONAR - class can be private
+        private final ExtensionFieldType<?> type;
+        private final String constraint;
 
         private ConstraintAndType(ExtensionFieldType<?> type, String constraint) {
             this.type = type;
@@ -186,13 +185,24 @@ public class ExtensionFieldEntity {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {// NOSONAR - false-positive from clover; if-expression is correct
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {// NOSONAR - false-positive from clover; if-expression is
+                                                          // correct
+                return false;
+            }
 
             ConstraintAndType that = (ConstraintAndType) o;
 
-            if (constraint != null ? !constraint.equals(that.constraint) : that.constraint != null) return false;
-            if (type != null ? !type.equals(that.type) : that.type != null) return false;
+            if (constraint != null ? !constraint.equals(that.constraint) : that.constraint != null) {// NOSONAR -
+                // false-positive from clover; if-expression is correct
+                return false;
+            }
+            if (type != null ? !type.equals(that.type) : that.type != null) {// NOSONAR - false-positive from clover;
+                                                                             // if-expression is correct
+                return false;
+            }
 
             return true;
         }
