@@ -60,9 +60,10 @@ public class ExtensionConverter implements Converter<Set<Extension>, Set<Extensi
                 if (extension.isFieldPresent(field.getName())) {
                     ExtensionFieldValueEntity value = new ExtensionFieldValueEntity();
 
-                    String typeCheckedStringValue = getTypeCheckedStringValue(field.getType(), field.getName(), extension);
+                    String typeCheckedStringValue = getTypeCheckedStringValue(field.getType(), field.getName(),
+                            extension);
 
-                    if(field.getType() == ExtensionFieldType.INTEGER || field.getType() == ExtensionFieldType.DECIMAL) {
+                    if (field.getType() == ExtensionFieldType.INTEGER || field.getType() == ExtensionFieldType.DECIMAL) {
                         typeCheckedStringValue = numberPadder.pad(typeCheckedStringValue);
                     }
 
@@ -107,7 +108,7 @@ public class ExtensionConverter implements Converter<Set<Extension>, Set<Extensi
             }
             String value = fieldValueEntity.getValue();
 
-            if(type == ExtensionFieldType.INTEGER || type == ExtensionFieldType.DECIMAL) {
+            if (type == ExtensionFieldType.INTEGER || type == ExtensionFieldType.DECIMAL) {
                 value = numberPadder.unpad(value);
             }
 
@@ -122,4 +123,3 @@ public class ExtensionConverter implements Converter<Set<Extension>, Set<Extensi
         extension.addOrUpdateField(fieldName, type.fromString(stringValue), type);
     }
 }
-

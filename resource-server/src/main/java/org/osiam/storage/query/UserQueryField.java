@@ -377,7 +377,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
                 emailType = CanonicalEmailTypes.valueOf(value);
             }
             SetJoin<UserEntity, EmailEntity> join = createOrGetJoin(EMAIL_ALIAS, root, UserEntity_.emails);
-            return constraint.createPredicateForEmailTypeField(join.get(EmailEntity_.type), // NOSONAR - XEntity_.X will be filled by JPA provider
+            return constraint.createPredicateForEmailTypeField(join.get(EmailEntity_.type), // NOSONAR - XEntity_.X will
+                                                                                            // be filled by JPA provider
                     emailType, cb);
         }
 
@@ -393,7 +394,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
                 String value, CriteriaBuilder cb) {
 
             SetJoin<UserEntity, EmailEntity> join = createOrGetJoin(EMAIL_ALIAS, root, UserEntity_.emails);
-            return constraint.createPredicateForBooleanField(join.get(EmailEntity_.primary), // NOSONAR - XEntity_.X will be filled by JPA provider
+            return constraint.createPredicateForBooleanField(join.get(EmailEntity_.primary), // NOSONAR - XEntity_.X
+                    // will be filled by JPA provider
                     Boolean.valueOf(value), cb);
         }
 
@@ -443,7 +445,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
             }
             SetJoin<UserEntity, PhoneNumberEntity> join = createOrGetJoin(PHONENUMBERS_ALIAS, root,
                     UserEntity_.phoneNumbers);
-            return constraint.createPredicateForPhoneNumberTypeField(join.get(PhoneNumberEntity_.type), // NOSONAR - XEntity_.X will be filled by JPA provider
+            return constraint.createPredicateForPhoneNumberTypeField(join.get(PhoneNumberEntity_.type), // NOSONAR -
+                    // XEntity_.X will be filled by JPA provider
                     phoneNumberType, cb);
         }
 
@@ -491,7 +494,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
                 imType = CanonicalImTypes.valueOf(value);
             }
             SetJoin<UserEntity, ImEntity> join = createOrGetJoin(IMS_ALIAS, root, UserEntity_.ims);
-            return constraint.createPredicateForImTypeField(join.get(ImEntity_.type), imType, cb);  // NOSONAR - XEntity_.X will be filled by JPA provider
+            return constraint.createPredicateForImTypeField(join.get(ImEntity_.type), imType, cb); // NOSONAR -
+            // XEntity_.X will be filled by JPA provider
         }
 
         @Override
@@ -504,7 +508,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, PhotoEntity> join = createOrGetJoin(PHOTOS_ALIAS, root, UserEntity_.photos);
-            return constraint.createPredicateForStringField(join.get(PhotoEntity_.value), value, cb); // NOSONAR - XEntity_.X will be filled by JPA provider
+            return constraint.createPredicateForStringField(join.get(PhotoEntity_.value), value, cb); // NOSONAR -
+            // XEntity_.X will be filled by JPA provider
 
         }
 
@@ -538,7 +543,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
                 photoType = CanonicalPhotoTypes.valueOf(value);
             }
             SetJoin<UserEntity, PhotoEntity> join = createOrGetJoin(PHOTOS_ALIAS, root, UserEntity_.photos);
-            return constraint.createPredicateForPhotoTypeField(join.get(PhotoEntity_.type), photoType, cb); // NOSONAR - XEntity_.X will be filled by JPA provider
+            return constraint.createPredicateForPhotoTypeField(join.get(PhotoEntity_.type), photoType, cb); // NOSONAR -
+            // XEntity_.X will be filled by JPA provider
         }
 
         @Override
@@ -792,7 +798,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
     }
 
     protected RuntimeException handleSortByFieldNotSupported(String fieldName) {
-        throw new RuntimeException("Sorting by " + fieldName + " is not supported yet"); // NOSONAR - will be removed after implementing
+        throw new RuntimeException("Sorting by " + fieldName + " is not supported yet"); // NOSONAR - will be removed
+                                                                                         // after implementing
     }
 
     @Override

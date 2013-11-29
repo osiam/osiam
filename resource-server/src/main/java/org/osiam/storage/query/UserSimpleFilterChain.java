@@ -53,8 +53,8 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
     private final CriteriaBuilder criteriaBuilder;
     private final NumberPadder numberPadder;
 
-
-    public UserSimpleFilterChain(CriteriaBuilder criteriaBuilder, ExtensionDao extensionDao, String filter, NumberPadder numberPadder) {
+    public UserSimpleFilterChain(CriteriaBuilder criteriaBuilder, ExtensionDao extensionDao, String filter,
+            NumberPadder numberPadder) {
         Matcher matcher = FilterParser.SIMPLE_FILTER_PATTERN.matcher(filter);
 
         if (!matcher.matches()) {

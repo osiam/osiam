@@ -30,7 +30,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-
 /**
  * Defines a field in a scim-extension.
  */
@@ -91,11 +90,11 @@ public class ExtensionFieldEntity { // NOSONAR - will be constructed by jackson
 
     @Column(name = "type")
     @Access(AccessType.PROPERTY)
-    private String getTypeAsString() {  // NOSONAR : This method is needed to serialize our type
-        return type.toString();         // NOSONAR : This method is needed to serialize our type
+    private String getTypeAsString() { // NOSONAR : This method is needed to serialize our type
+        return type.toString(); // NOSONAR : This method is needed to serialize our type
     }
 
-    private void setTypeAsString(String typeAsString) {  // NOSONAR : This method is needed to deserialize our type
+    private void setTypeAsString(String typeAsString) { // NOSONAR : This method is needed to deserialize our type
         type = ExtensionFieldType.valueOf(typeAsString); // NOSONAR : This method is needed to deserialize our type
     }
 
@@ -173,7 +172,7 @@ public class ExtensionFieldEntity { // NOSONAR - will be constructed by jackson
             new ConstraintAndType(ExtensionFieldType.REFERENCE, "ge"),
             new ConstraintAndType(ExtensionFieldType.REFERENCE, "lt"),
             new ConstraintAndType(ExtensionFieldType.REFERENCE, "le")
-    ));
+            ));
 
     private static class ConstraintAndType { // NOSONAR - class can be private
         private final ExtensionFieldType<?> type;
@@ -189,16 +188,19 @@ public class ExtensionFieldEntity { // NOSONAR - will be constructed by jackson
             if (this == o) {// NOSONAR - false-positive from clover; if-expression is correct
                 return true;
             }
-            if (o == null || getClass() != o.getClass()) {// NOSONAR - false-positive from clover; if-expression is correct
+            if (o == null || getClass() != o.getClass()) {// NOSONAR - false-positive from clover; if-expression is
+                                                          // correct
                 return false;
             }
 
             ConstraintAndType that = (ConstraintAndType) o;
 
-            if (constraint != null ? !constraint.equals(that.constraint) : that.constraint != null) {// NOSONAR - false-positive from clover; if-expression is correct
+            if (constraint != null ? !constraint.equals(that.constraint) : that.constraint != null) {// NOSONAR -
+                // false-positive from clover; if-expression is correct
                 return false;
             }
-            if (type != null ? !type.equals(that.type) : that.type != null) {// NOSONAR - false-positive from clover; if-expression is correct
+            if (type != null ? !type.equals(that.type) : that.type != null) {// NOSONAR - false-positive from clover;
+                                                                             // if-expression is correct
                 return false;
             }
 

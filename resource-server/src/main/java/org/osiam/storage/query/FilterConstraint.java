@@ -508,7 +508,7 @@ public enum FilterConstraint {
         this.name = constraint;
     }
 
-    static Map<String, FilterConstraint> getStringToEnumMap(){
+    static Map<String, FilterConstraint> getStringToEnumMap() {
         return STRING_TO_ENUM;
     }
 

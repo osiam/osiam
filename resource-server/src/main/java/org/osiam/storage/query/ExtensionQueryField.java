@@ -46,7 +46,7 @@ public class ExtensionQueryField {
             String value, CriteriaBuilder cb) {
 
         String localeValue = value;
-        if(field.getType() == ExtensionFieldType.INTEGER || field.getType() == ExtensionFieldType.DECIMAL) {
+        if (field.getType() == ExtensionFieldType.INTEGER || field.getType() == ExtensionFieldType.DECIMAL) {
             localeValue = numberPadder.pad(value);
         }
 

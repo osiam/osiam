@@ -14,11 +14,11 @@ public class SearchResult<T extends InternalIdSkeleton> {
         this.totalResults = totalResults;
     }
 
-    public List<T> getResults(){
+    public List<T> getResults() {
         return results;
     }
 
-    public long getTotalResults(){
+    public long getTotalResults() {
         return totalResults;
     }
 }
