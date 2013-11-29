@@ -23,21 +23,12 @@
 
 package org.osiam.storage.entities;
 
+import org.osiam.resources.scim.ExtensionFieldType;
+
+import javax.persistence.*;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
-
-import org.osiam.resources.scim.ExtensionFieldType;
 
 
 /**
@@ -171,6 +162,7 @@ public class ExtensionFieldEntity {
             new ConstraintAndType(ExtensionFieldType.BOOLEAN, "le"),
             new ConstraintAndType(ExtensionFieldType.DATE_TIME, "co"),
             new ConstraintAndType(ExtensionFieldType.DATE_TIME, "sw"),
+            new ConstraintAndType(ExtensionFieldType.BINARY, "eq"),
             new ConstraintAndType(ExtensionFieldType.BINARY, "co"),
             new ConstraintAndType(ExtensionFieldType.BINARY, "sw"),
             new ConstraintAndType(ExtensionFieldType.BINARY, "gt"),
