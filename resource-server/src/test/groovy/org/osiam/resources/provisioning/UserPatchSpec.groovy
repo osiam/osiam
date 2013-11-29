@@ -322,6 +322,44 @@ class UserPatchSpec extends Specification {
         entity.displayName == null
     }
 
+    def 'updating a user with a password set, encodes and stores the new password' (){
+        given:
+        def password = 'irrelevant'
+        def hashedPassword = 'hashed password'
+        def user = new User(userName: 'userName', displayName: 'displayName', password: password)
+        userDao.getById(uuidAsString) >> entity
+
+        when:
+        scimUserProvisioningBean.update(uuidAsString, user)
+
+        then:
+        1 * passwordEncoder.encodePassword(password, _) >> hashedPassword
+        entity.getPassword() == hashedPassword
+    }
+
+    def 'updating a user with extension set works' (){
+        given:
+        def urn = 'irrelevant'
+        def extensionFieldName = 'irrelevant'
+        def extensionFieldValue = 'irrelevant'
+
+        Extension extension = new Extension(urn)
+        extension.addOrUpdateField(extensionFieldName, extensionFieldValue)
+        User user = new User.Builder('userName').addExtension(extension).build()
+
+        userDao.getById(uuidAsString) >> entity
+        ExtensionFieldEntity extensionField = new ExtensionFieldEntity(name: extensionFieldName, type: ExtensionFieldType.STRING)
+        extensionDao.getExtensionByUrn(urn) >> new ExtensionEntity(urn: urn, fields: [extensionField] as Set)
+
+        when:
+        scimUserProvisioningBean.update(uuidAsString, user)
+
+        then:
+        entity.getUserExtensions().size() == 1
+        entity.getUserExtensions().first().value == extensionFieldValue
+    }
+
+
     def 'should ignore update when simple-attribute is in meta'() {
         given:
         def meta = new Meta.Builder(null, null).setAttributes(['displayName'] as Set).build()
