@@ -6,19 +6,11 @@ import java.util.List;
 
 public class SearchResult<T extends InternalIdSkeleton> {
 
-    private final List<T> results;
-    private final long totalResults;
+    public final List<T> results; // NOSONAR - field is final and can be public
+    public final long totalResults; // NOSONAR - field is final and can be public
 
     public SearchResult(List<T> results, long totalResults) {
         this.results = results;
         this.totalResults = totalResults;
-    }
-
-    public List<T> getResults() {
-        return results;
-    }
-
-    public long getTotalResults() {
-        return totalResults;
     }
 }

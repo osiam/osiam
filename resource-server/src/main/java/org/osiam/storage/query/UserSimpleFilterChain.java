@@ -75,7 +75,8 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
         }
 
         String constraintName = matcher.group(2); // NOSONAR - no need to make constant for number
-        constraint = FilterConstraint.getStringToEnumMap().get(constraintName);
+        constraint = FilterConstraint.fromString(constraintName);
+
 
         value = matcher.group(3).trim().replace("\"", ""); // NOSONAR - no need to make constant for number
     }

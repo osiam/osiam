@@ -43,7 +43,7 @@ public class GroupSimpleFilterChain implements FilterChain<GroupEntity> {
 
         this.criteriaBuilder = criteriaBuilder;
         field = matcher.group(1).trim();
-        constraint = FilterConstraint.getStringToEnumMap().get(matcher.group(2)); // NOSONAR - not a magic number
+        constraint = FilterConstraint.fromString(matcher.group(2)); // NOSONAR - not a magic number
         filterField = GroupQueryField.fromString(field.toLowerCase(Locale.ENGLISH));
 
         value = matcher.group(3).trim().replace("\"", ""); // NOSONAR - not a magic number

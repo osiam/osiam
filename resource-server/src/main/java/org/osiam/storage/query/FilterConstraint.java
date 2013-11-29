@@ -508,10 +508,6 @@ public enum FilterConstraint {
         this.name = constraint;
     }
 
-    static Map<String, FilterConstraint> getStringToEnumMap() {
-        return STRING_TO_ENUM;
-    }
-
     public abstract Predicate createPredicateForStringField(Path<String> path, String value, CriteriaBuilder cb);
 
     public abstract Predicate createPredicateForDateField(Path<Date> path, Date value, CriteriaBuilder cb);
