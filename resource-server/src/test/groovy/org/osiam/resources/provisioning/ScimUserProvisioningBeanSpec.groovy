@@ -41,7 +41,7 @@ class ScimUserProvisioningBeanSpec extends Specification {
     UserConverter userConverter = Mock()
 
     SCIMUserProvisioningBean scimUserProvisioningBean = new SCIMUserProvisioningBean(userDao: userDao,
-    userConverter: userConverter, passwordEncoder: passwordEncoder)
+            userConverter: userConverter, passwordEncoder: passwordEncoder)
 
     def 'should be possible to get an user by his id'() {
 
@@ -102,7 +102,38 @@ class ScimUserProvisioningBeanSpec extends Specification {
         e.getMessage().contains(externalId)
     }
 
-    def 'should get a user before replace, set the unmodifiable fields, merge the result and return scim user'() {
+    def 'replacing a user converts it from scim, updates last modified, updates the db and returns the replaced user as scim'() {
+        given:
+        def idString = UUID.randomUUID().toString()
+        def userScim = new User()
+
+        UserEntity userEntity = Mock()
+        userDao.getById(idString) >> Mock(UserEntity)
+
+        when:
+        scimUserProvisioningBean.replace(idString, userScim)
+
+        then:
+        1 * userConverter.fromScim(userScim) >> userEntity
+        1 * userEntity.touch()
+        1 * userDao.update(userEntity) >> userEntity
+        1 * userConverter.toScim(userEntity)
+    }
+
+    def 'replacing a user retrieves the original user from db'() {
+        given:
+        def idString = UUID.randomUUID().toString()
+        def userScim = new User()
+        userConverter.fromScim(userScim) >> Mock(UserEntity)
+
+        when:
+        scimUserProvisioningBean.replace(idString, userScim)
+
+        then:
+        1 * userDao.getById(idString) >> Mock(UserEntity)
+    }
+
+    def 'replacing a user copies its unmodifieable values, i.e. internalId, meta and UUID'() {
         given:
         def id = UUID.randomUUID()
         def idString = id.toString()
@@ -112,13 +143,13 @@ class ScimUserProvisioningBeanSpec extends Specification {
 
         UserEntity existingEntity = Mock()
         UserEntity userEntity = Mock()
+        userDao.getById(idString) >> existingEntity
+        userConverter.fromScim(userScim) >> userEntity
 
         when:
         scimUserProvisioningBean.replace(idString, userScim)
 
         then:
-        1 * userDao.getById(idString) >> existingEntity
-        1 * userConverter.fromScim(userScim) >> userEntity
 
         1 * existingEntity.getInternalId() >>internalId
         1 * existingEntity.getMeta() >> meta
@@ -126,9 +157,47 @@ class ScimUserProvisioningBeanSpec extends Specification {
         1 * userEntity.setInternalId(internalId)
         1 * userEntity.setMeta(meta)
         1 * userEntity.setId(id)
+    }
 
-        1 * userDao.update(userEntity) >> userEntity
-        1 * userConverter.toScim(userEntity)
+    def 'replacing a user with a password set, encodes and stores the new password' (){
+        given:
+        def id = UUID.randomUUID()
+        def password = 'irrelevant'
+        def hashedPassword = 'hashed password'
+
+        User userScim = Mock()
+        UserEntity userEntity = Mock()
+        userDao.getById(id.toString()) >> new UserEntity(id: id)
+        userConverter.fromScim(userScim) >> userEntity
+
+        when:
+        scimUserProvisioningBean.replace(id.toString(), userScim)
+
+        then:
+        3 * userScim.getPassword() >> password
+        1 * userEntity.getId() >> id
+        1 * passwordEncoder.encodePassword(password, id) >> hashedPassword
+        1 * userEntity.setPassword(hashedPassword)
+    }
+
+    def 'replacing a user without a password set, copies the original password' () {
+        given:
+        def id = UUID.randomUUID()
+        def password = 'irrelevant'
+        def userScim = new User()
+
+        UserEntity existingEntity = Mock()
+        UserEntity userEntity = Mock()
+        userDao.getById(id.toString()) >> existingEntity
+        userConverter.fromScim(userScim) >> userEntity
+
+
+        when:
+        scimUserProvisioningBean.replace(id.toString(), userScim)
+
+        then:
+        1 * existingEntity.getPassword() >> password
+        1 * userEntity.setPassword(password)
     }
 
     def 'should wrap IllegalAccessException to an IllegalState'() {
@@ -138,7 +207,7 @@ class ScimUserProvisioningBeanSpec extends Specification {
         when:
         scimUserProvisioningBean.setFieldsWrapException(setUserFields)
         then:
-        1 * setUserFields.setFields() >> { throw new IllegalAccessException('Blubb') }
+        1 * setUserFields.setFields() >> { throw new IllegalAccessException('irrelevant') }
         def e = thrown(IllegalStateException)
         e.message == 'This should not happen.'
     }
