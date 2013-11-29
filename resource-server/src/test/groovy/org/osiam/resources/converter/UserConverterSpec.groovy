@@ -59,17 +59,17 @@ class UserConverterSpec extends Specification {
     UserDao userDao = Mock()
 
     UserConverter userConverter = new UserConverter(
-    x509CertificateConverter: x509CertificateConverter,
-    roleConverter: roleConverter,
-    photoConverter: photoConverter,
-    phoneNumberConverter: phoneNumberConverter,
-    imConverter: imConverter,
-    entitlementConverter: entitlementConverter,
-    emailConverter: emailConverter,
-    addressConverter: addressConverter,
-    nameConverter: nameConverter,
-    extensionConverter: extensionConverter,
-    metaConverter: metaConverter,
+            x509CertificateConverter: x509CertificateConverter,
+            roleConverter: roleConverter,
+            photoConverter: photoConverter,
+            phoneNumberConverter: phoneNumberConverter,
+            imConverter: imConverter,
+            entitlementConverter: entitlementConverter,
+            emailConverter: emailConverter,
+            addressConverter: addressConverter,
+            nameConverter: nameConverter,
+            extensionConverter: extensionConverter,
+            metaConverter: metaConverter,
     )
 
     def 'converting user entity to scim works as expected'() {
