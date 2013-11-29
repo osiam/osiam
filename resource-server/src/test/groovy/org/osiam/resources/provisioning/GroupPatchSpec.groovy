@@ -24,18 +24,21 @@
 package org.osiam.resources.provisioning
 
 import org.osiam.resources.converter.GroupConverter
+import org.osiam.resources.converter.MetaConverter
 import org.osiam.resources.scim.Group
 import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.storage.dao.GroupDao
 import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.UserEntity
+
 import spock.lang.Specification
 
 class GroupPatchSpec extends Specification {
     def groupDao = Mock(GroupDao)
-    def groupConverter = new GroupConverter()
-    SCIMGroupProvisioningBean bean = new SCIMGroupProvisioningBean(groupDao: groupDao, groupConverter: groupConverter)
+    def metaConverter = new MetaConverter()
+    def groupConverter = new GroupConverter(metaConverter:metaConverter)
+    SCIMGroupProvisioningBean groupProvisioningBean = new SCIMGroupProvisioningBean(groupDao: groupDao, groupConverter: groupConverter)
     def uId = UUID.randomUUID()
     def id = uId.toString()
     def groupId = UUID.randomUUID()
@@ -51,7 +54,7 @@ class GroupPatchSpec extends Specification {
         def entity = createEntityWithInternalId()
         addListsToEntity(entity)
         when:
-        bean.update(id, group)
+        groupProvisioningBean.update(id, group)
         then:
         1 * groupDao.getById(id) >> entity
         entity.members.size() == 1
@@ -68,7 +71,7 @@ class GroupPatchSpec extends Specification {
         def entity = createEntityWithInternalId()
         addListsToEntity(entity)
         when:
-        bean.update(id, group)
+        groupProvisioningBean.update(id, group)
         then:
         1 * groupDao.getById(id) >> entity
         entity.members.size() == 1
@@ -91,7 +94,7 @@ class GroupPatchSpec extends Specification {
         def entity = createEntityWithInternalId()
         addListsToEntity(entity)
         when:
-        bean.update(id, group)
+        groupProvisioningBean.update(id, group)
         then:
         1 * groupDao.getById(id) >> entity
         entity.members.empty
@@ -109,7 +112,7 @@ class GroupPatchSpec extends Specification {
         def entity = createEntityWithInternalId()
         addListsToEntity(entity)
         when:
-        bean.update(id, group)
+        groupProvisioningBean.update(id, group)
         then:
         1 * groupDao.getById(id) >> entity
         entity.members.size() == 3
@@ -127,7 +130,7 @@ class GroupPatchSpec extends Specification {
         def entity = createEntityWithInternalId()
         addListsToEntity(entity)
         when:
-        bean.update(id, group)
+        groupProvisioningBean.update(id, group)
         then:
         1 * groupDao.getById(id) >> entity
         entity.members.size() == 2
@@ -142,7 +145,7 @@ class GroupPatchSpec extends Specification {
         def entity = createEntityWithInternalId()
 
         when:
-        bean.update(id, group)
+        groupProvisioningBean.update(id, group)
 
         then:
         1 * groupDao.getById(id) >> entity
@@ -164,7 +167,7 @@ class GroupPatchSpec extends Specification {
         def entity = createEntityWithInternalId()
 
         when:
-        bean.update(id, group)
+        groupProvisioningBean.update(id, group)
         then:
         1 * groupDao.getById(id) >> entity
         entity.displayName == "master of the universe"
@@ -178,7 +181,7 @@ class GroupPatchSpec extends Specification {
         def entity = createEntityWithInternalId()
         addListsToEntity(entity)
         when:
-        bean.update(id, group)
+        groupProvisioningBean.update(id, group)
         then:
         1 * groupDao.getById(id) >> entity
         entity.displayName == "harald"
@@ -198,7 +201,7 @@ class GroupPatchSpec extends Specification {
         entity.setDisplayName("display it")
         addListsToEntity(entity)
         when:
-        bean.update(id, user)
+        groupProvisioningBean.update(id, user)
         then:
         1 * groupDao.getById(id) >> entity
         entity.getMembers().empty
@@ -211,7 +214,7 @@ class GroupPatchSpec extends Specification {
         def entity = createEntityWithInternalId()
         def oldUuid = entity.getId()
         when:
-        def result = bean.update(id, group)
+        def result = groupProvisioningBean.update(id, group)
         then:
         1 * groupDao.getById(id) >> entity
         result.id == oldUuid.toString()
@@ -224,7 +227,7 @@ class GroupPatchSpec extends Specification {
         def entity = createEntityWithInternalId()
         def oldUuid = entity.getId()
         when:
-        def result = bean.update(id, group)
+        def result = groupProvisioningBean.update(id, group)
         then:
         1 * groupDao.getById(id) >> entity
         result.id == oldUuid.toString()

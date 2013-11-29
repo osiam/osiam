@@ -47,6 +47,9 @@ public class GroupConverter implements Converter<Group, GroupEntity> {
     @Inject
     private UserDao userDao;
 
+    @Inject
+    private MetaConverter metaConverter;
+
     @Override
     public GroupEntity fromScim(Group group) {
         if (group == null) {
@@ -93,7 +96,7 @@ public class GroupConverter implements Converter<Group, GroupEntity> {
         Group.Builder groupBuilder = new Group.Builder()
                 .setDisplayName(group.getDisplayName())
                 .setId(group.getId().toString())
-                .setMeta(group.getMeta().toScim())
+                .setMeta(metaConverter.toScim(group.getMeta()))
                 .setExternalId(group.getExternalId());
 
         Set<MemberRef> members = new HashSet<>();

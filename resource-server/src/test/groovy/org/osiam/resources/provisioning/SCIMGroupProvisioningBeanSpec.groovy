@@ -24,6 +24,7 @@
 package org.osiam.resources.provisioning
 
 import org.osiam.resources.converter.GroupConverter
+import org.osiam.resources.converter.MetaConverter
 import org.osiam.resources.exceptions.ResourceExistsException
 import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.resources.scim.Group
@@ -32,12 +33,14 @@ import org.osiam.storage.dao.SearchResult
 import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.MetaEntity
 import org.springframework.dao.DataIntegrityViolationException
+
 import spock.lang.Specification
 
 class SCIMGroupProvisioningBeanSpec extends Specification {
 
     def groupDao = Mock(GroupDao)
-    private GroupConverter groupConverter = new GroupConverter(groupDao: groupDao)
+    def metaConverter = new MetaConverter()
+    private GroupConverter groupConverter = new GroupConverter(groupDao: groupDao, metaConverter: metaConverter)
     SCIMGroupProvisioningBean underTest = new SCIMGroupProvisioningBean(groupDao: groupDao, groupConverter: groupConverter)
     def group = Mock(Group)
     def entity = Mock(GroupEntity)

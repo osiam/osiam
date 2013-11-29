@@ -48,7 +48,8 @@ class GroupConverterSpec extends Specification {
     private GroupDao groupDao = Mock()
     private UserDao userDao = Mock()
 
-    GroupConverter groupConverter = new GroupConverter(groupDao: groupDao, userDao: userDao)
+    MetaConverter metaConverter = Mock()
+    GroupConverter groupConverter = new GroupConverter(groupDao: groupDao, userDao: userDao, metaConverter:metaConverter)
 
     def 'mapping a user as member works'() {
         given:
