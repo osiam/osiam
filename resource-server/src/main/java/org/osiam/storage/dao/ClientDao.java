@@ -32,10 +32,8 @@ import javax.persistence.Query;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.storage.entities.ClientEntity;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-@Transactional
 public class ClientDao {
 
     @PersistenceContext

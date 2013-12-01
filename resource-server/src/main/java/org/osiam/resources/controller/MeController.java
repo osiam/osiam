@@ -38,18 +38,20 @@ import org.osiam.storage.entities.NameEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-@Controller
-@RequestMapping(value = "/me")
 /**
  * This Controller is used for getting information about the user who initialised the access_token.
  *
  */
+@Controller
+@RequestMapping(value = "/me")
+@Transactional
 public class MeController {
 
     @Inject

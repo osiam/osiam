@@ -31,6 +31,7 @@ import org.osiam.storage.dao.ClientDao;
 import org.osiam.storage.entities.ClientEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,11 +41,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Controller
-@RequestMapping(value = "/Client")
 /**
  * Is the http api for clients. You can get, create and delete a client.
  */
+@Controller
+@RequestMapping(value = "/Client")
+@Transactional
 public class ClientManagementController {
 
     @Inject

@@ -28,6 +28,7 @@ import java.util.Set;
 
 import org.osiam.resources.scim.Constants;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -35,6 +36,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Controller
 @RequestMapping(value = "/ServiceProviderConfigs")
+@Transactional
 public class ServiceProviderConfigsController {
     @RequestMapping
     @ResponseBody

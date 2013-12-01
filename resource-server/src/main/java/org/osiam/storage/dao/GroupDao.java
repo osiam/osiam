@@ -37,11 +37,9 @@ import org.osiam.storage.query.FilterParser;
 import org.osiam.storage.query.GroupFilterParser;
 import org.osiam.storage.query.GroupQueryField;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Repository
-@Transactional
 public class GroupDao extends ResourceDao<GroupEntity> implements GenericDao<GroupEntity> {
 
     @Inject

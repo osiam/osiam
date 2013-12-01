@@ -39,10 +39,8 @@ import org.osiam.storage.query.FilterParser;
 import org.osiam.storage.query.UserFilterParser;
 import org.osiam.storage.query.UserQueryField;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-@Transactional
 public class UserDao extends ResourceDao<UserEntity> implements GenericDao<UserEntity> {
 
     @Inject

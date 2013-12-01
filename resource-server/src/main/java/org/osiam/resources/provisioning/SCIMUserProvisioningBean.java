@@ -23,10 +23,21 @@
 
 package org.osiam.resources.provisioning;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.UUID;
+
+import javax.inject.Inject;
+
 import org.osiam.resources.converter.Converter;
 import org.osiam.resources.converter.UserConverter;
 import org.osiam.resources.exceptions.ResourceExistsException;
-import org.osiam.resources.scim.*;
+import org.osiam.resources.scim.Constants;
+import org.osiam.resources.scim.Extension;
+import org.osiam.resources.scim.ExtensionFieldType;
+import org.osiam.resources.scim.SCIMSearchResult;
+import org.osiam.resources.scim.User;
 import org.osiam.storage.dao.ExtensionDao;
 import org.osiam.storage.dao.GenericDao;
 import org.osiam.storage.dao.SearchResult;
@@ -38,17 +49,8 @@ import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.helper.NumberPadder;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.inject.Inject;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.UUID;
 
 @Service
-@Transactional
 public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserEntity> implements SCIMUserProvisioning {
 
     @Inject
