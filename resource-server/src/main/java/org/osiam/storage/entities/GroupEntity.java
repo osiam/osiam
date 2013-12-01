@@ -23,14 +23,14 @@
 
 package org.osiam.storage.entities;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
-import java.util.HashSet;
-import java.util.Set;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Group Entity
@@ -38,7 +38,7 @@ import java.util.Set;
 @Entity(name = "scim_group")
 public class GroupEntity extends InternalIdSkeleton {
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     private Set<InternalIdSkeleton> members = new HashSet<>();
 
     @Column(unique = true, nullable = false)
@@ -68,6 +68,7 @@ public class GroupEntity extends InternalIdSkeleton {
         member.removeFromGroup(this);
     }
 
+    @Override
     public String getDisplayName() {
         return displayName;
     }

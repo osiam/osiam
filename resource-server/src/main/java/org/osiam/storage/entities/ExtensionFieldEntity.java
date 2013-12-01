@@ -50,7 +50,7 @@ public class ExtensionFieldEntity { // NOSONAR - will be constructed by jackson
     @Column(name = "is_required")
     private boolean isRequired;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     private ExtensionEntity extension;
 
     public ExtensionEntity getExtension() {

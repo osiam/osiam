@@ -51,7 +51,7 @@ public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute {
     @ManyToOne(cascade = CascadeType.ALL)
     private MetaEntity meta = new MetaEntity(GregorianCalendar.getInstance());
 
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "members")
+    @ManyToMany(mappedBy = "members")
     private Set<GroupEntity> groups = new HashSet<>();
 
     public UUID getId() {
