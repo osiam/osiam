@@ -33,9 +33,11 @@ import org.osiam.storage.entities.RolesEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.text.ParseException;
@@ -49,6 +51,7 @@ import java.util.Set;
  */
 @Controller
 @RequestMapping(value = "/authentication")
+@Transactional
 public class AuthenticationController {
 
     @Inject
