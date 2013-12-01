@@ -42,7 +42,9 @@ import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.storage.entities.InternalIdSkeleton;
 import org.osiam.storage.entities.InternalIdSkeleton_;
 import org.osiam.storage.query.FilterParser;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 public abstract class ResourceDao<T extends InternalIdSkeleton> {
 
     protected static final Logger LOGGER = Logger.getLogger(ResourceDao.class.getName()); // NOSONAR used in child classes

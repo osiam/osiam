@@ -35,8 +35,10 @@ import org.osiam.storage.dao.SearchResult;
 import org.osiam.storage.entities.GroupEntity;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -44,6 +46,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Service
+@Transactional
 public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, GroupEntity> implements
         SCIMGroupProvisioning {
 
