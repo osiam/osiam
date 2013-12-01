@@ -136,26 +136,4 @@ public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute {
         this.meta = meta;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof InternalIdSkeleton)) {
-            return false;
-        }
-
-        InternalIdSkeleton that = (InternalIdSkeleton) o;
-
-        if (id != null ? !id.equals(that.id) : that.id != null) {
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
-    }
 }

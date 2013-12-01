@@ -77,19 +77,22 @@ public class GroupEntity extends InternalIdSkeleton {
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (this == other) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (other == null || getClass() != other.getClass()) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        return super.equals(other);
+
+        GroupEntity that = (GroupEntity) o;
+
+        return displayName.equals(that.displayName);
     }
 
     @Override
-    public int hashCode() { // NOSONAR : Make sure you change hashcode() too if you modify equals
-        return super.hashCode();
+    public int hashCode() {
+        return displayName.hashCode();
     }
 
     @Override

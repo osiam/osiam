@@ -566,7 +566,7 @@ class UserPatchSpec extends Specification {
 
 
         entity.setUserName('username')
-        entity.addToGroup(new GroupEntity(id: UUID.randomUUID()))
+        entity.addToGroup(new GroupEntity(id: UUID.randomUUID(), displayName: 'irrelevant'))
 
         when:
         scimUserProvisioningBean.update(uuidAsString, user)

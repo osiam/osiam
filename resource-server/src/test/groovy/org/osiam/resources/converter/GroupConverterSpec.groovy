@@ -36,6 +36,7 @@ import spock.lang.Specification
 
 class GroupConverterSpec extends Specification {
 
+    static def IRRELEVANT = 'irrelevant'
     Map fixtures = [displayName: 'displayName',
         externalId: 'externalId'
     ]
@@ -61,7 +62,7 @@ class GroupConverterSpec extends Specification {
         GroupEntity GroupEntity = groupConverter.fromScim(group)
 
         then:
-        1 * userDao.getById(memberUuidFixtures['user']) >> new UserEntity(id: UUID.fromString(memberUuidFixtures['user']))
+        1 * userDao.getById(memberUuidFixtures['user']) >> new UserEntity(id: UUID.fromString(memberUuidFixtures['user']), userName: IRRELEVANT)
         GroupEntity.getMembers().size() == 1
     }
 
@@ -76,7 +77,7 @@ class GroupConverterSpec extends Specification {
 
         then:
         1 * userDao.getById(memberUuidFixtures['group']) >> { throw new ResourceNotFoundException('') }
-        1 * groupDao.getById(memberUuidFixtures['group']) >> new GroupEntity(id: UUID.fromString(memberUuidFixtures['group']))
+        1 * groupDao.getById(memberUuidFixtures['group']) >> new GroupEntity(id: UUID.fromString(memberUuidFixtures['group']), displayName: IRRELEVANT)
         GroupEntity.getMembers().size() == 1
     }
 
@@ -165,6 +166,7 @@ class GroupConverterSpec extends Specification {
         UserEntity member = new UserEntity(
                 id: UUID.fromString(memberUuidFixtures['user']),
                 displayName: 'user',
+                userName: 'irrelevant',
                 meta: meta)
 
         group.addMember(member)
@@ -177,7 +179,6 @@ class GroupConverterSpec extends Specification {
         Group.Builder groupBuilder = new Group.Builder(fixtures)
 
         groupBuilder.setId(uuid.toString())
-
         return groupBuilder.build()
     }
 

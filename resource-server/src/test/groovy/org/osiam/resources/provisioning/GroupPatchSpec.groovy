@@ -31,13 +31,13 @@ import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.storage.dao.GroupDao
 import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.UserEntity
-
 import spock.lang.Specification
 
 class GroupPatchSpec extends Specification {
+    static IRRELEVANT = 'irrelevant'
     def groupDao = Mock(GroupDao)
     def metaConverter = new MetaConverter()
-    def groupConverter = new GroupConverter(metaConverter:metaConverter)
+    def groupConverter = new GroupConverter(metaConverter: metaConverter)
     SCIMGroupProvisioningBean groupProvisioningBean = new SCIMGroupProvisioningBean(groupDao: groupDao, groupConverter: groupConverter)
     def uId = UUID.randomUUID()
     def id = uId.toString()
@@ -81,15 +81,13 @@ class GroupPatchSpec extends Specification {
 
     private void addListsToEntity(GroupEntity entity) {
         entity.addMember(new GroupEntity(id: groupId, displayName: "group"))
-        entity.addMember(new UserEntity(id: userId, displayName: "user"))
+        entity.addMember(new UserEntity(id: userId, displayName: "user", userName: IRRELEVANT))
     }
 
 
     def "should delete all attributes of a multi-value-attribute list"() {
         def meta = new Meta.Builder(null, null).setAttributes(["members"] as Set).build()
-        def group = new Group.Builder()
-                .setMeta(meta)
-                .build()
+        def group = new Group.Builder(meta: meta, displayName: IRRELEVANT).build();
 
         def entity = createEntityWithInternalId()
         addListsToEntity(entity)
@@ -102,13 +100,9 @@ class GroupPatchSpec extends Specification {
 
 
     def "should add a multi-value to a attribute list"() {
-        def members = new HashSet()
         def newUuid = UUID.randomUUID().toString()
-        members.add(new MultiValuedAttribute.Builder().setValue(newUuid).setDisplay("narf").build())
-        def group = new Group.Builder()
-                .setMembers(members)
-                .setDisplayName("hi")
-                .build()
+        def members = [new MultiValuedAttribute.Builder(value: newUuid, display: IRRELEVANT).build()] as Set
+        def group = new Group.Builder(members: members, displayName: IRRELEVANT).build()
         def entity = createEntityWithInternalId()
         addListsToEntity(entity)
         when:
@@ -121,7 +115,7 @@ class GroupPatchSpec extends Specification {
     def "should delete and add a value to a multi-value-attribute list"() {
         def members = new HashSet()
         def newUuid = UUID.randomUUID().toString()
-        members.add(new MultiValuedAttribute.Builder().setValue(newUuid).setDisplay("narf").build())
+        members.add(new MultiValuedAttribute.Builder().setValue(newUuid).setDisplay(IRRELEVANT).build())
         members.add(new MultiValuedAttribute.Builder().setValue(userId.toString()).setOperation("delete").build())
         def group = new Group.Builder()
                 .setMembers(members)
