@@ -24,18 +24,21 @@
 package org.osiam.resources.provisioning
 
 import org.osiam.resources.converter.GroupConverter
+import org.osiam.resources.converter.MetaConverter
 import org.osiam.resources.scim.Group
 import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.MultiValuedAttribute
-import org.osiam.storage.dao.GroupDAO
+import org.osiam.storage.dao.GroupDao
 import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.UserEntity
 import spock.lang.Specification
 
 class GroupPatchSpec extends Specification {
-    def groupDAO = Mock(GroupDAO)
-    def groupConverter = new GroupConverter()
-    SCIMGroupProvisioningBean bean = new SCIMGroupProvisioningBean(groupDAO: groupDAO, groupConverter: groupConverter)
+    static IRRELEVANT = 'irrelevant'
+    def groupDao = Mock(GroupDao)
+    def metaConverter = new MetaConverter()
+    def groupConverter = new GroupConverter(metaConverter: metaConverter)
+    SCIMGroupProvisioningBean groupProvisioningBean = new SCIMGroupProvisioningBean(groupDao: groupDao, groupConverter: groupConverter)
     def uId = UUID.randomUUID()
     def id = uId.toString()
     def groupId = UUID.randomUUID()
@@ -51,9 +54,9 @@ class GroupPatchSpec extends Specification {
         def entity = createEntityWithInternalId()
         addListsToEntity(entity)
         when:
-        bean.update(id, group)
+        groupProvisioningBean.update(id, group)
         then:
-        1 * groupDAO.getById(id) >> entity
+        1 * groupDao.getById(id) >> entity
         entity.members.size() == 1
         entity.members.first() instanceof UserEntity
     }
@@ -68,9 +71,9 @@ class GroupPatchSpec extends Specification {
         def entity = createEntityWithInternalId()
         addListsToEntity(entity)
         when:
-        bean.update(id, group)
+        groupProvisioningBean.update(id, group)
         then:
-        1 * groupDAO.getById(id) >> entity
+        1 * groupDao.getById(id) >> entity
         entity.members.size() == 1
         entity.members.first() instanceof GroupEntity
     }
@@ -78,47 +81,41 @@ class GroupPatchSpec extends Specification {
 
     private void addListsToEntity(GroupEntity entity) {
         entity.addMember(new GroupEntity(id: groupId, displayName: "group"))
-        entity.addMember(new UserEntity(id: userId, displayName: "user"))
+        entity.addMember(new UserEntity(id: userId, displayName: "user", userName: IRRELEVANT))
     }
 
 
     def "should delete all attributes of a multi-value-attribute list"() {
         def meta = new Meta.Builder(null, null).setAttributes(["members"] as Set).build()
-        def group = new Group.Builder()
-                .setMeta(meta)
-                .build()
+        def group = new Group.Builder(meta: meta, displayName: IRRELEVANT).build();
 
         def entity = createEntityWithInternalId()
         addListsToEntity(entity)
         when:
-        bean.update(id, group)
+        groupProvisioningBean.update(id, group)
         then:
-        1 * groupDAO.getById(id) >> entity
+        1 * groupDao.getById(id) >> entity
         entity.members.empty
     }
 
 
     def "should add a multi-value to a attribute list"() {
-        def members = new HashSet()
         def newUuid = UUID.randomUUID().toString()
-        members.add(new MultiValuedAttribute.Builder().setValue(newUuid).setDisplay("narf").build())
-        def group = new Group.Builder()
-                .setMembers(members)
-                .setDisplayName("hi")
-                .build()
+        def members = [new MultiValuedAttribute.Builder(value: newUuid, display: IRRELEVANT).build()] as Set
+        def group = new Group.Builder(members: members, displayName: IRRELEVANT).build()
         def entity = createEntityWithInternalId()
         addListsToEntity(entity)
         when:
-        bean.update(id, group)
+        groupProvisioningBean.update(id, group)
         then:
-        1 * groupDAO.getById(id) >> entity
+        1 * groupDao.getById(id) >> entity
         entity.members.size() == 3
     }
 
     def "should delete and add a value to a multi-value-attribute list"() {
         def members = new HashSet()
         def newUuid = UUID.randomUUID().toString()
-        members.add(new MultiValuedAttribute.Builder().setValue(newUuid).setDisplay("narf").build())
+        members.add(new MultiValuedAttribute.Builder().setValue(newUuid).setDisplay(IRRELEVANT).build())
         members.add(new MultiValuedAttribute.Builder().setValue(userId.toString()).setOperation("delete").build())
         def group = new Group.Builder()
                 .setMembers(members)
@@ -127,9 +124,9 @@ class GroupPatchSpec extends Specification {
         def entity = createEntityWithInternalId()
         addListsToEntity(entity)
         when:
-        bean.update(id, group)
+        groupProvisioningBean.update(id, group)
         then:
-        1 * groupDAO.getById(id) >> entity
+        1 * groupDao.getById(id) >> entity
         entity.members.size() == 2
         entity.members.last() instanceof GroupEntity
 
@@ -142,10 +139,10 @@ class GroupPatchSpec extends Specification {
         def entity = createEntityWithInternalId()
 
         when:
-        bean.update(id, group)
+        groupProvisioningBean.update(id, group)
 
         then:
-        1 * groupDAO.getById(id) >> entity
+        1 * groupDao.getById(id) >> entity
         entity.displayName == "hallo"
     }
 
@@ -164,9 +161,9 @@ class GroupPatchSpec extends Specification {
         def entity = createEntityWithInternalId()
 
         when:
-        bean.update(id, group)
+        groupProvisioningBean.update(id, group)
         then:
-        1 * groupDAO.getById(id) >> entity
+        1 * groupDao.getById(id) >> entity
         entity.displayName == "master of the universe"
     }
 
@@ -178,9 +175,9 @@ class GroupPatchSpec extends Specification {
         def entity = createEntityWithInternalId()
         addListsToEntity(entity)
         when:
-        bean.update(id, group)
+        groupProvisioningBean.update(id, group)
         then:
-        1 * groupDAO.getById(id) >> entity
+        1 * groupDao.getById(id) >> entity
         entity.displayName == "harald"
         entity.members.empty
 
@@ -198,9 +195,9 @@ class GroupPatchSpec extends Specification {
         entity.setDisplayName("display it")
         addListsToEntity(entity)
         when:
-        bean.update(id, user)
+        groupProvisioningBean.update(id, user)
         then:
-        1 * groupDAO.getById(id) >> entity
+        1 * groupDao.getById(id) >> entity
         entity.getMembers().empty
     }
 
@@ -211,9 +208,9 @@ class GroupPatchSpec extends Specification {
         def entity = createEntityWithInternalId()
         def oldUuid = entity.getId()
         when:
-        def result = bean.update(id, group)
+        def result = groupProvisioningBean.update(id, group)
         then:
-        1 * groupDAO.getById(id) >> entity
+        1 * groupDao.getById(id) >> entity
         result.id == oldUuid.toString()
     }
 
@@ -224,9 +221,9 @@ class GroupPatchSpec extends Specification {
         def entity = createEntityWithInternalId()
         def oldUuid = entity.getId()
         when:
-        def result = bean.update(id, group)
+        def result = groupProvisioningBean.update(id, group)
         then:
-        1 * groupDAO.getById(id) >> entity
+        1 * groupDao.getById(id) >> entity
         result.id == oldUuid.toString()
 
     }

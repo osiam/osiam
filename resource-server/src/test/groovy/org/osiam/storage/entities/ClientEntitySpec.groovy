@@ -1,3 +1,26 @@
+/*
+ * Copyright (C) 2013 tarent AG
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package org.osiam.storage.entities
 
 import spock.lang.Specification
@@ -17,7 +40,9 @@ class ClientEntitySpec extends Specification {
         def b = new ClientEntity()
         then:
         b.getGrants() == under_test.getGrants()
-        b.getGrants() == ["authorization_code", "refresh-token"] as Set
+        b.getGrants() == [
+            "authorization_code",
+            "refresh-token"] as Set
     }
 
     def "should be able to set access_token length"() {
@@ -118,7 +143,9 @@ class ClientEntitySpec extends Specification {
         client.setScope(["scope1", "scope2"] as Set)
         client.setImplicit(true)
         client.setValidityInSeconds(123)
-        client.setGrants(["client_credentials", "password"] as Set)
+        client.setGrants([
+            "client_credentials",
+            "password"] as Set)
 
         when:
         def clientEntity = new ClientEntity(client)
@@ -132,7 +159,9 @@ class ClientEntitySpec extends Specification {
         clientEntity.getScope() == ["scope1", "scope2"] as Set
         clientEntity.isImplicit()
         clientEntity.getValidityInSeconds() == 123
-        clientEntity.getGrants() == ["client_credentials", "password"] as Set
+        clientEntity.getGrants() == [
+            "client_credentials",
+            "password"] as Set
     }
 
     def "parametrized constructor should work with null id and secret"() {
@@ -146,7 +175,9 @@ class ClientEntitySpec extends Specification {
         client.setScope(["scope1", "scope2"] as Set)
         client.setImplicit(true)
         client.setValidityInSeconds(123)
-        client.setGrants(["client_credentials", "password"] as Set)
+        client.setGrants([
+            "client_credentials",
+            "password"] as Set)
 
         when:
         def clientEntity = new ClientEntity(client)
@@ -160,7 +191,9 @@ class ClientEntitySpec extends Specification {
         clientEntity.getScope() == ["scope1", "scope2"] as Set
         clientEntity.isImplicit()
         clientEntity.getValidityInSeconds() == 123
-        clientEntity.getGrants() == ["client_credentials", "password"] as Set
+        clientEntity.getGrants() == [
+            "client_credentials",
+            "password"] as Set
     }
 
     def "parametrized constructor should work with empty list of grants and generate the default"() {
@@ -188,6 +221,8 @@ class ClientEntitySpec extends Specification {
         clientEntity.getScope() == ["scope1", "scope2"] as Set
         clientEntity.isImplicit()
         clientEntity.getValidityInSeconds() == 123
-        clientEntity.getGrants() == ["authorization_code", "refresh-token"] as Set
+        clientEntity.getGrants() == [
+            "authorization_code",
+            "refresh-token"] as Set
     }
 }

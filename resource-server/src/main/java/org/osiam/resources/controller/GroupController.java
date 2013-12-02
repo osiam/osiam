@@ -39,6 +39,7 @@ import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -46,11 +47,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.util.UriTemplate;
 
-@Controller
-@RequestMapping(value = "/Groups")
 /**
  * HTTP Api for groups. You can create, delete, replace, update and search groups.
  */
+@Controller
+@RequestMapping(value = "/Groups")
+@Transactional
 public class GroupController {
 
     @Inject

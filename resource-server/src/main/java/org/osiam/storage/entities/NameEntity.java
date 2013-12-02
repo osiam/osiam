@@ -23,8 +23,6 @@
 
 package org.osiam.storage.entities;
 
-import org.osiam.resources.scim.Name;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -114,19 +112,8 @@ public class NameEntity {
         this.honorificSuffix = honorificSuffix;
     }
 
-    public Name toScim() {
-        return new Name.Builder().
-                setFamilyName(getFamilyName()).
-                setFormatted(getFormatted()).
-                setGivenName(getGivenName()).
-                setHonorificPrefix(getHonorificPrefix()).
-                setHonorificSuffix(getHonorificSuffix()).
-                setMiddleName(getMiddleName()).
-                build();
-    }
-
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o) { // NOSONAR - Cyclomatic Complexity can be > 10
         if (this == o) {
             return true;
         }

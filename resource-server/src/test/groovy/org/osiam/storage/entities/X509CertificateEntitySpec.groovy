@@ -23,18 +23,9 @@
 
 package org.osiam.storage.entities
 
-import org.osiam.resources.scim.MultiValuedAttribute
-import org.osiam.storage.entities.UserEntity
-import org.osiam.storage.entities.X509CertificateEntity
 import spock.lang.Specification
 
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 15.03.13
- * Time: 16:15
- * To change this template use File | Settings | File Templates.
- */
+
 class X509CertificateEntitySpec extends Specification {
 
     X509CertificateEntity certificateEntity = new X509CertificateEntity()

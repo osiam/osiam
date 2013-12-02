@@ -24,21 +24,24 @@
 package org.osiam.resources.provisioning
 
 import org.osiam.resources.converter.GroupConverter
+import org.osiam.resources.converter.MetaConverter
 import org.osiam.resources.exceptions.ResourceExistsException
 import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.resources.scim.Group
-import org.osiam.resources.scim.SCIMSearchResult
-import org.osiam.storage.dao.GroupDAO
+import org.osiam.storage.dao.GroupDao
+import org.osiam.storage.dao.SearchResult
 import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.MetaEntity
 import org.springframework.dao.DataIntegrityViolationException
+
 import spock.lang.Specification
 
 class SCIMGroupProvisioningBeanSpec extends Specification {
 
-    def groupDao = Mock(GroupDAO)
-    private GroupConverter groupConverter = new GroupConverter(groupDao: groupDao)
-    SCIMGroupProvisioningBean underTest = new SCIMGroupProvisioningBean(groupDAO: groupDao, groupConverter: groupConverter)
+    def groupDao = Mock(GroupDao)
+    def metaConverter = new MetaConverter()
+    private GroupConverter groupConverter = new GroupConverter(groupDao: groupDao, metaConverter: metaConverter)
+    SCIMGroupProvisioningBean underTest = new SCIMGroupProvisioningBean(groupDao: groupDao, groupConverter: groupConverter)
     def group = Mock(Group)
     def entity = Mock(GroupEntity)
 
@@ -97,22 +100,19 @@ class SCIMGroupProvisioningBeanSpec extends Specification {
 
     def "should call dao search on search"() {
         given:
-        def scimSearchResultMock = Mock(SCIMSearchResult)
-        groupDao.search("anyFilter", "userName", "ascending", 100, 1) >> scimSearchResultMock
 
         GroupEntity groupEntityMock = Mock()
         groupEntityMock.getId() >> UUID.randomUUID()
         groupEntityMock.getMeta() >> new MetaEntity()
         groupEntityMock.getMembers() >> ([] as Set)
-        def userList = [groupEntityMock] as List
-        scimSearchResultMock.getResources() >> userList
-        scimSearchResultMock.getTotalResults() >> 1000.toLong()
+        def groupList = [groupEntityMock] as List
+        def searchResult = new SearchResult(groupList, 1000)
+        groupDao.search("anyFilter", "userName", "ascending", 100, 0) >> searchResult
 
         when:
         def result = underTest.search("anyFilter", "userName", "ascending", 100, 1)
 
         then:
-        result != null
         result.getTotalResults() == 1000.toLong()
     }
 }

@@ -23,15 +23,16 @@
 
 package org.osiam.resources.provisioning;
 
-import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Locale;
-import java.util.Map;
-
 import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.storage.entities.ChildOfMultiValueAttribute;
 import org.osiam.storage.entities.ChildOfMultiValueAttributeWithIdAndType;
 import org.osiam.storage.entities.ChildOfMultiValueAttributeWithIdAndTypeAndPrimary;
+import org.osiam.storage.entities.GroupEntity;
+
+import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Locale;
+import java.util.Map;
 
 public class EntityListFieldWrapper {
 
@@ -85,7 +86,9 @@ public class EntityListFieldWrapper {
     private void updateList(Collection<Object> targetList, Class<?> clazz, Collection listOfMultiValue)
             throws InstantiationException, IllegalAccessException {
         clearIfNotInPatchMode(targetList);
-        if (listOfMultiValue == null) { return; }
+        if (listOfMultiValue == null) {
+            return;
+        }
         for (Object o : listOfMultiValue) {
             MultiValuedAttribute m = (MultiValuedAttribute) o;
             if (notDeleted(m, targetList)) {
@@ -96,7 +99,9 @@ public class EntityListFieldWrapper {
 
     private boolean notDeleted(MultiValuedAttribute m, Collection<Object> targetList) {
         boolean equals = "delete".equals(m.getOperation());
-        if (equals) { seekAndDelete(m, targetList); }
+        if (equals) {
+            seekAndDelete(m, targetList);
+        }
         return !equals;
 
     }
@@ -155,6 +160,10 @@ public class EntityListFieldWrapper {
         if (target instanceof ChildOfMultiValueAttributeWithIdAndTypeAndPrimary) {
             ((ChildOfMultiValueAttributeWithIdAndTypeAndPrimary) target)
                     .setPrimary(m.isPrimary() != null ? m.isPrimary() : false);
+        }
+        // This is bad and should be fixed in a different way
+        if (target instanceof GroupEntity) {
+            ((GroupEntity) target).setDisplayName(m.getDisplay());
         }
         return target;
     }

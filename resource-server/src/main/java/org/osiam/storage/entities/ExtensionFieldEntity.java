@@ -1,14 +1,40 @@
+/*
+ * Copyright (C) 2013 tarent AG
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package org.osiam.storage.entities;
 
 import org.osiam.resources.scim.ExtensionFieldType;
 
 import javax.persistence.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Defines a field in a scim-extension.
  */
 @Entity(name = "scim_extension_field")
-public class ExtensionFieldEntity {
+public class ExtensionFieldEntity { // NOSONAR - will be constructed by jackson
 
     @Id
     @GeneratedValue
@@ -24,7 +50,7 @@ public class ExtensionFieldEntity {
     @Column(name = "is_required")
     private boolean isRequired;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     private ExtensionEntity extension;
 
     public ExtensionEntity getExtension() {
@@ -64,11 +90,11 @@ public class ExtensionFieldEntity {
 
     @Column(name = "type")
     @Access(AccessType.PROPERTY)
-    private String getTypeAsString() {  // NOSONAR : This method is needed to serialize our type
-        return type.toString();         // NOSONAR : This method is needed to serialize our type
+    private String getTypeAsString() { // NOSONAR : This method is needed to serialize our type
+        return type.toString(); // NOSONAR : This method is needed to serialize our type
     }
 
-    private void setTypeAsString(String typeAsString) {  // NOSONAR : This method is needed to deserialize our type
+    private void setTypeAsString(String typeAsString) { // NOSONAR : This method is needed to deserialize our type
         type = ExtensionFieldType.valueOf(typeAsString); // NOSONAR : This method is needed to deserialize our type
     }
 
@@ -78,6 +104,10 @@ public class ExtensionFieldEntity {
 
     public void setRequired(boolean required) {
         isRequired = required;
+    }
+
+    public boolean isConstrainedValid(String constraint) {
+        return !invalidTypeForConstraint.contains(new ConstraintAndType(type, constraint));
     }
 
     @Override
@@ -116,5 +146,73 @@ public class ExtensionFieldEntity {
             return false;
         }
         return true;
+    }
+
+    private static Set<ConstraintAndType> invalidTypeForConstraint = new HashSet<>(Arrays.asList(
+            new ConstraintAndType(ExtensionFieldType.INTEGER, "co"),
+            new ConstraintAndType(ExtensionFieldType.INTEGER, "sw"),
+            new ConstraintAndType(ExtensionFieldType.DECIMAL, "co"),
+            new ConstraintAndType(ExtensionFieldType.DECIMAL, "sw"),
+            new ConstraintAndType(ExtensionFieldType.BOOLEAN, "co"),
+            new ConstraintAndType(ExtensionFieldType.BOOLEAN, "sw"),
+            new ConstraintAndType(ExtensionFieldType.BOOLEAN, "gt"),
+            new ConstraintAndType(ExtensionFieldType.BOOLEAN, "ge"),
+            new ConstraintAndType(ExtensionFieldType.BOOLEAN, "lt"),
+            new ConstraintAndType(ExtensionFieldType.BOOLEAN, "le"),
+            new ConstraintAndType(ExtensionFieldType.DATE_TIME, "co"),
+            new ConstraintAndType(ExtensionFieldType.DATE_TIME, "sw"),
+            new ConstraintAndType(ExtensionFieldType.BINARY, "eq"),
+            new ConstraintAndType(ExtensionFieldType.BINARY, "co"),
+            new ConstraintAndType(ExtensionFieldType.BINARY, "sw"),
+            new ConstraintAndType(ExtensionFieldType.BINARY, "gt"),
+            new ConstraintAndType(ExtensionFieldType.BINARY, "ge"),
+            new ConstraintAndType(ExtensionFieldType.BINARY, "lt"),
+            new ConstraintAndType(ExtensionFieldType.BINARY, "le"),
+            new ConstraintAndType(ExtensionFieldType.REFERENCE, "gt"),
+            new ConstraintAndType(ExtensionFieldType.REFERENCE, "ge"),
+            new ConstraintAndType(ExtensionFieldType.REFERENCE, "lt"),
+            new ConstraintAndType(ExtensionFieldType.REFERENCE, "le")
+            ));
+
+    private static class ConstraintAndType { // NOSONAR - class can be private
+        private final ExtensionFieldType<?> type;
+        private final String constraint;
+
+        private ConstraintAndType(ExtensionFieldType<?> type, String constraint) {
+            this.type = type;
+            this.constraint = constraint;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {// NOSONAR - false-positive from clover; if-expression is correct
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {// NOSONAR - false-positive from clover; if-expression is
+                                                          // correct
+                return false;
+            }
+
+            ConstraintAndType that = (ConstraintAndType) o;
+
+            if (constraint != null ? !constraint.equals(that.constraint) : that.constraint != null) {// NOSONAR -
+                // false-positive from clover; if-expression is correct
+                return false;
+            }
+            if (type != null ? !type.equals(that.type) : that.type != null) {// NOSONAR - false-positive from clover;
+                                                                             // if-expression is correct
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = type != null ? type.hashCode() : 0;
+            result = prime * result + (constraint != null ? constraint.hashCode() : 0);
+            return result;
+        }
     }
 }

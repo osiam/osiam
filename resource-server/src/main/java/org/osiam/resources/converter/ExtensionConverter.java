@@ -1,4 +1,34 @@
+/*
+ * Copyright (C) 2013 tarent AG
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package org.osiam.resources.converter;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import javax.inject.Inject;
 
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.ExtensionFieldType;
@@ -6,13 +36,8 @@ import org.osiam.storage.dao.ExtensionDao;
 import org.osiam.storage.entities.ExtensionEntity;
 import org.osiam.storage.entities.ExtensionFieldEntity;
 import org.osiam.storage.entities.ExtensionFieldValueEntity;
+import org.osiam.storage.helper.NumberPadder;
 import org.springframework.stereotype.Service;
-
-import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 @Service
 public class ExtensionConverter implements Converter<Set<Extension>, Set<ExtensionFieldValueEntity>> {
@@ -20,6 +45,8 @@ public class ExtensionConverter implements Converter<Set<Extension>, Set<Extensi
     @Inject
     private ExtensionDao extensionDao;
 
+    @Inject
+    private NumberPadder numberPadder;
 
     @Override
     public Set<ExtensionFieldValueEntity> fromScim(Set<Extension> extensions) {
@@ -32,9 +59,15 @@ public class ExtensionConverter implements Converter<Set<Extension>, Set<Extensi
             for (ExtensionFieldEntity field : extensionEntity.getFields()) {
                 if (extension.isFieldPresent(field.getName())) {
                     ExtensionFieldValueEntity value = new ExtensionFieldValueEntity();
-                    // This is a shortcut that only works because we know that the field values are always
-                    // stored as string.
-                    value.setValue(extension.getField(field.getName(), ExtensionFieldType.STRING));
+
+                    String typeCheckedStringValue = getTypeCheckedStringValue(field.getType(), field.getName(),
+                            extension);
+
+                    if (field.getType() == ExtensionFieldType.INTEGER || field.getType() == ExtensionFieldType.DECIMAL) {
+                        typeCheckedStringValue = numberPadder.pad(typeCheckedStringValue);
+                    }
+
+                    value.setValue(typeCheckedStringValue);
                     value.setExtensionField(field);
                     result.add(value);
                 }
@@ -44,6 +77,12 @@ public class ExtensionConverter implements Converter<Set<Extension>, Set<Extensi
         return result;
     }
 
+    private <T> String getTypeCheckedStringValue(ExtensionFieldType<T> type, String fieldName, Extension extension) {
+        T value = extension.getField(fieldName, type);
+        return type.toString(value);
+    }
+
+    @Override
     public Set<Extension> toScim(Set<ExtensionFieldValueEntity> entity) {
         if (entity == null) {
             return null;
@@ -68,6 +107,11 @@ public class ExtensionConverter implements Converter<Set<Extension>, Set<Extensi
                 throw new IllegalArgumentException("The ExtensionField type can't be null");
             }
             String value = fieldValueEntity.getValue();
+
+            if (type == ExtensionFieldType.INTEGER || type == ExtensionFieldType.DECIMAL) {
+                value = numberPadder.unpad(value);
+            }
+
             String name = fieldValueEntity.getExtensionField().getName();
             addField(extension, type, name, value);
         }
@@ -79,4 +123,3 @@ public class ExtensionConverter implements Converter<Set<Extension>, Set<Extensi
         extension.addOrUpdateField(fieldName, type.fromString(stringValue), type);
     }
 }
-

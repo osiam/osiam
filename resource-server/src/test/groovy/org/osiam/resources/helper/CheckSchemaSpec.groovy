@@ -34,13 +34,12 @@ import spock.lang.Specification
 import java.lang.reflect.Method
 
 class CheckSchemaSpec extends Specification {
-    def underTest = new CheckSchema()
+    def checkSchema = new CheckSchema()
     def joint = Mock(JoinPoint)
-
 
     def "should do nothing when no args are delivered"() {
         when:
-        underTest.checkUser(joint)
+        checkSchema.checkUser(joint)
         then:
         notThrown(SchemaUnknownException)
 
@@ -50,12 +49,10 @@ class CheckSchemaSpec extends Specification {
         given:
         joint.args >> ["haha"]
         when:
-        underTest.checkUser(joint)
+        checkSchema.checkUser(joint)
         then:
         notThrown(SchemaUnknownException)
-
     }
-
 
     def "should throw an org.osiam.resources.exceptions.SchemaUnknownException when User schema is empty"() {
         given:
@@ -63,7 +60,7 @@ class CheckSchemaSpec extends Specification {
         User user = new User.Builder("test").setSchemas(schema).build()
         joint.args >> [user]
         when:
-        underTest.checkUser(joint)
+        checkSchema.checkUser(joint)
         then:
         thrown(SchemaUnknownException)
     }
@@ -73,7 +70,7 @@ class CheckSchemaSpec extends Specification {
         User user = new User.Builder("test").setSchemas(null).build()
         joint.args >> [user]
         when:
-        underTest.checkUser(joint)
+        checkSchema.checkUser(joint)
         then:
         thrown(SchemaUnknownException)
     }
@@ -84,7 +81,7 @@ class CheckSchemaSpec extends Specification {
         User user = new User.Builder("test").setSchemas(schema).build()
         joint.args >> [user]
         when:
-        underTest.checkUser(joint)
+        checkSchema.checkUser(joint)
         then:
         thrown(SchemaUnknownException)
 
@@ -92,37 +89,14 @@ class CheckSchemaSpec extends Specification {
 
     def "should do nothing when schema is correct"() {
         given:
-        def schema = Constants.CORE_SCHEMA
+        def schema = Constants.USER_CORE_SCHEMA
         def schemas = [schema] as Set
         User user = new User.Builder("test").setSchemas(schemas).build()
         joint.args >> [user]
         when:
-        underTest.checkUser(joint)
+        checkSchema.checkUser(joint)
         then:
         notThrown(SchemaUnknownException)
-    }
-
-    def "should contain controller and method pointcut"() {
-        when:
-        underTest.methodPointcut()
-        Method methodPointcut = CheckSchema.class.getDeclaredMethod("methodPointcut")
-        underTest.controllerBean()
-        Method controllerPointcut = CheckSchema.class.getDeclaredMethod("controllerBean")
-        then:
-        def mPointcut = methodPointcut.getAnnotation(Pointcut)
-        mPointcut.value() == "execution(* *(..))"
-        def cPointcut = controllerPointcut.getAnnotation(Pointcut)
-        cPointcut.value() == "within(@org.springframework.stereotype.Controller *)"
-
-    }
-
-    def "checkUser should ref controller and method pointcut in before"() {
-        when:
-        Method checkUser = CheckSchema.class.getDeclaredMethod("checkUser", JoinPoint.class)
-        then:
-        def before = checkUser.getAnnotation(Before)
-        before.value() == "controllerBean() && methodPointcut() "
-
     }
 
 }

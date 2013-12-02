@@ -27,15 +27,17 @@ import org.osiam.resources.ClientSpring;
 import org.osiam.resources.RoleSpring;
 import org.osiam.resources.UserSpring;
 import org.osiam.storage.dao.ClientDao;
-import org.osiam.storage.dao.UserDAO;
+import org.osiam.storage.dao.UserDao;
 import org.osiam.storage.entities.ClientEntity;
 import org.osiam.storage.entities.RolesEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.text.ParseException;
@@ -49,10 +51,11 @@ import java.util.Set;
  */
 @Controller
 @RequestMapping(value = "/authentication")
+@Transactional
 public class AuthenticationController {
 
     @Inject
-    private UserDAO userDAO;
+    private UserDao userDao;
 
     @Inject
     private ClientDao clientDao;
@@ -61,7 +64,7 @@ public class AuthenticationController {
     @ResponseBody
     public UserSpring getUser(@PathVariable final String userName) {
 
-        UserEntity dbUser = userDAO.getByUsername(userName);
+        UserEntity dbUser = userDao.getByUsername(userName);
         return getUserSpring(dbUser);
     }
 
