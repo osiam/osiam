@@ -29,7 +29,7 @@ import org.junit.Test;
 /*
  * This test class is here only to validate that all our entities observe the equals/hashCode contract.
  */
-public class EqualsValidator {
+public class EqualsValidatorTest {
 
     @Test
     public void addressEntity_honors_equals_contract() {
