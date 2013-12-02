@@ -93,12 +93,4 @@ public class GroupEntity extends InternalIdSkeleton {
     public int hashCode() { // NOSONAR : Make sure you change hashcode() too if you modify equals
         return super.hashCode();
     }
-
-    @Override
-    public String toString() {
-        return "GroupEntity{" +
-                "UUID='" + getId() + "\', " +
-                "displayName='" + displayName + '\'' +
-                '}';
-    }
 }

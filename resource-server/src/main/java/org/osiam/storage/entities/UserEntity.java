@@ -529,12 +529,4 @@ public class UserEntity extends InternalIdSkeleton {
         result = prime * result + (userName != null ? userName.hashCode() : 0);
         return result;
     }
-
-    @Override
-    public String toString() {
-        return "UserEntity{" +
-                "UUID='" + getId() + "\', " +
-                "userName='" + userName + '\'' +
-                '}';
-    }
 }

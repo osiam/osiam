@@ -55,7 +55,7 @@ public abstract class InternalIdSkeleton implements ChildOfMultiValueAttribute {
     private Set<GroupEntity> groups = new HashSet<>();
 
     public UUID getId() {
-        return UUID.fromString(id);
+        return UUID.fromString(id != null ? id : "");
     }
 
     public void setId(UUID id) {
