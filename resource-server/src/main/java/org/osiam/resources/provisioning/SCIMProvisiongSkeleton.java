@@ -63,15 +63,11 @@ public abstract class SCIMProvisiongSkeleton<T extends Resource, E extends Inter
                 entity, GenericSCIMToEntityWrapper.Mode.PATCH, getScimEntities());
         setFieldsWrapException(genericSCIMToEntityWrapper);
 
-        entity.touch();
         return getConverter().toScim(entity);
-
     }
 
     @Override
     public void delete(String id) {
         getDao().delete(id);
     }
-
-
 }

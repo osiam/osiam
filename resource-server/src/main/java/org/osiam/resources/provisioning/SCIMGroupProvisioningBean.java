@@ -31,6 +31,7 @@ import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.dao.GenericDAO;
 import org.osiam.storage.dao.GroupDAO;
 import org.osiam.storage.entities.GroupEntity;
+import org.osiam.storage.entities.InternalIdSkeleton;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -90,6 +91,22 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
 
         groupEntity = groupDAO.update(groupEntity);
         return groupConverter.toScim(groupEntity);
+    }
+
+    @Override
+    public Group update(String id, Group group) {
+        //TODO: Refactor GenericScimToEntityWrapper to support membership updating without this ugly converting stuff
+        Group readyForUpdate = super.update(id, group);
+        GroupEntity groupForUpdate = groupConverter.fromScim(readyForUpdate);
+
+        GroupEntity existingEntity = groupDAO.getById(id);
+
+        groupForUpdate.setId(existingEntity.getId());
+        groupForUpdate.setInternalId(existingEntity.getInternalId());
+        groupForUpdate.touch();
+
+        groupDAO.update(groupForUpdate);
+        return groupConverter.toScim(groupForUpdate);
     }
 
     @Override
