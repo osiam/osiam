@@ -24,217 +24,37 @@
 package org.osiam.resources.provisioning
 
 import org.osiam.resources.converter.GroupConverter
-import org.osiam.resources.converter.MetaConverter
 import org.osiam.resources.scim.Group
-import org.osiam.resources.scim.Meta
-import org.osiam.resources.scim.MultiValuedAttribute
-
 import org.osiam.storage.dao.GroupDao
-import org.osiam.storage.dao.UserDao
 import org.osiam.storage.entities.GroupEntity
-import org.osiam.storage.entities.UserEntity
+import org.osiam.storage.entities.MetaEntity
 import spock.lang.Specification
 
 class GroupPatchSpec extends Specification {
 
-    def groupDAO = Mock(GroupDao)
-    def userDAO = Mock(UserDao)
-
-    static IRRELEVANT = 'irrelevant'
     def groupDao = Mock(GroupDao)
-    def metaConverter = new MetaConverter()
-    def groupConverter = new GroupConverter(groupDao: groupDAO, userDao: userDAO, metaConverter: metaConverter)
+    def groupConverter = Mock(GroupConverter)
     SCIMGroupProvisioningBean groupProvisioningBean = new SCIMGroupProvisioningBean(groupDao: groupDao, groupConverter: groupConverter)
 
     def uId = UUID.randomUUID()
     def id = uId.toString()
     def groupId = UUID.randomUUID()
-    def userId = UUID.randomUUID()
 
-    def "should delete a single group in members"() {
-        def members = new HashSet()
-        members.add(new MultiValuedAttribute.Builder().setValue(groupId.toString()).setOperation("delete").build())
-        def group = new Group.Builder()
-                .setMembers(members)
-                .setDisplayName("hi")
-                .build()
-        def entity = createEntityWithInternalId()
-        addListsToEntity(entity)
-        when:
-        groupProvisioningBean.update(id, group)
-        then:
-        1 * groupDao.getById(id) >> entity
-        entity.members.size() == 1
-        entity.members.first() instanceof UserEntity
-    }
-
-
-    def "should delete a single user in members"() {
+    def "only checking call hierarchy due to implementation logic encapsulation in th super class. therefor added integration tests"() {
         given:
-        def members = new HashSet()
-        members.add(new MultiValuedAttribute.Builder().setValue(userId.toString()).setOperation("delete").build())
-        def group = new Group.Builder()
-                .setMembers(members)
-                .setDisplayName("hi")
-                .build()
-        def entity = createEntityWithInternalId()
-        addListsToEntity(entity)
-        when:
-        groupProvisioningBean.update(id, group)
-        then:
-        1 * groupDao.getById(id) >> entity
-        entity.members.size() == 1
-        entity.members.first() instanceof GroupEntity
-    }
-
-
-    private void addListsToEntity(GroupEntity entity) {
-        entity.addMember(new GroupEntity(id: groupId, displayName: "group"))
-        entity.addMember(new UserEntity(id: userId, displayName: "user", userName: IRRELEVANT))
-    }
-
-
-    def "should delete all attributes of a multi-value-attribute list"() {
-        def meta = new Meta.Builder(null, null).setAttributes(["members"] as Set).build()
-        def group = new Group.Builder(meta: meta, displayName: IRRELEVANT).build();
-
-        def entity = createEntityWithInternalId()
-        addListsToEntity(entity)
-        when:
-        groupProvisioningBean.update(id, group)
-        then:
-        1 * groupDao.getById(id) >> entity
-        entity.members.empty
-    }
-
-
-    def "should add a multi-value to a attribute list"() {
-        def newUuid = UUID.randomUUID().toString()
-        def members = [new MultiValuedAttribute.Builder(value: newUuid, display: IRRELEVANT).build()] as Set
-        def group = new Group.Builder(members: members, displayName: IRRELEVANT).build()
-        def entity = createEntityWithInternalId()
-        addListsToEntity(entity)
-        when:
-        groupProvisioningBean.update(id, group)
-        then:
-        1 * groupDao.getById(id) >> entity
-        entity.members.size() == 3
-    }
-
-    def "should delete and add a value to a multi-value-attribute list"() {
-        def members = new HashSet()
-        def newUuid = UUID.randomUUID().toString()
-        members.add(new MultiValuedAttribute.Builder().setValue(newUuid).setDisplay(IRRELEVANT).build())
-        members.add(new MultiValuedAttribute.Builder().setValue(userId.toString()).setOperation("delete").build())
-        def group = new Group.Builder()
-                .setMembers(members)
-                .setDisplayName("hi")
-                .build()
-        def entity = createEntityWithInternalId()
-        addListsToEntity(entity)
-        when:
-        groupProvisioningBean.update(id, group)
-        then:
-        1 * groupDao.getById(id) >> entity
-        entity.members.size() == 2
-        entity.members.last() instanceof GroupEntity
-
-    }
-
-
-    def "should update a single attribute"() {
-        given:
-        def group = new Group.Builder().setDisplayName("hallo").build()
-        def entity = createEntityWithInternalId()
+        def group = new Group.Builder().setDisplayName("test").build()
+        def entityMock = Mock(GroupEntity)
 
         when:
         groupProvisioningBean.update(id, group)
 
         then:
-        1 * groupDao.getById(id) >> entity
-        entity.displayName == "hallo"
-
-    }
-
-    def createEntityWithInternalId() {
-        def entity = new GroupEntity()
-        entity.displayName = "master of the universe"
-        entity.id = uId
-        entity.internalId = 1
-        entity
-    }
-
-    def "should ignore when trying to delete required parameters"() {
-        given:
-        def meta = new Meta.Builder(null, null).setAttributes(["displayName"] as Set).build()
-        Group group = new Group.Builder().setMeta(meta).build()
-        def entity = createEntityWithInternalId()
-
-        when:
-        groupProvisioningBean.update(id, group)
-        then:
-        1 * groupDao.getById(id) >> entity
-        entity.displayName == "master of the universe"
-    }
-
-    def "should delete and update simple attributes"() {
-        given:
-        def meta = new Meta.Builder(null, null).setAttributes(["members"] as Set).build()
-
-        def group = new Group.Builder().setDisplayName("harald").setMeta(meta).build()
-        def entity = createEntityWithInternalId()
-        addListsToEntity(entity)
-        when:
-        groupProvisioningBean.update(id, group)
-        then:
-        1 * groupDao.getById(id) >> entity
-        entity.displayName == "harald"
-        entity.members.empty
-
-    }
-
-    def "should ignore update attribute is in meta"() {
-        given:
-        def meta = new Meta.Builder(null, null).setAttributes(["members"] as Set).build()
-
-        def members = new HashSet()
-        members.add(new MultiValuedAttribute.Builder().setValue(UUID.randomUUID().toString()).build())
-
-        def user = new Group.Builder().setMembers(members).setMeta(meta).build()
-        def entity = createEntityWithInternalId()
-        entity.setDisplayName("display it")
-        addListsToEntity(entity)
-        when:
-        groupProvisioningBean.update(id, user)
-        then:
-        1 * groupDao.getById(id) >> entity
-        entity.getMembers().empty
-    }
-
-
-    def "should ignore read-only attributes on modify"() {
-        given:
-        def group = new Group.Builder().setId(UUID.randomUUID().toString()).build()
-        def entity = createEntityWithInternalId()
-        def oldUuid = entity.getId()
-        when:
-        def result = groupProvisioningBean.update(id, group)
-        then:
-        1 * groupDao.getById(id) >> entity
-        result.id == oldUuid.toString()
-    }
-
-    def "should ignore read-only attributes on delete"() {
-        given:
-        def meta = new Meta.Builder().setAttributes(["id"] as Set).build()
-        def group = new Group.Builder().setMeta(meta).build()
-        def entity = createEntityWithInternalId()
-        def oldUuid = entity.getId()
-        when:
-        def result = groupProvisioningBean.update(id, group)
-        then:
-        1 * groupDao.getById(id) >> entity
-        result.id == oldUuid.toString()
-
+        1 * groupConverter.fromScim(_) >> entityMock
+        2 * groupDao.getById(id) >> entityMock
+        1 * entityMock.getId() >> groupId
+        1 * entityMock.getInternalId() >> 123
+        1 * entityMock.getMeta() >> Mock(MetaEntity)
+        1 * groupDao.update(_) >> entityMock
+        2 * groupConverter.toScim(_) >> Mock(Group)
     }
 }
