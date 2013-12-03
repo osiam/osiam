@@ -25,15 +25,15 @@ package org.osiam.resources.provisioning
 
 import org.osiam.resources.converter.GroupConverter
 import org.osiam.resources.exceptions.ResourceNotFoundException
-import org.osiam.storage.dao.GroupDAO
+import org.osiam.storage.dao.GroupDao
 import spock.lang.Specification
 
 class GroupGetSpec extends Specification {
 
-    GroupDAO groupDao = Mock()
+    GroupDao groupDao = Mock()
     GroupConverter groupConverter = Mock()
 
-    SCIMGroupProvisioningBean groupProvisioningBean = new SCIMGroupProvisioningBean(groupDAO: groupDao, groupConverter: groupConverter)
+    SCIMGroupProvisioningBean groupProvisioningBean = new SCIMGroupProvisioningBean(groupDao: groupDao, groupConverter: groupConverter)
 
     String groupUuid = UUID.randomUUID().toString()
 

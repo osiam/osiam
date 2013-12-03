@@ -23,10 +23,9 @@
 
 package org.osiam.storage.dao;
 
-import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.entities.InternalIdSkeleton;
 
-public interface GenericDAO<T extends InternalIdSkeleton> {
+public interface GenericDao<T extends InternalIdSkeleton> {
 
     void create(T entity);
 
@@ -36,5 +35,5 @@ public interface GenericDAO<T extends InternalIdSkeleton> {
 
     void delete(String id);
 
-    SCIMSearchResult<T> search(String filter, String sortBy, String sortOrder, int count, int startIndex);
+    SearchResult<T> search(String filter, String sortBy, String sortOrder, int count, int startIndex);
 }

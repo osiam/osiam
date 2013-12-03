@@ -64,7 +64,7 @@ public class UserEntity extends InternalIdSkeleton {
     private String timezone;
 
     @Column
-    private Boolean active;
+    private Boolean active = Boolean.FALSE;
 
     @Column(nullable = false)
     private String password;
@@ -72,37 +72,36 @@ public class UserEntity extends InternalIdSkeleton {
     @Column
     private String displayName;
 
-    @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EmailEntity> emails;
 
-    @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PhoneNumberEntity> phoneNumbers;
 
-    @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ImEntity> ims;
 
-    @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PhotoEntity> photos;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<AddressEntity> addresses;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<EntitlementsEntity> entitlements;
 
-    //needs to be eager fetched due to authorization decisions
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private Set<RolesEntity> roles;
 
-    @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<X509CertificateEntity> x509Certificates;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany
     @JoinTable(name = "scim_user_scim_extension", joinColumns = {@JoinColumn(name = "scim_user_internal_id", referencedColumnName = "internal_id")},
             inverseJoinColumns = {@JoinColumn(name = "registered_extensions_internal_id", referencedColumnName = "internal_id")})
     private Set<ExtensionEntity> registeredExtensions = new HashSet<>();
 
-    @OneToMany(mappedBy = MAPPING_NAME, fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ExtensionFieldValueEntity> extensionFieldValues = new HashSet<>();
 
     public UserEntity() {
@@ -249,6 +248,7 @@ public class UserEntity extends InternalIdSkeleton {
         this.password = password;
     }
 
+    @Override
     public String getDisplayName() {
         return displayName;
     }
@@ -506,27 +506,18 @@ public class UserEntity extends InternalIdSkeleton {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (!super.equals(o)) {
+        if (o == null || getClass() != o.getClass()){
             return false;
         }
 
         UserEntity that = (UserEntity) o;
 
-        if (userName != null ? !userName.equals(that.userName) : that.userName != null) {
-            return false;
-        }
+        return userName.equals(that.userName);
 
-        return true;
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + (userName != null ? userName.hashCode() : 0);
-        return result;
+        return userName.hashCode();
     }
 }

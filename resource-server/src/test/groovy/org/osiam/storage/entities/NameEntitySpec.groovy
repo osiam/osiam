@@ -23,17 +23,9 @@
 
 package org.osiam.storage.entities
 
-import org.osiam.resources.scim.Name
-import org.osiam.storage.entities.NameEntity
 import spock.lang.Specification
 
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 15.03.13
- * Time: 15:48
- * To change this template use File | Settings | File Templates.
- */
+
 class NameEntitySpec extends Specification {
 
     NameEntity nameEntity = new NameEntity()
@@ -93,5 +85,4 @@ class NameEntitySpec extends Specification {
         then:
         nameEntity.getHonorificSuffix() == "III"
     }
-
 }

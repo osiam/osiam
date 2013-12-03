@@ -23,14 +23,14 @@
 
 package org.osiam.storage.entities;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
-import java.util.HashSet;
-import java.util.Set;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Group Entity
@@ -38,9 +38,7 @@ import java.util.Set;
 @Entity(name = "scim_group")
 public class GroupEntity extends InternalIdSkeleton {
 
-    private static final long serialVersionUID = -6535056565639057158L;
-
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     private Set<InternalIdSkeleton> members = new HashSet<>();
 
     @Column(unique = true, nullable = false)
@@ -70,6 +68,7 @@ public class GroupEntity extends InternalIdSkeleton {
         member.removeFromGroup(this);
     }
 
+    @Override
     public String getDisplayName() {
         return displayName;
     }
@@ -79,18 +78,21 @@ public class GroupEntity extends InternalIdSkeleton {
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (this == other) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (other == null || getClass() != other.getClass()) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        return super.equals(other);
+
+        GroupEntity that = (GroupEntity) o;
+
+        return displayName.equals(that.displayName);
     }
 
     @Override
-    public int hashCode() { // NOSONAR : Make sure you change hashcode() too if you modify equals
-        return super.hashCode();
+    public int hashCode() {
+        return displayName.hashCode();
     }
 }

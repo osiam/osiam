@@ -23,27 +23,31 @@
 
 package org.osiam.resources.provisioning;
 
-import org.osiam.resources.converter.Converter;
-import org.osiam.resources.converter.GroupConverter;
-import org.osiam.resources.exceptions.ResourceExistsException;
-import org.osiam.resources.scim.Group;
-import org.osiam.resources.scim.SCIMSearchResult;
-import org.osiam.storage.dao.GenericDAO;
-import org.osiam.storage.dao.GroupDAO;
-import org.osiam.storage.entities.GroupEntity;
-import org.osiam.storage.entities.InternalIdSkeleton;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Service;
-
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.inject.Inject;
+
+import org.osiam.resources.converter.Converter;
+import org.osiam.resources.converter.GroupConverter;
+import org.osiam.resources.exceptions.ResourceExistsException;
+import org.osiam.resources.scim.Constants;
+import org.osiam.resources.scim.Group;
+import org.osiam.resources.scim.SCIMSearchResult;
+import org.osiam.storage.dao.GenericDao;
+import org.osiam.storage.dao.GroupDao;
+import org.osiam.storage.dao.SearchResult;
+import org.osiam.storage.entities.GroupEntity;
+import org.osiam.storage.entities.InternalIdSkeleton;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
+
 @Service
-public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, GroupEntity> implements SCIMGroupProvisioning {
+public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, GroupEntity> implements
+        SCIMGroupProvisioning {
 
     private static final Logger LOGGER = Logger.getLogger(SCIMGroupProvisioningBean.class.getName());
 
@@ -51,11 +55,11 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
     private GroupConverter groupConverter;
 
     @Inject
-    private GroupDAO groupDAO;
+    private GroupDao groupDao;
 
     @Override
-    protected GenericDAO<GroupEntity> getDao() {
-        return groupDAO;
+    protected GenericDao<GroupEntity> getDao() {
+        return groupDao;
     }
 
     @Override
@@ -68,7 +72,7 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
         GroupEntity enrichedGroup = groupConverter.fromScim(group);
         enrichedGroup.setId(UUID.randomUUID());
         try {
-            groupDAO.create(enrichedGroup);
+            groupDao.create(enrichedGroup);
         } catch (DataIntegrityViolationException e) {
             LOGGER.log(Level.INFO, "An exception got thrown while creating a group.", e);
 
@@ -80,7 +84,7 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
     @Override
     public Group replace(String id, Group group) {
 
-        GroupEntity existingEntity = groupDAO.getById(id);
+        GroupEntity existingEntity = groupDao.getById(id);
 
         GroupEntity groupEntity = groupConverter.fromScim(group);
 
@@ -89,7 +93,7 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
         groupEntity.setMeta(existingEntity.getMeta());
         groupEntity.touch();
 
-        groupEntity = groupDAO.update(groupEntity);
+        groupEntity = groupDao.update(groupEntity);
         return groupConverter.toScim(groupEntity);
     }
 
@@ -113,11 +117,15 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
     @Override
     public SCIMSearchResult<Group> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
         List<Group> groups = new ArrayList<>();
-        SCIMSearchResult<GroupEntity> result = getDao().search(filter, sortBy, sortOrder, count, startIndex);
-        for (GroupEntity group : result.getResources()) {
+
+        // Decrease startIndex by 1 because scim pagination starts at 1 and JPA doesn't
+        SearchResult<GroupEntity> result = getDao().search(filter, sortBy, sortOrder, count, startIndex - 1);
+
+        for (GroupEntity group : result.results) {
             groups.add(groupConverter.toScim(group));
         }
-        return new SCIMSearchResult<>(groups, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
+
+        return new SCIMSearchResult<>(groups, result.totalResults, count, startIndex, Constants.GROUP_CORE_SCHEMA);
     }
 
     @Override

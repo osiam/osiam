@@ -23,14 +23,13 @@
 
 package org.osiam.storage.entities;
 
-import org.osiam.resources.scim.Meta;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import java.util.Calendar;
-import java.util.Date;
 
 @Entity(name = "scim_meta")
 public class MetaEntity {
@@ -109,10 +108,6 @@ public class MetaEntity {
 
     public void setResourceType(String resourceType) {
         this.resourceType = resourceType;
-    }
-
-    public Meta toScim() {
-        return new Meta.Builder(created, lastModified).setResourceType(resourceType).build();
     }
 
 }

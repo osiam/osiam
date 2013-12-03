@@ -23,39 +23,41 @@
 
 package org.osiam.resources.provisioning;
 
-import org.osiam.resources.converter.Converter;
-import org.osiam.resources.converter.UserConverter;
-import org.osiam.resources.exceptions.ResourceExistsException;
-import org.osiam.resources.scim.Extension;
-import org.osiam.resources.scim.ExtensionFieldType;
-import org.osiam.resources.scim.SCIMSearchResult;
-import org.osiam.resources.scim.User;
-import org.osiam.storage.dao.ExtensionDao;
-import org.osiam.storage.dao.GenericDAO;
-import org.osiam.storage.dao.UserDAO;
-import org.osiam.storage.entities.ExtensionEntity;
-import org.osiam.storage.entities.ExtensionFieldEntity;
-import org.osiam.storage.entities.ExtensionFieldValueEntity;
-import org.osiam.storage.entities.UserEntity;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import javax.inject.Inject;
+
+import org.osiam.resources.converter.Converter;
+import org.osiam.resources.converter.UserConverter;
+import org.osiam.resources.exceptions.ResourceExistsException;
+import org.osiam.resources.scim.Constants;
+import org.osiam.resources.scim.Extension;
+import org.osiam.resources.scim.ExtensionFieldType;
+import org.osiam.resources.scim.SCIMSearchResult;
+import org.osiam.resources.scim.User;
+import org.osiam.storage.dao.ExtensionDao;
+import org.osiam.storage.dao.GenericDao;
+import org.osiam.storage.dao.SearchResult;
+import org.osiam.storage.dao.UserDao;
+import org.osiam.storage.entities.ExtensionEntity;
+import org.osiam.storage.entities.ExtensionFieldEntity;
+import org.osiam.storage.entities.ExtensionFieldValueEntity;
+import org.osiam.storage.entities.UserEntity;
+import org.osiam.storage.helper.NumberPadder;
+import org.springframework.security.authentication.encoding.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 @Service
-@Transactional
 public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserEntity> implements SCIMUserProvisioning {
 
     @Inject
     private UserConverter userConverter;
 
     @Inject
-    private UserDAO userDao;
+    private UserDao userDao;
 
     @Inject
     private ExtensionDao extensionDao;
@@ -63,8 +65,11 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
     @Inject
     private PasswordEncoder passwordEncoder;
 
+    @Inject
+    private NumberPadder numberPadder;
+
     @Override
-    protected GenericDAO<UserEntity> getDao() {
+    protected GenericDao<UserEntity> getDao() {
         return userDao;
     }
 
@@ -119,12 +124,16 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
     @Override
     public SCIMSearchResult<User> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
         List<User> users = new ArrayList<>();
-        SCIMSearchResult<UserEntity> result = getDao().search(filter, sortBy, sortOrder, count, startIndex);
-        for (Object g : result.getResources()) {
-            User scimResultUser = userConverter.toScim((UserEntity) g);
+
+        // Decrease startIndex by 1 because scim pagination starts at 1 and JPA doesn't
+        SearchResult<UserEntity> result = getDao().search(filter, sortBy, sortOrder, count, startIndex - 1);
+
+        for (UserEntity userEntity : result.results) {
+            User scimResultUser = userConverter.toScim(userEntity);
             users.add(User.Builder.generateForOutput(scimResultUser));
         }
-        return new SCIMSearchResult<>(users, result.getTotalResults(), count, result.getStartIndex(), result.getSchemas());
+
+        return new SCIMSearchResult<>(users, result.totalResults, count, startIndex, Constants.USER_CORE_SCHEMA);
     }
 
     @Override
@@ -159,15 +168,16 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
             String fieldName = extensionField.getName();
             ExtensionFieldValueEntity extensionFieldValue = findExtensionFieldValue(extensionField, userEntity);
 
-            if (extensionFieldValue == null && !updatedExtension.isFieldPresent(fieldName)) {
+            boolean isFieldPresent = updatedExtension.isFieldPresent(fieldName);
+            if (extensionFieldValue == null && !isFieldPresent) {
                 continue;
-            } else if (extensionFieldValue == null && updatedExtension.isFieldPresent(fieldName)) {
+            } else if (extensionFieldValue == null && isFieldPresent) {
                 extensionFieldValue = new ExtensionFieldValueEntity();
-            } else if (extensionFieldValue != null && !updatedExtension.isFieldPresent(fieldName)) {
+            } else if (extensionFieldValue != null && !isFieldPresent) {
                 continue;
             }
 
-            String newValue = updatedExtension.getField(fieldName, ExtensionFieldType.STRING);
+            String newValue = getNewExtensionValue(extensionField, updatedExtension, fieldName);
             if (newValue == null) {
                 continue;
             }
@@ -176,6 +186,17 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
             extensionFieldValue.setExtensionField(extensionField);
             userEntity.addOrUpdateExtensionValue(extensionFieldValue);
         }
+    }
+
+    private String getNewExtensionValue(ExtensionFieldEntity extensionField, Extension updatedExtension,
+            String fieldName) {
+        String newValue = updatedExtension.getField(fieldName, ExtensionFieldType.STRING);
+        if (newValue != null &&
+                (extensionField.getType() == ExtensionFieldType.INTEGER
+                || extensionField.getType() == ExtensionFieldType.DECIMAL)) {
+            newValue = numberPadder.pad(newValue);
+        }
+        return newValue;
     }
 
     private ExtensionFieldValueEntity findExtensionFieldValue(ExtensionFieldEntity extensionField, UserEntity userEntity) {
@@ -199,5 +220,3 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
     }
 
 }
-
-

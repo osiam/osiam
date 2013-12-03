@@ -23,22 +23,28 @@
 
 package org.osiam.storage.dao;
 
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.sql.JoinType;
-import org.osiam.resources.exceptions.ResourceNotFoundException;
-import org.osiam.resources.scim.SCIMSearchResult;
-import org.osiam.storage.entities.GroupEntity;
-import org.osiam.storage.entities.UserEntity;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.Query;
 import java.util.Set;
 import java.util.logging.Level;
 
+import javax.inject.Inject;
+import javax.persistence.Query;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Root;
+
+import org.osiam.resources.exceptions.ResourceNotFoundException;
+import org.osiam.resources.scim.Constants;
+import org.osiam.storage.entities.GroupEntity;
+import org.osiam.storage.entities.UserEntity;
+import org.osiam.storage.query.FilterParser;
+import org.osiam.storage.query.UserFilterParser;
+import org.osiam.storage.query.UserQueryField;
+import org.springframework.stereotype.Repository;
+
 @Repository
-@Transactional
-public class UserDAO extends GetInternalIdSkeleton implements GenericDAO<UserEntity> {
+public class UserDao extends ResourceDao<UserEntity> implements GenericDao<UserEntity> {
+
+    @Inject
+    private UserFilterParser filterParser;
 
     @Override
     public void create(UserEntity userEntity) {
@@ -77,22 +83,28 @@ public class UserDAO extends GetInternalIdSkeleton implements GenericDAO<UserEnt
     }
 
     @Override
-    public SCIMSearchResult<UserEntity> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
+    public SearchResult<UserEntity> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
         return search(UserEntity.class, filter, count, startIndex, sortBy, sortOrder);
     }
 
     @Override
-    protected void createAliasesForCriteria(DetachedCriteria criteria) {
-        criteria.createAlias("meta", "meta", JoinType.INNER_JOIN); // NOSONAR - no code duplication, need to set alias for types
-        criteria.createAlias("name", "name", JoinType.LEFT_OUTER_JOIN); // NOSONAR - no code duplication, need to set alias for types
-        criteria.createAlias("emails", "emails", JoinType.LEFT_OUTER_JOIN); // NOSONAR - no code duplication, need to set alias for types
-        criteria.createAlias("phoneNumbers", "phoneNumbers", JoinType.LEFT_OUTER_JOIN); // NOSONAR - no code duplication, need to set alias for types
-        criteria.createAlias("ims", "ims", JoinType.LEFT_OUTER_JOIN); // NOSONAR - no code duplication, need to set alias for types
-        criteria.createAlias("photos", "photos", JoinType.LEFT_OUTER_JOIN); // NOSONAR - no code duplication, need to set alias for types
-        criteria.createAlias("addresses", "addresses", JoinType.LEFT_OUTER_JOIN); // NOSONAR - no code duplication, need to set alias for types
-        criteria.createAlias("groups", "groups", JoinType.LEFT_OUTER_JOIN); // NOSONAR - no code duplication, need to set alias for types
-        criteria.createAlias("entitlements", "entitlements", JoinType.LEFT_OUTER_JOIN); // NOSONAR - no code duplication, need to set alias for types
-        criteria.createAlias("roles", "roles", JoinType.LEFT_OUTER_JOIN); // NOSONAR - no code duplication, need to set alias for types
-        criteria.createAlias("x509Certificates", "x509Certificates", JoinType.LEFT_OUTER_JOIN); // NOSONAR - no code duplication, need to set alias for types
+    protected FilterParser<UserEntity> getFilterParser() {
+        return filterParser;
     }
+
+    @Override
+    protected Class<UserEntity> getResourceClass() {
+        return UserEntity.class;
+    }
+
+    @Override
+    protected String getCoreSchema() {
+        return Constants.USER_CORE_SCHEMA;
+    }
+
+    @Override
+    protected Expression<?> getDefaultSortByField(Root<UserEntity> root) {
+        return UserQueryField.USERNAME.createSortByField(root, em.getCriteriaBuilder());
+    }
+
 }

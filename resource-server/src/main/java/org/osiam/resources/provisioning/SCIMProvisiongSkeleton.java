@@ -25,15 +25,16 @@ package org.osiam.resources.provisioning;
 
 import org.osiam.resources.converter.Converter;
 import org.osiam.resources.scim.Resource;
-import org.osiam.storage.dao.GenericDAO;
+import org.osiam.storage.dao.GenericDao;
 import org.osiam.storage.entities.InternalIdSkeleton;
 
 public abstract class SCIMProvisiongSkeleton<T extends Resource, E extends InternalIdSkeleton> implements SCIMProvisioning<T> {
 
-    protected abstract GenericDAO<E> getDao();
+    protected abstract GenericDao<E> getDao();
 
     protected abstract Converter<T, E> getConverter();
 
+    @Override
     public abstract T create(T resource);
 
     public abstract GenericSCIMToEntityWrapper.For getTarget();

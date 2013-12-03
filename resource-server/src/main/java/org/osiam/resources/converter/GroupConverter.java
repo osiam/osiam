@@ -1,27 +1,54 @@
+/*
+ * Copyright (C) 2013 tarent AG
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package org.osiam.resources.converter;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.inject.Inject;
 
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.MemberRef;
 import org.osiam.resources.scim.MultiValuedAttribute;
-import org.osiam.storage.dao.GroupDAO;
-import org.osiam.storage.dao.UserDAO;
+import org.osiam.storage.dao.GroupDao;
+import org.osiam.storage.dao.UserDao;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.InternalIdSkeleton;
 import org.springframework.stereotype.Service;
-
-import javax.inject.Inject;
-import java.util.HashSet;
-import java.util.Set;
 
 @Service
 public class GroupConverter implements Converter<Group, GroupEntity> {
 
     @Inject
-    private GroupDAO groupDao;
+    private GroupDao groupDao;
 
     @Inject
-    private UserDAO userDao;
+    private UserDao userDao;
+
+    @Inject
+    private MetaConverter metaConverter;
 
     @Override
     public GroupEntity fromScim(Group group) {
@@ -69,7 +96,7 @@ public class GroupConverter implements Converter<Group, GroupEntity> {
         Group.Builder groupBuilder = new Group.Builder()
                 .setDisplayName(group.getDisplayName())
                 .setId(group.getId().toString())
-                .setMeta(group.getMeta().toScim())
+                .setMeta(metaConverter.toScim(group.getMeta()))
                 .setExternalId(group.getExternalId());
 
         Set<MemberRef> members = new HashSet<>();

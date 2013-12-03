@@ -39,6 +39,7 @@ import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.resources.scim.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -59,8 +60,9 @@ import org.springframework.web.util.UriTemplate;
  */
 @Controller
 @RequestMapping(value = "/Users")
+@Transactional
 public class  UserController {
-    
+
     @Inject
     private SCIMUserProvisioning scimUserProvisioning;
 

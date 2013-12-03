@@ -1,3 +1,26 @@
+/*
+ * Copyright (C) 2013 tarent AG
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package org.osiam.resources.converter
 
 import org.joda.time.format.ISODateTimeFormat
@@ -7,6 +30,8 @@ import org.osiam.storage.dao.ExtensionDao
 import org.osiam.storage.entities.ExtensionEntity
 import org.osiam.storage.entities.ExtensionFieldEntity
 import org.osiam.storage.entities.ExtensionFieldValueEntity
+import org.osiam.storage.helper.NumberPadder
+
 import spock.lang.Specification
 
 class ExtensionConverterSpec extends Specification {
@@ -14,21 +39,22 @@ class ExtensionConverterSpec extends Specification {
     private static String URN1 = "urn:org.osiam.extensions:Test01:1.0"
     private static String URN2 = "urn:org.osiam.extensions:Test02:1.0"
 
-    private ExtensionDao extensionDao = Mock();
+    private ExtensionDao extensionDao = Mock()
+    private NumberPadder numberPadder = Mock()
 
-    private ExtensionConverter converter = new ExtensionConverter(extensionDao: extensionDao);
+    private ExtensionConverter converter = new ExtensionConverter(extensionDao: extensionDao, numberPadder: numberPadder)
 
     Map fixtures = [(URN1): [
             [fieldname: 'gender', valueAsString: 'male', value: 'male', type: ExtensionFieldType.STRING],
             [fieldname: 'size', valueAsString: '1.78', value: new BigDecimal('1.78'), type: ExtensionFieldType.DECIMAL],
             [fieldname: 'numberChildren', valueAsString: '2', value: BigInteger.valueOf(2), type: ExtensionFieldType.INTEGER],
             [fieldname: 'birth', valueAsString: '2008-01-23T04:56:22.000Z',
-                    value: new Date(ISODateTimeFormat.dateTime().withZoneUTC().parseDateTime("2008-01-23T04:56:22.000Z").getMillis())
-                    , type: ExtensionFieldType.DATE_TIME],
+                value: new Date(ISODateTimeFormat.dateTime().withZoneUTC().parseDateTime("2008-01-23T04:56:22.000Z").getMillis())
+                , type: ExtensionFieldType.DATE_TIME],
             [fieldname: 'newsletter', valueAsString: 'true', value: true, type: ExtensionFieldType.BOOLEAN]
-    ], (URN2): [
+        ], (URN2): [
             [fieldname: 'favoredPet', valueAsString: 'doc', value: 'doc', type: ExtensionFieldType.STRING],
-    ]]
+        ]]
 
     def 'convert extensionEntity set to scim extension set works'() {
         given:
@@ -39,7 +65,8 @@ class ExtensionConverterSpec extends Specification {
         Set<Extension> extensions = converter.toScim(extensionFieldValueEntitySet)
 
         then:
-        extensions.equals(scimExtensionSet)
+        1 * numberPadder.unpad('1.78') >> '1.78'
+        1 * numberPadder.unpad('2') >> '2'
         extensions == scimExtensionSet
     }
 
@@ -55,6 +82,8 @@ class ExtensionConverterSpec extends Specification {
         then:
         1 * extensionDao.getExtensionByUrn(URN1) >> extensionMap[URN1]
         1 * extensionDao.getExtensionByUrn(URN2) >> extensionMap[URN2]
+        1 * numberPadder.pad('1.78') >> '1.78'
+        1 * numberPadder.pad('2') >> '2'
         extensions == extensionFieldValueEntitySet
     }
 
@@ -89,38 +118,38 @@ class ExtensionConverterSpec extends Specification {
 
     private def createExtension(def urn) {
         def fixtureData = fixtures[urn]
-        def fields = fixtureData.collect { new ExtensionFieldEntity(name: it.fieldname) }
+        def fields = fixtureData.collect { new ExtensionFieldEntity(name: it.fieldname, type : it.type) }
         def extension = new ExtensionEntity(urn: urn, fields: fields as Set)
         extension
     }
 
     def addNameValuePairToExtensionEntity(ExtensionEntity extensionEntity, String name, String value) {
-        ExtensionFieldEntity fieldEntity = new ExtensionFieldEntity();
-        fieldEntity.setName(name);
+        ExtensionFieldEntity fieldEntity = new ExtensionFieldEntity()
+        fieldEntity.setName(name)
 
-        ExtensionFieldValueEntity valueEntity = new ExtensionFieldValueEntity();
-        valueEntity.setValue(value);
-        valueEntity.setExtensionField(fieldEntity);
+        ExtensionFieldValueEntity valueEntity = new ExtensionFieldValueEntity()
+        valueEntity.setValue(value)
+        valueEntity.setExtensionField(fieldEntity)
 
-        fieldEntity.setExtension(extensionEntity);
+        fieldEntity.setExtension(extensionEntity)
     }
 
     def Set<ExtensionFieldValueEntity> getFilledExtensionEntity(Map fixtures, String... urns) {
 
-        Set<ExtensionFieldValueEntity> extensionFieldValueEntitySet = new HashSet<>();
+        Set<ExtensionFieldValueEntity> extensionFieldValueEntitySet = new HashSet<>()
 
         for (urn in urns) {
-            ExtensionEntity entity = new ExtensionEntity();
-            entity.setUrn(urn);
+            ExtensionEntity entity = new ExtensionEntity()
+            entity.setUrn(urn)
 
             def fixture = fixtures.get(urn)
             for (field in fixture) {
                 ExtensionFieldValueEntity valueEntity = getFieldToEntityValueSet(entity, field.get('fieldname'), field.get('valueAsString'), field.get('type'))
-                extensionFieldValueEntitySet.add(valueEntity);
+                extensionFieldValueEntitySet.add(valueEntity)
             }
         }
 
-        return extensionFieldValueEntitySet;
+        return extensionFieldValueEntitySet
     }
 
     def Set<Extension> getFilledScimExtension(Map fixtures, String... urns) {
@@ -142,13 +171,13 @@ class ExtensionConverterSpec extends Specification {
     }
 
     def ExtensionFieldValueEntity getFieldToEntityValueSet(ExtensionEntity extensionEntity, String name, String value, ExtensionFieldType type) {
-        ExtensionFieldEntity fieldEntity = new ExtensionFieldEntity();
-        fieldEntity.setName(name);
+        ExtensionFieldEntity fieldEntity = new ExtensionFieldEntity()
+        fieldEntity.setName(name)
         fieldEntity.setType(type)
 
-        ExtensionFieldValueEntity valueEntity = new ExtensionFieldValueEntity();
-        valueEntity.setValue(value);
-        fieldEntity.setExtension(extensionEntity);
+        ExtensionFieldValueEntity valueEntity = new ExtensionFieldValueEntity()
+        valueEntity.setValue(value)
+        fieldEntity.setExtension(extensionEntity)
         valueEntity.setExtensionField(fieldEntity)
 
         return valueEntity
