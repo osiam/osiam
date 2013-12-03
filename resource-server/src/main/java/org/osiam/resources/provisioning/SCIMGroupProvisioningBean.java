@@ -103,6 +103,7 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
 
         groupForUpdate.setId(existingEntity.getId());
         groupForUpdate.setInternalId(existingEntity.getInternalId());
+        groupForUpdate.setMeta(existingEntity.getMeta());
         groupForUpdate.touch();
 
         groupDAO.update(groupForUpdate);

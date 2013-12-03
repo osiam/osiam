@@ -146,6 +146,7 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
         }
 
         userEntity.touch();
+        userDao.update(userEntity);
         return userConverter.toScim(userEntity);
     }
 

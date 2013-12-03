@@ -29,9 +29,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.osiam.resources.scim.MultiValuedAttribute;
-import org.osiam.storage.entities.ChildOfMultiValueAttribute;
-import org.osiam.storage.entities.ChildOfMultiValueAttributeWithIdAndType;
-import org.osiam.storage.entities.ChildOfMultiValueAttributeWithIdAndTypeAndPrimary;
+import org.osiam.storage.entities.*;
 
 public class EntityListFieldWrapper {
 
@@ -156,7 +154,23 @@ public class EntityListFieldWrapper {
             ((ChildOfMultiValueAttributeWithIdAndTypeAndPrimary) target)
                     .setPrimary(m.isPrimary() != null ? m.isPrimary() : false);
         }
+        addHibernateUserReferenceToEntityIfNeeded(target);
         return target;
+    }
+
+    //TODO: Ugly stuff, rework hole generic PATCH mechanism
+    private void addHibernateUserReferenceToEntityIfNeeded(Object target) {
+        if (target instanceof EmailEntity) {
+            ((EmailEntity) target).setUser((UserEntity) entity);
+        } else if (target instanceof PhoneNumberEntity ) {
+            ((PhoneNumberEntity) target).setUser((UserEntity) entity);
+        } else if (target instanceof ImEntity) {
+            ((ImEntity) target).setUser((UserEntity) entity);
+        } else if (target instanceof PhotoEntity) {
+            ((PhotoEntity) target).setUser((UserEntity) entity);
+        } else if (target instanceof X509CertificateEntity) {
+            ((X509CertificateEntity) target).setUser((UserEntity) entity);
+        }
     }
 
     private void clearIfNotInPatchMode(Collection<?> collection) {
