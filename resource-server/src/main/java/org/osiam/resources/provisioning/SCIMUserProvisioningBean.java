@@ -155,8 +155,8 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
         }
 
         userEntity.touch();
-        userDao.update(userEntity);
-        return userConverter.toScim(userEntity);
+        UserEntity updatedUser = userDao.update(userEntity);
+        return userConverter.toScim(updatedUser);
     }
 
     private void updateExtension(Entry<String, Extension> extensionEntry, UserEntity userEntity) {

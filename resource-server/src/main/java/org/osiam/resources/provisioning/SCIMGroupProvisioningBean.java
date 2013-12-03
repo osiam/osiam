@@ -103,15 +103,15 @@ public class SCIMGroupProvisioningBean extends SCIMProvisiongSkeleton<Group, Gro
         Group readyForUpdate = super.update(id, group);
         GroupEntity groupForUpdate = groupConverter.fromScim(readyForUpdate);
 
-        GroupEntity existingEntity = groupDAO.getById(id);
+        GroupEntity existingEntity = groupDao.getById(id);
 
         groupForUpdate.setId(existingEntity.getId());
         groupForUpdate.setInternalId(existingEntity.getInternalId());
         groupForUpdate.setMeta(existingEntity.getMeta());
         groupForUpdate.touch();
 
-        groupDAO.update(groupForUpdate);
-        return groupConverter.toScim(groupForUpdate);
+        GroupEntity updatedGroup = groupDao.update(groupForUpdate);
+        return groupConverter.toScim(updatedGroup);
     }
 
     @Override
