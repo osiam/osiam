@@ -96,8 +96,8 @@ public class  UserController {
         String requestUrl = request.getRequestURL().toString();
         URI uri = new UriTemplate("{requestUrl}{internalId}").expand(requestUrl + "/", createdUser.getId());
         response.setHeader("Location", uri.toASCIIString());
-        createdUser.getMeta().setLocation(uri.toASCIIString());
-        return new User.Builder(createdUser).setPassword(null).build();
+        Meta newMeta = new Meta.Builder(createdUser.getMeta()).setLocation(uri.toASCIIString()).build();
+        return new User.Builder(createdUser).setMeta(newMeta).setPassword(null).build();
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT) // NOSONAR - duplicate literals unnecessary
@@ -148,7 +148,7 @@ public class  UserController {
                                                       User createdUser) {
         String requestUrl = request.getRequestURL().toString();
         response.setHeader("Location", requestUrl);
-        createdUser.getMeta().setLocation(requestUrl);
-        return new User.Builder(createdUser).setPassword(null).build();
+        Meta newMeta = new Meta.Builder(createdUser.getMeta()).setLocation(requestUrl).build();
+        return new User.Builder(createdUser).setMeta(newMeta).setPassword(null).build();
     }
 }
