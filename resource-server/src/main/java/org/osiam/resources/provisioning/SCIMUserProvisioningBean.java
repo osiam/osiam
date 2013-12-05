@@ -130,7 +130,7 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
 
         for (UserEntity userEntity : result.results) {
             User scimResultUser = userConverter.toScim(userEntity);
-            users.add(User.Builder.generateForOutput(scimResultUser));
+            users.add(new User.Builder(scimResultUser).setPassword(null).build());
         }
 
         return new SCIMSearchResult<>(users, result.totalResults, count, startIndex, Constants.USER_CORE_SCHEMA);
