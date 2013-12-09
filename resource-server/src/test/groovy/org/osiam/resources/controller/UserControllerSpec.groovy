@@ -52,31 +52,33 @@ class UserControllerSpec extends Specification {
     def jsonInputValidator = Mock(JsonInputValidator)
     def attributesRemovalHelper = Mock(AttributesRemovalHelper)
     def underTest = new UserController(requestParamHelper: requestParamHelper,
-            jsonInputValidator: jsonInputValidator, attributesRemovalHelper: attributesRemovalHelper)
+    jsonInputValidator: jsonInputValidator, attributesRemovalHelper: attributesRemovalHelper)
     def provisioning = Mock(SCIMUserProvisioning)
     def httpServletRequest = Mock(HttpServletRequest)
     def httpServletResponse = Mock(HttpServletResponse)
 
     User user = new User.Builder("test").setActive(true)
-            .setDisplayName("display")
-            .setLocale("locale")
-            .setName(new Name.Builder().build())
-            .setNickName("nickname")
-            .setPassword("password")
-            .setPreferredLanguage("prefereedLanguage")
-            .setProfileUrl("profileUrl")
-            .setTimezone("time")
-            .setTitle("title")
-            .setUserType("userType")
-            .setExternalId("externalid")
-            .setId("id")
-            .setMeta(new Meta.Builder().build())
-            .build()
+    .setDisplayName("display")
+    .setLocale("locale")
+    .setName(new Name.Builder().build())
+    .setNickName("nickname")
+    .setPassword("password")
+    .setPreferredLanguage("prefereedLanguage")
+    .setProfileUrl("profileUrl")
+    .setTimezone("time")
+    .setTitle("title")
+    .setUserType("userType")
+    .setExternalId("externalid")
+    .setId("id")
+    .setMeta(new Meta.Builder().build())
+    .build()
 
     NameEntity nameEntity = new NameEntity(familyName: "Prefect", givenName: "Fnord", formatted: "Fnord Prefect")
-    UserEntity userEntity = new UserEntity(active: true, emails: [new EmailEntity(primary: true, value: "test@test.de")],
-            name: nameEntity, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
-            locale: "de_DE", userName: "fpref")
+    UserEntity userEntity = new UserEntity(active: true, emails: [
+        new EmailEntity(primary: true, value: "test@test.de")
+    ],
+    name: nameEntity, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
+    locale: "de_DE", userName: "fpref")
 
     def setup() {
         underTest.setScimUserProvisioning(provisioning)
@@ -87,7 +89,7 @@ class UserControllerSpec extends Specification {
         def result = underTest.getUser("one")
         then:
         1 * provisioning.getById("one") >> user
-        validateUser(result)
+        validateUser(result, false)
     }
 
     def "should contain a method to GET a user"() {
@@ -100,7 +102,6 @@ class UserControllerSpec extends Specification {
         mapping.value() == ["/{id}"]
         mapping.method() == [RequestMethod.GET]
         body
-
     }
 
     def "should contain a method to POST a user"() {
@@ -162,9 +163,7 @@ class UserControllerSpec extends Specification {
         defaultStatus.value() == HttpStatus.OK
     }
 
-
-
-    def validateUser(User result) {
+    def validateUser(User result, boolean locationChanged) {
         assert result != user
         assert user.password != null
         assert result.password == null
@@ -190,7 +189,16 @@ class UserControllerSpec extends Specification {
         assert result.userName == user.userName
         assert result.id == user.id
         assert result.externalId == user.externalId
-        assert result.meta == user.meta
+        if(!locationChanged){
+            assert result.meta == user.meta
+        }else{
+            result.meta.attributes  == user.meta.attributes
+            result.meta.created == user.meta.created
+            result.meta.lastModified == user.meta.lastModified
+            result.meta.resourceType == user.meta.resourceType
+            result.meta.version == user.meta.version
+            result.meta.location != user.meta.location
+        }
         true
     }
 
@@ -206,7 +214,7 @@ class UserControllerSpec extends Specification {
         then:
         1 * provisioning.create(user) >> user
         1 * httpServletResponse.setHeader("Location", uri.toASCIIString())
-        validateUser(result)
+        validateUser(result, true)
     }
 
     def "should replace an user and set location header"() {
@@ -221,7 +229,7 @@ class UserControllerSpec extends Specification {
         1 * provisioning.replace(id, user) >> user
         1 * httpServletRequest.getRequestURL() >> new StringBuffer("http://localhorst/horst/" + id)
         1 * httpServletResponse.setHeader("Location", "http://localhorst/horst/" + id)
-        validateUser(result)
+        validateUser(result, true)
     }
 
     def "should update an user and set location header"() {
@@ -236,7 +244,7 @@ class UserControllerSpec extends Specification {
         1 * provisioning.update(id, user) >> user
         1 * httpServletRequest.getRequestURL() >> new StringBuffer("http://localhorst/horst/yo")
         1 * httpServletResponse.setHeader("Location", "http://localhorst/horst/yo")
-        validateUser(result)
+        validateUser(result, true)
     }
 
     def "should be able to search a user on /User URI with GET method"() {
@@ -297,6 +305,5 @@ class UserControllerSpec extends Specification {
         mapping.method() == [RequestMethod.POST]
         body
         1 * attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResultMock, map)
-
     }
 }
