@@ -74,11 +74,6 @@ public class  UserController {
 
     private AttributesRemovalHelper attributesRemovalHelper = new AttributesRemovalHelper();
 
-
-    public void setScimUserProvisioning(SCIMUserProvisioning scimUserProvisioning) {
-        this.scimUserProvisioning = scimUserProvisioning;
-    }
-
     @RequestMapping(value = "/{id}", method = RequestMethod.GET) // NOSONAR - duplicate literals unnecessary
     @ResponseBody
     public User getUser(@PathVariable final String id) {
