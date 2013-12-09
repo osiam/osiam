@@ -23,6 +23,8 @@
 
 package org.osiam.storage.entities;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -50,6 +52,7 @@ public class ExtensionFieldValueEntity {
     private UserEntity user;
 
     @Lob
+    @Type(type="org.hibernate.type.StringClobType")
     @Column(nullable = false)
     private String value;
 

@@ -91,11 +91,11 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
         String fieldName = fieldString.substring(lastIndexOf + 1);
         final ExtensionEntity extension;
         try {
-            extension = extensionDao.getExtensionByUrn(urn);
+            extension = extensionDao.getExtensionByUrn(urn, true);
         } catch (NoResultException ex) {
             throw new IllegalArgumentException("Filtering not possible. Field '" + field + "' not available.", ex);
         }
-        final ExtensionFieldEntity fieldEntity = extension.getFieldForName(fieldName);
+        final ExtensionFieldEntity fieldEntity = extension.getFieldForName(fieldName, true);
         return new ExtensionQueryField(urn, fieldEntity, numberPadder);
     }
 
