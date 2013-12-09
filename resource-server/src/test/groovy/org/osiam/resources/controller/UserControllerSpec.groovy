@@ -48,30 +48,34 @@ import java.lang.reflect.Method
 
 class UserControllerSpec extends Specification {
 
-    def requestParamHelper = Mock(RequestParamHelper)
-    def jsonInputValidator = Mock(JsonInputValidator)
-    def attributesRemovalHelper = Mock(AttributesRemovalHelper)
-    def underTest = new UserController(requestParamHelper: requestParamHelper,
-    jsonInputValidator: jsonInputValidator, attributesRemovalHelper: attributesRemovalHelper)
-    def provisioning = Mock(SCIMUserProvisioning)
+    RequestParamHelper requestParamHelper = Mock()
+    JsonInputValidator jsonInputValidator = Mock()
+    AttributesRemovalHelper attributesRemovalHelper = Mock()
+    SCIMUserProvisioning scimUserProvisioning = Mock()
+    UserController userController = new UserController(requestParamHelper: requestParamHelper,
+            jsonInputValidator: jsonInputValidator, attributesRemovalHelper: attributesRemovalHelper,
+            scimUserProvisioning: scimUserProvisioning)
     def httpServletRequest = Mock(HttpServletRequest)
     def httpServletResponse = Mock(HttpServletResponse)
 
     User user = new User.Builder("test").setActive(true)
-    .setDisplayName("display")
-    .setLocale("locale")
-    .setName(new Name.Builder().build())
-    .setNickName("nickname")
-    .setPassword("password")
-    .setPreferredLanguage("prefereedLanguage")
-    .setProfileUrl("profileUrl")
-    .setTimezone("time")
-    .setTitle("title")
-    .setUserType("userType")
-    .setExternalId("externalid")
-    .setId("id")
-    .setMeta(new Meta.Builder().build())
-    .build()
+            .setDisplayName("display")
+            .setLocale("locale")
+            .setName(new Name.Builder().build())
+            .setNickName("nickname")
+            .setPassword("password")
+            .setPreferredLanguage("prefereedLanguage")
+            .setProfileUrl("profileUrl")
+            .setTimezone("time")
+            .setTitle("title")
+            .setUserType("userType")
+            .setExternalId("externalid")
+            .setId("id")
+            .setMeta(new Meta.Builder().build())
+            .build()
+
+    // simulating provisioning (i.e. removing password)
+    User provisionedUser = new User.Builder(user).setPassword(null).build()
 
     NameEntity nameEntity = new NameEntity(familyName: "Prefect", givenName: "Fnord", formatted: "Fnord Prefect")
     UserEntity userEntity = new UserEntity(active: true, emails: [
@@ -80,16 +84,15 @@ class UserControllerSpec extends Specification {
     name: nameEntity, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
     locale: "de_DE", userName: "fpref")
 
-    def setup() {
-        underTest.setScimUserProvisioning(provisioning)
-    }
+    def 'getting a user calls getById on provisioning bean'() {
+        given:
+        def id = 'irrelevant'
 
-    def "should return a cloned user based on a user found by provisioning on getUser"() {
         when:
-        def result = underTest.getUser("one")
+        def result = userController.getUser(id)
+
         then:
-        1 * provisioning.getById("one") >> user
-        validateUser(result, false)
+        1 * scimUserProvisioning.getById(id) >> provisionedUser
     }
 
     def "should contain a method to GET a user"() {
@@ -130,9 +133,9 @@ class UserControllerSpec extends Specification {
 
     def "should call provisioning on DELETE"() {
         when:
-        underTest.delete("id")
+        userController.delete("id")
         then:
-        1 * provisioning.delete("id")
+        1 * scimUserProvisioning.delete("id")
     }
 
 
@@ -192,7 +195,8 @@ class UserControllerSpec extends Specification {
         if(!locationChanged){
             assert result.meta == user.meta
         }else{
-            result.meta.attributes  == user.meta.attributes
+
+        result.meta.attributes  == user.meta.attributes
             result.meta.created == user.meta.created
             result.meta.lastModified == user.meta.lastModified
             result.meta.resourceType == user.meta.resourceType
@@ -209,10 +213,10 @@ class UserControllerSpec extends Specification {
         jsonInputValidator.validateJsonUser(httpServletRequest) >> user
 
         when:
-        def result = underTest.create(httpServletRequest, httpServletResponse)
+        def result = userController.create(httpServletRequest, httpServletResponse)
 
         then:
-        1 * provisioning.create(user) >> user
+        1 * scimUserProvisioning.create(user) >> provisionedUser
         1 * httpServletResponse.setHeader("Location", uri.toASCIIString())
         validateUser(result, true)
     }
@@ -223,10 +227,10 @@ class UserControllerSpec extends Specification {
         jsonInputValidator.validateJsonUser(httpServletRequest) >> user
 
         when:
-        def result = underTest.replace(id, httpServletRequest, httpServletResponse)
+        def result = userController.replace(id, httpServletRequest, httpServletResponse)
 
         then:
-        1 * provisioning.replace(id, user) >> user
+        1 * scimUserProvisioning.replace(id, user) >> provisionedUser
         1 * httpServletRequest.getRequestURL() >> new StringBuffer("http://localhorst/horst/" + id)
         1 * httpServletResponse.setHeader("Location", "http://localhorst/horst/" + id)
         validateUser(result, true)
@@ -238,10 +242,10 @@ class UserControllerSpec extends Specification {
         jsonInputValidator.validateJsonUser(httpServletRequest) >> user
 
         when:
-        def result = underTest.update(id, httpServletRequest, httpServletResponse)
+        def result = userController.update(id, httpServletRequest, httpServletResponse)
 
         then:
-        1 * provisioning.update(id, user) >> user
+        1 * scimUserProvisioning.update(id, user) >> provisionedUser
         1 * httpServletRequest.getRequestURL() >> new StringBuffer("http://localhorst/horst/yo")
         1 * httpServletResponse.setHeader("Location", "http://localhorst/horst/yo")
         validateUser(result, true)
@@ -260,15 +264,15 @@ class UserControllerSpec extends Specification {
         map.get("count") >> 10
         map.get("startIndex") >> 1
 
-        def scimSearchResultMock = Mock(SCIMSearchResult)
+        SCIMSearchResult scimSearchResultMock = Mock()
         def set = ["schemas"] as Set
-        provisioning.search("filter", "sortBy", "sortOrder", 10, 1) >> scimSearchResultMock
+        scimUserProvisioning.search("filter", "sortBy", "sortOrder", 10, 1) >> scimSearchResultMock
         scimSearchResultMock.getSchemas() >> set
 
         when:
         RequestMapping mapping = method.getAnnotation(RequestMapping)
         ResponseBody body = method.getAnnotation(ResponseBody)
-        underTest.searchWithGet(servletRequestMock)
+        userController.searchWithGet(servletRequestMock)
 
         then:
         mapping.value() == []
@@ -292,13 +296,13 @@ class UserControllerSpec extends Specification {
 
         def scimSearchResultMock = Mock(SCIMSearchResult)
         def set = ["schemas"] as Set
-        provisioning.search("filter", "sortBy", "sortOrder", 10, 1) >> scimSearchResultMock
+        scimUserProvisioning.search("filter", "sortBy", "sortOrder", 10, 1) >> scimSearchResultMock
         scimSearchResultMock.getSchemas() >> set
 
         when:
         RequestMapping mapping = method.getAnnotation(RequestMapping)
         ResponseBody body = method.getAnnotation(ResponseBody)
-        underTest.searchWithPost(servletRequestMock)
+        userController.searchWithPost(servletRequestMock)
 
         then:
         mapping.value() == ["/.search"]

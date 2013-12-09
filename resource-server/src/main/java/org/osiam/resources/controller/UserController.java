@@ -77,9 +77,7 @@ public class  UserController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET) // NOSONAR - duplicate literals unnecessary
     @ResponseBody
     public User getUser(@PathVariable final String id) {
-        User user = scimUserProvisioning.getById(id);
-        //clone without password
-        return new User.Builder(user).setPassword(null).build();
+        return scimUserProvisioning.getById(id);
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -88,11 +86,13 @@ public class  UserController {
     public User create(HttpServletRequest request, HttpServletResponse response) throws IOException {
         User user = jsonInputValidator.validateJsonUser(request);
         User createdUser = scimUserProvisioning.create(user);
+
         String requestUrl = request.getRequestURL().toString();
         URI uri = new UriTemplate("{requestUrl}{internalId}").expand(requestUrl + "/", createdUser.getId());
         response.setHeader("Location", uri.toASCIIString());
         Meta newMeta = new Meta.Builder(createdUser.getMeta()).setLocation(uri.toASCIIString()).build();
-        return new User.Builder(createdUser).setMeta(newMeta).setPassword(null).build();
+
+        return new User.Builder(createdUser).setMeta(newMeta).build();
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT) // NOSONAR - duplicate literals unnecessary
@@ -144,6 +144,6 @@ public class  UserController {
         String requestUrl = request.getRequestURL().toString();
         response.setHeader("Location", requestUrl);
         Meta newMeta = new Meta.Builder(createdUser.getMeta()).setLocation(requestUrl).build();
-        return new User.Builder(createdUser).setMeta(newMeta).setPassword(null).build();
+        return new User.Builder(createdUser).setMeta(newMeta).build();
     }
 }
