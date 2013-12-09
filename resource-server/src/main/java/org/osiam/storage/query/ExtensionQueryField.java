@@ -51,7 +51,7 @@ public class ExtensionQueryField {
             value = numberPadder.pad(value);  // NOSONAR - We want our modify our parameters
         }
 
-        final SetJoin<UserEntity, ExtensionFieldValueEntity> join = createOrGetJoin(aliasForUrn(urn),
+        final SetJoin<UserEntity, ExtensionFieldValueEntity> join = createOrGetJoin(generateAlias(urn + "." + field.getName()),
                 root, UserEntity_.extensionFieldValues);
         Predicate filterPredicate = constraint.createPredicateForExtensionField(
                 join.get(ExtensionFieldValueEntity_.value), // NOSONAR - XEntity_.X will be filled by JPA provider
@@ -62,13 +62,13 @@ public class ExtensionQueryField {
         return cb.and(filterPredicate, joinOnPredicate);
     }
 
-    private String aliasForUrn(String urn) {
-        int hashCode = urn.hashCode();
+    private String generateAlias(String value) {
+        int hashCode = value.hashCode();
         if (hashCode < 0) {
             hashCode *= -1;
         }
 
-        return "extensionAlias" + hashCode;
+        return "extensionFieldAlias" + hashCode;
     }
 
     @SuppressWarnings("unchecked")
