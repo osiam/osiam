@@ -79,6 +79,11 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
     }
 
     @Override
+    public User getById(String id) {
+        return removePassword(super.getById(id));
+    }
+
+    @Override
     public User create(User user) {
         UserEntity userEntity = userConverter.fromScim(user);
         userEntity.setId(UUID.randomUUID());
@@ -96,7 +101,10 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
             throw new ResourceExistsException("The user with name " +
                     user.getUserName() + " already exists.", e);
         }
-        return userConverter.toScim(userEntity);
+
+        User result = removePassword(userConverter.toScim(userEntity));
+
+        return result;
     }
 
     @Override
@@ -118,7 +126,12 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
         }
 
         userEntity.touch();
-        return userConverter.toScim(userDao.update(userEntity));
+
+        userEntity = userDao.update(userEntity);
+
+        User result = removePassword(userConverter.toScim(userEntity));
+
+        return result;
     }
 
     @Override
@@ -130,7 +143,7 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
 
         for (UserEntity userEntity : result.results) {
             User scimResultUser = userConverter.toScim(userEntity);
-            users.add(User.Builder.generateForOutput(scimResultUser));
+            users.add(removePassword(scimResultUser));
         }
 
         return new SCIMSearchResult<>(users, result.totalResults, count, startIndex, Constants.USER_CORE_SCHEMA);
@@ -156,7 +169,9 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
 
         userEntity.touch();
         UserEntity updatedUser = userDao.update(userEntity);
-        return userConverter.toScim(updatedUser);
+        User res = userConverter.toScim(updatedUser);
+        return removePassword(res);
+        
     }
 
     private void updateExtension(Entry<String, Extension> extensionEntry, UserEntity userEntity) {
@@ -217,6 +232,10 @@ public class SCIMUserProvisioningBean extends SCIMProvisiongSkeleton<User, UserE
     @Override
     public GenericSCIMToEntityWrapper.For getTarget() {
         return GenericSCIMToEntityWrapper.For.USER;
+    }
+
+    private User removePassword(User user) {
+        return new User.Builder(user).setPassword(null).build();
     }
 
 }

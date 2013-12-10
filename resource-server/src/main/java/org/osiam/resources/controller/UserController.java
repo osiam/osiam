@@ -35,6 +35,7 @@ import org.osiam.resources.helper.AttributesRemovalHelper;
 import org.osiam.resources.helper.JsonInputValidator;
 import org.osiam.resources.helper.RequestParamHelper;
 import org.osiam.resources.provisioning.SCIMUserProvisioning;
+import org.osiam.resources.scim.Meta;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.resources.scim.User;
 import org.springframework.http.HttpStatus;
@@ -73,17 +74,10 @@ public class  UserController {
 
     private AttributesRemovalHelper attributesRemovalHelper = new AttributesRemovalHelper();
 
-
-    public void setScimUserProvisioning(SCIMUserProvisioning scimUserProvisioning) {
-        this.scimUserProvisioning = scimUserProvisioning;
-    }
-
     @RequestMapping(value = "/{id}", method = RequestMethod.GET) // NOSONAR - duplicate literals unnecessary
     @ResponseBody
     public User getUser(@PathVariable final String id) {
-        User user = scimUserProvisioning.getById(id);
-        //clone without password
-        return User.Builder.generateForOutput(user);
+        return scimUserProvisioning.getById(id);
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -92,11 +86,13 @@ public class  UserController {
     public User create(HttpServletRequest request, HttpServletResponse response) throws IOException {
         User user = jsonInputValidator.validateJsonUser(request);
         User createdUser = scimUserProvisioning.create(user);
+
         String requestUrl = request.getRequestURL().toString();
         URI uri = new UriTemplate("{requestUrl}{internalId}").expand(requestUrl + "/", createdUser.getId());
         response.setHeader("Location", uri.toASCIIString());
-        createdUser.getMeta().setLocation(uri.toASCIIString());
-        return User.Builder.generateForOutput(createdUser);
+        Meta newMeta = new Meta.Builder(createdUser.getMeta()).setLocation(uri.toASCIIString()).build();
+
+        return new User.Builder(createdUser).setMeta(newMeta).build();
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT) // NOSONAR - duplicate literals unnecessary
@@ -147,7 +143,7 @@ public class  UserController {
                                                       User createdUser) {
         String requestUrl = request.getRequestURL().toString();
         response.setHeader("Location", requestUrl);
-        createdUser.getMeta().setLocation(requestUrl);
-        return User.Builder.generateForOutput(createdUser);
+        Meta newMeta = new Meta.Builder(createdUser.getMeta()).setLocation(requestUrl).build();
+        return new User.Builder(createdUser).setMeta(newMeta).build();
     }
 }

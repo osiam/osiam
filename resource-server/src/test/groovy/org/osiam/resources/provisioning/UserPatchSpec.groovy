@@ -79,6 +79,7 @@ class UserPatchSpec extends Specification {
     def setup() {
         userDao.update(_) >> entity
         userConverter.fromScim(_) >> entity
+        userConverter.toScim(entity) >> new User()
 
         extensionFieldString = new ExtensionFieldEntity(name: extensionFieldStringName, type: ExtensionFieldType.STRING)
         extensionFieldInt = new ExtensionFieldEntity(name: extensionFieldIntName, type: ExtensionFieldType.INTEGER)
@@ -301,6 +302,19 @@ class UserPatchSpec extends Specification {
         2 * userDao.getById(uuidAsString) >> entity
         entity.userName == 'username'
         entity.displayName == 'hallo'
+    }
+
+    def 'updating a user returns the updated user with its password removed'() {
+        given:
+        def user = new User.Builder('username').setPassword('password').build()
+        userDao.getById(uuidAsString) >> entity
+        userConverter.toScim(entity) >> user
+
+        when:
+        User updatedUser = scimUserProvisioningBean.update(uuidAsString, user)
+
+        then:
+        updatedUser.password == null
     }
 
     def 'should delete simple attributes'() {
