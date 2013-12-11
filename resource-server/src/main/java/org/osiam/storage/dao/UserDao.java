@@ -23,38 +23,41 @@
 
 package org.osiam.storage.dao;
 
-import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
-import javax.persistence.Query;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Root;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.osiam.resources.exceptions.ResourceNotFoundException;
-import org.osiam.resources.scim.Constants;
-import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.UserEntity;
-import org.osiam.storage.query.FilterParser;
 import org.osiam.storage.query.UserFilterParser;
-import org.osiam.storage.query.UserQueryField;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class UserDao extends ResourceDao<UserEntity> implements GenericDao<UserEntity> {
+public class UserDao implements GenericDao<UserEntity> {
+
+    private static final Logger LOGGER = Logger.getLogger(UserDao.class.getName());
 
     @Inject
     private UserFilterParser filterParser;
 
+    @Inject
+    private ResourceDao resourceDao;
+
+    @PersistenceContext
+    private EntityManager em;
+
     @Override
     public void create(UserEntity userEntity) {
-        em.persist(userEntity);
+        resourceDao.create(userEntity);
     }
 
     @Override
     public UserEntity getById(String id) {
         try {
-            return getInternalIdSkeleton(id);
+            return resourceDao.getById(id, UserEntity.class);
         } catch (ClassCastException c) {
             LOGGER.log(Level.WARNING, c.getMessage(), c);
             throw new ResourceNotFoundException("Resource " + id + " is not an User.", c);
@@ -62,49 +65,25 @@ public class UserDao extends ResourceDao<UserEntity> implements GenericDao<UserE
     }
 
     public UserEntity getByUsername(String userName) {
-        Query query = em.createNamedQuery("getUserByUsername");
+        /*Query query = em.createNamedQuery("getUserByUsername");
         query.setParameter("username", userName);
-        return getSingleInternalIdSkeleton(query, userName);
+        return getSingleInternalIdSkeleton(query, userName);*/
+        return null;
     }
 
     @Override
     public UserEntity update(UserEntity entity) {
-        return em.merge(entity);
+        return resourceDao.update(entity);
     }
 
     @Override
     public void delete(String id) {
-        UserEntity userEntity = getById(id);
-        Set<GroupEntity> groups = userEntity.getGroups();
-        for (GroupEntity group : groups) {
-            group.removeMember(userEntity);
-        }
-        em.remove(userEntity);
+        resourceDao.delete(id);
     }
 
     @Override
     public SearchResult<UserEntity> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
-        return search(UserEntity.class, filter, count, startIndex, sortBy, sortOrder);
-    }
-
-    @Override
-    protected FilterParser<UserEntity> getFilterParser() {
-        return filterParser;
-    }
-
-    @Override
-    protected Class<UserEntity> getResourceClass() {
-        return UserEntity.class;
-    }
-
-    @Override
-    protected String getCoreSchema() {
-        return Constants.USER_CORE_SCHEMA;
-    }
-
-    @Override
-    protected Expression<?> getDefaultSortByField(Root<UserEntity> root) {
-        return UserQueryField.USERNAME.createSortByField(root, em.getCriteriaBuilder());
+        return resourceDao.search(UserEntity.class, filter, count, startIndex, sortBy, sortOrder, filterParser);
     }
 
 }

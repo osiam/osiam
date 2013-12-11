@@ -24,11 +24,10 @@
 package org.osiam.storage.dao;
 
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -38,37 +37,18 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import org.osiam.resources.exceptions.ResourceNotFoundException;
-import org.osiam.storage.entities.InternalIdSkeleton;
-import org.osiam.storage.entities.InternalIdSkeleton_;
+import org.osiam.storage.entities.GroupEntity;
+import org.osiam.storage.entities.ResourceEntity;
+import org.osiam.storage.entities.ResourceEntity_;
 import org.osiam.storage.query.FilterParser;
 
-public abstract class ResourceDao<T extends InternalIdSkeleton> {
-
-    protected static final Logger LOGGER = Logger.getLogger(ResourceDao.class.getName()); // NOSONAR used in child classes
+public class ResourceDao {
 
     @PersistenceContext
-    protected EntityManager em; // NOSONAR used in child classes
+    private EntityManager em;
 
-    protected T getInternalIdSkeleton(String id) {
-        Query query = em.createNamedQuery("getById");
-        query.setParameter("id", id);
-        return getSingleInternalIdSkeleton(query, id);
-    }
-
-    protected T getSingleInternalIdSkeleton(Query query, String identifier) {
-        @SuppressWarnings("unchecked")
-        List<T> result = query.getResultList();
-
-        if (result.isEmpty()) {
-            throw new ResourceNotFoundException("Resource " + identifier + " not found.");
-        }
-
-        return result.get(0);
-    }
-
-    protected SearchResult<T> search(Class<T> clazz, String filter, int count, int startIndex, String sortBy,
-            String sortOrder) {
+    public <T extends ResourceEntity> SearchResult<T> search(Class<T> clazz, String filter, int count, int startIndex,
+            String sortBy, String sortOrder, FilterParser<T> filterParser) {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -77,20 +57,21 @@ public abstract class ResourceDao<T extends InternalIdSkeleton> {
 
         Subquery<Long> internalIdQuery = resourceQuery.subquery(Long.class);
         Root<T> internalIdRoot = internalIdQuery.from(clazz);
-        internalIdQuery.select(internalIdRoot.get(InternalIdSkeleton_.internalId));
+        internalIdQuery.select(internalIdRoot.get(ResourceEntity_.internalId));
 
         if (filter != null && !filter.isEmpty()) {
-            Predicate predicate = getFilterParser().createPredicateAndJoin(filter, internalIdRoot);
+            Predicate predicate = filterParser.createPredicateAndJoin(filter, internalIdRoot);
             internalIdQuery.where(predicate);
         }
 
         resourceQuery.select(resourceRoot).where(
-                cb.in(resourceRoot.get(InternalIdSkeleton_.internalId)).value(internalIdQuery));
+                cb.in(resourceRoot.get(ResourceEntity_.internalId)).value(internalIdQuery));
 
-        Expression<?> sortByField = getDefaultSortByField(resourceRoot);
+        // TODO: evaluate if a User-/GroupDao supplied default sortBy field is possible
+        Expression<?> sortByField = resourceRoot.get(ResourceEntity_.id);
 
         if (sortBy != null && !sortBy.isEmpty()) {
-            sortByField = getFilterParser().createSortByField(sortBy, resourceRoot);
+            sortByField = filterParser.createSortByField(sortBy, resourceRoot);
         }
 
         // default order is ascending
@@ -108,30 +89,55 @@ public abstract class ResourceDao<T extends InternalIdSkeleton> {
 
         List<T> results = query.getResultList();
 
-
         long totalResult = getTotalResults(clazz, internalIdQuery);
 
         return new SearchResult<>(results, totalResult);
     }
 
-    private long getTotalResults(Class<T> clazz, Subquery<Long> internalIdQuery) {
+    private <T extends ResourceEntity> long getTotalResults(Class<T> clazz, Subquery<Long> internalIdQuery) {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> resourceQuery = cb.createQuery(Long.class);
         Root<T> resourceRoot = resourceQuery.from(clazz);
 
-        resourceQuery.select(cb.count(resourceRoot)).where(cb.in(resourceRoot.get(InternalIdSkeleton_.internalId)).value(internalIdQuery));
+        resourceQuery.select(cb.count(resourceRoot)).where(
+                cb.in(resourceRoot.get(ResourceEntity_.internalId)).value(internalIdQuery));
 
         Long total = em.createQuery(resourceQuery).getSingleResult();
 
         return total;
     }
 
-    protected abstract Expression<?> getDefaultSortByField(Root<T> root);
+    public <T extends ResourceEntity> T getById(String id, Class<T> clazz) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<T> cq = cb.createQuery(clazz);
+        Root<T> resource = cq.from(clazz);
 
-    protected abstract FilterParser<T> getFilterParser();
+        cq.select(resource).where(cb.equal(resource.get(ResourceEntity_.id), id));
 
-    protected abstract String getCoreSchema();
+        TypedQuery<T> q = em.createQuery(cq);
+        T resourceEntity = q.getSingleResult();
 
-    protected abstract Class<T> getResourceClass();
+        return resourceEntity;
+    }
+
+    public void delete(String id) {
+        ResourceEntity resourceEntity = getById(id, ResourceEntity.class);
+
+        Set<GroupEntity> groups = resourceEntity.getGroups();
+        for (GroupEntity group : groups) {
+            group.removeMember(resourceEntity);
+        }
+
+        em.remove(resourceEntity);
+    }
+
+    public <T extends ResourceEntity> T update(T resourceEntity) {
+        return em.merge(resourceEntity);
+    }
+
+    public <T extends ResourceEntity> void create(T resourceEntity) {
+        em.persist(resourceEntity);
+    }
+
 }

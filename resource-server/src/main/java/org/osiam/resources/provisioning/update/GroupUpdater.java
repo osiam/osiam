@@ -68,7 +68,7 @@ public abstract class GroupUpdater {
             }
 
             String memberId = memberRef.getValue();
-            ResourceEntity member = resourceDao.getById(memberId);
+            ResourceEntity member = resourceDao.getById(memberId, ResourceEntity.class);
             groupEntity.removeMember(member);
             // TODO: delete memberRef from group
         }
