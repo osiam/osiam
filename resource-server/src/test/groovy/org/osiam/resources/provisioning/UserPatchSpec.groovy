@@ -60,7 +60,7 @@ class UserPatchSpec extends Specification {
     ExtensionDao extensionDao = Mock()
     NumberPadder numberPadder = Mock()
 
-    SCIMUserProvisioningBean scimUserProvisioningBean = new SCIMUserProvisioningBean(userDao: userDao,
+    SCIMUserProvisioning scimUserProvisioningBean = new SCIMUserProvisioning(userDao: userDao,
             userConverter: userConverter, passwordEncoder: passwordEncoder, extensionDao: extensionDao,
             numberPadder: numberPadder)
 

@@ -35,7 +35,7 @@ import spock.lang.Specification
 class GroupDeleteSpec extends Specification {
     EntityManager em = Mock(EntityManager)
     def groupDao = new GroupDao(em: em)
-    SCIMGroupProvisioningBean bean = new SCIMGroupProvisioningBean(groupDao: groupDao)
+    SCIMGroupProvisioning bean = new SCIMGroupProvisioning(groupDao: groupDao)
     def uId = UUID.randomUUID()
     def id = uId.toString()
     def query = Mock(Query)
