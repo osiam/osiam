@@ -1,10 +1,10 @@
 package org.osiam.storage.dao;
 
-import org.osiam.storage.entities.InternalIdSkeleton;
+import org.osiam.storage.entities.ResourceEntity;
 
 import java.util.List;
 
-public class SearchResult<T extends InternalIdSkeleton> {
+public class SearchResult<T extends ResourceEntity> {
 
     public final List<T> results; // NOSONAR - field is final and can be public
     public final long totalResults; // NOSONAR - field is final and can be public
