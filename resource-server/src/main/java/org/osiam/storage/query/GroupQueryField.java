@@ -39,9 +39,9 @@ import javax.persistence.metamodel.SetAttribute;
 import org.joda.time.format.ISODateTimeFormat;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.GroupEntity_;
-import org.osiam.storage.entities.InternalIdSkeleton;
-import org.osiam.storage.entities.InternalIdSkeleton_;
 import org.osiam.storage.entities.MetaEntity_;
+import org.osiam.storage.entities.ResourceEntity;
+import org.osiam.storage.entities.ResourceEntity_;
 
 public enum GroupQueryField implements QueryField<GroupEntity> {
     EXTERNALID("externalid") {
@@ -115,9 +115,9 @@ public enum GroupQueryField implements QueryField<GroupEntity> {
 
         @Override
         public Predicate addFilter(Root<GroupEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
-            SetJoin<GroupEntity, InternalIdSkeleton> join = createOrGetJoin("members", root, GroupEntity_.members); // NOSONAR
+            SetJoin<GroupEntity, ResourceEntity> join = createOrGetJoin("members", root, GroupEntity_.members); // NOSONAR
             // - XEntity_.X will be filled by JPA provider
-            return constraint.createPredicateForStringField(join.get(InternalIdSkeleton_.id), value, cb);
+            return constraint.createPredicateForStringField(join.get(ResourceEntity_.id), value, cb);
         }
 
         @Override
@@ -129,9 +129,9 @@ public enum GroupQueryField implements QueryField<GroupEntity> {
 
         @Override
         public Predicate addFilter(Root<GroupEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
-            SetJoin<GroupEntity, InternalIdSkeleton> join = createOrGetJoin("members", root,
+            SetJoin<GroupEntity, ResourceEntity> join = createOrGetJoin("members", root,
                     GroupEntity_.members);
-            return constraint.createPredicateForStringField(join.get(InternalIdSkeleton_.id), value, cb);
+            return constraint.createPredicateForStringField(join.get(ResourceEntity_.id), value, cb);
         }
 
         @Override

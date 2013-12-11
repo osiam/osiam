@@ -25,7 +25,7 @@ package org.osiam.storage.dao
 
 import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.storage.entities.GroupEntity
-import org.osiam.storage.entities.InternalIdSkeleton
+import org.osiam.storage.entities.ResourceEntity
 import org.osiam.storage.entities.UserEntity
 import spock.lang.Specification
 
@@ -37,7 +37,7 @@ class GroupDaoSpec extends Specification {
     EntityManager em = Mock(EntityManager)
 
     Query query = Mock(Query)
-    InternalIdSkeleton internalIdSkeleton = new GroupEntity(id: UUID.randomUUID())
+    ResourceEntity internalIdSkeleton = new GroupEntity(id: UUID.randomUUID())
 
     def underTest = new GroupDao(em: em)
     String id = UUID.randomUUID().toString()

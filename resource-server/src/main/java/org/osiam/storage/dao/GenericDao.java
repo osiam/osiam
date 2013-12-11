@@ -23,9 +23,9 @@
 
 package org.osiam.storage.dao;
 
-import org.osiam.storage.entities.InternalIdSkeleton;
+import org.osiam.storage.entities.ResourceEntity;
 
-public interface GenericDao<T extends InternalIdSkeleton> {
+public interface GenericDao<T extends ResourceEntity> {
 
     void create(T entity);
 

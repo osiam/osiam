@@ -28,7 +28,7 @@ import javax.persistence.Query
 
 import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.storage.entities.GroupEntity
-import org.osiam.storage.entities.InternalIdSkeleton
+import org.osiam.storage.entities.ResourceEntity
 import org.osiam.storage.entities.RolesEntity
 import org.osiam.storage.entities.UserEntity
 import org.osiam.storage.query.UserFilterParser
@@ -142,7 +142,7 @@ class UserDaoSpec extends Specification {
         def id = UUID.randomUUID().toString()
         def query = Mock(Query)
 
-        InternalIdSkeleton internalIdSkeleton = new GroupEntity()
+        ResourceEntity internalIdSkeleton = new GroupEntity()
         when:
         underTest.getById(id)
         then:

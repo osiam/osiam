@@ -28,9 +28,9 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.osiam.storage.entities.InternalIdSkeleton;
+import org.osiam.storage.entities.ResourceEntity;
 
-public interface QueryField<T extends InternalIdSkeleton> {
+public interface QueryField<T extends ResourceEntity> {
     Predicate addFilter(Root<T> root, FilterConstraint constraint, String value,
             CriteriaBuilder cb);
 

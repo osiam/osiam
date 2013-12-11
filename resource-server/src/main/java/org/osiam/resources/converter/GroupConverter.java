@@ -35,7 +35,7 @@ import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.storage.dao.GroupDao;
 import org.osiam.storage.dao.UserDao;
 import org.osiam.storage.entities.GroupEntity;
-import org.osiam.storage.entities.InternalIdSkeleton;
+import org.osiam.storage.entities.ResourceEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -69,7 +69,7 @@ public class GroupConverter implements Converter<Group, GroupEntity> {
     private void addMember(MultiValuedAttribute member, GroupEntity groupEntity) {
         String uuid = member.getValue();
 
-        InternalIdSkeleton resource = null;
+        ResourceEntity resource = null;
 
         try {
             resource = userDao.getById(uuid);
@@ -100,7 +100,7 @@ public class GroupConverter implements Converter<Group, GroupEntity> {
                 .setExternalId(group.getExternalId());
 
         Set<MemberRef> members = new HashSet<>();
-        for (InternalIdSkeleton member : group.getMembers()) {
+        for (ResourceEntity member : group.getMembers()) {
             MemberRef memberRef = new MemberRef.Builder()
                     .setValue(member.getId().toString())
                     .setReference(member.getMeta().getLocation())

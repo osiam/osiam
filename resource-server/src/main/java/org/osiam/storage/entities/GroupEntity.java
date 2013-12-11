@@ -36,10 +36,10 @@ import com.google.common.collect.ImmutableSet;
  * Group Entity
  */
 @Entity(name = "scim_group")
-public class GroupEntity extends InternalIdSkeleton {
+public class GroupEntity extends ResourceEntity {
 
     @ManyToMany
-    private Set<InternalIdSkeleton> members = new HashSet<>();
+    private Set<ResourceEntity> members = new HashSet<>();
 
     @Column(unique = true, nullable = false)
     private String displayName;
@@ -48,11 +48,11 @@ public class GroupEntity extends InternalIdSkeleton {
         getMeta().setResourceType("Group");
     }
 
-    public Set<InternalIdSkeleton> getMembers() {
+    public Set<ResourceEntity> getMembers() {
         return ImmutableSet.copyOf(members);
     }
 
-    public void addMember(InternalIdSkeleton member) {
+    public void addMember(ResourceEntity member) {
         if (members.contains(member)) {
             return;
         }
@@ -60,7 +60,7 @@ public class GroupEntity extends InternalIdSkeleton {
         member.addToGroup(this);
     }
 
-    public void removeMember(InternalIdSkeleton member) {
+    public void removeMember(ResourceEntity member) {
         if (!members.contains(member)) {
             return;
         }

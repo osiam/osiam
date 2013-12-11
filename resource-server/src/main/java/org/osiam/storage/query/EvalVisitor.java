@@ -23,19 +23,19 @@
 
 package org.osiam.storage.query;
 
-import org.antlr.v4.runtime.misc.NotNull;
-import org.osiam.storage.entities.InternalIdSkeleton;
-import org.osiam.storage.parser.LogicalOperatorRulesBaseVisitor;
-import org.osiam.storage.parser.LogicalOperatorRulesParser;
-
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+
+import org.antlr.v4.runtime.misc.NotNull;
+import org.osiam.storage.entities.ResourceEntity;
+import org.osiam.storage.parser.LogicalOperatorRulesBaseVisitor;
+import org.osiam.storage.parser.LogicalOperatorRulesParser;
 
 /**
  * Implements the generated visitor class to do the mapping to criteria api.
  * @author Jochen Todea
  */
-public class EvalVisitor<T extends InternalIdSkeleton> extends LogicalOperatorRulesBaseVisitor<Predicate> {
+public class EvalVisitor<T extends ResourceEntity> extends LogicalOperatorRulesBaseVisitor<Predicate> {
 
     private final FilterParser<T> filterParser;
     private final Root<T> root;

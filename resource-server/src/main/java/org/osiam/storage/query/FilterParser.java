@@ -23,20 +23,20 @@
 
 package org.osiam.storage.query;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.osiam.storage.entities.InternalIdSkeleton;
-import org.osiam.storage.parser.LogicalOperatorRulesLexer;
-import org.osiam.storage.parser.LogicalOperatorRulesParser;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-public abstract class FilterParser<T extends InternalIdSkeleton> {
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.osiam.storage.entities.ResourceEntity;
+import org.osiam.storage.parser.LogicalOperatorRulesLexer;
+import org.osiam.storage.parser.LogicalOperatorRulesParser;
+
+public abstract class FilterParser<T extends ResourceEntity> {
 
     @PersistenceContext
     protected EntityManager entityManager; // NOSONAR - doesn't need to be private

@@ -26,8 +26,8 @@ package org.osiam.storage.query;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.osiam.storage.entities.InternalIdSkeleton;
+import org.osiam.storage.entities.ResourceEntity;
 
-public interface FilterChain<T extends InternalIdSkeleton> {
+public interface FilterChain<T extends ResourceEntity> {
     Predicate createPredicateAndJoin(Root<T> root);
 }

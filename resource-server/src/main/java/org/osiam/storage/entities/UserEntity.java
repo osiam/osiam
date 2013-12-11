@@ -32,7 +32,7 @@ import java.util.Set;
  */
 @Entity(name = "scim_user")
 @NamedQueries({@NamedQuery(name = "getUserByUsername", query = "SELECT u FROM scim_user u WHERE u.userName = :username")})
-public class UserEntity extends InternalIdSkeleton {
+public class UserEntity extends ResourceEntity {
 
     private static final String MAPPING_NAME = "user";
 
