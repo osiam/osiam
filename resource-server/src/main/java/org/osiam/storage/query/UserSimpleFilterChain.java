@@ -23,17 +23,18 @@
 
 package org.osiam.storage.query;
 
-import org.osiam.storage.dao.ExtensionDao;
-import org.osiam.storage.entities.ExtensionEntity;
-import org.osiam.storage.entities.ExtensionFieldEntity;
-import org.osiam.storage.entities.UserEntity;
-import org.osiam.storage.helper.NumberPadder;
+import java.util.Locale;
 
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.Locale;
+
+import org.osiam.storage.dao.ExtensionDao;
+import org.osiam.storage.entities.ExtensionEntity;
+import org.osiam.storage.entities.ExtensionFieldEntity;
+import org.osiam.storage.entities.UserEntity;
+import org.osiam.storage.helper.NumberPadder;
 
 public class UserSimpleFilterChain implements FilterChain<UserEntity> {
 
@@ -47,7 +48,8 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
     private final CriteriaBuilder criteriaBuilder;
     private final NumberPadder numberPadder;
 
-    public UserSimpleFilterChain(CriteriaBuilder criteriaBuilder, ExtensionDao extensionDao, ScimExpression scimExpression,
+    public UserSimpleFilterChain(CriteriaBuilder criteriaBuilder, ExtensionDao extensionDao,
+            ScimExpression scimExpression,
             NumberPadder numberPadder) {
         this.criteriaBuilder = criteriaBuilder;
         this.extensionDao = extensionDao;
@@ -65,7 +67,8 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
     private ExtensionQueryField getExtensionFilterField(String fieldString) {
         int lastIndexOf = fieldString.lastIndexOf('.');
         if (lastIndexOf == -1) {
-            throw new IllegalArgumentException("Filtering not possible. Field '" + scimExpression.getField() + "' not available.");
+            throw new IllegalArgumentException("Filtering not possible. Field '" + scimExpression.getField()
+                    + "' not available.");
         }
 
         String urn = fieldString.substring(0, lastIndexOf);
@@ -74,7 +77,8 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
         try {
             extension = extensionDao.getExtensionByUrn(urn, true);
         } catch (NoResultException ex) {
-            throw new IllegalArgumentException("Filtering not possible. Field '" + scimExpression.getField() + "' not available.", ex);
+            throw new IllegalArgumentException("Filtering not possible. Field '" + scimExpression.getField()
+                    + "' not available.", ex);
         }
         final ExtensionFieldEntity fieldEntity = extension.getFieldForName(fieldName, true);
         return new ExtensionQueryField(urn, fieldEntity, numberPadder);
@@ -83,11 +87,14 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
     @Override
     public Predicate createPredicateAndJoin(Root<UserEntity> root) {
         if (userFilterField != null) {
-            return userFilterField.addFilter(root, scimExpression.getConstraint(), scimExpression.getValue(), criteriaBuilder);
+            return userFilterField.addFilter(root, scimExpression.getConstraint(), scimExpression.getValue(),
+                    criteriaBuilder);
         } else if (extensionFilterField != null) {
-            return extensionFilterField.addFilter(root, scimExpression.getConstraint(), scimExpression.getValue(), criteriaBuilder);
+            return extensionFilterField.addFilter(root, scimExpression.getConstraint(), scimExpression.getValue(),
+                    criteriaBuilder);
         } else {
-            throw new IllegalArgumentException("Filtering not possible. Field '" + scimExpression.getField() + "' not available.");
+            throw new IllegalArgumentException("Filtering not possible. Field '" + scimExpression.getField()
+                    + "' not available.");
         }
     }
 

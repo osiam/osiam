@@ -23,12 +23,22 @@
 
 package org.osiam.storage.query;
 
-import org.osiam.resources.scim.ExtensionFieldType;
-import org.osiam.storage.entities.*;
-import org.osiam.storage.helper.NumberPadder;
-
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.SetJoin;
 import javax.persistence.metamodel.SetAttribute;
+
+import org.osiam.resources.scim.ExtensionFieldType;
+import org.osiam.storage.entities.ExtensionFieldEntity;
+import org.osiam.storage.entities.ExtensionFieldEntity_;
+import org.osiam.storage.entities.ExtensionFieldValueEntity;
+import org.osiam.storage.entities.ExtensionFieldValueEntity_;
+import org.osiam.storage.entities.UserEntity;
+import org.osiam.storage.entities.UserEntity_;
+import org.osiam.storage.helper.NumberPadder;
 
 public class ExtensionQueryField {
 
