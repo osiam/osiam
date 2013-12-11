@@ -41,7 +41,7 @@ class SCIMGroupProvisioningBeanSpec extends Specification {
     def groupDao = Mock(GroupDao)
     def metaConverter = new MetaConverter()
     private GroupConverter groupConverter = new GroupConverter(groupDao: groupDao, metaConverter: metaConverter)
-    SCIMGroupProvisioningBean underTest = new SCIMGroupProvisioningBean(groupDao: groupDao, groupConverter: groupConverter)
+    SCIMGroupProvisioning underTest = new SCIMGroupProvisioning(groupDao: groupDao, groupConverter: groupConverter)
     def group = Mock(Group)
     def entity = Mock(GroupEntity)
 
