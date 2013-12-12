@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -36,6 +38,7 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
+import javax.persistence.metamodel.SingularAttribute;
 
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.ResourceEntity;
@@ -109,11 +112,26 @@ public class ResourceDao {
     }
 
     public <T extends ResourceEntity> T getById(String id, Class<T> clazz) {
+        return getByAttribute(ResourceEntity_.id, id, clazz);
+    }
+
+    /**
+     * Retrieves a single {@link ResourceEntity} by the given attribute and value.
+     * @param attribute The attribute of the entity to retrieve it by
+     * @param value The value of the attribute to compare it to
+     * @param clazz The concrete resource entity class to retrieve
+     * @return The {@link ResourceEntity}
+     * @throws NoResultException If no {@link ResourceEntity} could be found
+     * @throws NonUniqueResultException If more than 1 {@link ResourceEntity} was found
+     */
+    public <T extends ResourceEntity, V> T getByAttribute(SingularAttribute<? super T, V> attribute, V value,
+            Class<T> clazz) {
+
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<T> cq = cb.createQuery(clazz);
         Root<T> resource = cq.from(clazz);
 
-        cq.select(resource).where(cb.equal(resource.get(ResourceEntity_.id), id));
+        cq.select(resource).where(cb.equal(resource.get(attribute), value));
 
         TypedQuery<T> q = em.createQuery(cq);
         T resourceEntity = q.getSingleResult();
@@ -121,6 +139,12 @@ public class ResourceDao {
         return resourceEntity;
     }
 
+    /**
+     * Removes a {@link ResourceEntity} by its id from the database
+     * @param id id of the {@link ResourceEntity}
+     * @throws NoResultException if no {@link ResourceEntity} could be found with the given id
+     * @throws IllegalArgumentException if the instance is not a managed {@link ResourceEntity}
+     */
     public void delete(String id) {
         ResourceEntity resourceEntity = getById(id, ResourceEntity.class);
 
