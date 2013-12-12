@@ -23,11 +23,14 @@
 
 package org.osiam.resources.provisioning
 
+import javax.persistence.NoResultException
+
 import org.osiam.resources.converter.GroupConverter
-import org.osiam.resources.converter.MetaConverter
 import org.osiam.resources.exceptions.ResourceExistsException
 import org.osiam.resources.exceptions.ResourceNotFoundException
+import org.osiam.resources.provisioning.update.GroupUpdater
 import org.osiam.resources.scim.Group
+import org.osiam.resources.scim.MemberRef
 import org.osiam.storage.dao.GroupDao
 import org.osiam.storage.dao.SearchResult
 import org.osiam.storage.entities.GroupEntity
@@ -38,81 +41,173 @@ import spock.lang.Specification
 
 class SCIMGroupProvisioningBeanSpec extends Specification {
 
-    def groupDao = Mock(GroupDao)
-    def metaConverter = new MetaConverter()
-    private GroupConverter groupConverter = new GroupConverter(groupDao: groupDao, metaConverter: metaConverter)
-    SCIMGroupProvisioning underTest = new SCIMGroupProvisioning(groupDao: groupDao, groupConverter: groupConverter)
-    def group = Mock(Group)
-    def entity = Mock(GroupEntity)
+    GroupDao groupDao = Mock()
+    GroupConverter groupConverter = Mock()
+    GroupUpdater groupUpdater = Mock()
 
-    def "should return with id enriched group on create"() {
-        given:
-        groupDao.getById(_) >> { throw new ResourceNotFoundException('') }
-        group.getId() >> UUID.randomUUID().toString()
-        group.getMembers() >> Collections.emptySet()
+    SCIMGroupProvisioning scimGroupProvisioning = new SCIMGroupProvisioning(groupDao: groupDao, groupConverter: groupConverter,
+    groupUpdater: groupUpdater)
 
+    Group group = Mock()
+    GroupEntity groupEntity = Mock()
+
+    def groupUuid = UUID.randomUUID().toString()
+    def memberId = UUID.randomUUID().toString()
+
+    def 'retrieving a group works as expected'() {
         when:
-        def result = underTest.create(group)
+        scimGroupProvisioning.getById(groupUuid)
 
         then:
-        result != group
-        UUID.fromString(result.id)
-
+        1 * groupDao.getById(groupUuid)
+        1 * groupConverter.toScim(_)
     }
 
-    def "should call dao create on create"() {
-        given:
-        groupDao.getById(_) >> { throw new ResourceNotFoundException('') }
-        group.getId() >> UUID.randomUUID().toString()
-        group.getMembers() >> Collections.emptySet()
-
+    def 'retrieving a non-existant group raises exception'() {
         when:
-        underTest.create(group)
+        scimGroupProvisioning.getById(groupUuid)
 
         then:
-        1 * groupDao.create(_)
+        1 * groupDao.getById(groupUuid) >> { throw new ResourceNotFoundException('') }
+        thrown(ResourceNotFoundException)
     }
 
-    def "should wrap exceptions to org.osiam.resources.exceptions.ResourceExistsException on create"() {
+    def 'create a group with a non-existant member raises exception'() {
         given:
-        groupDao.getById(_) >> { throw new ResourceNotFoundException('') }
-        group.getId() >> UUID.randomUUID().toString()
-        group.getMembers() >> Collections.emptySet()
-        groupDao.create(_) >> {
-            throw new DataIntegrityViolationException("moep")
+        MemberRef member = new MemberRef.Builder()
+                .setValue(memberId)
+                .build()
+        group = new Group.Builder(group)
+                .setMembers([member] as Set)
+                .build()
+
+        when:
+        scimGroupProvisioning.create(group)
+
+        then:
+        1 * groupConverter.fromScim(_) >> { throw new ResourceNotFoundException('') }
+        thrown(ResourceNotFoundException)
+    }
+
+    // TODO: check if groupDao.create() really throws DataIntegrityViolationException
+    def 'creating an existing group raises exception'() {
+        when:
+        scimGroupProvisioning.create(group)
+
+        then:
+        1 * groupConverter.fromScim(group) >> groupEntity
+        1 * groupDao.create(groupEntity) >> { throw new DataIntegrityViolationException('') }
+        thrown(ResourceExistsException)
+    }
+
+    def 'creating a group works as expected'() {
+        when:
+        scimGroupProvisioning.create(group)
+
+        then:
+        1 * groupConverter.fromScim(group) >> groupEntity
+        1 * groupEntity.setId(_)
+        1 * groupDao.create(groupEntity)
+        1 * groupConverter.toScim(groupEntity)
+    }
+
+    def 'replacing a non-existing group raises exception'() {
+        when:
+        scimGroupProvisioning.replace(groupUuid.toString(), group)
+
+        then:
+        1 * groupConverter.fromScim(_) >> { throw new ResourceNotFoundException('') }
+        thrown(ResourceNotFoundException)
+    }
+
+    def 'replacing a group with a non-existing member raises exception'() {
+        given:
+        MemberRef member = new MemberRef.Builder()
+                .setValue(memberId)
+                .build()
+        group = new Group.Builder(group)
+                .setMembers([member] as Set)
+                .build()
+
+        when:
+        scimGroupProvisioning.replace(groupUuid.toString(), group)
+
+        then:
+        1 * groupConverter.fromScim(_) >> { throw new ResourceNotFoundException('') }
+        thrown(ResourceNotFoundException)
+    }
+
+    def 'replacing a group with a member works as expected'() {
+        MemberRef member = new MemberRef.Builder()
+                .setValue(memberId)
+                .build()
+        group = new Group.Builder(group)
+                .setMembers([member] as Set)
+                .build()
+
+        when:
+        scimGroupProvisioning.replace(groupUuid.toString(), group)
+
+        then:
+        1 * groupConverter.fromScim(_) >> groupEntity
+        1 * groupDao.getById(groupUuid.toString()) >> groupEntity   // <- is not the same as above, but doesn't really matter here
+        1 * groupDao.update(groupEntity) >> groupEntity
+        1 * groupConverter.toScim(groupEntity) >> new Group.Builder(group).build()
+        1 * groupEntity.touch()
+    }
+
+    def 'deleting an unknown group raises exception'() {
+
+        when:
+        scimGroupProvisioning.delete(groupUuid)
+
+        then:
+        1 * groupDao.delete(groupUuid) >> { throw new NoResultException() }
+        def rnfe = thrown(ResourceNotFoundException)
+
+        rnfe.getMessage().with {
+            contains('Group')
+            contains(groupUuid)
         }
-        group.getDisplayName() >> "displayName"
-        when:
-        underTest.create(group)
-        then:
-        def e = thrown(ResourceExistsException)
-        e.message == "displayName already exists."
     }
 
-    def "should call dao delete on delete"() {
+    def 'deleting a user calls userDao.delete()'() {
+
         when:
-        underTest.delete("id")
+        scimGroupProvisioning.delete(groupUuid)
 
         then:
-        1 * groupDao.delete("id")
-
+        1 * groupDao.delete(groupUuid)
     }
 
-    def "should call dao search on search"() {
+    def 'searching for groups calls groupDao.search(), converts each entity to scim and returns the SCIM search result'() {
+        given:
+        def groupList = [groupEntity] as List
+
+        when:
+        def result = scimGroupProvisioning.search("anyFilter", "userName", "ascending", 100, 1)
+
+        then:
+        1 * groupDao.search("anyFilter", "userName", "ascending", 100, 0) >> new SearchResult(groupList, 1000)
+        1 * groupConverter.toScim(groupEntity) >> group
+
+        result.resources.size() == 1
+        result.resources.first() == group
+        result.startIndex == 1
+        result.itemsPerPage == 100
+        result.totalResults == 1000.toLong()
+    }
+
+    def 'updating a group retrieves the entity, updates it and converts it back to scim'() {
         given:
 
-        GroupEntity groupEntityMock = Mock()
-        groupEntityMock.getId() >> UUID.randomUUID()
-        groupEntityMock.getMeta() >> new MetaEntity()
-        groupEntityMock.getMembers() >> ([] as Set)
-        def groupList = [groupEntityMock] as List
-        def searchResult = new SearchResult(groupList, 1000)
-        groupDao.search("anyFilter", "userName", "ascending", 100, 0) >> searchResult
-
         when:
-        def result = underTest.search("anyFilter", "userName", "ascending", 100, 1)
+        scimGroupProvisioning.update(groupUuid, group)
 
         then:
-        result.getTotalResults() == 1000.toLong()
+        1 * groupDao.getById(groupUuid) >> groupEntity
+        1 * groupUpdater.update(group, groupEntity)
+        1 * groupEntity.touch()
+        1 * groupConverter.toScim(groupEntity)
     }
 }
