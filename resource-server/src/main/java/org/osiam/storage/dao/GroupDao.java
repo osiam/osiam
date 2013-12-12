@@ -23,8 +23,6 @@
 
 package org.osiam.storage.dao;
 
-import java.util.logging.Logger;
-
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -35,8 +33,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class GroupDao implements GenericDao<GroupEntity> {
-
-    private static final Logger LOGGER = Logger.getLogger(UserDao.class.getName());
 
     @Inject
     private GroupFilterParser filterParser;
