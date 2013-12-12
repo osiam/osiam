@@ -33,7 +33,6 @@ import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 
-import org.osiam.resources.converter.Converter;
 import org.osiam.resources.converter.GroupConverter;
 import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
@@ -41,7 +40,6 @@ import org.osiam.resources.provisioning.update.GroupUpdater;
 import org.osiam.resources.scim.Constants;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.SCIMSearchResult;
-import org.osiam.storage.dao.GenericDao;
 import org.osiam.storage.dao.GroupDao;
 import org.osiam.storage.dao.SearchResult;
 import org.osiam.storage.entities.GroupEntity;
@@ -122,9 +120,16 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
     }
 
     @Override
-    public Group update(String id, Group resource) {
-        // TODO Auto-generated method stub
-        return null;
+    public Group update(String id, Group group) {
+        GroupEntity groupEntity = groupDao.getById(id);
+
+        groupUpdater.update(group, groupEntity);
+
+        groupEntity.touch();
+
+        Group result = groupConverter.toScim(groupEntity);
+
+        return result;
     }
 
     @Override
