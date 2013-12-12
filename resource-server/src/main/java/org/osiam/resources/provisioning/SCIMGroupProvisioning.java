@@ -64,6 +64,7 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
     public Group create(Group group) {
         GroupEntity enrichedGroup = groupConverter.fromScim(group);
         enrichedGroup.setId(UUID.randomUUID());
+
         try {
             groupDao.create(enrichedGroup);
         } catch (DataIntegrityViolationException e) {
@@ -71,6 +72,7 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
 
             throw new ResourceExistsException(group.getDisplayName() + " already exists.", e);
         }
+
         return groupConverter.toScim(enrichedGroup);
     }
 
