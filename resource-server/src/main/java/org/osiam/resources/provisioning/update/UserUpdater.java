@@ -30,7 +30,7 @@ import org.osiam.storage.entities.UserEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-public abstract class UserUpdater {
+public class UserUpdater {
 
     @Inject
     private ResourceUpdater resourceUpdater;

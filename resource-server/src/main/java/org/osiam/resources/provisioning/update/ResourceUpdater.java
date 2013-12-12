@@ -28,7 +28,7 @@ import org.osiam.storage.entities.ResourceEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-public abstract class ResourceUpdater {
+public class ResourceUpdater {
 
     public void update(Resource resource, ResourceEntity resourceEntity) {
 
