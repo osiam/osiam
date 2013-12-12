@@ -23,6 +23,7 @@
 
 package org.osiam.resources.provisioning.update;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -46,49 +47,56 @@ public abstract class GroupUpdater {
     public void update(Group group, GroupEntity groupEntity) {
         resourceUpdater.update(group, groupEntity);
 
+        Set<String> attributes = new HashSet<>();
         if (group.getMeta() != null && group.getMeta().getAttributes() != null) {
-            removeAttributes(group.getMeta().getAttributes(), groupEntity);
+            attributes = group.getMeta().getAttributes();
+        }
+
+        updateDisplayname(group, groupEntity, attributes);
+        updateMembers(group, groupEntity, attributes);
+
+    }
+
+    private void updateDisplayname(Group group, GroupEntity groupEntity, Set<String> attributes) {
+        String attributeName = "displayName";
+
+        for (String attribute : attributes) {
+            if (attribute.equalsIgnoreCase(attributeName)) {
+                groupEntity.setDisplayName(null);
+            }
         }
 
         if (group.getDisplayName() != null && !group.getDisplayName().isEmpty()) {
             groupEntity.setDisplayName(group.getDisplayName());
         }
 
-        if (group.getMembers() != null && !group.getMembers().isEmpty()) {
-            updateMembers(group.getMembers(), groupEntity);
-        }
     }
 
-    private void updateMembers(Set<MemberRef> members, GroupEntity groupEntity) {
+    private void updateMembers(Group group, GroupEntity groupEntity, Set<String> attributes) {
+        String attributeName = "members";
 
-        // first remove all members that have to be removed
-        for (MemberRef memberRef : members) {
-            if(memberRef.getOperation() == null || !memberRef.getOperation().equalsIgnoreCase("delete")) {
-                continue;
-            }
-
-            String memberId = memberRef.getValue();
-            ResourceEntity member = resourceDao.getById(memberId, ResourceEntity.class);
-            groupEntity.removeMember(member);
-            // TODO: delete memberRef from group
-        }
-
-        // second add all new members
-        for (MemberRef memberRef : members) {
-            if(memberRef.getOperation() != null && memberRef.getOperation().equalsIgnoreCase("delete")) {
-                continue;
-            }
-
-            // TODO: add memberRef to Group
-        }
-    }
-
-    private void removeAttributes(Set<String> attributes, GroupEntity groupEntity) {
         for (String attribute : attributes) {
-            if(attribute.equalsIgnoreCase("displayName")) {
-                groupEntity.setDisplayName(null);
+            if (attribute.equalsIgnoreCase(attributeName)) {
+                groupEntity.removeAllMembers();
             }
         }
+
+        if (group.getMembers() != null && !group.getMembers().isEmpty()) {
+
+            for (MemberRef memberRef : group.getMembers()) {
+
+                String memberId = memberRef.getValue();
+                ResourceEntity member = resourceDao.getById(memberId, ResourceEntity.class);
+
+                if (memberRef.getOperation() != null && memberRef.getOperation().equalsIgnoreCase("delete")) {
+                    groupEntity.removeMember(member);
+                } else {
+                    groupEntity.addMember(member);
+                }
+
+            }
+        }
+
     }
 
 }
