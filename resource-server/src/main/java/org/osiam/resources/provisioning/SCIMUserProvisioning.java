@@ -26,13 +26,18 @@ package org.osiam.resources.provisioning;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.UUID;
 
 import javax.inject.Inject;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
 
 import org.osiam.resources.converter.Converter;
 import org.osiam.resources.converter.UserConverter;
 import org.osiam.resources.exceptions.ResourceExistsException;
+import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.provisioning.update.UserUpdater;
 import org.osiam.resources.scim.Constants;
 import org.osiam.resources.scim.Extension;
@@ -54,6 +59,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class SCIMUserProvisioning implements SCIMProvisioning<User> {
 
+    private static final Logger LOGGER = Logger.getLogger(SCIMUserProvisioning.class.getName());
+
     @Inject
     private UserConverter userConverter;
 
@@ -74,7 +81,17 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
 
     @Override
     public User getById(String id) {
-        return removePassword(userConverter.toScim(userDao.getById(id)));
+        try {
+            return removePassword(userConverter.toScim(userDao.getById(id)));
+        } catch (NoResultException nre) {
+            LOGGER.log(Level.INFO, nre.getMessage(), nre);
+
+            throw new ResourceNotFoundException(String.format("User with id '%s' not found", id), nre);
+        } catch (PersistenceException pe) {
+            LOGGER.log(Level.WARNING, pe.getMessage(), pe);
+
+            throw new ResourceNotFoundException(String.format("User with id '%s' not found", id), pe);
+        }
     }
 
     @Override
@@ -223,7 +240,11 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
 
     @Override
     public void delete(String id) {
-        userDao.delete(id);
+        try {
+            userDao.delete(id);
+        } catch (NoResultException nre) {
+            throw new ResourceNotFoundException(String.format("User with id '%s' not found", id), nre);
+        }
     }
 
 }
