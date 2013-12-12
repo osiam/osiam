@@ -50,8 +50,10 @@ import org.osiam.storage.entities.X509CertificateEntity
 import org.osiam.storage.helper.NumberPadder
 import org.springframework.security.authentication.encoding.PasswordEncoder
 
+import spock.lang.Ignore
 import spock.lang.Specification
 
+@Ignore('wip')
 class UserPatchSpec extends Specification {
 
     UserDao userDao = Mock()
