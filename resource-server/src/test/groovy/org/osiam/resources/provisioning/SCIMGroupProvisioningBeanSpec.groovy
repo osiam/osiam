@@ -72,7 +72,7 @@ class SCIMGroupProvisioningBeanSpec extends Specification {
         thrown(ResourceNotFoundException)
     }
 
-    def 'create a group with a non-existant member raises exception'() {
+    def 'creating a group with a non-existant member raises exception'() {
         given:
         MemberRef member = new MemberRef.Builder()
                 .setValue(memberId)
