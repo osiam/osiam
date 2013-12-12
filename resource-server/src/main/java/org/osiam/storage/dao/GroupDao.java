@@ -49,16 +49,12 @@ public class GroupDao implements GenericDao<GroupEntity> {
 
     @Override
     public void create(GroupEntity group) {
-        em.persist(group);
+        resourceDao.create(group);
     }
 
     @Override
     public GroupEntity getById(String id) {
-        /*
-         * try { return getInternalIdSkeleton(id); } catch (ClassCastException c) { LOGGER.log(Level.WARNING,
-         * c.getMessage(), c); throw new ResourceNotFoundException("Resource " + id + " is not a Group.", c); }
-         */
-        return null;
+        return resourceDao.getById(id, GroupEntity.class);
     }
 
     @Override
