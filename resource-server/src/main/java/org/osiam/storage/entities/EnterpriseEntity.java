@@ -27,7 +27,8 @@ import org.osiam.resources.scim.Enterprise;
 
 import javax.persistence.*;
 
-@Entity(name = "scim_enterprise")
+@Entity
+@Table(name = "scim_enterprise")
 public class EnterpriseEntity {
 
     @Id

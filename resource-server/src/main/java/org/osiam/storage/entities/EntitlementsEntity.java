@@ -24,11 +24,13 @@
 package org.osiam.storage.entities;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * Entitlements Entity
  */
-@Entity(name = "scim_entitlements")
+@Entity
+@Table(name = "scim_entitlements")
 public class EntitlementsEntity extends MultiValueAttributeEntitySkeleton {
 
 }

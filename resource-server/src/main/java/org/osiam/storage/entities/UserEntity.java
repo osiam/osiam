@@ -24,14 +24,15 @@
 package org.osiam.storage.entities;
 
 import javax.persistence.*;
+
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * User Entity
  */
-@Entity(name = "scim_user")
-@NamedQueries({@NamedQuery(name = "getUserByUsername", query = "SELECT u FROM scim_user u WHERE u.userName = :username")})
+@Entity
+@Table(name = "scim_user")
 public class UserEntity extends ResourceEntity {
 
     private static final String MAPPING_NAME = "user";

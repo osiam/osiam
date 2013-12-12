@@ -23,12 +23,20 @@
 
 package org.osiam.storage.entities;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * Address Entity
  */
-@Entity(name = "scim_address")
+@Entity
+@Table(name = "scim_address")
 public class AddressEntity {
 
     @Id

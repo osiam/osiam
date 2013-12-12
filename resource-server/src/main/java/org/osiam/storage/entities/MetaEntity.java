@@ -30,8 +30,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
-@Entity(name = "scim_meta")
+@Entity
+@Table(name = "scim_meta")
 public class MetaEntity {
 
     @Id

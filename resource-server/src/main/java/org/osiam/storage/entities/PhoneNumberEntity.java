@@ -28,7 +28,8 @@ import javax.persistence.*;
 /**
  * Phone Numbers Entity
  */
-@Entity(name = "scim_phoneNumber")
+@Entity
+@Table(name = "scim_phoneNumber")
 public class PhoneNumberEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndType, HasUser {
 
     @Column
@@ -38,6 +39,7 @@ public class PhoneNumberEntity extends MultiValueAttributeEntitySkeleton impleme
     @ManyToOne
     private UserEntity user;
 
+    @Override
     public String getType() {
         if (type != null) {
             return type.toString();
@@ -45,16 +47,19 @@ public class PhoneNumberEntity extends MultiValueAttributeEntitySkeleton impleme
         return null;
     }
 
+    @Override
     public void setType(String type) {
         if (type != null) {
             this.type = CanonicalPhoneNumberTypes.valueOf(type);
         }
     }
 
+    @Override
     public UserEntity getUser() {
         return user;
     }
 
+    @Override
     public void setUser(UserEntity user) {
         this.user = user;
     }

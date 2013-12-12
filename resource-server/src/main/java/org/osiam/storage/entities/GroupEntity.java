@@ -29,13 +29,17 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+
+import org.osiam.resources.scim.Group;
 
 import com.google.common.collect.ImmutableSet;
 
 /**
- * Group Entity
+ * Entity class for {@link Group} resources
  */
-@Entity(name = "scim_group")
+@Entity
+@Table(name = "scim_group")
 public class GroupEntity extends ResourceEntity {
 
     @ManyToMany
@@ -68,6 +72,15 @@ public class GroupEntity extends ResourceEntity {
         member.removeFromGroup(this);
     }
 
+    /**
+     * Removes all members from this group.
+     */
+    public void removeAllMembers() {
+        for (ResourceEntity member : members) {
+            removeMember(member);
+        }
+    }
+
     @Override
     public String getDisplayName() {
         return displayName;
@@ -78,21 +91,11 @@ public class GroupEntity extends ResourceEntity {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        //TODO: change this back to displayName after the generic patch stuff is rewritten.
-        return super.equals(o);
+    public String toString() {
+        return "GroupEntity{" +
+                "UUID='" + getId() + "\', " +
+                "displayName='" + displayName + '\'' +
+                '}';
     }
 
-    @Override
-    public int hashCode() {
-        //TODO: change this back to displayName after the generic patch stuff is rewritten.
-        return super.hashCode();
-    }
 }

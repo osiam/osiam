@@ -25,21 +25,25 @@ package org.osiam.storage.entities;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * X509 Certificates Entity
  */
-@Entity(name = "scim_certificate")
+@Entity
+@Table(name = "scim_certificate")
 public class X509CertificateEntity extends MultiValueAttributeEntitySkeleton implements HasUser {
 
     @ManyToOne(optional = false)
     private UserEntity user;
 
 
+    @Override
     public UserEntity getUser() {
         return user;
     }
 
+    @Override
     public void setUser(UserEntity user) {
         this.user = user;
     }

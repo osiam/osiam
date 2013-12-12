@@ -25,8 +25,10 @@ package org.osiam.storage.entities;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
-@Entity(name = "database_scheme_version")
+@Entity
+@Table(name = "database_scheme_version")
 public class DBVersion {
 
     public static final double DB_VERSION = 0.05;
