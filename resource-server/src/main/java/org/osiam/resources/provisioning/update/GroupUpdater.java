@@ -52,23 +52,11 @@ public class GroupUpdater {
             attributes = group.getMeta().getAttributes();
         }
 
-        updateDisplayname(group, groupEntity, attributes);
-        updateMembers(group, groupEntity, attributes);
-
-    }
-
-    private void updateDisplayname(Group group, GroupEntity groupEntity, Set<String> attributes) {
-        String attributeName = "displayName";
-
-        for (String attribute : attributes) {
-            if (attribute.equalsIgnoreCase(attributeName)) {
-                groupEntity.setDisplayName(null);
-            }
-        }
-
         if (group.getDisplayName() != null && !group.getDisplayName().isEmpty()) {
             groupEntity.setDisplayName(group.getDisplayName());
         }
+
+        updateMembers(group, groupEntity, attributes);
 
     }
 
@@ -82,9 +70,7 @@ public class GroupUpdater {
         }
 
         if (group.getMembers() != null && !group.getMembers().isEmpty()) {
-
             for (MemberRef memberRef : group.getMembers()) {
-
                 String memberId = memberRef.getValue();
                 ResourceEntity member = resourceDao.getById(memberId, ResourceEntity.class);
 
@@ -93,7 +79,6 @@ public class GroupUpdater {
                 } else {
                     groupEntity.addMember(member);
                 }
-
             }
         }
 
