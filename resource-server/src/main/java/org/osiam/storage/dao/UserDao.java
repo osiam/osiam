@@ -23,31 +23,23 @@
 
 package org.osiam.storage.dao;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
-import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.storage.entities.UserEntity;
+import org.osiam.storage.entities.UserEntity_;
 import org.osiam.storage.query.UserFilterParser;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class UserDao implements GenericDao<UserEntity> {
 
-    private static final Logger LOGGER = Logger.getLogger(UserDao.class.getName());
-
     @Inject
     private UserFilterParser filterParser;
 
     @Inject
     private ResourceDao resourceDao;
-
-    @PersistenceContext
-    private EntityManager em;
 
     @Override
     public void create(UserEntity userEntity) {
@@ -56,19 +48,11 @@ public class UserDao implements GenericDao<UserEntity> {
 
     @Override
     public UserEntity getById(String id) {
-        try {
-            return resourceDao.getById(id, UserEntity.class);
-        } catch (ClassCastException c) {
-            LOGGER.log(Level.WARNING, c.getMessage(), c);
-            throw new ResourceNotFoundException("Resource " + id + " is not an User.", c);
-        }
+        return resourceDao.getById(id, UserEntity.class);
     }
 
     public UserEntity getByUsername(String userName) {
-        /*Query query = em.createNamedQuery("getUserByUsername");
-        query.setParameter("username", userName);
-        return getSingleInternalIdSkeleton(query, userName);*/
-        return null;
+        return resourceDao.getByAttribute(UserEntity_.userName, userName, UserEntity.class);
     }
 
     @Override
