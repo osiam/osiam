@@ -27,11 +27,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Name Entity
  */
-@Entity(name = "scim_name")
+@Entity
+@Table(name = "scim_name")
 public class NameEntity {
 
     @Id

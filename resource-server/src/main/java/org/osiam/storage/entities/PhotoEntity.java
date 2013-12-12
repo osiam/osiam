@@ -24,12 +24,14 @@
 package org.osiam.storage.entities;
 
 import javax.persistence.*;
+
 import java.util.regex.Pattern;
 
 /**
  * Photos Entity
  */
-@Entity(name = "scim_photo")
+@Entity
+@Table(name = "scim_photo")
 public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndType, HasUser {
 
     //a valid photo url is everything which does not contain any control character and ends with jpg|jpeg|png|gif
@@ -58,6 +60,7 @@ public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements Ch
         return !PHOTO_SUFFIX.matcher(value).matches();
     }
 
+    @Override
     public String getType() {
         if (type != null) {
             return type.toString();
@@ -65,16 +68,19 @@ public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements Ch
         return null;
     }
 
+    @Override
     public void setType(String type) {
         if (type != null) {
             this.type = CanonicalPhotoTypes.valueOf(type);
         }
     }
 
+    @Override
     public UserEntity getUser() {
         return user;
     }
 
+    @Override
     public void setUser(UserEntity user) {
         this.user = user;
     }

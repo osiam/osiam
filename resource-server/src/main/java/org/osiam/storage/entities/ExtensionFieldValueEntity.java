@@ -32,11 +32,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * Defines a value of a field of a scim-extension. It's user-dependent!
  */
-@Entity(name = "scim_extension_field_value")
+@Entity
+@Table(name = "scim_extension_field_value")
 public class ExtensionFieldValueEntity {
 
     @Id

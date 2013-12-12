@@ -26,6 +26,7 @@ package org.osiam.storage.entities;
 import org.osiam.resources.scim.ExtensionFieldType;
 
 import javax.persistence.*;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,7 +34,8 @@ import java.util.Set;
 /**
  * Defines a field in a scim-extension.
  */
-@Entity(name = "scim_extension_field")
+@Entity
+@Table(name = "scim_extension_field")
 public class ExtensionFieldEntity { // NOSONAR - will be constructed by jackson
 
     @Id

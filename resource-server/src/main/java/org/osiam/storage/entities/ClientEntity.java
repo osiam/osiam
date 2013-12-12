@@ -39,14 +39,16 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
-@Entity(name = "osiam_client")
-@NamedQueries({@NamedQuery(name = "getClientById", query = "SELECT i FROM osiam_client i WHERE i.id= :id")})
+@Entity
+@Table(name = "osiam_client")
+@NamedQueries({ @NamedQuery(name = "getClientById", query = "SELECT i FROM ClientEntity i WHERE i.id= :id") })
 public class ClientEntity {
 
     private static final int LENGTH = 32;
@@ -146,7 +148,7 @@ public class ClientEntity {
     }
 
     private String generateSecret() {
-        //TODO must be improved
+        // TODO must be improved
         return UUID.randomUUID().toString();
     }
 
@@ -161,7 +163,6 @@ public class ClientEntity {
     public String getId() {
         return id;
     }
-
 
     public void setRedirectUri(String redirectUri) {
         this.redirectUri = redirectUri;

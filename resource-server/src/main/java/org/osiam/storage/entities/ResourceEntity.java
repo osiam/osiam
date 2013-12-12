@@ -34,9 +34,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-@Entity(name = "scim_id")
+@Entity
+@Table(name = "scim_id")
 @Inheritance(strategy = InheritanceType.JOINED)
-@NamedQueries({@NamedQuery(name = "getById", query = "SELECT i FROM scim_id i WHERE i.id= :id")})
 public abstract class ResourceEntity implements ChildOfMultiValueAttribute {
 
     @Column(unique = true, nullable = false)

@@ -28,11 +28,13 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * Email Entity
  */
-@Entity(name = "scim_email")
+@Entity
+@Table(name = "scim_email")
 public class EmailEntity extends MultiValueAttributeEntitySkeleton implements HasUser, ChildOfMultiValueAttributeWithIdAndTypeAndPrimary {
 
     @Column

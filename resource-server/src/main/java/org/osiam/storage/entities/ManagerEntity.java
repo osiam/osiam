@@ -29,9 +29,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
+
 import java.util.UUID;
 
-@Entity(name = "scim_manager")
+@Entity
+@Table(name = "scim_manager")
 public class ManagerEntity {
 
     @Id

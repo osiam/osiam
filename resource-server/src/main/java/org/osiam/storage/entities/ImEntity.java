@@ -28,7 +28,8 @@ import javax.persistence.*;
 /**
  * Instant messaging Entity
  */
-@Entity(name = "scim_im")
+@Entity
+@Table(name = "scim_im")
 public class ImEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndType, HasUser {
 
     @Column
@@ -39,6 +40,7 @@ public class ImEntity extends MultiValueAttributeEntitySkeleton implements Child
     private UserEntity user;
 
 
+    @Override
     public String getType() {
         if (type != null) {
             return type.toString();
@@ -46,16 +48,19 @@ public class ImEntity extends MultiValueAttributeEntitySkeleton implements Child
         return null;
     }
 
+    @Override
     public void setType(String type) {
         if (type != null) {
             this.type = CanonicalImTypes.valueOf(type);
         }
     }
 
+    @Override
     public UserEntity getUser() {
         return user;
     }
 
+    @Override
     public void setUser(UserEntity user) {
         this.user = user;
     }
