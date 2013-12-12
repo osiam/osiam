@@ -160,9 +160,9 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
 
     @Override
     public User update(String id, User user) {
-        // TODO: implement!
-
         UserEntity userEntity = userDao.getById(id);
+
+        userUpdater.update(user, userEntity);
 
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             String hashedPassword = passwordEncoder.encodePassword(user.getPassword(), userEntity.getId());
