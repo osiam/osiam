@@ -28,36 +28,24 @@ import javax.persistence.Query
 
 import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.storage.dao.GroupDao
+import org.osiam.storage.dao.UserDao
 import org.osiam.storage.entities.GroupEntity
 
 import spock.lang.Specification
 
 class GroupDeleteSpec extends Specification {
-    EntityManager em = Mock(EntityManager)
-    def groupDao = new GroupDao(em: em)
-    SCIMGroupProvisioning bean = new SCIMGroupProvisioning(groupDao: groupDao)
-    def uId = UUID.randomUUID()
-    def id = uId.toString()
-    def query = Mock(Query)
 
+    GroupDao groupDao = Mock()
+    SCIMGroupProvisioning scimGroupProvisioning = new SCIMGroupProvisioning(groupDao: groupDao)
 
-    def "should throw an org.osiam.resources.exceptions.ResourceNotFoundException when trying to delete unknown group"() {
+    def uuidAsString = UUID.randomUUID().toString()
+
+    def 'deleting a user calls userDao.delete()'() {
+
         when:
-        bean.delete(id)
-        then:
-        1 * em.createNamedQuery("getById") >> query
-        1 * query.getResultList() >> []
-        thrown(ResourceNotFoundException)
-    }
+        scimGroupProvisioning.delete(uuidAsString)
 
-    def "should not throw any Exception when trying to delete known group"() {
-        given:
-        def entity = new GroupEntity()
-        when:
-        bean.delete(id)
         then:
-        1 * em.createNamedQuery("getById") >> query
-        1 * query.getResultList() >> [entity]
-        1 * em.remove(entity)
+        1 * groupDao.delete(uuidAsString)
     }
 }
