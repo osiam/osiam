@@ -88,14 +88,11 @@ public class GroupEntity extends InternalIdSkeleton {
 
         //TODO: change this back to displayName after the generic patch stuff is rewritten.
         return super.equals(o);
-        /*GroupEntity that = (GroupEntity) o;
-        return displayName.equals(that.displayName);*/
     }
 
     @Override
     public int hashCode() {
         //TODO: change this back to displayName after the generic patch stuff is rewritten.
         return super.hashCode();
-        /*return displayName.hashCode();*/
     }
 }

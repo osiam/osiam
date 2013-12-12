@@ -520,4 +520,12 @@ public class UserEntity extends InternalIdSkeleton {
     public int hashCode() {
         return userName.hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+            "UUID='" + getId() + "\', " +
+            "userName='" + userName + '\'' +
+            '}';
+    }
 }
