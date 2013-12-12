@@ -34,7 +34,7 @@ import org.springframework.security.authentication.encoding.PasswordEncoder
 
 import spock.lang.Specification
 
-class ScimUserProvisioningBeanSpec extends Specification {
+class SCIMUserProvisioningBeanSpec extends Specification {
 
     PasswordEncoder passwordEncoder = Mock()
     UserDao userDao = Mock()
