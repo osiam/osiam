@@ -23,8 +23,6 @@
 
 package org.osiam.resources.provisioning.update;
 
-import java.util.Set;
-
 import org.osiam.resources.scim.Resource;
 import org.osiam.storage.entities.ResourceEntity;
 import org.springframework.stereotype.Service;
@@ -35,21 +33,17 @@ public abstract class ResourceUpdater {
     public void update(Resource resource, ResourceEntity resourceEntity) {
 
         if(resource.getMeta() != null && resource.getMeta().getAttributes() != null) {
-            removeAttributes(resource.getMeta().getAttributes(), resourceEntity);
+            for (String attribute : resource.getMeta().getAttributes()) {
+                if(attribute.equalsIgnoreCase("externalId")) {
+                    resourceEntity.setExternalId(null);
+                }
+            }
         }
 
         if(resource.getExternalId() != null && !resource.getExternalId().isEmpty()) {
             resourceEntity.setExternalId(resource.getExternalId());
         }
 
-    }
-
-    private void removeAttributes(Set<String> attributes, ResourceEntity resourceEntity) {
-        for (String attribute : attributes) {
-            if(attribute.equalsIgnoreCase("externalId")) {
-                resourceEntity.setExternalId(null);
-            }
-        }
     }
 
 }
