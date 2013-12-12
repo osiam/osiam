@@ -30,10 +30,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
 
 import org.osiam.resources.converter.Converter;
 import org.osiam.resources.converter.GroupConverter;
 import org.osiam.resources.exceptions.ResourceExistsException;
+import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.provisioning.update.GroupUpdater;
 import org.osiam.resources.scim.Constants;
 import org.osiam.resources.scim.Group;
@@ -105,7 +108,17 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
 
     @Override
     public Group getById(String id) {
-        return groupConverter.toScim(groupDao.getById(id));
+        try {
+            return groupConverter.toScim(groupDao.getById(id));
+        } catch (NoResultException nre) {
+            LOGGER.log(Level.INFO, nre.getMessage(), nre);
+
+            throw new ResourceNotFoundException(String.format("Group with id '%s' not found", id), nre);
+        } catch (PersistenceException pe) {
+            LOGGER.log(Level.WARNING, pe.getMessage(), pe);
+
+            throw new ResourceNotFoundException(String.format("Group with id '%s' not found", id), pe);
+        }
     }
 
     @Override
@@ -116,7 +129,11 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
 
     @Override
     public void delete(String id) {
-        groupDao.delete(id);
+        try {
+            groupDao.delete(id);
+        } catch (NoResultException nre) {
+            throw new ResourceNotFoundException(String.format("Group with id '%s' not found", id), nre);
+        }
     }
 
 }
