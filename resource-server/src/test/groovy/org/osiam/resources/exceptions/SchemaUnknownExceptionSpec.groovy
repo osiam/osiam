@@ -33,11 +33,4 @@ class SchemaUnknownExceptionSpec extends Specification {
         e.message == "Delivered schema is unknown."
     }
 
-    def "should be instance of IllegalArgumentException"() {
-        when:
-        def e = new SchemaUnknownException()
-        then:
-        e instanceof IllegalArgumentException
-    }
-
 }
