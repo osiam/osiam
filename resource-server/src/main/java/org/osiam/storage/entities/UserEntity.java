@@ -478,26 +478,6 @@ public class UserEntity extends ResourceEntity {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()){
-            return false;
-        }
-
-        UserEntity that = (UserEntity) o;
-
-        return userName.equals(that.userName);
-
-    }
-
-    @Override
-    public int hashCode() {
-        return userName.hashCode();
-    }
-
-    @Override
     public String toString() {
         return "UserEntity{" +
             "UUID='" + getId() + "\', " +
