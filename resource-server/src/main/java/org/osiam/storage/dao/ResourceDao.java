@@ -44,7 +44,9 @@ import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.ResourceEntity;
 import org.osiam.storage.entities.ResourceEntity_;
 import org.osiam.storage.query.FilterParser;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ResourceDao {
 
     @PersistenceContext
