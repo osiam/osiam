@@ -23,71 +23,42 @@
 
 package org.osiam.storage.dao
 
-import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.storage.entities.GroupEntity
-import org.osiam.storage.entities.ResourceEntity
-import org.osiam.storage.entities.UserEntity
-import spock.lang.Specification
 
-import javax.persistence.EntityManager
-import javax.persistence.Query
+import spock.lang.Specification
 
 class GroupDaoSpec extends Specification {
 
-    EntityManager em = Mock(EntityManager)
+    static def IRRELEVANT = 'irrelevant'
 
-    Query query = Mock(Query)
-    ResourceEntity internalIdSkeleton = new GroupEntity(id: UUID.randomUUID())
+    ResourceDao resourceDao = Mock()
+    GroupDao groupDao = new GroupDao(resourceDao: resourceDao)
 
-    def underTest = new GroupDao(em: em)
-    String id = UUID.randomUUID().toString()
+    def 'retrieving a group by id calls resourceDao.getById()'() {
+        when:
+        groupDao.getById(IRRELEVANT)
 
-    def setup() {
-        em.createNamedQuery('getById') >> query
+        then:
+        1 * resourceDao.getById(IRRELEVANT, GroupEntity)
     }
 
-    def 'persisting a group without members works'() {
+    def 'creating a group calls resourceDao.create()'() {
         given:
-        def entity = new GroupEntity()
+        GroupEntity groupEntity = new GroupEntity()
+
         when:
-        underTest.create(entity)
+        groupDao.create(groupEntity)
+
         then:
-        1 * em.persist(entity)
+        1 * resourceDao.create(groupEntity)
     }
 
-    // This test might well be senseless
-    def 'retrieving a group works'() {
+    def 'deleting a group calls resourceDao.delete()'() {
         when:
-        def result = underTest.getById(id)
+        groupDao.delete(IRRELEVANT)
+
         then:
-        1 * query.getResultList() >> [internalIdSkeleton]
-        result == internalIdSkeleton
+        1 * resourceDao.delete(IRRELEVANT)
     }
 
-    def 'a class cast exception is wraped into a ResourceNotFoundException'() {
-        given:
-        internalIdSkeleton = new UserEntity()
-        when:
-        underTest.getById(id)
-        then:
-        1 * query.getResultList() >> [internalIdSkeleton]
-        thrown(ResourceNotFoundException)
-    }
-
-    def 'deleting a group first retrieves it, then deletes it'() {
-        when:
-        underTest.delete(id)
-        then:
-        1 * query.getResultList() >> [internalIdSkeleton]
-        1 * em.remove(internalIdSkeleton)
-    }
-
-    def 'deleting an unknown group raises exception'() {
-        when:
-        underTest.delete(id)
-        then:
-        1 * query.getResultList() >> []
-        0 * em.remove(internalIdSkeleton)
-        thrown(ResourceNotFoundException)
-    }
 }

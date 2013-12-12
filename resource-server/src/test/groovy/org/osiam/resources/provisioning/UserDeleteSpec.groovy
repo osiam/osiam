@@ -23,45 +23,41 @@
 
 package org.osiam.resources.provisioning
 
+import javax.persistence.NoResultException
+
 import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.storage.dao.UserDao
-import org.osiam.storage.entities.UserEntity
+
 import spock.lang.Specification
 
-import javax.persistence.EntityManager
-import javax.persistence.Query
-
 class UserDeleteSpec extends Specification {
-    EntityManager em = Mock(EntityManager)
-    def userDao = new UserDao(em: em)
-    SCIMUserProvisioning bean = new SCIMUserProvisioning(userDao: userDao)
-    def uId = UUID.randomUUID()
-    def id = uId.toString()
-    def query = Mock(Query)
 
+    UserDao userDao = Mock()
+    SCIMUserProvisioning scimUserProvisioning = new SCIMUserProvisioning(userDao: userDao)
 
-    def "should throw an org.osiam.resources.exceptions.ResourceNotFoundException when trying to delete unknown user"() {
+    def uuidAsString = UUID.randomUUID().toString()
+
+    def 'deleting an unknown user raises exception'() {
+
         when:
-        bean.delete(id)
+        scimUserProvisioning.delete(uuidAsString)
+
         then:
-        1 * em.createNamedQuery("getById") >> query
-        1 * query.getResultList() >> []
-        thrown(ResourceNotFoundException)
+        1 * userDao.delete(uuidAsString) >> { throw new NoResultException() }
+        def rnfe = thrown(ResourceNotFoundException)
 
-
+        rnfe.getMessage().with {
+            contains('User')
+            contains(uuidAsString)
+        }
     }
 
-    def "should not throw any Exception when trying to delete known user"() {
-        given:
-        def entity = new UserEntity()
+    def 'deleting a user calls userDao.delete()'() {
+
         when:
-        bean.delete(id)
+        scimUserProvisioning.delete(uuidAsString)
+
         then:
-        1 * em.createNamedQuery("getById") >> query
-        1 * query.getResultList() >> [entity]
-        1 * em.remove(entity)
-
+        1 * userDao.delete(uuidAsString)
     }
-
-
 }

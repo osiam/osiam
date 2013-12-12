@@ -24,6 +24,7 @@
 package org.osiam.storage.dao
 
 import javax.persistence.EntityManager
+import javax.persistence.NoResultException
 import javax.persistence.Query
 
 import org.osiam.resources.exceptions.ResourceNotFoundException
@@ -37,117 +38,45 @@ import spock.lang.Specification
 
 class UserDaoSpec extends Specification {
 
-    def em = Mock(EntityManager)
-    def filterParserMock = Mock(UserFilterParser)
-    def underTest = new UserDao(em: em, filterParser: filterParserMock)
-    def userEntity = Mock(UserEntity)
+    static def IRRELEVANT = 'irrelevant'
 
-    def setup() {
-        userEntity.roles >> new HashSet<>(Arrays.asList(new RolesEntity(value: "test"), new RolesEntity()))
-        userEntity.addresses >> new HashSet<>()
-        userEntity.phoneNumbers >> new HashSet<>()
-        userEntity.photos >> new HashSet<>()
-        userEntity.entitlements >> new HashSet<>()
-        userEntity.emails >> new HashSet<>()
-        userEntity.x509Certificates >> new HashSet<>()
-        userEntity.ims >> new HashSet<>()
+    ResourceDao resourceDao = Mock()
+    UserDao userDao = new UserDao(resourceDao: resourceDao)
+
+    def 'retrieving a user by id calls resourceDao.getById()'() {
+        when:
+        userDao.getById(IRRELEVANT)
+
+        then:
+        1 * resourceDao.getById(IRRELEVANT, UserEntity)
     }
 
-    def 'should get user by internal id'() {
+    def 'retrieving a user by userName calls resourceDao.getByAttribute()'() {
+        when:
+        userDao.getByUsername(IRRELEVANT)
+
+        then:
+        // The meta model attribute is null, because it is initialized by the JPA provider
+        1 * resourceDao.getByAttribute(null, IRRELEVANT, UserEntity)
+    }
+
+    def 'creating a user calls resourceDao.create()'() {
         given:
-        def internalId = UUID.randomUUID()
-        def query = Mock(Query)
-        def entity = new UserEntity()
+        UserEntity userEntity = new UserEntity()
 
         when:
-        def result = underTest.getById(internalId.toString())
+        userDao.create(userEntity)
 
         then:
-        1 * em.createNamedQuery('getById') >> query
-        1 * query.getResultList() >> [entity]
-        result == entity
+        1 * resourceDao.create(userEntity)
     }
 
-    def 'should throw an exception when no user is found by id'() {
-        given:
-        def internalId = UUID.randomUUID()
-        def query = Mock(Query)
-        def queryResults = []
-
+    def 'deleting a user calls resourceDao.delete()'() {
         when:
-        underTest.getById(internalId.toString())
+        userDao.delete(IRRELEVANT)
 
         then:
-        1 * em.createNamedQuery('getById') >> query
-        1 * query.getResultList() >> queryResults
-        def e = thrown(ResourceNotFoundException)
-        e.message.contains(internalId.toString())
+        1 * resourceDao.delete(IRRELEVANT)
     }
 
-    def 'should throw an exception when no user is found by name'() {
-        given:
-        def query = Mock(Query)
-        def queryResults = []
-
-        when:
-        underTest.getByUsername('name')
-
-        then:
-        1 * em.createNamedQuery('getUserByUsername') >> query
-        1 * query.setParameter('username', 'name')
-        1 * query.getResultList() >> queryResults
-        thrown(ResourceNotFoundException)
-
-    }
-
-    def 'should get user by username'() {
-        given:
-        def query = Mock(Query)
-        def queryResults = [new UserEntity()]
-        when:
-        def result = underTest.getByUsername('name')
-        then:
-        1 * em.createNamedQuery('getUserByUsername') >> query
-        1 * query.setParameter('username', 'name')
-        1 * query.getResultList() >> queryResults
-        result == queryResults.get(0)
-
-    }
-
-    def 'should be able to create a user'() {
-        when:
-        underTest.create(userEntity)
-
-        then:
-        1 * em.persist(userEntity)
-
-    }
-
-    def 'should first get an user than delete it'() {
-        given:
-        def entity = new UserEntity()
-        def id = UUID.randomUUID().toString()
-        def query = Mock(Query)
-        when:
-        underTest.delete(id)
-        then:
-        1 * em.createNamedQuery('getById') >> query
-        1 * query.getResultList() >> [entity]
-        1 * em.remove(entity)
-
-    }
-
-    def 'should wrap class cast exception to ResourceNotFoundException'() {
-        given:
-        def id = UUID.randomUUID().toString()
-        def query = Mock(Query)
-
-        ResourceEntity internalIdSkeleton = new GroupEntity()
-        when:
-        underTest.getById(id)
-        then:
-        1 * em.createNamedQuery('getById') >> query
-        1 * query.getResultList() >> [internalIdSkeleton]
-        thrown(ResourceNotFoundException)
-    }
 }
