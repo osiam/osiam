@@ -26,15 +26,14 @@ package org.osiam.resources.provisioning;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 
-import org.osiam.resources.converter.Converter;
 import org.osiam.resources.converter.UserConverter;
 import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
@@ -45,7 +44,6 @@ import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.resources.scim.User;
 import org.osiam.storage.dao.ExtensionDao;
-import org.osiam.storage.dao.GenericDao;
 import org.osiam.storage.dao.SearchResult;
 import org.osiam.storage.dao.UserDao;
 import org.osiam.storage.entities.ExtensionEntity;
@@ -234,10 +232,6 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
         return null;
     }
 
-    private User removePassword(User user) {
-        return new User.Builder(user).setPassword(null).build();
-    }
-
     @Override
     public void delete(String id) {
         try {
@@ -245,6 +239,10 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
         } catch (NoResultException nre) {
             throw new ResourceNotFoundException(String.format("User with id '%s' not found", id), nre);
         }
+    }
+
+    private User removePassword(User user) {
+        return new User.Builder(user).setPassword(null).build();
     }
 
 }
