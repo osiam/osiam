@@ -36,7 +36,7 @@ import org.osiam.storage.entities.ResourceEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-public abstract class GroupUpdater {
+public class GroupUpdater {
 
     @Inject
     private ResourceUpdater resourceUpdater;
