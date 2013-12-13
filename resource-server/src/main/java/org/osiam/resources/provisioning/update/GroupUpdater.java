@@ -69,19 +69,36 @@ public class GroupUpdater {
             }
         }
 
-        if (group.getMembers() != null && !group.getMembers().isEmpty()) {
+        if (group.getMembers() != null) {
             for (MemberRef memberRef : group.getMembers()) {
                 String memberId = memberRef.getValue();
-                ResourceEntity member = resourceDao.getById(memberId, ResourceEntity.class);
 
                 if (memberRef.getOperation() != null && memberRef.getOperation().equalsIgnoreCase("delete")) {
-                    groupEntity.removeMember(member);
+                    ResourceEntity member = getMember(memberId, groupEntity);
+                    // TODO: check if exception should be thrown if member is not part of this group
+                    if(member != null) {
+                        groupEntity.removeMember(member);
+                    }
                 } else {
+                    // TODO: what to do if member does not exist?
+                    ResourceEntity member = resourceDao.getById(memberId, ResourceEntity.class);
+
+                    // TODO: check if exception should be thrown if member is already part of this group
                     groupEntity.addMember(member);
                 }
             }
         }
 
+    }
+
+    private ResourceEntity getMember(String memberId, GroupEntity groupEntity) {
+        for (ResourceEntity member : groupEntity.getMembers()) {
+            if(member.getId().equals(memberId)) {
+                return member;
+            }
+        }
+
+        return null;
     }
 
 }
