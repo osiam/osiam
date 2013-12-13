@@ -1,6 +1,7 @@
 package org.osiam.resources.helper
 
 import com.fasterxml.jackson.databind.JsonMappingException
+import org.osiam.resources.scim.Constants
 import spock.lang.Specification
 
 import javax.servlet.http.HttpServletRequest
@@ -8,18 +9,17 @@ import javax.servlet.http.HttpServletRequest
 class JsonInputValidatorSpec extends Specification {
 
     def jsonInputValidator = new JsonInputValidator()
-    def httpServletRequestMock
-    def readerMock = Mock(BufferedReader)
-    def validUserJson = '{"userName":"irrelevant","password":"123", "schemas" : ["irrelevant"]}'
-
+    HttpServletRequest httpServletRequestMock
+    BufferedReader readerMock = Mock()
 
     def setup() {
         servletRequestWithMethod 'POST'
     }
 
-    def "should validate user without errors if json is valid"() {
+    def 'validating user if JSON is valid works'() {
         given:
-        readerMock.readLine() >>> [validUserJson, null]
+        def userJson = """{"userName":"irrelevant","password": "123","schemas" : ["$Constants.USER_CORE_SCHEMA"]}"""
+        readerMock.readLine() >>> [userJson, null]
 
         when:
         def user = jsonInputValidator.validateJsonUser(httpServletRequestMock)
@@ -28,20 +28,19 @@ class JsonInputValidatorSpec extends Specification {
         user.userName == 'irrelevant'
     }
 
-    def "should throw exception if the mandatory userName is missing"() {
+    def 'missing mandatory userName raises exception'() {
         given:
-        def userJson = '{"schemas" : ["irrelevant"]}'
+        def userJson = """{"schemas" : ["$Constants.USER_CORE_SCHEMA"]}"""
         readerMock.readLine() >>> [userJson, null]
 
         when:
         jsonInputValidator.validateJsonUser(httpServletRequestMock)
 
         then:
-        def e = thrown(IllegalArgumentException)
-        e.getMessage() == "The attribute userName is mandatory and MUST NOT be null"
+        thrown(IllegalArgumentException)
     }
 
-    def "should throw exception if the mandatory schemas declaration is missing"() {
+    def 'missing mandatory schema declaration for user raises exception'() {
         given:
         def userJson = '{"userName" : "irrelevant"}'
         readerMock.readLine() >>> [userJson, null]
@@ -53,35 +52,31 @@ class JsonInputValidatorSpec extends Specification {
         thrown(JsonMappingException)
     }
 
-    def "should ignore the mandatory userName if method is PATCH"() {
+    def 'using PATCH without userName field works'() {
         given:
-        def userJson = '{"password":"123", "schemas" : ["irrelevant"]}'
+        def userJson = """{"password":"123", "schemas" : ["$Constants.USER_CORE_SCHEMA"]}"""
         servletRequestWithMethod 'PATCH'
         readerMock.readLine() >>> [userJson, null]
 
-        when:
-        def result = jsonInputValidator.validateJsonUser(httpServletRequestMock)
-
-        then:
-        result
+        expect:
+        jsonInputValidator.validateJsonUser(httpServletRequestMock)
     }
 
-    def "invalid json structure for user should throw exception"() {
+    def 'validating invalid JSON structure raises exception'() {
         given:
-        def userJson = '{"schemas":["urn:scim:schemas:core:1.0"],"userName":"irrelevant","password":"123"'
+        def userJson = """{"schemas":["$Constants.USER_CORE_SCHEMA"],"userName":"irrelevant","password":"123"""
         readerMock.readLine() >>> [userJson, null]
 
         when:
         jsonInputValidator.validateJsonUser(httpServletRequestMock)
 
         then:
-        def e = thrown(IllegalArgumentException)
-        e.getMessage() == "The JSON structure is invalid"
+        thrown(IllegalArgumentException)
     }
 
-    def 'uuid is removed from user when using POST'() {
+    def 'removing uuid from user when using POST works'() {
         given:
-        def userJson = '{"id":"irrelevant","schemas":["urn:scim:schemas:core:1.0"],"userName":"irrelevant","password":"123"}'
+        def userJson = """{"id":"irrelevant","schemas":["$Constants.USER_CORE_SCHEMA"],"userName":"irrelevant","password":"123"}"""
         readerMock.readLine() >>> [userJson, null]
 
         when:
@@ -91,9 +86,9 @@ class JsonInputValidatorSpec extends Specification {
         user.id == null
     }
 
-    def "should validate group without errors if json is valid"() {
+    def 'validating group if JSON is valid works'() {
         given:
-        def groupJson = '{"displayName":"display name"}'
+        def groupJson = """{"schemas":["$Constants.GROUP_CORE_SCHEMA"],"displayName":"display name"}"""
         readerMock.readLine() >>> [groupJson, null]
 
         when:
@@ -103,34 +98,30 @@ class JsonInputValidatorSpec extends Specification {
         group.displayName == 'display name'
     }
 
-    def "should throw exception if the mandatory displayName is not present"() {
+    def 'missing mandatory displayName raises exception'() {
         given:
-        def groupJson = '{"members": []}'
+        def groupJson = """{"schemas":["$Constants.GROUP_CORE_SCHEMA"],"members": []}"""
         readerMock.readLine() >>> [groupJson, null]
 
         when:
         jsonInputValidator.validateJsonGroup(httpServletRequestMock)
 
         then:
-        def e = thrown(IllegalArgumentException)
-        e.getMessage() == 'The attribute displayName is mandatory and MUST NOT be null'
+        thrown(IllegalArgumentException)
     }
 
-    def "should ignore the mandatory displayName if method is PATCH"() {
+    def 'using PATCH without displayName works'() {
         given:
-        def groupJson = '{"members": []}'
+        def groupJson = """{"schemas":["$Constants.GROUP_CORE_SCHEMA"],"members": []}"""
         servletRequestWithMethod 'PATCH'
         readerMock.readLine() >>> [groupJson, null]
 
+        expect:
+        jsonInputValidator.validateJsonGroup(httpServletRequestMock)
 
-        when:
-        def result = jsonInputValidator.validateJsonGroup(httpServletRequestMock)
-
-        then:
-        result
     }
 
-    def "invalid json structure for group should throw exception"() {
+    def 'trying to validate invalid JSON structure for group raises exception'() {
         given:
         def groupJson = '{"displayName":"display name"'
         readerMock.readLine() >>> [groupJson, null]
@@ -139,12 +130,11 @@ class JsonInputValidatorSpec extends Specification {
         jsonInputValidator.validateJsonGroup(httpServletRequestMock)
 
         then:
-        def e = thrown(IllegalArgumentException)
-        e.getMessage() == "The JSON structure is invalid"
+        thrown(IllegalArgumentException)
     }
 
     def servletRequestWithMethod(String requestMethodType) {
-        httpServletRequestMock = Mock(HttpServletRequest)
+        httpServletRequestMock = Mock()
         httpServletRequestMock.getReader() >> readerMock
         httpServletRequestMock.getMethod() >> requestMethodType
     }

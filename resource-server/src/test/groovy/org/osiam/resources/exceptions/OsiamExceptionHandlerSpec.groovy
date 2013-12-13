@@ -31,72 +31,79 @@ import org.osiam.storage.entities.PhoneNumberEntity
 import org.osiam.storage.entities.PhotoEntity
 import org.springframework.http.HttpStatus
 import org.springframework.web.context.request.WebRequest
+import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Unroll
 
 class OsiamExceptionHandlerSpec extends Specification {
-    def underTest = new OsiamExceptionHandler()
-    WebRequest request = Mock(WebRequest)
+    def exceptionHandler = new OsiamExceptionHandler()
+    @Shared
+    def IRRELEVANT = 'irrelevant'
+    WebRequest request = Mock()
 
-    def "exception result should contain a code and a description"() {
+    def 'generated JsonErrorResult contains provided code and description'() {
         when:
-        def errorResult = new OsiamExceptionHandler.JsonErrorResult("hacja", "unso")
+        def errorResult = new OsiamExceptionHandler.JsonErrorResult('code', 'description')
         then:
-        errorResult.error_code == "hacja"
-        errorResult.description == "unso"
+        errorResult.error_code == 'code'
+        errorResult.description == 'description'
     }
 
-    def "should generate a response entity"() {
+    def 'generating a response entity works'() {
         when:
-        def result = underTest.handleConflict(new NullPointerException("Dunno"), request)
+        def result = exceptionHandler.handleConflict(new NullPointerException(IRRELEVANT), request)
         then:
         result.getStatusCode() == HttpStatus.CONFLICT
         (result.getBody() as OsiamExceptionHandler.JsonErrorResult).error_code == HttpStatus.CONFLICT.name()
-        (result.getBody() as OsiamExceptionHandler.JsonErrorResult).description == "Dunno"
+        (result.getBody() as OsiamExceptionHandler.JsonErrorResult).description == IRRELEVANT
     }
 
-    def "should set status to ResourceNotFound when org.osiam.resources.exceptions.ResourceNotFoundException occurs"() {
+    def 'status is set to ResourceNotFound when ResourceNotFoundException occurs'() {
         when:
-        def result = underTest.handleConflict(new ResourceNotFoundException("Dunno"), request)
+        def result = exceptionHandler.handleConflict(new ResourceNotFoundException(IRRELEVANT), request)
         then:
         result.getStatusCode() == HttpStatus.NOT_FOUND
         (result.getBody() as OsiamExceptionHandler.JsonErrorResult).error_code == HttpStatus.NOT_FOUND.name()
-        (result.getBody() as OsiamExceptionHandler.JsonErrorResult).description == "Dunno"
     }
 
-    def "should set status to NOT_IMPLEMENTED when java.lang.UnsupportedOperationException occurs"() {
+    def "status is set to NOT_IMPLEMENTED when java.lang.UnsupportedOperationException occurs"() {
         when:
-        def result = underTest.handleConflict(new UnsupportedOperationException("Dunno"), request)
+        def result = exceptionHandler.handleConflict(new UnsupportedOperationException(IRRELEVANT), request)
         then:
         result.getStatusCode() == HttpStatus.NOT_IMPLEMENTED
         (result.getBody() as OsiamExceptionHandler.JsonErrorResult).error_code == HttpStatus.NOT_IMPLEMENTED.name()
-        (result.getBody() as OsiamExceptionHandler.JsonErrorResult).description == "Dunno"
     }
 
-    def "should set status to I_AM_A_TEAPOT when org.osiam.resources.exceptions.SchemaUnknownException occurs"() {
+    def "status is set to I_AM_A_TEAPOT when org.osiam.resources.exceptions.SchemaUnknownException occurs"() {
         when:
-        def result = underTest.handleConflict(new SchemaUnknownException(), request)
+        def result = exceptionHandler.handleConflict(new SchemaUnknownException(), request)
         then:
         result.getStatusCode() == HttpStatus.I_AM_A_TEAPOT
         (result.getBody() as OsiamExceptionHandler.JsonErrorResult).error_code == HttpStatus.I_AM_A_TEAPOT.name()
-        (result.getBody() as OsiamExceptionHandler.JsonErrorResult).description == "Delivered schema is unknown."
     }
 
-    def "should transform *Entity No enum constant error message to a more readable error response"() {
+    @Unroll
+    def "should transform #name Entity No enum constant error message to a more readable error response"() {
         when:
-        def result = underTest.handleConflict(e, request)
+        def result = exceptionHandler.handleConflict(e, request)
         then:
         (result.getBody() as OsiamExceptionHandler.JsonErrorResult).description ==
-                "huch is not a valid " + name + " are allowed."
+                "$IRRELEVANT is not a valid " + name + " are allowed."
         where:
-        name << ["PhoneNumber type only work, home, mobile, fax, pager, other",
-                "Im type only aim, gtalk, icq, xmpp, msn, skype, qq, yahoo",
-                "Email type only work, home, other",
-                "Photo type only photo, thumbnail"]
+        name                                                           | e
+        "PhoneNumber type. Only work, home, mobile, fax, pager, other" | get_exception {
+            new PhoneNumberEntity().setType(IRRELEVANT)
+        }
+        "Im type. Only aim, gtalk, icq, xmpp, msn, skype, qq, yahoo"   | get_exception {
+            new ImEntity().setType(IRRELEVANT)
+        }
+        "Email type. Only work, home, other"                           | get_exception {
+            new EmailEntity().setType(IRRELEVANT)
+        }
+        "Photo type. Only photo, thumbnail"                            | get_exception {
+            new PhotoEntity().setType(IRRELEVANT)
+        }
 
-        e << [get_exception { new PhoneNumberEntity().setType("huch") },
-                get_exception { new ImEntity().setType("huch") },
-                get_exception { new EmailEntity().setType("huch") },
-                get_exception { new PhotoEntity().setType("huch") }]
     }
 
     def get_exception(Closure c) {
@@ -111,7 +118,7 @@ class OsiamExceptionHandlerSpec extends Specification {
         given:
         def e = generate_wrong_json_exception('{"extId":"blubb"}', User)
         when:
-        def result = underTest.handleConflict(e, request)
+        def result = exceptionHandler.handleConflict(e, request)
         then:
         (result.getBody() as OsiamExceptionHandler.JsonErrorResult).description == 'Unrecognized field "extId"'
     }
@@ -130,7 +137,7 @@ class OsiamExceptionHandlerSpec extends Specification {
         given:
         def e = generate_wrong_json_exception('{"ims":"blaa"}', User)
         when:
-        def result = underTest.handleConflict(e, request)
+        def result = exceptionHandler.handleConflict(e, request)
         then:
         (result.getBody() as OsiamExceptionHandler.JsonErrorResult).description == 'Can not deserialize instance of java.util.ArrayList out of VALUE_STRING'
     }

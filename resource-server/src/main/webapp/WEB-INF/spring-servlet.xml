@@ -48,7 +48,6 @@
     <mvc:default-servlet-handler/>
 
     <aop:aspectj-autoproxy proxy-target-class="true"/>
-    <bean id="logAspect" class="org.osiam.resources.helper.CheckSchema"/>
     <bean id="profiling" class="org.osiam.resources.helper.MeasureDurationTimeOfMethods"/>
 
     <context:property-placeholder location="classpath:osiam.properties"/>
