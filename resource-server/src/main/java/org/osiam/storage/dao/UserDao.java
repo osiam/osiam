@@ -23,8 +23,6 @@
 
 package org.osiam.storage.dao;
 
-import java.util.logging.Logger;
-
 import javax.inject.Inject;
 
 import org.osiam.storage.entities.UserEntity;
