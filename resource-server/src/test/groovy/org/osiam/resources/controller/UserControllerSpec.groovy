@@ -64,7 +64,7 @@ class UserControllerSpec extends Specification {
             .setName(new Name.Builder().build())
             .setNickName("nickname")
             .setPassword("password")
-            .setPreferredLanguage("prefereedLanguage")
+            .setPreferredLanguage("preferredLanguage")
             .setProfileUrl("profileUrl")
             .setTimezone("time")
             .setTitle("title")
