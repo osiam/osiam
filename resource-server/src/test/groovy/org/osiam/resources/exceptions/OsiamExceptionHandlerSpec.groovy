@@ -37,8 +37,7 @@ import spock.lang.Unroll
 
 class OsiamExceptionHandlerSpec extends Specification {
     def exceptionHandler = new OsiamExceptionHandler()
-    @Shared
-    def IRRELEVANT = 'irrelevant'
+    def static IRRELEVANT = 'irrelevant'
     WebRequest request = Mock()
 
     def 'generated JsonErrorResult contains provided code and description'() {
