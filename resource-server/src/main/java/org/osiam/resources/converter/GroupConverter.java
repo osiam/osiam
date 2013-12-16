@@ -32,8 +32,7 @@ import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.MemberRef;
 import org.osiam.resources.scim.MultiValuedAttribute;
-import org.osiam.storage.dao.GroupDao;
-import org.osiam.storage.dao.UserDao;
+import org.osiam.storage.dao.ResourceDao;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.ResourceEntity;
 import org.springframework.stereotype.Service;
@@ -42,10 +41,7 @@ import org.springframework.stereotype.Service;
 public class GroupConverter implements Converter<Group, GroupEntity> {
 
     @Inject
-    private GroupDao groupDao;
-
-    @Inject
-    private UserDao userDao;
+    private ResourceDao resourceDao;
 
     @Inject
     private MetaConverter metaConverter;
@@ -55,35 +51,22 @@ public class GroupConverter implements Converter<Group, GroupEntity> {
         if (group == null) {
             return null;
         }
+
         GroupEntity groupEntity = new GroupEntity();
         groupEntity.setDisplayName(group.getDisplayName());
         groupEntity.setExternalId(group.getExternalId());
 
-        for (MultiValuedAttribute member : group.getMembers()) {
+        for (MemberRef member : group.getMembers()) {
             addMember(member, groupEntity);
         }
 
         return groupEntity;
     }
 
-    private void addMember(MultiValuedAttribute member, GroupEntity groupEntity) {
+    private void addMember(MemberRef member, GroupEntity groupEntity) {
         String uuid = member.getValue();
 
-        ResourceEntity resource = null;
-
-        try {
-            resource = userDao.getById(uuid);
-        } catch (ResourceNotFoundException ignored) {
-            // this exception is safe to ignore
-        }
-
-        if (resource == null) {
-            try {
-                resource = groupDao.getById(uuid);
-            } catch (ResourceNotFoundException e) {
-                throw new ResourceNotFoundException("Group member with UUID " + uuid + " not found"); // NOSONAR : Don't preserve stack trace here
-            }
-        }
+        ResourceEntity resource = resourceDao.getById(uuid, ResourceEntity.class);
 
         groupEntity.addMember(resource);
     }
@@ -93,6 +76,7 @@ public class GroupConverter implements Converter<Group, GroupEntity> {
         if (group == null) {
             return null;
         }
+
         Group.Builder groupBuilder = new Group.Builder()
                 .setDisplayName(group.getDisplayName())
                 .setId(group.getId().toString())
@@ -106,6 +90,7 @@ public class GroupConverter implements Converter<Group, GroupEntity> {
                     .setReference(member.getMeta().getLocation())
                     .setDisplay(member.getDisplayName() != null ? member.getDisplayName() : null)
                     .build();
+
             members.add(memberRef);
         }
         groupBuilder.setMembers(members);
