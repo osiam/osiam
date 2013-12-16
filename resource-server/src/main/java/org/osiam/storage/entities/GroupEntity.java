@@ -76,7 +76,9 @@ public class GroupEntity extends ResourceEntity {
      * Removes all members from this group.
      */
     public void removeAllMembers() {
-        for (ResourceEntity member : members) {
+        Set<ResourceEntity> membersToRemove = ImmutableSet.copyOf(members);
+
+        for (ResourceEntity member : membersToRemove) {
             removeMember(member);
         }
     }
