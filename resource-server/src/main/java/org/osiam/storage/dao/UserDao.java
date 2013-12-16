@@ -25,6 +25,7 @@ package org.osiam.storage.dao;
 
 import javax.inject.Inject;
 
+import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.entities.UserEntity_;
 import org.osiam.storage.query.UserFilterParser;
@@ -46,11 +47,19 @@ public class UserDao implements GenericDao<UserEntity> {
 
     @Override
     public UserEntity getById(String id) {
-        return resourceDao.getById(id, UserEntity.class);
+        try {
+            return resourceDao.getById(id, UserEntity.class);
+        } catch (ResourceNotFoundException rnfe) {
+            throw new ResourceNotFoundException(String.format("User with id '%s' not found", id), rnfe);
+        }
     }
 
     public UserEntity getByUsername(String userName) {
-        return resourceDao.getByAttribute(UserEntity_.userName, userName, UserEntity.class);
+        try {
+            return resourceDao.getByAttribute(UserEntity_.userName, userName, UserEntity.class);
+        } catch (ResourceNotFoundException rnfe) {
+            throw new ResourceNotFoundException(String.format("User with userName '%s' not found", userName), rnfe);
+        }
     }
 
     @Override
@@ -60,7 +69,11 @@ public class UserDao implements GenericDao<UserEntity> {
 
     @Override
     public void delete(String id) {
-        resourceDao.delete(id);
+        try {
+            resourceDao.delete(id);
+        } catch (ResourceNotFoundException rnfe) {
+            throw new ResourceNotFoundException(String.format("User with id '%s' not found", id), rnfe);
+        }
     }
 
     @Override
