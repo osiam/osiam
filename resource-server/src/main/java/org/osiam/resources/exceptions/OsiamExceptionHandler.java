@@ -39,7 +39,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @ControllerAdvice
 public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger LOGGER = Logger.getLogger(OsiamExceptionHandler.class.getName());
-    //Contains all known ErrorMessageTransformer to validate and manipulate error messages
+
+    /**
+     * Contains all known ErrorMessageTransformer to validate and manipulate error messages
+     */
     private static final ErrorMessageTransformer[] KNOWN_ERROR_MSG_TRANSFORMER =
             {new TypeErrorMessageTransformer(), new JsonPropertyMessageTransformer(), new JsonMappingMessageTransformer(),
                     new ClientManagementErrorMessageTransformer()};
