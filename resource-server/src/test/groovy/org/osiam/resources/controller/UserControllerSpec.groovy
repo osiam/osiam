@@ -168,6 +168,30 @@ class UserControllerSpec extends Specification {
 
     def validateUser(User result, boolean locationChanged) {
         assert result == user
+        assert user.password != null
+        assert result.password == null
+        assert result.active == user.active
+        assert result.addresses.empty
+        assert result.displayName == user.displayName
+        assert result.emails.empty
+        assert result.entitlements.empty
+        assert result.groups.empty
+        assert result.ims.empty
+        assert result.locale == user.locale
+        assert result.name == user.name
+        assert result.nickName == user.nickName
+        assert result.phoneNumbers.empty
+        assert result.photos.empty
+        assert result.preferredLanguage == user.preferredLanguage
+        assert result.profileUrl == user.profileUrl
+        assert result.roles.empty
+        assert result.timezone == user.timezone
+        assert result.title == user.title
+        assert result.userType == user.userType
+        assert result.x509Certificates.empty
+        assert result.userName == user.userName
+        assert result.id == user.id
+        assert result.externalId == user.externalId
 
         if(!locationChanged){
             assert result.meta == user.meta
