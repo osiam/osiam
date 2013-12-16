@@ -41,7 +41,9 @@ public class EvalVisitor<T extends InternalIdSkeleton> extends LogicalOperatorRu
     @Override
     public Predicate visitSimpleExp(@NotNull LogicalOperatorRulesParser.SimpleExpContext ctx) {
         String fieldName = ctx.FIELD().getText();
-        String value = ctx.VALUE().getText().replace("\"", "");
+        String value = ctx.VALUE().getText();
+        value = value.substring(1, value.length() - 1); // removed first and last quot
+        value = value.replace("\\\"", "\""); // replaced \" with "
         FilterConstraint operator = FilterConstraint.fromString(ctx.OPERATOR().getText());
         ScimExpression scimExpression = new ScimExpression(fieldName, operator, value);
 
