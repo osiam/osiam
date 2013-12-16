@@ -25,11 +25,11 @@ package org.osiam.resources.converter
 
 import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.resources.scim.Group
-import org.osiam.resources.scim.MultiValuedAttribute
-import org.osiam.storage.dao.GroupDao
-import org.osiam.storage.dao.UserDao
+import org.osiam.resources.scim.MemberRef
+import org.osiam.storage.dao.ResourceDao
 import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.MetaEntity
+import org.osiam.storage.entities.ResourceEntity
 import org.osiam.storage.entities.UserEntity
 
 import spock.lang.Specification
@@ -46,23 +46,21 @@ class GroupConverterSpec extends Specification {
         group: '0c60179c-0b9c-4cad-a918-4ec59bbab173',
         'non-existant': 'e75522d8-2b4d-4b60-bb92-6c6cda8faaea']
 
-    private GroupDao groupDao = Mock()
-    private UserDao userDao = Mock()
+    private ResourceDao resourceDao = Mock()
 
     MetaConverter metaConverter = Mock()
-    GroupConverter groupConverter = new GroupConverter(groupDao: groupDao, userDao: userDao, metaConverter:metaConverter)
+    GroupConverter groupConverter = new GroupConverter(resourceDao: resourceDao, metaConverter:metaConverter)
 
     def 'mapping a user as member works'() {
         given:
         def uuid = UUID.randomUUID()
         Group group = getFilledGroupWithMember(uuid, memberUuidFixtures['user'])
-        groupDao.getById(uuid.toString()) >> { throw new ResourceNotFoundException('') }
 
         when:
         GroupEntity GroupEntity = groupConverter.fromScim(group)
 
         then:
-        1 * userDao.getById(memberUuidFixtures['user']) >> new UserEntity(id: UUID.fromString(memberUuidFixtures['user']), userName: IRRELEVANT)
+        1 * resourceDao.getById(memberUuidFixtures['user'], ResourceEntity.class) >> new UserEntity(id: UUID.fromString(memberUuidFixtures['user']), userName: IRRELEVANT)
         GroupEntity.getMembers().size() == 1
     }
 
@@ -70,14 +68,12 @@ class GroupConverterSpec extends Specification {
         given:
         def uuid = UUID.randomUUID()
         Group group = getFilledGroupWithMember(uuid, memberUuidFixtures['group'])
-        groupDao.getById(uuid.toString()) >> { throw new ResourceNotFoundException('') }
 
         when:
         GroupEntity GroupEntity = groupConverter.fromScim(group)
 
         then:
-        1 * userDao.getById(memberUuidFixtures['group']) >> { throw new ResourceNotFoundException('') }
-        1 * groupDao.getById(memberUuidFixtures['group']) >> new GroupEntity(id: UUID.fromString(memberUuidFixtures['group']), displayName: IRRELEVANT)
+        1 * resourceDao.getById(memberUuidFixtures['group'], ResourceEntity.class) >> new GroupEntity(id: UUID.fromString(memberUuidFixtures['group']), displayName: IRRELEVANT)
         GroupEntity.getMembers().size() == 1
     }
 
@@ -85,14 +81,12 @@ class GroupConverterSpec extends Specification {
         given:
         def uuid = UUID.randomUUID()
         Group group = getFilledGroupWithMember(uuid, memberUuidFixtures['non-existant'])
-        groupDao.getById(uuid.toString()) >> { throw new ResourceNotFoundException('') }
 
         when:
         GroupEntity GroupEntity = groupConverter.fromScim(group)
 
         then:
-        1 * userDao.getById(memberUuidFixtures['non-existant']) >> { throw new ResourceNotFoundException('') }
-        1 * groupDao.getById(memberUuidFixtures['non-existant']) >> { throw new ResourceNotFoundException('') }
+        1 * resourceDao.getById(memberUuidFixtures['non-existant'], ResourceEntity.class) >> { throw new ResourceNotFoundException('') }
         thrown(ResourceNotFoundException)
     }
 
@@ -185,7 +179,7 @@ class GroupConverterSpec extends Specification {
     def Group getFilledGroupWithMember(def uuid, def memberUuid) {
         Group group = getFilledGroup(uuid)
 
-        MultiValuedAttribute member = new MultiValuedAttribute(value: memberUuid)
+        MemberRef member = new MemberRef.Builder(value: memberUuid).build()
 
         group.members.add(member)
 
