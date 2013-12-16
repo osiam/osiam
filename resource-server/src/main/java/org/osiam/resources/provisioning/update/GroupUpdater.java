@@ -75,7 +75,7 @@ public class GroupUpdater {
 
                 if (memberRef.getOperation() != null && memberRef.getOperation().equalsIgnoreCase("delete")) {
                     ResourceEntity member = getMember(memberId, groupEntity);
-                    // TODO: check if exception should be thrown if member is not part of this group
+
                     if(member != null) {
                         groupEntity.removeMember(member);
                     }
@@ -83,7 +83,6 @@ public class GroupUpdater {
                     // TODO: what to do if member does not exist?
                     ResourceEntity member = resourceDao.getById(memberId, ResourceEntity.class);
 
-                    // TODO: check if exception should be thrown if member is already part of this group
                     groupEntity.addMember(member);
                 }
             }
