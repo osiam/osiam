@@ -101,17 +101,17 @@ class GroupUpdaterSpec extends Specification {
 
     def 'removing a member works'(){
         given:
-        def memberId = 'irrelevant'
-        def member = new GroupEntity()
+        def memberId = UUID.randomUUID()
+        GroupEntity member = new GroupEntity(id: memberId)
 
-        MemberRef memberRef = new MemberRef.Builder(value: memberId, operation: 'delete').build()
+        MemberRef memberRef = new MemberRef.Builder(value: memberId.toString(), operation: 'delete').build()
         group = new Group.Builder(members: [memberRef] as Set).build()
 
         when:
         groupUpdater.update(group, groupEntity)
 
         then:
-        1 * resourceDao.getById(memberId, ResourceEntity) >> member
+        1 * groupEntity.getMembers() >> ([member] as Set)
         1 * groupEntity.removeMember(member)
     }
 }

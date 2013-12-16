@@ -92,8 +92,10 @@ public class GroupUpdater {
     }
 
     private ResourceEntity getMember(String memberId, GroupEntity groupEntity) {
-        for (ResourceEntity member : groupEntity.getMembers()) {
-            if(member.getId().equals(memberId)) {
+        Set<ResourceEntity> members = groupEntity.getMembers();
+
+        for (ResourceEntity member : members) {
+            if(member.getId().toString().equals(memberId)) {
                 return member;
             }
         }
