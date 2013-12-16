@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.query.GroupFilterParser;
 import org.springframework.stereotype.Repository;
@@ -50,12 +51,20 @@ public class GroupDao implements GenericDao<GroupEntity> {
 
     @Override
     public GroupEntity getById(String id) {
-        return resourceDao.getById(id, GroupEntity.class);
+        try {
+            return resourceDao.getById(id, GroupEntity.class);
+        } catch (ResourceNotFoundException rnfe) {
+            throw new ResourceNotFoundException(String.format("Group with id '%s' not found", id), rnfe);
+        }
     }
 
     @Override
     public void delete(String id) {
-        resourceDao.delete(id);
+        try {
+            resourceDao.delete(id);
+        } catch (ResourceNotFoundException rnfe) {
+            throw new ResourceNotFoundException(String.format("Group with id '%s' not found", id), rnfe);
+        }
     }
 
     @Override
