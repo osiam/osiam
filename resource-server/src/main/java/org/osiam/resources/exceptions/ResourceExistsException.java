@@ -27,7 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.CONFLICT)
-public class ResourceExistsException extends IllegalArgumentException {
+public class ResourceExistsException extends OsiamException {
     private static final long serialVersionUID = 6005039154271572847L;
 
     public ResourceExistsException(String s) {
