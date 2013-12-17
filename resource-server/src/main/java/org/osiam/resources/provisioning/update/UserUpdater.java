@@ -23,11 +23,17 @@
 
 package org.osiam.resources.provisioning.update;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.inject.Inject;
 
+import org.osiam.resources.exceptions.OsiamException;
 import org.osiam.resources.scim.User;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.stereotype.Service;
+
+import com.google.common.base.Strings;
 
 @Service
 public class UserUpdater {
@@ -35,10 +41,34 @@ public class UserUpdater {
     @Inject
     private ResourceUpdater resourceUpdater;
 
+    @Inject
+    private NameUpdater nameUpdater;
+
     public void update(User user, UserEntity userEntity) {
         resourceUpdater.update(user, userEntity);
 
-        // TODO: implement
+        Set<String> attributes = new HashSet<>();
+        if (user.getMeta() != null && user.getMeta().getAttributes() != null) {
+            attributes = user.getMeta().getAttributes();
+        }
+
+        updateUserName(user.getUserName(), userEntity, attributes);
+        nameUpdater.update(user.getName(), userEntity, attributes);
+
+        if (user.isActive() != null) {
+            userEntity.setActive(user.isActive());
+        }
+    }
+
+    private void updateUserName(String userName, UserEntity userEntity, Set<String> attributes) {
+        if (attributes.contains("userName")) {
+            throw new OsiamException("Attribute 'userName' cannot be deleted.");
+        }
+
+        if (!Strings.isNullOrEmpty(userName)) {
+            // TODO: check if userName already taken?
+            userEntity.setUserName(userName);
+        }
     }
 
 }
