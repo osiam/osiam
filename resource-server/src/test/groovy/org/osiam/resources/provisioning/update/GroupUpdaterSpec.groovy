@@ -63,7 +63,7 @@ class GroupUpdaterSpec extends Specification {
         groupUpdater.update(group, groupEntity)
 
         then:
-        0 * groupEntity.setDisplayName(displayName)
+        0 * groupEntity.setDisplayName(_)
 
         where:
         value          | displayName
