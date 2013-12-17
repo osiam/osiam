@@ -52,22 +52,34 @@ public class UserUpdater {
             attributes = user.getMeta().getAttributes();
         }
 
-        updateUserName(user.getUserName(), userEntity, attributes);
+        updateUserName(user, userEntity, attributes);
         nameUpdater.update(user.getName(), userEntity, attributes);
+        updateNickName(user, userEntity, attributes);
+
 
         if (user.isActive() != null) {
             userEntity.setActive(user.isActive());
         }
     }
 
-    private void updateUserName(String userName, UserEntity userEntity, Set<String> attributes) {
+    private void updateUserName(User user, UserEntity userEntity, Set<String> attributes) {
         if (attributes.contains("userName")) {
             throw new OsiamException("Attribute 'userName' cannot be deleted.");
         }
 
-        if (!Strings.isNullOrEmpty(userName)) {
+        if (!Strings.isNullOrEmpty(user.getUserName())) {
             // TODO: check if userName already taken?
-            userEntity.setUserName(userName);
+            userEntity.setUserName(user.getUserName());
+        }
+    }
+
+    private void updateNickName(User user, UserEntity userEntity, Set<String> attributes) {
+        if (attributes.contains("nickName")) {
+            userEntity.setNickName(null);
+        }
+
+        if (!Strings.isNullOrEmpty(user.getNickName())) {
+            userEntity.setNickName(user.getNickName());
         }
     }
 
