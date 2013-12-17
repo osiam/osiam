@@ -80,9 +80,7 @@ public class GroupUpdater {
                         groupEntity.removeMember(member);
                     }
                 } else {
-                    // TODO: what to do if member does not exist?
                     ResourceEntity member = resourceDao.getById(memberId, ResourceEntity.class);
-
                     groupEntity.addMember(member);
                 }
             }
