@@ -58,7 +58,7 @@ OPERATOR
     ;
 
 FIELD
-    : ([a-z] | [A-Z] | [0-9] | '.' | ':')+ //match lower-case, upper-case, number identifier including dots, colons and quotation marks
+    : ([a-z] | [A-Z] | [0-9] | '.' | ':' | '_' | '-')+ //match lower-case, upper-case, number identifier including dots, colons and quotation marks
     ;
 
 ESCAPED_QUOTE

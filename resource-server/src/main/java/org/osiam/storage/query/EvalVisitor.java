@@ -15,40 +15,43 @@ import javax.persistence.criteria.Root;
  * Time: 12:36
  * Created: with Intellij IDEA
  */
-public class EvalVisitor<T extends InternalIdSkeleton> extends LogicalOperatorRulesBaseVisitor {
+public class EvalVisitor<T extends InternalIdSkeleton> extends LogicalOperatorRulesBaseVisitor<Predicate> {
 
-    private final FilterParser filterParser;
+    private final FilterParser<T> filterParser;
     private final Root<T> root;
 
-    public EvalVisitor(FilterParser filterParser, Root<T> root) {
+    public EvalVisitor(FilterParser<T> filterParser, Root<T> root) {
         this.filterParser = filterParser;
         this.root = root;
     }
 
     @Override
     public Predicate visitAndExp(@NotNull LogicalOperatorRulesParser.AndExpContext ctx) {
-        Predicate left = (Predicate) this.visit(ctx.expression(0));
-        Predicate right = (Predicate) this.visit(ctx.expression(1));
+        Predicate left = this.visit(ctx.expression(0));
+        Predicate right = this.visit(ctx.expression(1));
 
         return filterParser.entityManager.getCriteriaBuilder().and(left, right);
     }
 
     @Override
     public Predicate visitBraceExp(@NotNull LogicalOperatorRulesParser.BraceExpContext ctx) {
-        return (Predicate) this.visit(ctx.expression());
+        return this.visit(ctx.expression());
     }
 
     @Override
     public Predicate visitSimpleExp(@NotNull LogicalOperatorRulesParser.SimpleExpContext ctx) {
-        String fieldName = ctx.FIELD().getText();
-        String value = ctx.VALUE().getText();
-        value = value.substring(1, value.length() - 1); // removed first and last quot
-        value = value.replace("\\\"", "\""); // replaced \" with "
-        FilterConstraint operator = FilterConstraint.fromString(ctx.OPERATOR().getText());
-        ScimExpression scimExpression = new ScimExpression(fieldName, operator, value);
-
+        ScimExpression scimExpression = getScimExpressionFromContext(ctx);
         FilterChain<T> filterChain = filterParser.createFilterChain(scimExpression);
         return filterChain.createPredicateAndJoin(root);
+    }
+
+    private ScimExpression getScimExpressionFromContext(LogicalOperatorRulesParser.SimpleExpContext ctx) {
+        String fieldName = ctx.FIELD().getText();
+        String value = ctx.VALUE().getText();
+        value = value.substring(1, value.length() - 1); // removed first and last quote
+        value = value.replace("\\\"", "\""); // replaced \" with "
+        FilterConstraint operator = FilterConstraint.fromString(ctx.OPERATOR().getText());
+        return new ScimExpression(fieldName, operator, value);
     }
 
     @Override
@@ -63,15 +66,15 @@ public class EvalVisitor<T extends InternalIdSkeleton> extends LogicalOperatorRu
 
     @Override
     public Predicate visitNotExp(@NotNull LogicalOperatorRulesParser.NotExpContext ctx) {
-        Predicate term = (Predicate) this.visit(ctx.expression());
+        Predicate term = this.visit(ctx.expression());
 
         return filterParser.entityManager.getCriteriaBuilder().not(term);
     }
 
     @Override
     public Predicate visitOrExp(@NotNull LogicalOperatorRulesParser.OrExpContext ctx) {
-        Predicate left = (Predicate) this.visit(ctx.expression(0));
-        Predicate right = (Predicate) this.visit(ctx.expression(1));
+        Predicate left = this.visit(ctx.expression(0));
+        Predicate right = this.visit(ctx.expression(1));
 
         return filterParser.entityManager.getCriteriaBuilder().or(left, right);
     }
