@@ -48,7 +48,7 @@ public abstract class FilterParser<T extends InternalIdSkeleton> {
         ParseTree tree = parser.parse();
         EvalVisitor<T> visitor = new EvalVisitor<>(this, root);
 
-        return (Predicate) visitor.visit(tree);
+        return visitor.visit(tree);
     }
 
     public Expression<?> createSortByField(String sortBy, Root<T> root) {
