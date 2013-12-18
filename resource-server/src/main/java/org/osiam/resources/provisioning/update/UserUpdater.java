@@ -43,6 +43,8 @@ public class UserUpdater {
 
     @Inject
     private NameUpdater nameUpdater;
+    @Inject
+    private EmailUpdater emailUpdater;
 
     public void update(User user, UserEntity userEntity) {
         resourceUpdater.update(user, userEntity);
@@ -64,6 +66,7 @@ public class UserUpdater {
         updateTimezone(user, userEntity, attributes);
         updateActive(user, userEntity, attributes);
         updatePassword(user, userEntity, attributes);
+        emailUpdater.update(user.getEmails(), userEntity, attributes);
     }
 
     private void updateUserName(User user, UserEntity userEntity, Set<String> attributes) {
