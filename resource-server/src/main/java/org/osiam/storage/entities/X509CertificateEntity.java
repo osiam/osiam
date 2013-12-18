@@ -32,20 +32,9 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "scim_certificate")
-public class X509CertificateEntity extends MultiValueAttributeEntitySkeleton implements HasUser {
+public class X509CertificateEntity extends MultiValueAttributeEntitySkeleton {
 
     @ManyToOne(optional = false)
     private UserEntity user;
-
-
-    @Override
-    public UserEntity getUser() {
-        return user;
-    }
-
-    @Override
-    public void setUser(UserEntity user) {
-        this.user = user;
-    }
 
 }

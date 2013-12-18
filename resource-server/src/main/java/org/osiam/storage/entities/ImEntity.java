@@ -30,7 +30,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "scim_im")
-public class ImEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndType, HasUser {
+public class ImEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndType {
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -53,16 +53,6 @@ public class ImEntity extends MultiValueAttributeEntitySkeleton implements Child
         if (type != null) {
             this.type = CanonicalImTypes.valueOf(type);
         }
-    }
-
-    @Override
-    public UserEntity getUser() {
-        return user;
-    }
-
-    @Override
-    public void setUser(UserEntity user) {
-        this.user = user;
     }
 
     public enum CanonicalImTypes {

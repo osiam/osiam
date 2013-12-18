@@ -30,7 +30,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "scim_phoneNumber")
-public class PhoneNumberEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndType, HasUser {
+public class PhoneNumberEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndType {
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -52,16 +52,6 @@ public class PhoneNumberEntity extends MultiValueAttributeEntitySkeleton impleme
         if (type != null) {
             this.type = CanonicalPhoneNumberTypes.valueOf(type);
         }
-    }
-
-    @Override
-    public UserEntity getUser() {
-        return user;
-    }
-
-    @Override
-    public void setUser(UserEntity user) {
-        this.user = user;
     }
 
     public enum CanonicalPhoneNumberTypes {

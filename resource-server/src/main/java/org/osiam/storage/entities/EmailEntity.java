@@ -35,7 +35,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "scim_email")
-public class EmailEntity extends MultiValueAttributeEntitySkeleton implements HasUser, ChildOfMultiValueAttributeWithIdAndTypeAndPrimary {
+public class EmailEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndTypeAndPrimary {
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -71,16 +71,6 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ha
     @Override
     public void setPrimary(boolean primary) {
         this.primary = primary;
-    }
-
-    @Override
-    public UserEntity getUser() {
-        return user;
-    }
-
-    @Override
-    public void setUser(UserEntity user) {
-        this.user = user;
     }
 
     @Override
