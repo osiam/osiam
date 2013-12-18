@@ -26,17 +26,38 @@ package org.osiam.resources.provisioning.update;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
+
+import org.osiam.resources.converter.EmailConverter;
 import org.osiam.resources.scim.MultiValuedAttribute;
+import org.osiam.storage.entities.EmailEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EmailUpdater {
 
-    void update(List<MultiValuedAttribute> list, UserEntity userEntity, Set<String> attributes) {
+    @Inject
+    private EmailConverter emailConverter;
+
+    void update(List<MultiValuedAttribute> emails, UserEntity userEntity, Set<String> attributes) {
 
         if (attributes.contains("emails")) {
             userEntity.setEmails(null);
         }
+
+        Set<EmailEntity> emailEntities = userEntity.getEmails();
+
+        for (MultiValuedAttribute email : emails) {
+            if(email.getOperation().equalsIgnoreCase("delete")) {
+                deleteEmail(email, emailEntities);
+            }
+        }
     }
+
+    private void deleteEmail(MultiValuedAttribute email, Set<EmailEntity> emailEntities) {
+         EmailEntity emailEntity = emailConverter.fromScim(email);
+         emailEntities.remove(emailEntity);
+    }
+
 }
