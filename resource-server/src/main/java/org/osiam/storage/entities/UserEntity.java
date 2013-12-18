@@ -23,10 +23,19 @@
 
 package org.osiam.storage.entities;
 
-import javax.persistence.*;
-
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * User Entity
@@ -98,8 +107,8 @@ public class UserEntity extends ResourceEntity {
     private Set<X509CertificateEntity> x509Certificates = new HashSet<>();
 
     @OneToMany
-    @JoinTable(name = "scim_user_scim_extension", joinColumns = {@JoinColumn(name = "scim_user_internal_id", referencedColumnName = "internal_id")},
-            inverseJoinColumns = {@JoinColumn(name = "registered_extensions_internal_id", referencedColumnName = "internal_id")})
+    @JoinTable(name = "scim_user_scim_extension", joinColumns = { @JoinColumn(name = "scim_user_internal_id", referencedColumnName = "internal_id") },
+            inverseJoinColumns = { @JoinColumn(name = "registered_extensions_internal_id", referencedColumnName = "internal_id") })
     private Set<ExtensionEntity> registeredExtensions = new HashSet<>();
 
     @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -117,7 +126,8 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
-     * @param name the name entity
+     * @param name
+     *            the name entity
      */
     public void setName(NameEntity name) {
         this.name = name;
@@ -131,7 +141,8 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
-     * @param nickName the nick name
+     * @param nickName
+     *            the nick name
      */
     public void setNickName(String nickName) {
         this.nickName = nickName;
@@ -145,7 +156,8 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
-     * @param profileUrl the profile url
+     * @param profileUrl
+     *            the profile url
      */
     public void setProfileUrl(String profileUrl) {
         this.profileUrl = profileUrl;
@@ -159,7 +171,8 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
-     * @param title the title
+     * @param title
+     *            the title
      */
     public void setTitle(String title) {
         this.title = title;
@@ -173,7 +186,8 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
-     * @param userType the user type
+     * @param userType
+     *            the user type
      */
     public void setUserType(String userType) {
         this.userType = userType;
@@ -187,7 +201,8 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
-     * @param preferredLanguage the preferred languages
+     * @param preferredLanguage
+     *            the preferred languages
      */
     public void setPreferredLanguage(String preferredLanguage) {
         this.preferredLanguage = preferredLanguage;
@@ -201,7 +216,8 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
-     * @param locale the locale
+     * @param locale
+     *            the locale
      */
     public void setLocale(String locale) {
         this.locale = locale;
@@ -215,7 +231,8 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
-     * @param timezone the timezone
+     * @param timezone
+     *            the timezone
      */
     public void setTimezone(String timezone) {
         this.timezone = timezone;
@@ -229,7 +246,8 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
-     * @param active the active status
+     * @param active
+     *            the active status
      */
     public void setActive(Boolean active) {
         this.active = active;
@@ -243,7 +261,8 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
-     * @param password the password
+     * @param password
+     *            the password
      */
     public void setPassword(String password) {
         this.password = password;
@@ -258,33 +277,58 @@ public class UserEntity extends ResourceEntity {
         this.displayName = displayName;
     }
 
-
     public String getUserName() {
         return userName;
     }
 
     /**
-     * @param userName the user name
+     * @param userName
+     *            the user name
      */
     public void setUserName(String userName) {
         this.userName = userName;
     }
 
     /**
+     * Returns an immutable view of the list of emails
+     *
      * @return the emails entity
      */
     public Set<EmailEntity> getEmails() {
-        return emails;
+        return ImmutableSet.copyOf(emails);
     }
 
     /**
-     * @param emails the emails entity
+     * Adds a new email to this user
+     *
+     * @param email
+     *            the emai lto add
      */
+    public void addEmail(EmailEntity email) {
+        emails.add(email);
+    }
+
+    /**
+     * Removes the given email from this user
+     *
+     * @param email
+     *            the email to remove
+     */
+    public void removeEmail(EmailEntity email) {
+        emails.remove(email);
+    }
+
+    /**
+     * @param emails
+     *            the emails entity
+     * @deprecated
+     */
+    @Deprecated
     public void setEmails(Set<EmailEntity> emails) {
-        //Setting Foreign key in child entity because hibernate did it not automatically
+        // Setting Foreign key in child entity because hibernate did it not automatically
         if (emails != null) {
             for (EmailEntity emailEntity : emails) {
-                emailEntity.setUser(this);
+                // emailEntity.setUser(this);
             }
         }
         this.emails = emails;
@@ -301,7 +345,8 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
-     * @param userExtensions the extension data of the user
+     * @param userExtensions
+     *            the extension data of the user
      */
     public void setUserExtensions(Set<ExtensionFieldValueEntity> userExtensions) {
         if (userExtensions != null) {
@@ -320,10 +365,11 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
-     * @param phoneNumbers the phone numbers entity
+     * @param phoneNumbers
+     *            the phone numbers entity
      */
     public void setPhoneNumbers(Set<PhoneNumberEntity> phoneNumbers) {
-        //Setting Foreign key in child entity because hibernate did it not automatically
+        // Setting Foreign key in child entity because hibernate did it not automatically
         if (phoneNumbers != null) {
             for (PhoneNumberEntity phoneNumberEntity : phoneNumbers) {
                 phoneNumberEntity.setUser(this);
@@ -340,10 +386,11 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
-     * @param ims the instant messaging entity
+     * @param ims
+     *            the instant messaging entity
      */
     public void setIms(Set<ImEntity> ims) {
-        //Setting Foreign key in child entity because hibernate did it not automatically
+        // Setting Foreign key in child entity because hibernate did it not automatically
         if (ims != null) {
             for (ImEntity imEntity : ims) {
                 imEntity.setUser(this);
@@ -360,10 +407,11 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
-     * @param photos the photos entity
+     * @param photos
+     *            the photos entity
      */
     public void setPhotos(Set<PhotoEntity> photos) {
-        //Setting Foreign key in child entity because hibernate did it not automatically
+        // Setting Foreign key in child entity because hibernate did it not automatically
         if (photos != null) {
             for (PhotoEntity photoEntity : photos) {
                 photoEntity.setUser(this);
@@ -380,7 +428,8 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
-     * @param addresses the addresses entity
+     * @param addresses
+     *            the addresses entity
      */
     public void setAddresses(Set<AddressEntity> addresses) {
         this.addresses = addresses;
@@ -394,7 +443,8 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
-     * @param entitlements the entitlements
+     * @param entitlements
+     *            the entitlements
      */
     public void setEntitlements(Set<EntitlementsEntity> entitlements) {
         this.entitlements = entitlements;
@@ -408,7 +458,8 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
-     * @param roles the roles
+     * @param roles
+     *            the roles
      */
     public void setRoles(Set<RolesEntity> roles) {
         this.roles = roles;
@@ -422,10 +473,11 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
-     * @param x509Certificates the X509 certs
+     * @param x509Certificates
+     *            the X509 certs
      */
     public void setX509Certificates(Set<X509CertificateEntity> x509Certificates) {
-        //Setting Foreign key in child entity because hibernate did it not automatically
+        // Setting Foreign key in child entity because hibernate did it not automatically
         if (x509Certificates != null) {
             for (X509CertificateEntity certificateEntity : x509Certificates) {
                 certificateEntity.setUser(this);
@@ -437,7 +489,8 @@ public class UserEntity extends ResourceEntity {
     /**
      * Registers a new extension for this User. If the given extension is already registered, it will be ignored.
      *
-     * @param extension The extension to register
+     * @param extension
+     *            The extension to register
      */
     public void registerExtension(ExtensionEntity extension) {
         if (extension == null) {
@@ -457,17 +510,16 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
-     * Adds or updates an extension field value for this User. When updating, the
-     * old value of the extension field is removed from this user and the new
-     * one will be added.
+     * Adds or updates an extension field value for this User. When updating, the old value of the extension field is
+     * removed from this user and the new one will be added.
      *
-     * @param extensionValue The extension field value to add or update
+     * @param extensionValue
+     *            The extension field value to add or update
      */
     public void addOrUpdateExtensionValue(ExtensionFieldValueEntity extensionValue) {
         if (extensionValue == null) {
             throw new IllegalArgumentException("extensionValue must not be null");
         }
-
 
         if (extensionFieldValues.contains(extensionValue)) {
             extensionFieldValues.remove(extensionValue);
@@ -481,8 +533,8 @@ public class UserEntity extends ResourceEntity {
     @Override
     public String toString() {
         return "UserEntity{" +
-            "UUID='" + getId() + "\', " +
-            "userName='" + userName + '\'' +
-            '}';
+                "UUID='" + getId() + "\', " +
+                "userName='" + userName + '\'' +
+                '}';
     }
 }
