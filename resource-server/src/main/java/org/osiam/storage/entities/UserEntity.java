@@ -329,6 +329,13 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
+     * Removes all email's from this user
+     */
+    public void removeAllEmails(){
+        emails.clear();
+    }
+
+    /**
      * @param emails
      *            the emails entity
      * @deprecated

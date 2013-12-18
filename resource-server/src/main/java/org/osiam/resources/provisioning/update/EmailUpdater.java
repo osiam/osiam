@@ -34,6 +34,8 @@ import org.osiam.storage.entities.EmailEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Strings;
+
 @Service
 public class EmailUpdater {
 
@@ -43,21 +45,32 @@ public class EmailUpdater {
     void update(List<MultiValuedAttribute> emails, UserEntity userEntity, Set<String> attributes) {
 
         if (attributes.contains("emails")) {
-            userEntity.setEmails(null);
+            userEntity.removeAllEmails();
         }
 
-        Set<EmailEntity> emailEntities = userEntity.getEmails();
+        if (emails != null) {
+            for (MultiValuedAttribute scimEmail : emails) {
+                EmailEntity emailEntity = emailConverter.fromScim(scimEmail);
+                userEntity.removeEmail(emailEntity); // we always have to remove the email in case
+                                                     // the active flag has changed
+                if (Strings.isNullOrEmpty(scimEmail.getOperation())
+                        || !scimEmail.getOperation().equalsIgnoreCase("delete")) {
 
-        for (MultiValuedAttribute email : emails) {
-            if(email.getOperation().equalsIgnoreCase("delete")) {
-                deleteEmail(email, emailEntities);
+                    ensureOnlyOnePrimaryEmailExists(emailEntity, userEntity);
+                    userEntity.addEmail(emailEntity);
+                }
             }
         }
     }
 
-    private void deleteEmail(MultiValuedAttribute email, Set<EmailEntity> emailEntities) {
-         EmailEntity emailEntity = emailConverter.fromScim(email);
-         emailEntities.remove(emailEntity);
+    private void ensureOnlyOnePrimaryEmailExists(EmailEntity newEmail, UserEntity userEntity) {
+        if (newEmail.isPrimary()) {
+            for (EmailEntity exisitngEmailEntity : userEntity.getEmails()) {
+                if (exisitngEmailEntity.isPrimary()) {
+                    exisitngEmailEntity.setPrimary(false);
+                }
+            }
+        }
     }
 
 }
