@@ -13,8 +13,11 @@ class UserUpdaterSpec extends Specification {
     static IRRELEVANT = 'irrelevant'
 
     NameUpdater nameUpdater = Mock()
+    EmailUpdater emailUpdater = Mock()
     ResourceUpdater resourceUpdater = Mock()
-    UserUpdater userUpdater = new UserUpdater(resourceUpdater: resourceUpdater, nameUpdater: nameUpdater)
+    UserUpdater userUpdater = new UserUpdater(resourceUpdater: resourceUpdater,
+        nameUpdater: nameUpdater,
+        emailUpdater : emailUpdater)
 
     User user
     UserEntity userEntity = Mock()
@@ -80,6 +83,17 @@ class UserUpdaterSpec extends Specification {
 
         then:
         1 * nameUpdater.update(null, userEntity, new HashSet())
+    }
+
+    def 'updating a user triggers email updater'() {
+        given:
+        user = new User.Builder().build()
+
+        when:
+        userUpdater.update(user, userEntity)
+
+        then:
+        1 * emailUpdater.update([] as List, userEntity, new HashSet())
     }
 
     def 'removing the displayName attribute is possible'() {
