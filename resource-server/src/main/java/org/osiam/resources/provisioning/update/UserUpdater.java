@@ -54,12 +54,16 @@ public class UserUpdater {
 
         updateUserName(user, userEntity, attributes);
         nameUpdater.update(user.getName(), userEntity, attributes);
+        updateDisplayName(user, userEntity, attributes);
         updateNickName(user, userEntity, attributes);
-
-
-        if (user.isActive() != null) {
-            userEntity.setActive(user.isActive());
-        }
+        updateProfileUrl(user, userEntity, attributes);
+        updateTitle(user, userEntity, attributes);
+        updateUserType(user, userEntity, attributes);
+        updatePreferredLanguage(user, userEntity, attributes);
+        updateLocale(user, userEntity, attributes);
+        updateTimezone(user, userEntity, attributes);
+        updateActive(user, userEntity, attributes);
+        updatePassword(user, userEntity, attributes);
     }
 
     private void updateUserName(User user, UserEntity userEntity, Set<String> attributes) {
@@ -73,6 +77,16 @@ public class UserUpdater {
         }
     }
 
+    private void updateDisplayName(User user, UserEntity userEntity, Set<String> attributes) {
+        if (attributes.contains("displayName")) {
+            userEntity.setDisplayName(null);
+        }
+
+        if (!Strings.isNullOrEmpty(user.getDisplayName())) {
+            userEntity.setDisplayName(user.getDisplayName());
+        }
+    }
+
     private void updateNickName(User user, UserEntity userEntity, Set<String> attributes) {
         if (attributes.contains("nickName")) {
             userEntity.setNickName(null);
@@ -80,6 +94,86 @@ public class UserUpdater {
 
         if (!Strings.isNullOrEmpty(user.getNickName())) {
             userEntity.setNickName(user.getNickName());
+        }
+    }
+
+    private void updateProfileUrl(User user, UserEntity userEntity, Set<String> attributes) {
+        if (attributes.contains("profileUrl")) {
+            userEntity.setProfileUrl(null);
+        }
+
+        if (!Strings.isNullOrEmpty(user.getProfileUrl())) {
+            userEntity.setProfileUrl(user.getProfileUrl());
+        }
+    }
+
+    private void updateTitle(User user, UserEntity userEntity, Set<String> attributes) {
+        if (attributes.contains("title")) {
+            userEntity.setTitle(null);
+        }
+
+        if (!Strings.isNullOrEmpty(user.getTitle())) {
+            userEntity.setTitle(user.getTitle());
+        }
+    }
+
+    private void updateUserType(User user, UserEntity userEntity, Set<String> attributes) {
+        if (attributes.contains("userType")) {
+            userEntity.setUserType(null);
+        }
+
+        if (!Strings.isNullOrEmpty(user.getUserType())) {
+            userEntity.setUserType(user.getUserType());
+        }
+    }
+
+    private void updatePreferredLanguage(User user, UserEntity userEntity, Set<String> attributes) {
+        if (attributes.contains("preferredLanguage")) {
+            userEntity.setPreferredLanguage(null);
+        }
+
+        if (!Strings.isNullOrEmpty(user.getPreferredLanguage())) {
+            userEntity.setPreferredLanguage(user.getPreferredLanguage());
+        }
+    }
+
+    private void updateLocale(User user, UserEntity userEntity, Set<String> attributes) {
+        if (attributes.contains("locale")) {
+            userEntity.setLocale(null);
+        }
+
+        if (!Strings.isNullOrEmpty(user.getLocale())) {
+            userEntity.setLocale(user.getLocale());
+        }
+    }
+
+    private void updateTimezone(User user, UserEntity userEntity, Set<String> attributes) {
+        if (attributes.contains("timezone")) {
+            userEntity.setTimezone(null);
+        }
+
+        if (!Strings.isNullOrEmpty(user.getTimezone())) {
+            userEntity.setTimezone(user.getTimezone());
+        }
+    }
+
+    private void updateActive(User user, UserEntity userEntity, Set<String> attributes) {
+        if (attributes.contains("active")) {
+            userEntity.setActive(null);
+        }
+
+        if (user.isActive() != null) {
+            userEntity.setActive(user.isActive());
+        }
+    }
+
+    private void updatePassword(User user, UserEntity userEntity, Set<String> attributes) {
+        if (attributes.contains("password")) {
+            throw new OsiamException("Attribute 'password' cannot be deleted.");
+        }
+
+        if (!Strings.isNullOrEmpty(user.getPassword())) {
+            userEntity.setPassword(user.getPassword());
         }
     }
 
