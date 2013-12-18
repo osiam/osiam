@@ -1,6 +1,9 @@
 package org.osiam.resources.provisioning.update
 
+import javax.inject.Inject
+
 import org.osiam.resources.exceptions.OsiamException
+import org.osiam.resources.scim.Group
 import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.User
 import org.osiam.storage.entities.UserEntity
@@ -14,10 +17,26 @@ class UserUpdaterSpec extends Specification {
 
     NameUpdater nameUpdater = Mock()
     EmailUpdater emailUpdater = Mock()
+    PhoneNumberUpdater phoneNumberUpdater = Mock()
+    ImUpdater imUpdater = Mock()
+    PhotoUpdater photoUpdater = Mock()
+    EntitlementsUpdater entitlementUpdater = Mock()
+    RoleUpdater roleUpdater = Mock()
+    X509CertificateUpdater x509CertificateUpdater = Mock()
+    AddressUpdater addressUpdater = Mock()
+
     ResourceUpdater resourceUpdater = Mock()
     UserUpdater userUpdater = new UserUpdater(resourceUpdater: resourceUpdater,
         nameUpdater: nameUpdater,
-        emailUpdater : emailUpdater)
+        emailUpdater : emailUpdater,
+        phoneNumberUpdater : phoneNumberUpdater,
+        imUpdater : imUpdater,
+        photoUpdater : photoUpdater,
+        entitlementUpdater : entitlementUpdater,
+        roleUpdater : roleUpdater,
+        x509CertificateUpdater : x509CertificateUpdater,
+        addressUpdater : addressUpdater
+        )
 
     User user
     UserEntity userEntity = Mock()
@@ -94,6 +113,83 @@ class UserUpdaterSpec extends Specification {
 
         then:
         1 * emailUpdater.update([] as List, userEntity, new HashSet())
+    }
+
+    def 'updating a user triggers phoneNumbers updater'() {
+        given:
+        user = new User.Builder().build()
+
+        when:
+        userUpdater.update(user, userEntity)
+
+        then:
+        1 * phoneNumberUpdater.update([] as List, userEntity, new HashSet())
+    }
+
+    def 'updating a user triggers im updater'() {
+        given:
+        user = new User.Builder().build()
+
+        when:
+        userUpdater.update(user, userEntity)
+
+        then:
+        1 * imUpdater.update([] as List, userEntity, new HashSet())
+    }
+
+    def 'updating a user triggers photo updater'() {
+        given:
+        user = new User.Builder().build()
+
+        when:
+        userUpdater.update(user, userEntity)
+
+        then:
+        1 * photoUpdater.update([] as List, userEntity, new HashSet())
+    }
+
+    def 'updating a user triggers entitlement updater'() {
+        given:
+        user = new User.Builder().build()
+
+        when:
+        userUpdater.update(user, userEntity)
+
+        then:
+        1 * entitlementUpdater.update([] as List, userEntity, new HashSet())
+    }
+
+    def 'updating a user triggers role updater'() {
+        given:
+        user = new User.Builder().build()
+
+        when:
+        userUpdater.update(user, userEntity)
+
+        then:
+        1 * roleUpdater.update([] as List, userEntity, new HashSet())
+    }
+
+    def 'updating a user triggers x509Certificate updater'() {
+        given:
+        user = new User.Builder().build()
+
+        when:
+        userUpdater.update(user, userEntity)
+
+        then:
+        1 * x509CertificateUpdater.update([] as List, userEntity, new HashSet())
+    }
+
+    def 'updating a user triggers address updater'() {
+        given:
+        user = new User.Builder().build()
+
+        when:
+        userUpdater.update(user, userEntity)
+
+        then:
+        1 * addressUpdater.update([] as List, userEntity, new HashSet())
     }
 
     def 'removing the displayName attribute is possible'() {
@@ -494,5 +590,30 @@ class UserUpdaterSpec extends Specification {
         value          | password
         'null'         | null
         'empty string' | ''
+    }
+
+    def 'deleting all groups raises an exception'(){
+        given:
+        Meta meta = new Meta(attributes: ['groups'] as Set)
+        user = new User.Builder(meta: meta).build()
+
+        when:
+        userUpdater.update(user, userEntity)
+
+        then:
+        def oe = thrown(OsiamException)
+        oe.getMessage().contains('group')
+    }
+
+    def 'modify a single group raises an exception'(){
+        given:
+        user = new User.Builder(groups : [new Group()] as List).build()
+
+        when:
+        userUpdater.update(user, userEntity)
+
+        then:
+        def oe = thrown(OsiamException)
+        oe.getMessage().contains('group')
     }
 }

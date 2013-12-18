@@ -26,7 +26,7 @@ class EmailUpdaterSpec extends Specification {
         1 * userEntity.removeAllEmails()
         userEntity.getEmails() >> ([
             new EmailEntity(value : IRRELEVANT),
-            new EmailEntity(value : IRRELEVANT + '2')] as Set)
+            new EmailEntity(value : IRRELEVANT_02)] as Set)
     }
 
     def 'removing an email is possible'(){

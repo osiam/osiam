@@ -45,6 +45,20 @@ public class UserUpdater {
     private NameUpdater nameUpdater;
     @Inject
     private EmailUpdater emailUpdater;
+    @Inject
+    private PhoneNumberUpdater phoneNumberUpdater;
+    @Inject
+    private ImUpdater imUpdater;
+    @Inject
+    private PhotoUpdater photoUpdater;
+    @Inject
+    private EntitlementsUpdater entitlementUpdater;
+    @Inject
+    private RoleUpdater roleUpdater;
+    @Inject
+    private X509CertificateUpdater x509CertificateUpdater;
+    @Inject
+    private AddressUpdater addressUpdater;
 
     public void update(User user, UserEntity userEntity) {
         resourceUpdater.update(user, userEntity);
@@ -67,6 +81,14 @@ public class UserUpdater {
         updateActive(user, userEntity, attributes);
         updatePassword(user, userEntity, attributes);
         emailUpdater.update(user.getEmails(), userEntity, attributes);
+        phoneNumberUpdater.update(user.getPhoneNumbers(), userEntity, attributes);
+        imUpdater.update(user.getIms(), userEntity, attributes);
+        photoUpdater.update(user.getPhotos(), userEntity, attributes);
+        addressUpdater.update(user.getAddresses(), userEntity, attributes);
+        updateGroups(user, userEntity, attributes);
+        entitlementUpdater.update(user.getEntitlements(), userEntity, attributes);
+        roleUpdater.update(user.getRoles(), userEntity, attributes);
+        x509CertificateUpdater.update(user.getX509Certificates(), userEntity, attributes);
     }
 
     private void updateUserName(User user, UserEntity userEntity, Set<String> attributes) {
@@ -179,5 +201,13 @@ public class UserUpdater {
             userEntity.setPassword(user.getPassword());
         }
     }
+
+    private void updateGroups(User user, UserEntity userEntity, Set<String> attributes) {
+        if (attributes.contains("groups")
+                || user.getGroups().size() > 0) {
+            throw new OsiamException("The membership to a group can't be modified. Please use the group update.");
+        }
+    }
+
 
 }
