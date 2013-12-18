@@ -26,7 +26,6 @@ INSERT INTO osiam_client_grants VALUES (3, 'client_credentials');
 INSERT INTO scim_user VALUES (TRUE, NULL, NULL, NULL, 'cbae73fac0893291c4792ef19d158a589402288b35cb18fb8406e951b9d95f6b8b06a3526ffebe96ae0d91c04ae615a7fe2af362763db386ccbf3b55c29ae800', NULL, NULL, NULL, NULL, 'marissa', NULL, 1, NULL);
 
 --
--- For second FK using the ID 1 which is specified in the init.sql script for inserting a role with value 'USER'
--- First FK is the users internal id (first value from scim_id table above)
+-- TODO: insert right role for marissa
 --
-INSERT INTO scim_user_scim_roles VALUES (1, 1);
+INSERT INTO scim_roles VALUES (1, 1);
