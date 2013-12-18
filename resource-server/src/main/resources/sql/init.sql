@@ -1,6 +1,4 @@
-DROP TABLE IF EXISTS scim_user_scim_roles CASCADE;
-DROP TABLE IF EXISTS scim_user_scim_entitlements CASCADE;
-DROP TABLE IF EXISTS scim_user_scim_address CASCADE;
+-- TODO: check DROPs
 DROP TABLE IF EXISTS scim_user CASCADE;
 DROP TABLE IF EXISTS scim_roles CASCADE;
 DROP TABLE IF EXISTS scim_photo CASCADE;
@@ -30,9 +28,20 @@ DROP SEQUENCE IF EXISTS hibernate_sequence CASCADE;
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
+--
+-- Name: database_scheme_version; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE database_scheme_version (
-  version DOUBLE PRECISION NOT NULL
+    version double precision NOT NULL
 );
+
+
+--
+-- Inserting scheme version
+--
+
+INSERT INTO database_scheme_version VALUES (0.05);
 
 
 --
@@ -40,623 +49,690 @@ CREATE TABLE database_scheme_version (
 --
 
 CREATE SEQUENCE hibernate_sequence
-START WITH 1
-INCREMENT BY 1
-NO MINVALUE
-NO MAXVALUE
-CACHE 1;
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 
 --
--- This table is for the sequence strategy 'per table' for multiValue attributes
+-- Name: hibernate_sequences; Type: TABLE; Schema: public; Owner: -
 --
+
 CREATE TABLE hibernate_sequences (
-  SEQUENCE_NAME varchar(255),
-  SEQUENCE_NEXT_HI_VALUE integer
+    sequence_name character varying(255),
+    sequence_next_hi_value integer
 );
 
+
 --
--- Name: scim_address; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: osiam_client; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE osiam_client (
+    internal_id bigint NOT NULL,
+    accesstokenvalidityseconds integer NOT NULL,
+    client_secret text NOT NULL,
+    expiry timestamp without time zone,
+    id character varying(32) NOT NULL,
+    implicit_approval boolean NOT NULL,
+    redirect_uri text NOT NULL,
+    refreshtokenvalidityseconds integer NOT NULL,
+    validityinseconds bigint NOT NULL
+);
+
+
+--
+-- Name: osiam_client_grants; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE osiam_client_grants (
+    id bigint NOT NULL,
+    grants text
+);
+
+
+--
+-- Name: osiam_client_scopes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE osiam_client_scopes (
+    id bigint NOT NULL,
+    scope text
+);
+
+
+--
+-- Name: scim_address; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_address (
-  id                               BIGINT NOT NULL,
-  country                          TEXT,
-  formatted                        TEXT,
-  locality                         TEXT,
-  postalcode                       TEXT,
-  postgresql_does_not_like_primary BOOLEAN,
-  region                           TEXT,
-  streetaddress                    TEXT,
-  type                             TEXT,
-  user_internal_id                 BIGINT
+    id bigint NOT NULL,
+    country text,
+    formatted text,
+    locality text,
+    postalcode text,
+    postgresql_does_not_like_primary boolean,
+    region text,
+    streetaddress text,
+    type text,
+    user_internal_id bigint NOT NULL
 );
 
 
 --
--- Name: scim_certificate; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: scim_certificate; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_certificate (
-  multi_value_id BIGINT NOT NULL,
-  value            TEXT   NOT NULL,
-  user_internal_id BIGINT
+    multi_value_id bigint NOT NULL,
+    value text,
+    user_internal_id bigint NOT NULL
 );
 
 
 --
--- Name: scim_email; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: scim_email; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_email (
-  multi_value_id BIGINT NOT NULL,
-  value                            TEXT   NOT NULL,
-  postgresql_does_not_like_primary BOOLEAN,
-  type                             TEXT,
-  user_internal_id                 BIGINT NOT NULL
+    multi_value_id bigint NOT NULL,
+    value text,
+    postgresql_does_not_like_primary boolean,
+    type text,
+    user_internal_id bigint NOT NULL
 );
 
 
 --
--- Name: scim_enterprise; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: scim_enterprise; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_enterprise (
-  id             BIGINT NOT NULL,
-  costcenter     TEXT,
-  department     TEXT,
-  division       TEXT,
-  employeenumber TEXT,
-  organization   TEXT,
-  manager_id     BIGINT
+    id bigint NOT NULL,
+    costcenter text,
+    department text,
+    division text,
+    employeenumber text,
+    organization text,
+    manager_id bigint
 );
 
 
 --
--- Name: scim_entitlements; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: scim_entitlements; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_entitlements (
-  multi_value_id BIGINT NOT NULL,
-  value        TEXT   NOT NULL
+    multi_value_id bigint NOT NULL,
+    value text,
+    user_internal_id bigint NOT NULL
 );
 
 
 --
--- Name: scim_group; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: scim_extension; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE scim_extension (
+    internal_id bigint NOT NULL,
+    urn text NOT NULL
+);
+
+
+--
+-- Name: scim_extension_field; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE scim_extension_field (
+    internal_id bigint NOT NULL,
+    is_required boolean,
+    name text,
+    type text,
+    extension_internal_id bigint
+);
+
+
+--
+-- Name: scim_extension_field_value; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE scim_extension_field_value (
+    internal_id bigint NOT NULL,
+    value text NOT NULL,
+    extension_field_internal_id bigint NOT NULL,
+    user_internal_id bigint NOT NULL
+);
+
+
+--
+-- Name: scim_group; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_group (
-  displayname TEXT   NOT NULL UNIQUE,
-  internal_id BIGINT NOT NULL
-);
-
-
-CREATE TABLE osiam_client (
-  internal_id                 BIGINT PRIMARY KEY,
-  id                          VARCHAR(34) NOT NULL UNIQUE,
-  redirect_uri                TEXT        NOT NULL UNIQUE,
-  client_secret               TEXT        NOT NULL UNIQUE,
-  accessTokenValiditySeconds  INT,
-  refreshTokenValiditySeconds INT,
-  validityInSeconds           BIGINT      NOT NULL,
-  implicit_approval           BOOLEAN     NOT NULL,
-  expiry                      TIMESTAMP WITHOUT TIME ZONE
-);
-
-CREATE TABLE osiam_client_scopes (
-  id    BIGINT REFERENCES osiam_client (internal_id),
-  scope TEXT NOT NULL
-);
-
-CREATE TABLE osiam_client_grants (
-  id     BIGINT REFERENCES osiam_client (internal_id),
-  grants TEXT NOT NULL
-);
-
-CREATE TABLE scim_meta (
-  id           BIGINT NOT NULL UNIQUE,
-  created      TIMESTAMP WITHOUT TIME ZONE,
-  lastmodified TIMESTAMP WITHOUT TIME ZONE,
-  location     TEXT,
-  version      TEXT,
-  resourceType TEXT
-);
-
-CREATE TABLE scim_group_scim_id (
-  groups_internal_id  BIGINT NOT NULL,
-  members_internal_id BIGINT NOT NULL
+    displayname text NOT NULL,
+    internal_id bigint NOT NULL
 );
 
 
 --
--- Name: scim_id; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: scim_group_scim_id; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE scim_group_scim_id (
+    groups_internal_id bigint NOT NULL,
+    members_internal_id bigint NOT NULL
+);
+
+
+--
+-- Name: scim_id; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_id (
-  internal_id BIGINT NOT NULL,
-  externalid  TEXT UNIQUE,
-  meta_id     BIGINT REFERENCES scim_meta (id),
-  id          TEXT   NOT NULL
+    internal_id bigint NOT NULL,
+    externalid text,
+    id text NOT NULL,
+    meta_id bigint
 );
 
 
 --
--- Name: scim_im; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: scim_im; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_im (
-  multi_value_id BIGINT NOT NULL,
-  value            TEXT   NOT NULL,
-  type             TEXT,
-  user_internal_id BIGINT
+    multi_value_id bigint NOT NULL,
+    value text,
+    type text,
+    user_internal_id bigint NOT NULL
 );
 
 
 --
--- Name: scim_manager; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: scim_manager; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_manager (
-  id          BIGINT NOT NULL,
-  displayname TEXT,
-  managerid   BYTEA
+    id bigint NOT NULL,
+    displayname text,
+    managerid bytea
 );
 
 
 --
--- Name: scim_name; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: scim_meta; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE scim_meta (
+    id bigint NOT NULL,
+    created timestamp without time zone,
+    lastmodified timestamp without time zone,
+    location text,
+    resourcetype text,
+    version text
+);
+
+
+--
+-- Name: scim_name; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_name (
-  id              BIGINT NOT NULL,
-  familyname      TEXT,
-  formatted       TEXT,
-  givenname       TEXT,
-  honorificprefix TEXT,
-  honorificsuffix TEXT,
-  middlename      TEXT
+    id bigint NOT NULL,
+    familyname text,
+    formatted text,
+    givenname text,
+    honorificprefix text,
+    honorificsuffix text,
+    middlename text
 );
 
 
 --
--- Name: scim_phonenumber; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: scim_phonenumber; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_phonenumber (
-  multi_value_id BIGINT NOT NULL,
-  value            TEXT   NOT NULL,
-  type             TEXT,
-  user_internal_id BIGINT
+    multi_value_id bigint NOT NULL,
+    value text,
+    type text,
+    user_internal_id bigint NOT NULL
 );
 
 
 --
--- Name: scim_photo; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: scim_photo; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_photo (
-  multi_value_id BIGINT NOT NULL,
-  value            TEXT   NOT NULL,
-  type             TEXT,
-  user_internal_id BIGINT
+    multi_value_id bigint NOT NULL,
+    value text,
+    type text,
+    user_internal_id bigint NOT NULL
 );
 
 
 --
--- Name: scim_roles; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: scim_roles; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_roles (
-  multi_value_id BIGINT NOT NULL,
-  value        TEXT   NOT NULL
+    multi_value_id bigint NOT NULL,
+    value text,
+    user_internal_id bigint NOT NULL
 );
 
 
 --
--- Name: scim_user; Type: TABLE; Schema: public; Owner: -; Tablespace:
+-- Name: scim_user; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_user (
-  active            BOOLEAN,
-  displayname       TEXT,
-  locale            TEXT,
-  nickname          TEXT,
-  password          TEXT   NOT NULL,
-  preferredlanguage TEXT,
-  profileurl        TEXT,
-  timezone          TEXT,
-  title             TEXT,
-  username          TEXT   NOT NULL UNIQUE,
-  usertype          TEXT,
-  internal_id       BIGINT NOT NULL,
-  name_id           BIGINT
-);
-
---
--- Name: scim_user_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
---
-
-ALTER TABLE ONLY scim_user
-ADD CONSTRAINT scim_user_pkey PRIMARY KEY (internal_id);
-
-
---
--- Name: scim_user_scim_address; Type: TABLE; Schema: public; Owner: -; Tablespace:
---
-
-CREATE TABLE scim_user_scim_address (
-  scim_user_internal_id BIGINT NOT NULL,
-  addresses_id          BIGINT NOT NULL
+    active boolean,
+    displayname text,
+    locale text,
+    nickname text,
+    password text NOT NULL,
+    preferredlanguage text,
+    profileurl text,
+    timezone text,
+    title text,
+    username text NOT NULL,
+    usertype text,
+    internal_id bigint NOT NULL,
+    name_id bigint
 );
 
 
 --
--- Name: scim_user_scim_entitlements; Type: TABLE; Schema: public; Owner: -; Tablespace:
---
-
-CREATE TABLE scim_user_scim_entitlements (
-  scim_user_internal_id     BIGINT NOT NULL,
-  entitlements_multi_value_id BIGINT NOT NULL
-);
-
-
---
--- Name: scim_user_scim_roles; Type: TABLE; Schema: public; Owner: -; Tablespace:
---
-
-CREATE TABLE scim_user_scim_roles (
-  scim_user_internal_id BIGINT NOT NULL,
-  roles_multi_value_id BIGINT NOT NULL
-);
-
-
---
--- Extension section: table, constraints, indexes
---
-
-CREATE TABLE scim_extension
-(
-  internal_id BIGINT                 NOT NULL,
-  urn         CHARACTER VARYING(255) NOT NULL,
-  CONSTRAINT scim_extension_pkey PRIMARY KEY (internal_id),
-  CONSTRAINT urn_ UNIQUE (urn)
-);
-
---
--- Extension field section: table, constraints, indexes
---
-
-CREATE TABLE scim_extension_field
-(
-  internal_id           BIGINT NOT NULL,
-  is_required           BOOLEAN,
-  name                  CHARACTER VARYING(255),
-  type                  CHARACTER VARYING(255),
-  extension_internal_id BIGINT,
-  CONSTRAINT scim_extension_field_pkey PRIMARY KEY (internal_id),
-  CONSTRAINT fka8ad6a2f30b87d5d FOREIGN KEY (extension_internal_id)
-  REFERENCES scim_extension (internal_id) MATCH SIMPLE
-  ON UPDATE NO ACTION ON DELETE NO ACTION
-);
---
--- Extension field value section: table, constraints, indexes
---
-
-CREATE TABLE scim_extension_field_value
-(
-  internal_id                 BIGINT NOT NULL,
-  value                       TEXT   NOT NULL,
-  extension_field_internal_id BIGINT NOT NULL,
-  user_internal_id            BIGINT NOT NULL,
-  CONSTRAINT scim_extension_field_value_pkey PRIMARY KEY (internal_id),
-  CONSTRAINT fk6683bf6124a90fb9 FOREIGN KEY (extension_field_internal_id)
-  REFERENCES scim_extension_field (internal_id) MATCH SIMPLE
-  ON UPDATE NO ACTION ON DELETE NO ACTION,
-  CONSTRAINT fk6683bf6146402c6a FOREIGN KEY (user_internal_id)
-  REFERENCES scim_user (internal_id) MATCH SIMPLE
-  ON UPDATE NO ACTION ON DELETE NO ACTION
-);
-
---
--- Inserting default role and scheme version
---
-
-INSERT INTO database_scheme_version VALUES (0.05);
-
-INSERT INTO scim_roles VALUES (1, 'USER');
-
-
---
--- Adding primary key constraint for scheme version table
+-- Name: database_scheme_version_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY database_scheme_version
-ADD CONSTRAINT database_scheme_version_pkey PRIMARY KEY (version);
+    ADD CONSTRAINT database_scheme_version_pkey PRIMARY KEY (version);
 
 
 --
--- Name: scim_address_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: osiam_client_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY osiam_client
+    ADD CONSTRAINT osiam_client_pkey PRIMARY KEY (internal_id);
+
+
+--
+-- Name: scim_address_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY scim_address
-ADD CONSTRAINT scim_address_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT scim_address_pkey PRIMARY KEY (id);
 
 
 --
--- Name: scim_certificate_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: scim_certificate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY scim_certificate
-ADD CONSTRAINT scim_certificate_pkey PRIMARY KEY (multi_value_id);
+    ADD CONSTRAINT scim_certificate_pkey PRIMARY KEY (multi_value_id);
 
 
 --
--- Name: scim_email_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: scim_email_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY scim_email
-ADD CONSTRAINT scim_email_pkey PRIMARY KEY (multi_value_id);
+    ADD CONSTRAINT scim_email_pkey PRIMARY KEY (multi_value_id);
 
 
 --
--- Name: scim_enterprise_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: scim_enterprise_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY scim_enterprise
-ADD CONSTRAINT scim_enterprise_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT scim_enterprise_pkey PRIMARY KEY (id);
 
 
 --
--- Name: scim_entitlements_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: scim_entitlements_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY scim_entitlements
-ADD CONSTRAINT scim_entitlements_pkey PRIMARY KEY (multi_value_id);
+    ADD CONSTRAINT scim_entitlements_pkey PRIMARY KEY (multi_value_id);
 
 
 --
--- Name: scim_group_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: scim_extension_field_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_extension_field
+    ADD CONSTRAINT scim_extension_field_pkey PRIMARY KEY (internal_id);
+
+
+--
+-- Name: scim_extension_field_value_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_extension_field_value
+    ADD CONSTRAINT scim_extension_field_value_pkey PRIMARY KEY (internal_id);
+
+
+--
+-- Name: scim_extension_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_extension
+    ADD CONSTRAINT scim_extension_pkey PRIMARY KEY (internal_id);
+
+
+--
+-- Name: scim_group_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY scim_group
-ADD CONSTRAINT scim_group_pkey PRIMARY KEY (internal_id);
+    ADD CONSTRAINT scim_group_pkey PRIMARY KEY (internal_id);
 
 
 --
--- Name: scim_group_scim_id_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: scim_group_scim_id_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY scim_group_scim_id
-ADD CONSTRAINT scim_group_scim_id_pkey PRIMARY KEY (groups_internal_id, members_internal_id);
+    ADD CONSTRAINT scim_group_scim_id_pkey PRIMARY KEY (groups_internal_id, members_internal_id);
 
 
 --
--- Name: scim_id_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: scim_id_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY scim_id
-ADD CONSTRAINT scim_id_pkey PRIMARY KEY (internal_id);
+    ADD CONSTRAINT scim_id_pkey PRIMARY KEY (internal_id);
 
 
 --
--- Name: scim_im_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: scim_im_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY scim_im
-ADD CONSTRAINT scim_im_pkey PRIMARY KEY (multi_value_id);
+    ADD CONSTRAINT scim_im_pkey PRIMARY KEY (multi_value_id);
 
 
 --
--- Name: scim_manager_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: scim_manager_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY scim_manager
-ADD CONSTRAINT scim_manager_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT scim_manager_pkey PRIMARY KEY (id);
 
 
 --
--- Name: scim_meta_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: scim_meta_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY scim_meta
-ADD CONSTRAINT scim_meta_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT scim_meta_pkey PRIMARY KEY (id);
 
 
 --
--- Name: scim_name_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: scim_name_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY scim_name
-ADD CONSTRAINT scim_name_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT scim_name_pkey PRIMARY KEY (id);
 
 
 --
--- Name: scim_phonenumber_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: scim_phonenumber_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY scim_phonenumber
-ADD CONSTRAINT scim_phonenumber_pkey PRIMARY KEY (multi_value_id);
+    ADD CONSTRAINT scim_phonenumber_pkey PRIMARY KEY (multi_value_id);
 
 
 --
--- Name: scim_photo_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: scim_photo_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY scim_photo
-ADD CONSTRAINT scim_photo_pkey PRIMARY KEY (multi_value_id);
+    ADD CONSTRAINT scim_photo_pkey PRIMARY KEY (multi_value_id);
 
 
 --
--- Name: scim_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
+-- Name: scim_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY scim_roles
-ADD CONSTRAINT scim_roles_pkey PRIMARY KEY (multi_value_id);
+    ADD CONSTRAINT scim_roles_pkey PRIMARY KEY (multi_value_id);
 
 
 --
--- Name: scim_user_scim_address_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
---
-
-ALTER TABLE ONLY scim_user_scim_address
-ADD CONSTRAINT scim_user_scim_address_pkey PRIMARY KEY (scim_user_internal_id, addresses_id);
-
-
---
--- Name: scim_user_scim_entitlements_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
---
-
-ALTER TABLE ONLY scim_user_scim_entitlements
-ADD CONSTRAINT scim_user_scim_entitlements_pkey PRIMARY KEY (scim_user_internal_id, entitlements_multi_value_id);
-
-
---
--- Name: scim_user_scim_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace:
---
-
-ALTER TABLE ONLY scim_user_scim_roles
-ADD CONSTRAINT scim_user_scim_roles_pkey PRIMARY KEY (scim_user_internal_id, roles_multi_value_id);
-
-
---
--- Name: fk2d322588abdb6640; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY scim_user_scim_entitlements
-ADD CONSTRAINT fk2d322588abdb6640 FOREIGN KEY (scim_user_internal_id) REFERENCES scim_user (internal_id);
-
-
---
--- Name: fk2d322588ef67251f; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY scim_user_scim_entitlements
-ADD CONSTRAINT fk2d322588ef67251f FOREIGN KEY (entitlements_multi_value_id) REFERENCES scim_entitlements (multi_value_id);
-
-
---
--- Name: fk340ed212353ef531; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY scim_user_scim_address
-ADD CONSTRAINT fk340ed212353ef531 FOREIGN KEY (addresses_id) REFERENCES scim_address (id);
-
-
---
--- Name: fk340ed212abdb6640; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY scim_user_scim_address
-ADD CONSTRAINT fk340ed212abdb6640 FOREIGN KEY (scim_user_internal_id) REFERENCES scim_user (internal_id);
-
-
---
--- Name: fk38b265b627b5137b; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: scim_user_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY scim_user
-ADD CONSTRAINT fk38b265b627b5137b FOREIGN KEY (name_id) REFERENCES scim_name (id);
+    ADD CONSTRAINT scim_user_pkey PRIMARY KEY (internal_id);
 
 
 --
--- Name: fk38b265b6e9e686e0; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: uk_164dcfif0r82xubvindi9vrnc; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY scim_user
-ADD CONSTRAINT fk38b265b6e9e686e0 FOREIGN KEY (internal_id) REFERENCES scim_id (internal_id);
-
---
--- Name: fk70e4b45babdb6640; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY scim_user_scim_roles
-ADD CONSTRAINT fk70e4b45babdb6640 FOREIGN KEY (scim_user_internal_id) REFERENCES scim_user (internal_id);
+ALTER TABLE ONLY scim_id
+    ADD CONSTRAINT uk_164dcfif0r82xubvindi9vrnc UNIQUE (externalid);
 
 
 --
--- Name: fk70e4b45be638e451; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY scim_user_scim_roles
-ADD CONSTRAINT fk70e4b45be638e451 FOREIGN KEY (roles_multi_value_id) REFERENCES scim_roles (multi_value_id);
-
-
---
--- Name: fk725705cf738674d5; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY scim_im
-ADD CONSTRAINT fk725705cf738674d5 FOREIGN KEY (user_internal_id) REFERENCES scim_user (internal_id);
-
-
---
--- Name: fk8d2c327b6d23d136; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY scim_group_scim_id
-ADD CONSTRAINT fk8d2c327b6d23d136 FOREIGN KEY (groups_internal_id) REFERENCES scim_group (internal_id);
-
-
---
--- Name: fk8d2c327bc347d0ba; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY scim_group_scim_id
-ADD CONSTRAINT fk8d2c327bc347d0ba FOREIGN KEY (members_internal_id) REFERENCES scim_id (internal_id);
-
-
---
--- Name: fk956dd94c738674d5; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY scim_certificate
-ADD CONSTRAINT fk956dd94c738674d5 FOREIGN KEY (user_internal_id) REFERENCES scim_user (internal_id);
-
-
---
--- Name: fka4a85629738674d5; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY scim_address
-ADD CONSTRAINT fka4a85629738674d5 FOREIGN KEY (user_internal_id) REFERENCES scim_user (internal_id);
-
-
---
--- Name: fkd9f3520c738674d5; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY scim_phonenumber
-ADD CONSTRAINT fkd9f3520c738674d5 FOREIGN KEY (user_internal_id) REFERENCES scim_user (internal_id);
-
-
---
--- Name: fkdcb60f11738674d5; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY scim_email
-ADD CONSTRAINT fkdcb60f11738674d5 FOREIGN KEY (user_internal_id) REFERENCES scim_user (internal_id);
-
-
---
--- Name: fkdcd4b9f4e9e686e0; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: uk_1dt64mbf4gp83rwy18jofwwf; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY scim_group
-ADD CONSTRAINT fkdcd4b9f4e9e686e0 FOREIGN KEY (internal_id) REFERENCES scim_id (internal_id);
+    ADD CONSTRAINT uk_1dt64mbf4gp83rwy18jofwwf UNIQUE (displayname);
 
 
 --
--- Name: fkdd4f01a7738674d5; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: uk_1onynolltgwuk8a5ngjhkqcl1; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY scim_photo
-ADD CONSTRAINT fkdd4f01a7738674d5 FOREIGN KEY (user_internal_id) REFERENCES scim_user (internal_id);
+ALTER TABLE ONLY scim_user
+    ADD CONSTRAINT uk_1onynolltgwuk8a5ngjhkqcl1 UNIQUE (username);
 
 
 --
--- Name: fke1bc510cae52e63f; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: uk_60sysrrwavtwwnji8nw5tng2x; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_extension
+    ADD CONSTRAINT uk_60sysrrwavtwwnji8nw5tng2x UNIQUE (urn);
+
+
+--
+-- Name: uk_c34iilt4h1ln91s9ro8m96hru; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY osiam_client
+    ADD CONSTRAINT uk_c34iilt4h1ln91s9ro8m96hru UNIQUE (id);
+
+
+--
+-- Name: uk_jj3o15pxbkaf4p88paf4l6ax0; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY osiam_client
+    ADD CONSTRAINT uk_jj3o15pxbkaf4p88paf4l6ax0 UNIQUE (redirect_uri);
+
+
+--
+-- Name: uk_ktjxo7vyfs0veopytnh1x68sm; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY osiam_client
+    ADD CONSTRAINT uk_ktjxo7vyfs0veopytnh1x68sm UNIQUE (client_secret);
+
+
+--
+-- Name: uk_q4ya5m8v6tafgtvw1inqtmm42; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_id
+    ADD CONSTRAINT uk_q4ya5m8v6tafgtvw1inqtmm42 UNIQUE (id);
+
+
+--
+-- Name: fk_6y0v7g2y69nkvody9jv5q3tuo; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_extension_field_value
+    ADD CONSTRAINT fk_6y0v7g2y69nkvody9jv5q3tuo FOREIGN KEY (extension_field_internal_id) REFERENCES scim_extension_field(internal_id);
+
+
+--
+-- Name: fk_7jnl5vqcfg1j9plj4py1qvxcp; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_entitlements
+    ADD CONSTRAINT fk_7jnl5vqcfg1j9plj4py1qvxcp FOREIGN KEY (user_internal_id) REFERENCES scim_user(internal_id);
+
+
+--
+-- Name: fk_b29y2qc2j5uu49wa9grpbulb0; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_group_scim_id
+    ADD CONSTRAINT fk_b29y2qc2j5uu49wa9grpbulb0 FOREIGN KEY (members_internal_id) REFERENCES scim_id(internal_id);
+
+
+--
+-- Name: fk_byxttqfbmb2wcj4ud3hd53mw3; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_id
+    ADD CONSTRAINT fk_byxttqfbmb2wcj4ud3hd53mw3 FOREIGN KEY (meta_id) REFERENCES scim_meta(id);
+
+
+--
+-- Name: fk_ctvkl0udnj6jpn1p93vbwywte; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY osiam_client_grants
+    ADD CONSTRAINT fk_ctvkl0udnj6jpn1p93vbwywte FOREIGN KEY (id) REFERENCES osiam_client(internal_id);
+
+
+--
+-- Name: fk_d2ji7ipe62fbg8uu2ir7b9ls4; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_user
+    ADD CONSTRAINT fk_d2ji7ipe62fbg8uu2ir7b9ls4 FOREIGN KEY (name_id) REFERENCES scim_name(id);
+
+
+--
+-- Name: fk_dmfj3s46npn4p1pcrc3iur2mp; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_email
+    ADD CONSTRAINT fk_dmfj3s46npn4p1pcrc3iur2mp FOREIGN KEY (user_internal_id) REFERENCES scim_user(internal_id);
+
+
+--
+-- Name: fk_eksek96tmtxkaqe5a7hfmoswo; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_extension_field
+    ADD CONSTRAINT fk_eksek96tmtxkaqe5a7hfmoswo FOREIGN KEY (extension_internal_id) REFERENCES scim_extension(internal_id);
+
+
+--
+-- Name: fk_gct22972jrrv22crorixfdlmi; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_group_scim_id
+    ADD CONSTRAINT fk_gct22972jrrv22crorixfdlmi FOREIGN KEY (groups_internal_id) REFERENCES scim_group(internal_id);
+
+
+--
+-- Name: fk_ghdpgmh1b8suimtfxdl8653bj; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_certificate
+    ADD CONSTRAINT fk_ghdpgmh1b8suimtfxdl8653bj FOREIGN KEY (user_internal_id) REFERENCES scim_user(internal_id);
+
+
+--
+-- Name: fk_gl93uw092wua8dl5cpb5ysn3f; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY osiam_client_scopes
+    ADD CONSTRAINT fk_gl93uw092wua8dl5cpb5ysn3f FOREIGN KEY (id) REFERENCES osiam_client(internal_id);
+
+
+--
+-- Name: fk_hmsah9dinhk7f8k4lf50h658; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_im
+    ADD CONSTRAINT fk_hmsah9dinhk7f8k4lf50h658 FOREIGN KEY (user_internal_id) REFERENCES scim_user(internal_id);
+
+
+--
+-- Name: fk_in6gs4safpkntvac3v88ke54r; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_extension_field_value
+    ADD CONSTRAINT fk_in6gs4safpkntvac3v88ke54r FOREIGN KEY (user_internal_id) REFERENCES scim_user(internal_id);
+
+
+--
+-- Name: fk_jxkq2wka34t20eejcvycluyr6; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY scim_enterprise
-ADD CONSTRAINT fke1bc510cae52e63f FOREIGN KEY (manager_id) REFERENCES scim_manager (id);
+    ADD CONSTRAINT fk_jxkq2wka34t20eejcvycluyr6 FOREIGN KEY (manager_id) REFERENCES scim_manager(id);
+
+
+--
+-- Name: fk_n5und6lnrtblhgs2ococpglyi; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_roles
+    ADD CONSTRAINT fk_n5und6lnrtblhgs2ococpglyi FOREIGN KEY (user_internal_id) REFERENCES scim_user(internal_id);
+
+
+--
+-- Name: fk_nx0839hyqd5yrfelxkr2fpr7a; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_user
+    ADD CONSTRAINT fk_nx0839hyqd5yrfelxkr2fpr7a FOREIGN KEY (internal_id) REFERENCES scim_id(internal_id);
+
+
+--
+-- Name: fk_oari88x9o5j9jmigtt5s20m4k; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_group
+    ADD CONSTRAINT fk_oari88x9o5j9jmigtt5s20m4k FOREIGN KEY (internal_id) REFERENCES scim_id(internal_id);
+
+
+--
+-- Name: fk_q3rk61yla08pvod7gq8av7i0l; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_photo
+    ADD CONSTRAINT fk_q3rk61yla08pvod7gq8av7i0l FOREIGN KEY (user_internal_id) REFERENCES scim_user(internal_id);
+
+
+--
+-- Name: fk_qr6gtqi0h9r6yp034tarlry1k; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_address
+    ADD CONSTRAINT fk_qr6gtqi0h9r6yp034tarlry1k FOREIGN KEY (user_internal_id) REFERENCES scim_user(internal_id);
+
+
+--
+-- Name: fk_rpqvdf1p9twdigaq1wclu5wm8; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY scim_phonenumber
+    ADD CONSTRAINT fk_rpqvdf1p9twdigaq1wclu5wm8 FOREIGN KEY (user_internal_id) REFERENCES scim_user(internal_id);
