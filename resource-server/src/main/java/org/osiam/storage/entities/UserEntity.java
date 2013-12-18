@@ -73,7 +73,7 @@ public class UserEntity extends InternalIdSkeleton {
     private String displayName;
 
     @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<EmailEntity> emails;
+    private Set<EmailEntity> emails = new HashSet<>();
 
     @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PhoneNumberEntity> phoneNumbers;
@@ -273,9 +273,6 @@ public class UserEntity extends InternalIdSkeleton {
      * @return the emails entity
      */
     public Set<EmailEntity> getEmails() {
-        if (emails == null) {
-            emails = new HashSet<>();
-        }
         return emails;
     }
 
