@@ -51,25 +51,6 @@ class UserExtensionSpec extends Specification {
         emptySet != null
     }
 
-    def 'extensions can be registered'() {
-        given:
-        def extension = new ExtensionEntity()
-
-        when:
-        userEntity.registerExtension(extension);
-
-        then:
-        userEntity.registeredExtensions.contains(extension)
-    }
-
-    def 'registering null as extension raises exception'() {
-        when:
-        userEntity.registerExtension(null);
-
-        then:
-        thrown(IllegalArgumentException)
-    }
-
     def 'adding a field value works'() {
         given:
         def extension = new ExtensionEntity()
@@ -132,7 +113,7 @@ class UserExtensionSpec extends Specification {
     }
 
     def extensionValuesOnlyContains(fieldValue, extensionField) {
-        def ok = false;
+        def ok = false
         for (extensionFieldValue in userEntity.extensionFieldValues) {
             if (extensionFieldValue.extensionField != extensionField) {
                 continue

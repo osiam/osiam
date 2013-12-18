@@ -114,12 +114,6 @@ public class UserEntity extends ResourceEntity {
     @JoinColumn(name = JOIN_COLUMN_NAME)
     private Set<X509CertificateEntity> x509Certificates = new HashSet<>();
 
-    // TODO: fix relationship or delete it (it is not used right now)
-    @OneToMany
-    @JoinTable(name = "scim_user_scim_extension", joinColumns = { @JoinColumn(name = "scim_user_internal_id", referencedColumnName = "internal_id") },
-            inverseJoinColumns = { @JoinColumn(name = "registered_extensions_internal_id", referencedColumnName = "internal_id") })
-    private Set<ExtensionEntity> registeredExtensions = new HashSet<>();
-
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = JOIN_COLUMN_NAME)
     private Set<ExtensionFieldValueEntity> extensionFieldValues = new HashSet<>();
@@ -471,29 +465,6 @@ public class UserEntity extends ResourceEntity {
      */
     public void setX509Certificates(Set<X509CertificateEntity> x509Certificates) {
         this.x509Certificates = x509Certificates;
-    }
-
-    /**
-     * Registers a new extension for this User. If the given extension is already registered, it will be ignored.
-     *
-     * @param extension
-     *            The extension to register
-     */
-    public void registerExtension(ExtensionEntity extension) {
-        if (extension == null) {
-            throw new IllegalArgumentException("extension must not be null");
-        }
-
-        registeredExtensions.add(extension);
-    }
-
-    /**
-     * Read all registered user extensions.
-     *
-     * @return A set of all registered user extensions. Never null;
-     */
-    public Set<ExtensionEntity> getRegisteredExtensions() {
-        return registeredExtensions;
     }
 
     /**
