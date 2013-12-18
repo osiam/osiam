@@ -83,39 +83,39 @@ public class UserEntity extends ResourceEntity {
     private String displayName;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = JOIN_COLUMN_NAME)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
     private Set<EmailEntity> emails = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = JOIN_COLUMN_NAME)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
     private Set<PhoneNumberEntity> phoneNumbers = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = JOIN_COLUMN_NAME)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
     private Set<ImEntity> ims = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = JOIN_COLUMN_NAME)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
     private Set<PhotoEntity> photos = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = JOIN_COLUMN_NAME)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
     private Set<AddressEntity> addresses = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = JOIN_COLUMN_NAME)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
     private Set<EntitlementsEntity> entitlements = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = JOIN_COLUMN_NAME)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
     private Set<RolesEntity> roles = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = JOIN_COLUMN_NAME)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
     private Set<X509CertificateEntity> x509Certificates = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = JOIN_COLUMN_NAME)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
     private Set<ExtensionFieldValueEntity> extensionFieldValues = new HashSet<>();
 
     public UserEntity() {
