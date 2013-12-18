@@ -102,7 +102,7 @@ class UserUpdaterSpec extends Specification {
         userUpdater.update(user, userEntity)
 
         then:
-        1 * userEntity.setNickName(IRRELEVANT)
+        1 * userEntity.setDisplayName(IRRELEVANT)
     }
 
     @Unroll
@@ -114,7 +114,7 @@ class UserUpdaterSpec extends Specification {
         userUpdater.update(user, userEntity)
 
         then:
-        0 * userEntity.setNickName(_)
+        0 * userEntity.setDisplayName(_)
 
         where:
         value          | displayName
@@ -416,13 +416,13 @@ class UserUpdaterSpec extends Specification {
 
     def 'updating the active is possible' () {
         given:
-        User user = new User.Builder(active : IRRELEVANT).build()
+        User user = new User.Builder(active : true).build()
 
         when:
         userUpdater.update(user, userEntity)
 
         then:
-        1 * userEntity.setActive(IRRELEVANT)
+        1 * userEntity.setActive(true)
     }
 
     @Unroll
@@ -439,7 +439,6 @@ class UserUpdaterSpec extends Specification {
         where:
         value          | active
         'null'         | null
-        'empty string' | ''
     }
 
     def 'removing the password attribute raises exception'() {
