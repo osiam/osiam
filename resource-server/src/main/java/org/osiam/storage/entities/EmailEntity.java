@@ -45,9 +45,6 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ch
     @Column(name = "postgresql_does_not_like_primary")
     private boolean primary;
 
-    @ManyToOne(optional = false)
-    private UserEntity user;
-
     @Override
     public String getType() {
         if (type != null) {

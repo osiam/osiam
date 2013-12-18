@@ -24,7 +24,6 @@
 package org.osiam.storage.entities;
 
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -33,8 +32,5 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "scim_certificate")
 public class X509CertificateEntity extends MultiValueAttributeEntitySkeleton {
-
-    @ManyToOne(optional = false)
-    private UserEntity user;
 
 }

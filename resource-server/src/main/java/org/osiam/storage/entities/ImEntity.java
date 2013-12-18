@@ -36,10 +36,6 @@ public class ImEntity extends MultiValueAttributeEntitySkeleton implements Child
     @Enumerated(EnumType.STRING)
     private CanonicalImTypes type;
 
-    @ManyToOne
-    private UserEntity user;
-
-
     @Override
     public String getType() {
         if (type != null) {

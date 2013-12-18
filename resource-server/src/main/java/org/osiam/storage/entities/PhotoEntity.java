@@ -41,9 +41,6 @@ public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements Ch
     @Enumerated(EnumType.STRING)
     private CanonicalPhotoTypes type;
 
-    @ManyToOne
-    private UserEntity user;
-
     @Override
     public void setValue(String value) {
         if (isValueIncorrect(value)) {

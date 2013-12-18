@@ -36,9 +36,6 @@ public class PhoneNumberEntity extends MultiValueAttributeEntitySkeleton impleme
     @Enumerated(EnumType.STRING)
     private CanonicalPhoneNumberTypes type;
 
-    @ManyToOne
-    private UserEntity user;
-
     @Override
     public String getType() {
         if (type != null) {

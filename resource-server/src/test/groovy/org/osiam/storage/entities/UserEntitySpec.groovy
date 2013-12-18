@@ -142,19 +142,6 @@ class UserEntitySpec extends Specification {
         userEntity.meta.lastModified.time > 0
     }
 
-    def "adding extensions to a user should result in setting the user also to the extension"() {
-        given:
-        def extensions = [new ExtensionFieldValueEntity()] as Set
-        userEntity.setUserExtensions(extensions)
-
-        when:
-        def result = userEntity.getUserExtensions()
-
-        then:
-        result == extensions
-        result[0].getUser() == userEntity
-    }
-
     def "If extensions are null empty set should be returned"() {
         when:
         def emptySet = userEntity.getUserExtensions()
