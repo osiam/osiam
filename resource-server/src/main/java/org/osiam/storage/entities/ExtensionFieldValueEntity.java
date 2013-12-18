@@ -50,9 +50,6 @@ public class ExtensionFieldValueEntity {
     @JoinColumn(name = "extension_field_internal_id")
     private ExtensionFieldEntity extensionField;
 
-    @ManyToOne(optional = false)
-    private UserEntity user;
-
     @Lob
     @Type(type="org.hibernate.type.StringClobType")
     @Column(nullable = false)
@@ -72,14 +69,6 @@ public class ExtensionFieldValueEntity {
 
     public void setExtensionField(ExtensionFieldEntity extensionField) {
         this.extensionField = extensionField;
-    }
-
-    public UserEntity getUser() {
-        return user;
-    }
-
-    public void setUser(UserEntity user) {
-        this.user = user;
     }
 
     public String getValue() {

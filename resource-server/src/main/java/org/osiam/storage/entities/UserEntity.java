@@ -354,11 +354,6 @@ public class UserEntity extends ResourceEntity {
      *            the extension data of the user
      */
     public void setUserExtensions(Set<ExtensionFieldValueEntity> userExtensions) {
-        if (userExtensions != null) {
-            for (ExtensionFieldValueEntity extensionValue : userExtensions) {
-                extensionValue.setUser(this);
-            }
-        }
         this.extensionFieldValues = userExtensions;
     }
 
@@ -482,8 +477,6 @@ public class UserEntity extends ResourceEntity {
         if (extensionFieldValues.contains(extensionValue)) {
             extensionFieldValues.remove(extensionValue);
         }
-
-        extensionValue.setUser(this);
 
         extensionFieldValues.add(extensionValue);
     }
