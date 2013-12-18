@@ -32,9 +32,9 @@ import java.util.regex.Pattern;
  */
 @Entity
 @Table(name = "scim_photo")
-public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndType, HasUser {
+public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndType {
 
-    //a valid photo url is everything which does not contain any control character and ends with jpg|jpeg|png|gif
+    // a valid photo url is everything which does not contain any control character and ends with jpg|jpeg|png|gif
     private static final Pattern PHOTO_SUFFIX = Pattern.compile("(?i)\\S+\\.(jpg|jpeg|png|gif)");
 
     @Column
@@ -73,16 +73,6 @@ public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements Ch
         if (type != null) {
             this.type = CanonicalPhotoTypes.valueOf(type);
         }
-    }
-
-    @Override
-    public UserEntity getUser() {
-        return user;
-    }
-
-    @Override
-    public void setUser(UserEntity user) {
-        this.user = user;
     }
 
     public enum CanonicalPhotoTypes {

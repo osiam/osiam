@@ -43,42 +43,30 @@ public class AddressEntity {
     @GeneratedValue
     private long id;
 
-
     @Column
     @Enumerated(EnumType.STRING)
     private CanonicalAddressTypes type;
 
-
     @Column
     private String formatted;
-
 
     @Column
     private String streetAddress;
 
-
     @Column
     private String locality;
-
 
     @Column
     private String region;
 
-
     @Column
     private String postalCode;
-
 
     @Column
     private String country;
 
-
     @Column(name = "postgresql_does_not_like_primary")
     private Boolean primary;
-
-    @ManyToOne
-    private UserEntity user;
-
 
     public long getId() {
         return id;
@@ -155,14 +143,6 @@ public class AddressEntity {
 
     public void setCountry(String country) {
         this.country = country;
-    }
-
-    public UserEntity getUser() {
-        return user;
-    }
-
-    public void setUser(UserEntity user) {
-        this.user = user;
     }
 
     @Override
