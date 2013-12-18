@@ -44,8 +44,6 @@ import com.google.common.collect.ImmutableSet;
 @Table(name = "scim_user")
 public class UserEntity extends ResourceEntity {
 
-    private static final String MAPPING_NAME = "user";
-
     @Column(nullable = false, unique = true)
     private String userName;
 
@@ -82,36 +80,46 @@ public class UserEntity extends ResourceEntity {
     @Column
     private String displayName;
 
-    @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "user_internal_id")
     private Set<EmailEntity> emails = new HashSet<>();
 
-    @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "user_internal_id")
     private Set<PhoneNumberEntity> phoneNumbers = new HashSet<>();
 
-    @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "user_internal_id")
     private Set<ImEntity> ims = new HashSet<>();
 
-    @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "user_internal_id")
     private Set<PhotoEntity> photos = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "user_internal_id")
     private Set<AddressEntity> addresses = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "user_internal_id")
     private Set<EntitlementsEntity> entitlements = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "user_internal_id")
     private Set<RolesEntity> roles = new HashSet<>();
 
-    @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "user_internal_id")
     private Set<X509CertificateEntity> x509Certificates = new HashSet<>();
 
+    // TODO: fix relationship
     @OneToMany
     @JoinTable(name = "scim_user_scim_extension", joinColumns = { @JoinColumn(name = "scim_user_internal_id", referencedColumnName = "internal_id") },
             inverseJoinColumns = { @JoinColumn(name = "registered_extensions_internal_id", referencedColumnName = "internal_id") })
     private Set<ExtensionEntity> registeredExtensions = new HashSet<>();
 
-    @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "user_internal_id")
     private Set<ExtensionFieldValueEntity> extensionFieldValues = new HashSet<>();
 
     public UserEntity() {
