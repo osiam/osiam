@@ -76,25 +76,25 @@ public class UserEntity extends InternalIdSkeleton {
     private Set<EmailEntity> emails = new HashSet<>();
 
     @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<PhoneNumberEntity> phoneNumbers;
+    private Set<PhoneNumberEntity> phoneNumbers = new HashSet<>();
 
     @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ImEntity> ims;
+    private Set<ImEntity> ims = new HashSet<>();
 
     @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<PhotoEntity> photos;
+    private Set<PhotoEntity> photos = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<AddressEntity> addresses;
+    private Set<AddressEntity> addresses = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<EntitlementsEntity> entitlements;
+    private Set<EntitlementsEntity> entitlements = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL)
-    private Set<RolesEntity> roles;
+    private Set<RolesEntity> roles = new HashSet<>();
 
     @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<X509CertificateEntity> x509Certificates;
+    private Set<X509CertificateEntity> x509Certificates = new HashSet<>();
 
     @OneToMany
     @JoinTable(name = "scim_user_scim_extension", joinColumns = {@JoinColumn(name = "scim_user_internal_id", referencedColumnName = "internal_id")},
@@ -315,9 +315,6 @@ public class UserEntity extends InternalIdSkeleton {
      * @return the phone numbers entity
      */
     public Set<PhoneNumberEntity> getPhoneNumbers() {
-        if (phoneNumbers == null) {
-            phoneNumbers = new HashSet<>();
-        }
         return phoneNumbers;
     }
 
@@ -338,9 +335,6 @@ public class UserEntity extends InternalIdSkeleton {
      * @return the instant messaging entity
      */
     public Set<ImEntity> getIms() {
-        if (ims == null) {
-            ims = new HashSet<>();
-        }
         return ims;
     }
 
@@ -361,9 +355,6 @@ public class UserEntity extends InternalIdSkeleton {
      * @return the photos entity
      */
     public Set<PhotoEntity> getPhotos() {
-        if (photos == null) {
-            photos = new HashSet<>();
-        }
         return photos;
     }
 
@@ -384,9 +375,6 @@ public class UserEntity extends InternalIdSkeleton {
      * @return the addresses entity
      */
     public Set<AddressEntity> getAddresses() {
-        if (addresses == null) {
-            addresses = new HashSet<>();
-        }
         return addresses;
     }
 
@@ -401,9 +389,6 @@ public class UserEntity extends InternalIdSkeleton {
      * @return the entitlements
      */
     public Set<EntitlementsEntity> getEntitlements() {
-        if (entitlements == null) {
-            entitlements = new HashSet<>();
-        }
         return entitlements;
     }
 
@@ -418,9 +403,6 @@ public class UserEntity extends InternalIdSkeleton {
      * @return the roles
      */
     public Set<RolesEntity> getRoles() {
-        if (roles == null) {
-            roles = new HashSet<>();
-        }
         return roles;
     }
 
@@ -435,9 +417,6 @@ public class UserEntity extends InternalIdSkeleton {
      * @return the X509 certs
      */
     public Set<X509CertificateEntity> getX509Certificates() {
-        if (x509Certificates == null) {
-            x509Certificates = new HashSet<>();
-        }
         return x509Certificates;
     }
 
