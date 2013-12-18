@@ -31,36 +31,12 @@ class MetaEntitySpec extends Specification {
     MetaEntity metaEntity = new MetaEntity()
     def date = Mock(Date)
 
-    def "setter and getter for the Id should be present"() {
-        when:
-        metaEntity.setId(123456)
-
-        then:
-        metaEntity.getId() == 123456
-    }
-
-    def "setter and getter for the created field should be present"() {
-        when:
-        metaEntity.setCreated(date)
-
-        then:
-        metaEntity.getCreated() == date
-    }
-
     def "should not throw NullpointerException if created is null"() {
         when:
         metaEntity.setCreated(null)
 
         then:
         metaEntity.getCreated() == null
-    }
-
-    def "setter and getter for the modified field should be present"() {
-        when:
-        metaEntity.setLastModified(date)
-
-        then:
-        metaEntity.getLastModified() == date
     }
 
     def "should not throw NullpointerException if last modified is null"() {
@@ -71,19 +47,4 @@ class MetaEntitySpec extends Specification {
         metaEntity.getLastModified() == null
     }
 
-    def "setter and getter for the location should be present"() {
-        when:
-        metaEntity.setLocation("https://example.com/Users/2819c223-7f76-453a-919d-413861904646")
-
-        then:
-        metaEntity.getLocation() == "https://example.com/Users/2819c223-7f76-453a-919d-413861904646"
-    }
-
-    def "setter and getter for the version should be present"() {
-        when:
-        metaEntity.setVersion("3694e05e9dff591")
-
-        then:
-        metaEntity.getVersion() == "3694e05e9dff591"
-    }
 }
