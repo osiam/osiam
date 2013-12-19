@@ -23,11 +23,12 @@
 
 package org.osiam.storage.helper;
 
-import com.google.common.base.Strings;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
+
+import org.springframework.stereotype.Service;
+
+import com.google.common.base.Strings;
 
 @Service
 public class NumberPadder {

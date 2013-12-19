@@ -23,6 +23,8 @@
 
 package org.osiam.storage.query;
 
+import java.util.BitSet;
+
 import org.antlr.v4.runtime.ANTLRErrorListener;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.RecognitionException;
@@ -31,8 +33,6 @@ import org.antlr.v4.runtime.atn.ATNConfigSet;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.misc.Nullable;
-
-import java.util.BitSet;
 
 /**
  * Handles parsing errors.

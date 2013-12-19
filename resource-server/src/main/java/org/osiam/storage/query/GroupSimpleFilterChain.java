@@ -17,12 +17,13 @@
 
 package org.osiam.storage.query;
 
-import org.osiam.storage.entities.GroupEntity;
+import java.util.Locale;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.Locale;
+
+import org.osiam.storage.entities.GroupEntity;
 
 public class GroupSimpleFilterChain implements FilterChain<GroupEntity> {
 
