@@ -23,9 +23,11 @@
 
 package org.osiam.resources.provisioning.update
 
+import org.osiam.resources.exceptions.ResourceExistsException
 import org.osiam.resources.scim.Group
 import org.osiam.resources.scim.MemberRef
 import org.osiam.resources.scim.Meta
+import org.osiam.storage.dao.GroupDao
 import org.osiam.storage.dao.ResourceDao
 import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.ResourceEntity
@@ -35,9 +37,12 @@ import spock.lang.Unroll
 
 class GroupUpdaterSpec extends Specification {
 
+    static IRRELEVANT = 'irrelevant'
+
     ResourceUpdater resourceUpdater = Mock()
     ResourceDao resourceDao = Mock()
-    GroupUpdater groupUpdater = new GroupUpdater(resourceUpdater: resourceUpdater, resourceDao: resourceDao)
+    GroupDao groupDao = Mock()
+    GroupUpdater groupUpdater = new GroupUpdater(resourceUpdater: resourceUpdater, resourceDao: resourceDao, groupDao: groupDao)
 
     Group group
     GroupEntity groupEntity = Mock()
@@ -67,14 +72,15 @@ class GroupUpdaterSpec extends Specification {
 
     def 'updating displayName is possible'() {
         given:
-        def displayName = 'irrelevant'
-        group = new Group.Builder(displayName: displayName).build()
+        def uuid = UUID.randomUUID()
+        group = new Group.Builder(displayName: IRRELEVANT).build()
 
         when:
         groupUpdater.update(group, groupEntity)
 
         then: 'only the displayName was changed'
-        1 * groupEntity.setDisplayName(displayName)
+        1 * groupEntity.getId() >> uuid
+        1 * groupEntity.setDisplayName(IRRELEVANT)
         and: 'nothing else was changed'
         0 * groupEntity._
     }
@@ -146,5 +152,32 @@ class GroupUpdaterSpec extends Specification {
         1 * groupEntity.removeMember(member)
         and: 'nothing else was changed'
         0 * groupEntity._
+    }
+
+    def 'updating the displayName checks if the displayName already exists' () {
+        given:
+        def uuid = UUID.randomUUID()
+        Group group = new Group.Builder(displayName : IRRELEVANT).build()
+        groupEntity.getId() >> uuid
+
+        when:
+        groupUpdater.update(group, groupEntity)
+
+        then:
+        1 * groupDao.isDisplayNameAlreadyTaken(IRRELEVANT, uuid.toString())
+    }
+
+    def 'updating the displayName to an existing dislpayName raises exception' () {
+        given:
+        def uuid = UUID.randomUUID()
+        Group group = new Group.Builder(displayName : IRRELEVANT).build()
+        groupEntity.getId() >> uuid
+
+        when:
+        groupUpdater.update(group, groupEntity)
+
+        then:
+        1 * groupDao.isDisplayNameAlreadyTaken(IRRELEVANT, uuid.toString()) >> true
+        thrown(ResourceExistsException)
     }
 }

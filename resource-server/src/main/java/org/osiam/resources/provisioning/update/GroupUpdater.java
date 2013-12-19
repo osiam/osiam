@@ -28,18 +28,25 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.MemberRef;
+import org.osiam.storage.dao.GroupDao;
 import org.osiam.storage.dao.ResourceDao;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.ResourceEntity;
 import org.springframework.stereotype.Service;
+
+import com.google.common.base.Strings;
 
 /**
  * The GroupUpdater provides the functionality to update (patch) a {@link GroupEntity}
  */
 @Service
 public class GroupUpdater {
+
+    @Inject
+    private GroupDao groupDao;
 
     @Inject
     private ResourceUpdater resourceUpdater;
@@ -63,8 +70,13 @@ public class GroupUpdater {
             attributes = group.getMeta().getAttributes();
         }
 
-        if (group.getDisplayName() != null && !group.getDisplayName().isEmpty()) {
-            groupEntity.setDisplayName(group.getDisplayName());
+        String displayName = group.getDisplayName();
+
+        if (!Strings.isNullOrEmpty(displayName)) {
+            if (groupDao.isDisplayNameAlreadyTaken(displayName, groupEntity.getId().toString())) {
+                throw new ResourceExistsException(String.format("Group with displayName '%s' already exists", displayName));
+            }
+            groupEntity.setDisplayName(displayName);
         }
 
         updateMembers(group, groupEntity, attributes);

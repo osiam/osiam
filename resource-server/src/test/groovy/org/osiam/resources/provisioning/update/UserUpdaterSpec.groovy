@@ -26,11 +26,14 @@ package org.osiam.resources.provisioning.update
 import javax.inject.Inject
 
 import org.osiam.resources.exceptions.OsiamException
+import org.osiam.resources.exceptions.ResourceExistsException
 import org.osiam.resources.scim.Group
 import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.User
+import org.osiam.storage.dao.UserDao
 import org.osiam.storage.entities.UserEntity
 
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -47,19 +50,20 @@ class UserUpdaterSpec extends Specification {
     RoleUpdater roleUpdater = Mock()
     X509CertificateUpdater x509CertificateUpdater = Mock()
     AddressUpdater addressUpdater = Mock()
+    UserDao userDao = Mock()
 
     ResourceUpdater resourceUpdater = Mock()
     UserUpdater userUpdater = new UserUpdater(resourceUpdater: resourceUpdater,
-    nameUpdater: nameUpdater,
-    emailUpdater : emailUpdater,
-    phoneNumberUpdater : phoneNumberUpdater,
-    imUpdater : imUpdater,
-    photoUpdater : photoUpdater,
-    entitlementUpdater : entitlementUpdater,
-    roleUpdater : roleUpdater,
-    x509CertificateUpdater : x509CertificateUpdater,
-    addressUpdater : addressUpdater
-    )
+            nameUpdater: nameUpdater,
+            emailUpdater: emailUpdater,
+            phoneNumberUpdater: phoneNumberUpdater,
+            imUpdater: imUpdater,
+            photoUpdater: photoUpdater,
+            entitlementUpdater: entitlementUpdater,
+            roleUpdater: roleUpdater,
+            x509CertificateUpdater: x509CertificateUpdater,
+            addressUpdater: addressUpdater,
+            userDao: userDao)
 
     User user
     UserEntity userEntity = Mock()
@@ -90,7 +94,9 @@ class UserUpdaterSpec extends Specification {
 
     def 'updating the userName is possible' () {
         given:
+        def uuid = UUID.randomUUID()
         User user = new User.Builder(IRRELEVANT).build()
+        userEntity.getId() >> uuid
 
         when:
         userUpdater.update(user, userEntity)
@@ -638,5 +644,32 @@ class UserUpdaterSpec extends Specification {
         then:
         def oe = thrown(OsiamException)
         oe.getMessage().contains('group')
+    }
+
+    def 'updating the userName checks if the userName already exists' () {
+        given:
+        def uuid = UUID.randomUUID()
+        User user = new User.Builder(IRRELEVANT).build()
+        userEntity.getId() >> uuid
+
+        when:
+        userUpdater.update(user, userEntity)
+
+        then:
+        1 * userDao.isUserNameAlreadyTaken(IRRELEVANT, uuid.toString())
+    }
+
+    def 'updating the userName to an existing userName raises exception' () {
+        given:
+        def uuid = UUID.randomUUID()
+        User user = new User.Builder(IRRELEVANT).build()
+        userEntity.getId() >> uuid
+
+        when:
+        userUpdater.update(user, userEntity)
+
+        then:
+        1 * userDao.isUserNameAlreadyTaken(IRRELEVANT, uuid.toString()) >> true
+        thrown(ResourceExistsException)
     }
 }

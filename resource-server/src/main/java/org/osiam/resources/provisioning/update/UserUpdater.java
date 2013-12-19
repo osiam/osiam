@@ -29,7 +29,9 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.osiam.resources.exceptions.OsiamException;
+import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.scim.User;
+import org.osiam.storage.dao.UserDao;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.stereotype.Service;
 
@@ -42,23 +44,35 @@ import com.google.common.base.Strings;
 public class UserUpdater {
 
     @Inject
+    private UserDao userDao;
+
+    @Inject
     private ResourceUpdater resourceUpdater;
+
     @Inject
     private NameUpdater nameUpdater;
+
     @Inject
     private EmailUpdater emailUpdater;
+
     @Inject
     private PhoneNumberUpdater phoneNumberUpdater;
+
     @Inject
     private ImUpdater imUpdater;
+
     @Inject
     private PhotoUpdater photoUpdater;
+
     @Inject
     private EntitlementsUpdater entitlementUpdater;
+
     @Inject
     private RoleUpdater roleUpdater;
+
     @Inject
     private X509CertificateUpdater x509CertificateUpdater;
+
     @Inject
     private AddressUpdater addressUpdater;
 
@@ -105,10 +119,14 @@ public class UserUpdater {
         if (attributes.contains("userName")) {
             throw new OsiamException("Attribute 'userName' cannot be deleted.");
         }
+        String userName = user.getUserName();
 
-        if (!Strings.isNullOrEmpty(user.getUserName())) {
-            // TODO: check if userName already taken?
-            userEntity.setUserName(user.getUserName());
+        if (!Strings.isNullOrEmpty(userName)) {
+
+            if (userDao.isUserNameAlreadyTaken(userName, userEntity.getId().toString())) {
+                throw new ResourceExistsException(String.format("User with userName '%s' already exists", userName));
+            }
+            userEntity.setUserName(userName);
         }
     }
 

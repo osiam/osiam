@@ -62,6 +62,30 @@ public class UserDao implements GenericDao<UserEntity> {
         }
     }
 
+    /**
+     * Checks if a userName is already taken by another user.
+     *
+     * @param userName
+     *            the userName to check
+     * @return true if the userName is taken, otherwise false
+     */
+    public boolean isUserNameAlreadyTaken(String userName) {
+        return isUserNameAlreadyTaken(userName, null);
+    }
+
+    /**
+     * Checks if a userName is already taken by another user. Ignores the user with the given id.
+     *
+     * @param userName
+     *            the userName to check
+     * @param id
+     *            the id of the user to ignore
+     * @return true if the userName is taken, otherwise false
+     */
+    public boolean isUserNameAlreadyTaken(String userName, String id) {
+        return resourceDao.isUniqueAttributeAlreadyTaken(userName, id, UserEntity_.userName, UserEntity.class);
+    }
+
     @Override
     public UserEntity update(UserEntity entity) {
         return resourceDao.update(entity);
