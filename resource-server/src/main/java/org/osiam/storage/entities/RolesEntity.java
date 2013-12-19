@@ -33,4 +33,11 @@ import javax.persistence.Table;
 @Table(name = "scim_roles")
 public class RolesEntity extends MultiValueAttributeEntitySkeleton {
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("RolesEntity [getValue()=").append(getValue()).append("]");
+        return builder.toString();
+    }
+
 }

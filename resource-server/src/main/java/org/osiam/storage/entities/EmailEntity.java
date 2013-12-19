@@ -74,7 +74,6 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ch
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + (primary ? 1 : 0);
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         return result;
     }
@@ -91,13 +90,18 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ch
             return false;
         }
         EmailEntity other = (EmailEntity) obj;
-        if (primary != other.primary) {
-            return false;
-        }
         if (type != other.type) {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("EmailEntity [type=").append(type).append(", primary=").append(primary).append(", getValue()=")
+                .append(getValue()).append("]");
+        return builder.toString();
     }
 
     public enum CanonicalEmailTypes {

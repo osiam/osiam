@@ -51,6 +51,39 @@ public class PhoneNumberEntity extends MultiValueAttributeEntitySkeleton impleme
         }
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        PhoneNumberEntity other = (PhoneNumberEntity) obj;
+        if (type != other.type) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("PhoneNumberEntity [type=").append(type).append(", getValue()=").append(getValue()).append("]");
+        return builder.toString();
+    }
+
     public enum CanonicalPhoneNumberTypes {
         work, home, mobile, fax, pager, other
     }

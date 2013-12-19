@@ -685,9 +685,8 @@ public class UserEntity extends ResourceEntity {
 
     @Override
     public String toString() {
-        return "UserEntity{" +
-                "UUID='" + getId() + "\', " +
-                "userName='" + userName + '\'' +
-                '}';
+        StringBuilder builder = new StringBuilder();
+        builder.append("UserEntity [userName=").append(userName).append(", getId()=").append(getId()).append("]");
+        return builder.toString();
     }
 }

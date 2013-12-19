@@ -150,6 +150,14 @@ public class ExtensionFieldEntity { // NOSONAR - will be constructed by jackson
         return true;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("ExtensionFieldEntity [name=").append(name).append(", type=").append(type)
+                .append(", isRequired=").append(isRequired).append("]");
+        return builder.toString();
+    }
+
     private static Set<ConstraintAndType> invalidTypeForConstraint = new HashSet<>(Arrays.asList(
             new ConstraintAndType(ExtensionFieldType.INTEGER, "co"),
             new ConstraintAndType(ExtensionFieldType.INTEGER, "sw"),

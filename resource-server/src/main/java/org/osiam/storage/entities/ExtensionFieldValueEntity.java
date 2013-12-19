@@ -109,6 +109,14 @@ public class ExtensionFieldValueEntity {
         return true;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("ExtensionFieldValueEntity [extensionField=").append(extensionField).append(", value=")
+                .append(value).append("]");
+        return builder.toString();
+    }
+
 }
 
 

@@ -87,4 +87,11 @@ public abstract class MultiValueAttributeEntitySkeleton implements ChildOfMultiV
         return true;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("MultiValueAttributeEntitySkeleton [value=").append(value).append("]");
+        return builder.toString();
+    }
+
 }
