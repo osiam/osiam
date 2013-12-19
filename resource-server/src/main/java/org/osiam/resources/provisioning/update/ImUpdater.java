@@ -66,7 +66,7 @@ class ImUpdater {
             for (MultiValuedAttribute scimIm : ims) {
                 ImEntity imEntity = imConverter.fromScim(scimIm);
                 userEntity.removeIm(imEntity); // we always have to remove the im in case
-                                               // the active flag has changed
+                                               // the primary attribute has changed
                 if (Strings.isNullOrEmpty(scimIm.getOperation())
                         || !scimIm.getOperation().equalsIgnoreCase("delete")) {
 

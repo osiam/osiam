@@ -66,7 +66,7 @@ class AddressUpdater {
             for (Address scimAddress : addresss) {
                 AddressEntity addressEntity = addressConverter.fromScim(scimAddress);
                 userEntity.removeAddress(addressEntity); // we always have to remove the address in case
-                // the active flag has changed
+                                                         // the primary attribute has changed
                 if (Strings.isNullOrEmpty(scimAddress.getOperation())
                         || !scimAddress.getOperation().equalsIgnoreCase("delete")) {
 

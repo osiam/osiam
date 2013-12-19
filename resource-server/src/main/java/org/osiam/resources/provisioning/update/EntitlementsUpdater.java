@@ -66,7 +66,7 @@ class EntitlementsUpdater {
             for (MultiValuedAttribute scimEntitlements : entitlements) {
                 EntitlementsEntity entitlementsEntity = entitlementConverter.fromScim(scimEntitlements);
                 userEntity.removeEntitlement(entitlementsEntity); // we always have to remove the entitlement's in case
-                // the active flag has changed
+                                                                  // the primary attribute has changed
                 if (Strings.isNullOrEmpty(scimEntitlements.getOperation())
                         || !scimEntitlements.getOperation().equalsIgnoreCase("delete")) {
 

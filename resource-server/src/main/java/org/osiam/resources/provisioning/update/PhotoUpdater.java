@@ -66,7 +66,7 @@ class PhotoUpdater {
             for (MultiValuedAttribute scimPhoto : photos) {
                 PhotoEntity photoEntity = photoConverter.fromScim(scimPhoto);
                 userEntity.removePhoto(photoEntity); // we always have to remove the photo in case
-                                                     // the active flag has changed
+                                                     // the primary attribute has changed
                 if (Strings.isNullOrEmpty(scimPhoto.getOperation())
                         || !scimPhoto.getOperation().equalsIgnoreCase("delete")) {
 

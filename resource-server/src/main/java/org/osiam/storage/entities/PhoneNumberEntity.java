@@ -87,4 +87,5 @@ public class PhoneNumberEntity extends MultiValueAttributeEntitySkeleton impleme
     public enum CanonicalPhoneNumberTypes {
         work, home, mobile, fax, pager, other
     }
+
 }

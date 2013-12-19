@@ -66,7 +66,7 @@ class X509CertificateUpdater {
             for (MultiValuedAttribute scimX509Certificate : x509Certificates) {
                 X509CertificateEntity x509CertificateEntity = x509CertificateConverter.fromScim(scimX509Certificate);
                 userEntity.removeX509Certificate(x509CertificateEntity); // we always have to remove the x509Certificate
-                                                                         // in case the active flag has changed
+                                                                         // the primary attribute has changed
                 if (Strings.isNullOrEmpty(scimX509Certificate.getOperation())
                         || !scimX509Certificate.getOperation().equalsIgnoreCase("delete")) {
 
