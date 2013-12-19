@@ -30,8 +30,6 @@ import javax.persistence.PersistenceContext;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.GroupEntity_;
-import org.osiam.storage.entities.UserEntity;
-import org.osiam.storage.entities.UserEntity_;
 import org.osiam.storage.query.GroupFilterParser;
 import org.springframework.stereotype.Repository;
 

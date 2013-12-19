@@ -23,13 +23,21 @@
 
 package org.osiam.storage.entities;
 
-import org.osiam.resources.scim.ExtensionFieldType;
-
-import javax.persistence.*;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.osiam.resources.scim.ExtensionFieldType;
 
 /**
  * Defines a field in a scim-extension.
