@@ -23,7 +23,7 @@
 
 package org.osiam.storage.entities;
 
-import org.osiam.resources.scim.Manager;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,7 +31,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import java.util.UUID;
+import org.osiam.resources.scim.Manager;
 
 @Entity
 @Table(name = "scim_manager")

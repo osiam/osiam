@@ -28,10 +28,8 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.MemberRef;
-import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.storage.dao.ResourceDao;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.ResourceEntity;
