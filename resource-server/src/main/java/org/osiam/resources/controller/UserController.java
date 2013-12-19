@@ -121,9 +121,9 @@ public class  UserController {
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
-    public SCIMSearchResult searchWithGet(HttpServletRequest request) {
+    public SCIMSearchResult<User> searchWithGet(HttpServletRequest request) {
         Map<String,Object> parameterMap = requestParamHelper.getRequestParameterValues(request);
-        SCIMSearchResult scimSearchResult = scimUserProvisioning.search((String)parameterMap.get("filter"), (String)parameterMap.get("sortBy"), (String)parameterMap.get("sortOrder"),
+        SCIMSearchResult<User> scimSearchResult = scimUserProvisioning.search((String)parameterMap.get("filter"), (String)parameterMap.get("sortBy"), (String)parameterMap.get("sortOrder"),
                 (int)parameterMap.get("count"), (int)parameterMap.get("startIndex"));
 
         return attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResult, parameterMap);
@@ -131,9 +131,9 @@ public class  UserController {
 
     @RequestMapping(value = "/.search", method = RequestMethod.POST)
     @ResponseBody
-    public SCIMSearchResult searchWithPost(HttpServletRequest request) {
+    public SCIMSearchResult<User> searchWithPost(HttpServletRequest request) {
         Map<String,Object> parameterMap = requestParamHelper.getRequestParameterValues(request);
-        SCIMSearchResult scimSearchResult = scimUserProvisioning.search((String) parameterMap.get("filter"), (String) parameterMap.get("sortBy"), (String) parameterMap.get("sortOrder"),
+        SCIMSearchResult<User> scimSearchResult = scimUserProvisioning.search((String) parameterMap.get("filter"), (String) parameterMap.get("sortBy"), (String) parameterMap.get("sortOrder"),
                 (int) parameterMap.get("count"), (int) parameterMap.get("startIndex"));
 
         return attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResult, parameterMap);
