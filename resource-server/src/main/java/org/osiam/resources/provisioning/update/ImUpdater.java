@@ -36,12 +36,26 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
 
+/**
+ * The ImUpdater provides the functionality to update the {@link ImEntity} of a UserEntity
+ */
 @Service
-public class ImUpdater {
+class ImUpdater {
 
     @Inject
     private ImConverter imConverter;
 
+    /**
+     * updates (adds new, delete, updates) the {@link ImEntity}'s of the given {@link UserEntity} based on the given
+     * List of Im's
+     *
+     * @param ims
+     *            list of Im's to be deleted, updated or added
+     * @param userEntity
+     *            user who needs to be updated
+     * @param attributes
+     *            all {@link ImEntity}'s will be deleted if this Set contains 'ims'
+     */
     void update(List<MultiValuedAttribute> ims, UserEntity userEntity, Set<String> attributes) {
 
         if (attributes.contains("ims")) {
@@ -52,11 +66,11 @@ public class ImUpdater {
             for (MultiValuedAttribute scimIm : ims) {
                 ImEntity imEntity = imConverter.fromScim(scimIm);
                 userEntity.removeIm(imEntity); // we always have to remove the im in case
-                                                     // the active flag has changed
+                                               // the active flag has changed
                 if (Strings.isNullOrEmpty(scimIm.getOperation())
                         || !scimIm.getOperation().equalsIgnoreCase("delete")) {
 
-                  //TODO primary is not implemented yet. If it is see EmailUpdater how to implement it here
+                    // TODO primary is not implemented yet. If it is see EmailUpdater how to implement it here
                     userEntity.addIm(imEntity);
                 }
             }

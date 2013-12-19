@@ -36,12 +36,26 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
 
+/**
+ * The PhotoUpdater provides the functionality to update the {@link PhotoEntity} of a UserEntity
+ */
 @Service
-public class PhotoUpdater {
+class PhotoUpdater {
 
     @Inject
     private PhotoConverter photoConverter;
 
+    /**
+     * updates (adds new, delete, updates) the {@link PhotoEntity}'s of the given {@link UserEntity} based on the given
+     * List of Photo's
+     *
+     * @param photos
+     *            list of Photo's to be deleted, updated or added
+     * @param userEntity
+     *            user who needs to be updated
+     * @param attributes
+     *            all {@link PhotoEntity}'s will be deleted if this Set contains 'photos'
+     */
     void update(List<MultiValuedAttribute> photos, UserEntity userEntity, Set<String> attributes) {
 
         if (attributes.contains("photos")) {
@@ -56,7 +70,7 @@ public class PhotoUpdater {
                 if (Strings.isNullOrEmpty(scimPhoto.getOperation())
                         || !scimPhoto.getOperation().equalsIgnoreCase("delete")) {
 
-                    //TODO primary is not implemented yet. If it is see EmailUpdater how to implement it here
+                    // TODO primary is not implemented yet. If it is see EmailUpdater how to implement it here
                     userEntity.addPhoto(photoEntity);
                 }
             }

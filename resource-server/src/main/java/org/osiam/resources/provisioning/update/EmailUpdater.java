@@ -36,12 +36,26 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
 
+/**
+ * The EmailUpdater provides the functionality to update the {@link EmailEntity} of a UserEntity
+ */
 @Service
-public class EmailUpdater {
+class EmailUpdater {
 
     @Inject
     private EmailConverter emailConverter;
 
+    /**
+     * updates (adds new, delete, updates) the {@link EmailEntity}'s of the given {@link UserEntity} based on the given
+     * List of Email's
+     *
+     * @param emails
+     *            list of Email's to be deleted, updated or added
+     * @param userEntity
+     *            user who needs to be updated
+     * @param attributes
+     *            all {@link EmailEntity}'s will be deleted if this Set contains 'emails'
+     */
     void update(List<MultiValuedAttribute> emails, UserEntity userEntity, Set<String> attributes) {
 
         if (attributes.contains("emails")) {
@@ -56,16 +70,25 @@ public class EmailUpdater {
                 if (Strings.isNullOrEmpty(scimEmail.getOperation())
                         || !scimEmail.getOperation().equalsIgnoreCase("delete")) {
 
-                    ensureOnlyOnePrimaryEmailExists(emailEntity, userEntity);
+                    ensureOnlyOnePrimaryEmailExists(emailEntity, userEntity.getEmails());
                     userEntity.addEmail(emailEntity);
                 }
             }
         }
     }
 
-    private void ensureOnlyOnePrimaryEmailExists(EmailEntity newEmail, UserEntity userEntity) {
+    /**
+     * if the given newEmail is set to primary the primary attribute of all existing email's in the {@link UserEntity}
+     * will be removed
+     *
+     * @param newEmail
+     *            to be checked if it is primary
+     * @param emails
+     *            all existing email's of the {@link UserEntity}
+     */
+    private void ensureOnlyOnePrimaryEmailExists(EmailEntity newEmail, Set<EmailEntity> emails) {
         if (newEmail.isPrimary()) {
-            for (EmailEntity exisitngEmailEntity : userEntity.getEmails()) {
+            for (EmailEntity exisitngEmailEntity : emails) {
                 if (exisitngEmailEntity.isPrimary()) {
                     exisitngEmailEntity.setPrimary(false);
                 }

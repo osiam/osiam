@@ -30,18 +30,32 @@ import javax.inject.Inject;
 
 import org.osiam.resources.converter.X509CertificateConverter;
 import org.osiam.resources.scim.MultiValuedAttribute;
-import org.osiam.storage.entities.X509CertificateEntity;
 import org.osiam.storage.entities.UserEntity;
+import org.osiam.storage.entities.X509CertificateEntity;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
 
+/**
+ * The X509CertificateUpdater provides the functionality to update the {@link X509CertificateEntity} of a UserEntity
+ */
 @Service
-public class X509CertificateUpdater {
+class X509CertificateUpdater {
 
     @Inject
     private X509CertificateConverter x509CertificateConverter;
 
+    /**
+     * updates (adds new, delete, updates) the {@link X509CertificateEntity}'s of the given {@link UserEntity} based on
+     * the given List of X509Certificate's
+     *
+     * @param x509Certificates
+     *            list of X509Certificate's to be deleted, updated or added
+     * @param userEntity
+     *            user who needs to be updated
+     * @param attributes
+     *            all {@link X509CertificateEntity}'s will be deleted if this Set contains 'x509Certificates'
+     */
     void update(List<MultiValuedAttribute> x509Certificates, UserEntity userEntity, Set<String> attributes) {
 
         if (attributes.contains("x509Certificates")) {
@@ -51,12 +65,12 @@ public class X509CertificateUpdater {
         if (x509Certificates != null) {
             for (MultiValuedAttribute scimX509Certificate : x509Certificates) {
                 X509CertificateEntity x509CertificateEntity = x509CertificateConverter.fromScim(scimX509Certificate);
-                userEntity.removeX509Certificate(x509CertificateEntity); // we always have to remove the x509Certificate in case
-                                                     // the active flag has changed
+                userEntity.removeX509Certificate(x509CertificateEntity); // we always have to remove the x509Certificate
+                                                                         // in case the active flag has changed
                 if (Strings.isNullOrEmpty(scimX509Certificate.getOperation())
                         || !scimX509Certificate.getOperation().equalsIgnoreCase("delete")) {
 
-                    //TODO primary is not implemented yet. If it is see EmailUpdater how to implement it here
+                    // TODO primary is not implemented yet. If it is see EmailUpdater how to implement it here
                     userEntity.addX509Certificate(x509CertificateEntity);
                 }
             }

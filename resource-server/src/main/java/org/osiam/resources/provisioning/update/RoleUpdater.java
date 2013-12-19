@@ -36,12 +36,26 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
 
+/**
+ * The RoleUpdater provides the functionality to update the {@link RoleEntity} of a UserEntity
+ */
 @Service
-public class RoleUpdater {
+class RoleUpdater {
 
     @Inject
     private RoleConverter roleConverter;
 
+    /**
+     * updates (adds new, delete, updates) the {@link RoleEntity}'s of the given {@link UserEntity} based on the given
+     * List of Role's
+     *
+     * @param roles
+     *            list of Role's to be deleted, updated or added
+     * @param userEntity
+     *            user who needs to be updated
+     * @param attributes
+     *            all {@link RoleEntity}'s will be deleted if this Set contains 'roles'
+     */
     void update(List<MultiValuedAttribute> roles, UserEntity userEntity, Set<String> attributes) {
 
         if (attributes.contains("roles")) {
@@ -52,11 +66,11 @@ public class RoleUpdater {
             for (MultiValuedAttribute scimRole : roles) {
                 RolesEntity roleEntity = roleConverter.fromScim(scimRole);
                 userEntity.removeRole(roleEntity); // we always have to remove the role in case
-                                                     // the active flag has changed
+                                                   // the active flag has changed
                 if (Strings.isNullOrEmpty(scimRole.getOperation())
                         || !scimRole.getOperation().equalsIgnoreCase("delete")) {
 
-                    //TODO primary is not implemented yet. If it is see EmailUpdater how to implement it here
+                    // TODO primary is not implemented yet. If it is see EmailUpdater how to implement it here
                     userEntity.addRole(roleEntity);
                 }
             }
