@@ -19,7 +19,7 @@ INSERT INTO osiam_client_scopes VALUES (3, 'PATCH');
 INSERT INTO osiam_client_scopes VALUES (3, 'DELETE');
 
 INSERT INTO osiam_client_grants VALUES (3, 'authorization_code');
-INSERT INTO osiam_client_grants VALUES (3, 'refresh-token');
+INSERT INTO osiam_client_grants VALUES (3, 'refresh_token');
 INSERT INTO osiam_client_grants VALUES (3, 'password');
 INSERT INTO osiam_client_grants VALUES (3, 'client_credentials');
 
