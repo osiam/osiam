@@ -27,23 +27,33 @@ import org.osiam.resources.scim.Resource;
 import org.osiam.storage.entities.ResourceEntity;
 import org.springframework.stereotype.Service;
 
+/**
+ * The ResourceUpdater provides the functionality to update the {@link ResourceEntity} of a UserEntity
+ */
 @Service
 public class ResourceUpdater {
 
+    /**
+     * updates (adds new, delete, updates) the given {@link ResourceEntity} based on the given {@link Resource}
+     *
+     * @param resource
+     *            {@link Resource} to be deleted, updated or added
+     * @param resourceEntity
+     *            {@link ResourceEntity} which will be updated
+     */
     public void update(Resource resource, ResourceEntity resourceEntity) {
 
-        if(resource.getMeta() != null && resource.getMeta().getAttributes() != null) {
+        if (resource.getMeta() != null && resource.getMeta().getAttributes() != null) {
             for (String attribute : resource.getMeta().getAttributes()) {
-                if(attribute.equalsIgnoreCase("externalId")) {
+                if (attribute.equalsIgnoreCase("externalId")) {
                     resourceEntity.setExternalId(null);
                 }
             }
         }
 
-        if(resource.getExternalId() != null && !resource.getExternalId().isEmpty()) {
+        if (resource.getExternalId() != null && !resource.getExternalId().isEmpty()) {
             resourceEntity.setExternalId(resource.getExternalId());
         }
-
     }
 
 }

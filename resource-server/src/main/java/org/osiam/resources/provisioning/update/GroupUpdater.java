@@ -35,6 +35,9 @@ import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.ResourceEntity;
 import org.springframework.stereotype.Service;
 
+/**
+ * The GroupUpdater provides the functionality to update (patch) a {@link GroupEntity}
+ */
 @Service
 public class GroupUpdater {
 
@@ -44,6 +47,14 @@ public class GroupUpdater {
     @Inject
     private ResourceDao resourceDao;
 
+    /**
+     * updates the {@link GroupEntity} based on the given {@link Group}
+     *
+     * @param group
+     *            group with all fields that needs to be updated
+     * @param groupEntity
+     *            entity that needs to be updated
+     */
     public void update(Group group, GroupEntity groupEntity) {
         resourceUpdater.update(group, groupEntity);
 
@@ -76,7 +87,7 @@ public class GroupUpdater {
                 if (memberRef.getOperation() != null && memberRef.getOperation().equalsIgnoreCase("delete")) {
                     ResourceEntity member = getMember(memberId, groupEntity);
 
-                    if(member != null) {
+                    if (member != null) {
                         groupEntity.removeMember(member);
                     }
                 } else {
@@ -92,7 +103,7 @@ public class GroupUpdater {
         Set<ResourceEntity> members = groupEntity.getMembers();
 
         for (ResourceEntity member : members) {
-            if(member.getId().toString().equals(memberId)) {
+            if (member.getId().toString().equals(memberId)) {
                 return member;
             }
         }

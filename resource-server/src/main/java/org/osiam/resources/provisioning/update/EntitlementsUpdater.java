@@ -36,22 +36,36 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
 
+/**
+ * The EntitlementsUpdater provides the functionality to update the {@link EntitlementsEntity} of a UserEntity
+ */
 @Service
-public class EntitlementsUpdater {
+class EntitlementsUpdater {
 
     @Inject
     private EntitlementConverter entitlementConverter;
 
-    void update(List<MultiValuedAttribute> entitlementss, UserEntity userEntity, Set<String> attributes) {
+    /**
+     * updates (adds new, delete, updates) the {@link EntitlementsEntity}'s of the given {@link UserEntity} based on the
+     * given List of Entitlement's
+     *
+     * @param entitlements
+     *            list of Entitlement's to be deleted, updated or added
+     * @param userEntity
+     *            user who needs to be updated
+     * @param attributes
+     *            all {@link EntitlementsEntity}'s will be deleted if this Set contains 'entitlements'
+     */
+    void update(List<MultiValuedAttribute> entitlements, UserEntity userEntity, Set<String> attributes) {
 
         if (attributes.contains("entitlements")) {
             userEntity.removeAllEntitlements();
         }
 
-        if (entitlementss != null) {
-            for (MultiValuedAttribute scimEntitlements : entitlementss) {
+        if (entitlements != null) {
+            for (MultiValuedAttribute scimEntitlements : entitlements) {
                 EntitlementsEntity entitlementsEntity = entitlementConverter.fromScim(scimEntitlements);
-                userEntity.removeEntitlement(entitlementsEntity); // we always have to remove the entitlements in case
+                userEntity.removeEntitlement(entitlementsEntity); // we always have to remove the entitlement's in case
                 // the active flag has changed
                 if (Strings.isNullOrEmpty(scimEntitlements.getOperation())
                         || !scimEntitlements.getOperation().equalsIgnoreCase("delete")) {

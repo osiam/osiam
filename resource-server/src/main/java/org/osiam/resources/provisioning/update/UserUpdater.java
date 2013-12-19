@@ -35,12 +35,14 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
 
+/**
+ * The UserUpdater provides the functionality to update (patch) a {@link UserEntity}
+ */
 @Service
 public class UserUpdater {
 
     @Inject
     private ResourceUpdater resourceUpdater;
-
     @Inject
     private NameUpdater nameUpdater;
     @Inject
@@ -60,6 +62,14 @@ public class UserUpdater {
     @Inject
     private AddressUpdater addressUpdater;
 
+    /**
+     * updates the {@link UserEntity} based on the given {@link User}
+     *
+     * @param user
+     *            {@link User} with all fields that needs to be updated
+     * @param userEntity
+     *            entity that needs to be updated
+     */
     public void update(User user, UserEntity userEntity) {
         resourceUpdater.update(user, userEntity);
 
@@ -85,7 +95,7 @@ public class UserUpdater {
         imUpdater.update(user.getIms(), userEntity, attributes);
         photoUpdater.update(user.getPhotos(), userEntity, attributes);
         addressUpdater.update(user.getAddresses(), userEntity, attributes);
-        updateGroups(user, userEntity, attributes);
+        updateGroups(user, attributes);
         entitlementUpdater.update(user.getEntitlements(), userEntity, attributes);
         roleUpdater.update(user.getRoles(), userEntity, attributes);
         x509CertificateUpdater.update(user.getX509Certificates(), userEntity, attributes);
@@ -202,12 +212,20 @@ public class UserUpdater {
         }
     }
 
-    private void updateGroups(User user, UserEntity userEntity, Set<String> attributes) {
+    /**
+     * the update of the relationship of a user to his group will be done through the group. If the User provides any
+     * information about patching the group we will throw an exception
+     *
+     * @param user
+     *            the {@link User} is not allowed to contain any groups
+     * @param attributes
+     *            the list is not allowed to contain 'groups'
+     */
+    private void updateGroups(User user, Set<String> attributes) {
         if (attributes.contains("groups")
                 || user.getGroups().size() > 0) {
             throw new OsiamException("The membership to a group can't be modified. Please use the group update.");
         }
     }
-
 
 }

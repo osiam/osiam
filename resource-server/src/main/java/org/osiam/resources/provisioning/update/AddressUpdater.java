@@ -36,12 +36,26 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
 
+/**
+ * The AddressUpdater provides the functionality to update the {@link AddressEntity} of a UserEntity
+ */
 @Service
-public class AddressUpdater {
+class AddressUpdater {
 
     @Inject
     private AddressConverter addressConverter;
 
+    /**
+     * updates (adds new, delete, updates) the addresses of the given {@link UserEntity} based on the given List of
+     * {@link Address}
+     *
+     * @param addresss
+     *            list of {@link Address} to be deleted, updated or added
+     * @param userEntity
+     *            user who needs to be updated
+     * @param attributes
+     *            all {@link AddressEntity}'s will be deleted if this Set contains 'address'
+     */
     void update(List<Address> addresss, UserEntity userEntity, Set<String> attributes) {
 
         if (attributes.contains("addresss")) {
@@ -52,11 +66,11 @@ public class AddressUpdater {
             for (Address scimAddress : addresss) {
                 AddressEntity addressEntity = addressConverter.fromScim(scimAddress);
                 userEntity.removeAddress(addressEntity); // we always have to remove the address in case
-                                                     // the active flag has changed
+                // the active flag has changed
                 if (Strings.isNullOrEmpty(scimAddress.getOperation())
                         || !scimAddress.getOperation().equalsIgnoreCase("delete")) {
 
-                    //TODO primary is not implemented yet. If it is see EmailUpdater how to implement it here
+                    // TODO primary is not implemented yet. If it is see EmailUpdater how to implement it here
                     userEntity.addAddress(addressEntity);
                 }
             }
