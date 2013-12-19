@@ -92,7 +92,7 @@ public class MeController {
                 .getUserAuthentication();
         Object o = userAuthentication.getPrincipal();
         if (o instanceof LinkedHashMap) {
-            String principalId = (String) ((LinkedHashMap) o).get("id");
+            String principalId = (String) ((LinkedHashMap<?, ?>) o).get("id");
             UserEntity userEntity = userDao.getById(principalId);
             return new FacebookInformationConstruct(userEntity);
         } else {
