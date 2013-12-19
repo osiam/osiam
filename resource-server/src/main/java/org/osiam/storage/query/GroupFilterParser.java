@@ -23,10 +23,10 @@
 
 package org.osiam.storage.query;
 
+import java.util.Locale;
+
 import org.osiam.storage.entities.GroupEntity;
 import org.springframework.stereotype.Service;
-
-import java.util.Locale;
 
 @Service
 public class GroupFilterParser extends FilterParser<GroupEntity> {

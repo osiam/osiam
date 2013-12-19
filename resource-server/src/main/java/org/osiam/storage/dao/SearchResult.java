@@ -1,8 +1,8 @@
 package org.osiam.storage.dao;
 
-import org.osiam.storage.entities.ResourceEntity;
-
 import java.util.List;
+
+import org.osiam.storage.entities.ResourceEntity;
 
 public class SearchResult<T extends ResourceEntity> {
 

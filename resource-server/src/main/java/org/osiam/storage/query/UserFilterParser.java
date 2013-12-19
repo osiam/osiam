@@ -17,13 +17,14 @@
 
 package org.osiam.storage.query;
 
+import java.util.Locale;
+
+import javax.inject.Inject;
+
 import org.osiam.storage.dao.ExtensionDao;
 import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.helper.NumberPadder;
 import org.springframework.stereotype.Service;
-
-import javax.inject.Inject;
-import java.util.Locale;
 
 @Service
 public class UserFilterParser extends FilterParser<UserEntity> {
