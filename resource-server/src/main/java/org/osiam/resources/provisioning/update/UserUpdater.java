@@ -33,6 +33,7 @@ import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.scim.User;
 import org.osiam.storage.dao.UserDao;
 import org.osiam.storage.entities.UserEntity;
+import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
@@ -75,6 +76,9 @@ public class UserUpdater {
 
     @Inject
     private AddressUpdater addressUpdater;
+
+    @Inject
+    private PasswordEncoder passwordEncoder;
 
     /**
      * updates the {@link UserEntity} based on the given {@link User}
@@ -226,7 +230,8 @@ public class UserUpdater {
         }
 
         if (!Strings.isNullOrEmpty(user.getPassword())) {
-            userEntity.setPassword(user.getPassword());
+            String hashedPassword = passwordEncoder.encodePassword(user.getPassword(), userEntity.getId());
+            userEntity.setPassword(hashedPassword);
         }
     }
 

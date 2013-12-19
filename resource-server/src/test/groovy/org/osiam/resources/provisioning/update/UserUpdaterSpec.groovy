@@ -23,8 +23,6 @@
 
 package org.osiam.resources.provisioning.update
 
-import javax.inject.Inject
-
 import org.osiam.resources.exceptions.OsiamException
 import org.osiam.resources.exceptions.ResourceExistsException
 import org.osiam.resources.scim.Group
@@ -32,8 +30,8 @@ import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.User
 import org.osiam.storage.dao.UserDao
 import org.osiam.storage.entities.UserEntity
+import org.springframework.security.authentication.encoding.PasswordEncoder
 
-import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -51,6 +49,7 @@ class UserUpdaterSpec extends Specification {
     X509CertificateUpdater x509CertificateUpdater = Mock()
     AddressUpdater addressUpdater = Mock()
     UserDao userDao = Mock()
+    PasswordEncoder passwordEncoder = Mock()
 
     ResourceUpdater resourceUpdater = Mock()
     UserUpdater userUpdater = new UserUpdater(resourceUpdater: resourceUpdater,
@@ -63,7 +62,8 @@ class UserUpdaterSpec extends Specification {
             roleUpdater: roleUpdater,
             x509CertificateUpdater: x509CertificateUpdater,
             addressUpdater: addressUpdater,
-            userDao: userDao)
+            userDao: userDao,
+            passwordEncoder: passwordEncoder)
 
     User user
     UserEntity userEntity = Mock()
@@ -595,13 +595,16 @@ class UserUpdaterSpec extends Specification {
 
     def 'updating the password is possible' () {
         given:
+        def uuid= UUID.randomUUID()
         User user = new User.Builder(password : IRRELEVANT).build()
 
         when:
         userUpdater.update(user, userEntity)
 
         then:
-        1 * userEntity.setPassword(IRRELEVANT)
+        1 * userEntity.getId() >> uuid
+        1 * passwordEncoder.encodePassword(IRRELEVANT, uuid) >> 'hashedPassword'
+        1 * userEntity.setPassword('hashedPassword')
     }
 
     @Unroll
