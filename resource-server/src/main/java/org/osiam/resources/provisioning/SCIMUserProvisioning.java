@@ -164,11 +164,6 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
 
         userUpdater.update(user, userEntity);
 
-        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-            String hashedPassword = passwordEncoder.encodePassword(user.getPassword(), userEntity.getId());
-            userEntity.setPassword(hashedPassword);
-        }
-
         if (user.getAllExtensions().size() != 0) {
             for (Entry<String, Extension> extensionEntry : user.getAllExtensions().entrySet()) {
                 updateExtension(extensionEntry, userEntity);
