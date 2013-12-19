@@ -59,7 +59,7 @@ class AddressUpdater {
     void update(List<Address> addresss, UserEntity userEntity, Set<String> attributes) {
 
         if (attributes.contains("addresses")) {
-            userEntity.removeAllAddresss();
+            userEntity.removeAllAddresses();
         }
 
         if (addresss != null) {

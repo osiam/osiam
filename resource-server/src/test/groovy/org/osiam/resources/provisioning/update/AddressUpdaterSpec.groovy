@@ -42,12 +42,12 @@ class AddressUpdaterSpec extends Specification {
     AddressConverter addressConverter = Mock()
     AddressUpdater addressUpdater = new AddressUpdater(addressConverter : addressConverter)
 
-    def 'removing all addresss is possible'() {
+    def 'removing all addresses is possible'() {
         when:
-        addressUpdater.update(null, userEntity, ['addresss'] as Set)
+        addressUpdater.update(null, userEntity, ['addresses'] as Set)
 
         then:
-        1 * userEntity.removeAllAddresss()
+        1 * userEntity.removeAllAddresses()
         userEntity.getAddresses() >> ([
             new AddressEntity(formatted : IRRELEVANT),
             new AddressEntity(formatted : IRRELEVANT_02)] as Set)

@@ -528,7 +528,7 @@ public class UserEntity extends ResourceEntity {
     /**
      * Removes all addresses from this user
      */
-    public void removeAllAddresss(){
+    public void removeAllAddresses(){
         addresses.clear();
     }
 
