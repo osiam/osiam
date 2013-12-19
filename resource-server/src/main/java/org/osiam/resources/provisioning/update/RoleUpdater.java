@@ -66,7 +66,7 @@ class RoleUpdater {
             for (MultiValuedAttribute scimRole : roles) {
                 RolesEntity roleEntity = roleConverter.fromScim(scimRole);
                 userEntity.removeRole(roleEntity); // we always have to remove the role in case
-                                                   // the active flag has changed
+                                                   // the primary attribute has changed
                 if (Strings.isNullOrEmpty(scimRole.getOperation())
                         || !scimRole.getOperation().equalsIgnoreCase("delete")) {
 

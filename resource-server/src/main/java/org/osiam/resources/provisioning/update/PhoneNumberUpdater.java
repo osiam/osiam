@@ -66,7 +66,7 @@ class PhoneNumberUpdater {
             for (MultiValuedAttribute scimPhoneNumber : phoneNumbers) {
                 PhoneNumberEntity phoneNumberEntity = phoneNumberConverter.fromScim(scimPhoneNumber);
                 userEntity.removePhoneNumber(phoneNumberEntity); // we always have to remove the phoneNumber in case
-                // the active flag has changed
+                                                                 // the primary attribute has changed
                 if (Strings.isNullOrEmpty(scimPhoneNumber.getOperation())
                         || !scimPhoneNumber.getOperation().equalsIgnoreCase("delete")) {
 
