@@ -45,6 +45,8 @@ import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.ResourceEntity;
 import org.osiam.storage.entities.ResourceEntity_;
+import org.osiam.storage.entities.UserEntity;
+import org.osiam.storage.entities.UserEntity_;
 import org.osiam.storage.query.FilterParser;
 import org.springframework.stereotype.Repository;
 
@@ -165,6 +167,26 @@ public class ResourceDao {
             throw new OsiamException(String.format("Muliple resources with attribute '%s' set to '%s' found",
                     attribute.getName(), value), nure);
         }
+    }
+
+    public <T extends ResourceEntity, V> boolean isUniqueAttributeAlreadyTaken(String attributeValue, String id,
+            SingularAttribute<? super T, V> attribute, Class<T> clazz) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<T> resource = cq.from(clazz);
+
+        cq.select(cb.countDistinct(resource));
+
+        Predicate predicate = cb.equal(resource.get(attribute), attributeValue);
+        if (id != null) {
+            Predicate ignoreId = cb.notEqual(resource.get(ResourceEntity_.id), id);
+            predicate = cb.and(predicate, ignoreId);
+        }
+        cq.where(predicate);
+
+        TypedQuery<Long> countQuery = em.createQuery(cq);
+
+        return countQuery.getSingleResult() > 0;
     }
 
     /**

@@ -29,6 +29,9 @@ import javax.persistence.PersistenceContext;
 
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.storage.entities.GroupEntity;
+import org.osiam.storage.entities.GroupEntity_;
+import org.osiam.storage.entities.UserEntity;
+import org.osiam.storage.entities.UserEntity_;
 import org.osiam.storage.query.GroupFilterParser;
 import org.springframework.stereotype.Repository;
 
@@ -56,6 +59,30 @@ public class GroupDao implements GenericDao<GroupEntity> {
         } catch (ResourceNotFoundException rnfe) {
             throw new ResourceNotFoundException(String.format("Group with id '%s' not found", id), rnfe);
         }
+    }
+
+    /**
+     * Checks if a displayName is already taken by another group.
+     *
+     * @param displayName
+     *            the displayName to check
+     * @return true if the displayName is taken, otherwise false
+     */
+    public boolean isDisplayNameAlreadyTaken(String displayName) {
+        return isDisplayNameAlreadyTaken(displayName, null);
+    }
+
+    /**
+     * Checks if a displayName is already taken by another group. Ignores the group with the given id.
+     *
+     * @param displayName
+     *            the displayName to check
+     * @param id
+     *            the id of the group to ignore
+     * @return true if the displayName is taken, otherwise false
+     */
+    public boolean isDisplayNameAlreadyTaken(String displayName, String id) {
+        return resourceDao.isUniqueAttributeAlreadyTaken(displayName, id, GroupEntity_.displayName, GroupEntity.class);
     }
 
     @Override
