@@ -66,7 +66,7 @@ class EmailUpdater {
             for (MultiValuedAttribute scimEmail : emails) {
                 EmailEntity emailEntity = emailConverter.fromScim(scimEmail);
                 userEntity.removeEmail(emailEntity); // we always have to remove the email in case
-                                                     // the active flag has changed
+                                                     // the primary attribute has changed
                 if (Strings.isNullOrEmpty(scimEmail.getOperation())
                         || !scimEmail.getOperation().equalsIgnoreCase("delete")) {
 
