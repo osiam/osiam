@@ -23,15 +23,20 @@
 
 package org.osiam.resources.provisioning.update
 
+import org.osiam.resources.exceptions.ResourceExistsException
 import org.osiam.resources.scim.Group
 import org.osiam.resources.scim.Meta
+import org.osiam.storage.dao.ResourceDao
 import org.osiam.storage.entities.GroupEntity
 
 import spock.lang.Specification
 
 class ResourceUpdaterSpec extends Specification {
 
-    ResourceUpdater resourceUpdater = new ResourceUpdater()
+    static String IRRELEVANT = 'irrelevant'
+
+    ResourceDao resourceDao = Mock()
+    ResourceUpdater resourceUpdater = new ResourceUpdater(resourceDao: resourceDao)
 
     Meta metaWithAttributesToDelete = new Meta(attributes: ['externalId'] as Set)
     // resources are abstract so we use groups here with no loss of generality
@@ -51,13 +56,42 @@ class ResourceUpdaterSpec extends Specification {
 
     def 'updating externalId works'() {
         given:
-        group = new Group.Builder(externalId: 'irrelevant').build()
+        def uuid = UUID.randomUUID()
+        group = new Group.Builder(externalId: IRRELEVANT).build()
+        groupEntity.getId() >> uuid
 
         when:
         resourceUpdater.update(group, groupEntity)
 
         then:
-        1 * groupEntity.setExternalId('irrelevant')
+        1 * groupEntity.setExternalId(IRRELEVANT)
+    }
+
+    def 'updating the externalId checks if the externalId already exists' () {
+        given:
+        def uuid = UUID.randomUUID()
+        Group group = new Group.Builder(externalId: IRRELEVANT).build()
+        groupEntity.getId() >> uuid
+
+        when:
+        resourceUpdater.update(group, groupEntity)
+
+        then:
+        1 * resourceDao.isExternalIdAlreadyTaken(IRRELEVANT, uuid.toString())
+    }
+
+    def 'updating the externalId to an existing externalId raises exception' () {
+        given:
+        def uuid = UUID.randomUUID()
+        Group group = new Group.Builder(externalId: IRRELEVANT).build()
+        groupEntity.getId() >> uuid
+
+        when:
+        resourceUpdater.update(group, groupEntity)
+
+        then:
+        1 * resourceDao.isExternalIdAlreadyTaken(IRRELEVANT, uuid.toString()) >> true
+        thrown(ResourceExistsException)
     }
 
 }

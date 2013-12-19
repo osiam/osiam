@@ -45,8 +45,6 @@ import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.ResourceEntity;
 import org.osiam.storage.entities.ResourceEntity_;
-import org.osiam.storage.entities.UserEntity;
-import org.osiam.storage.entities.UserEntity_;
 import org.osiam.storage.query.FilterParser;
 import org.springframework.stereotype.Repository;
 
@@ -187,6 +185,14 @@ public class ResourceDao {
         TypedQuery<Long> countQuery = em.createQuery(cq);
 
         return countQuery.getSingleResult() > 0;
+    }
+
+    public boolean isExternalIdAlreadyTaken(String externalId, String id) {
+        return isUniqueAttributeAlreadyTaken(externalId, id, ResourceEntity_.externalId, ResourceEntity.class);
+    }
+
+    public boolean isExternalIdAlreadyTaken(String externalId) {
+        return isExternalIdAlreadyTaken(externalId, null);
     }
 
     /**

@@ -23,7 +23,11 @@
 
 package org.osiam.resources.provisioning.update;
 
+import javax.inject.Inject;
+
+import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.scim.Resource;
+import org.osiam.storage.dao.ResourceDao;
 import org.osiam.storage.entities.ResourceEntity;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +36,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ResourceUpdater {
+
+    @Inject
+    ResourceDao resourceDao;
 
     /**
      * updates (adds new, delete, updates) the given {@link ResourceEntity} based on the given {@link Resource}
@@ -51,8 +58,14 @@ public class ResourceUpdater {
             }
         }
 
-        if (resource.getExternalId() != null && !resource.getExternalId().isEmpty()) {
-            resourceEntity.setExternalId(resource.getExternalId());
+        String externalId = resource.getExternalId();
+
+        if (externalId != null && !externalId.isEmpty()) {
+            if (resourceDao.isExternalIdAlreadyTaken(externalId, resourceEntity.getId().toString())) {
+                throw new ResourceExistsException(String.format("Resource with externalId '%s' already exists", externalId));
+            }
+
+            resourceEntity.setExternalId(externalId);
         }
     }
 
