@@ -29,7 +29,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -153,15 +152,14 @@ public class AddressEntity {
         result = prime * result + ((formatted == null) ? 0 : formatted.hashCode());
         result = prime * result + ((locality == null) ? 0 : locality.hashCode());
         result = prime * result + ((postalCode == null) ? 0 : postalCode.hashCode());
-        result = prime * result + ((primary == null) ? 0 : primary.hashCode());
         result = prime * result + ((region == null) ? 0 : region.hashCode());
         result = prime * result + ((streetAddress == null) ? 0 : streetAddress.hashCode());
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         return result;
     }
 
-    @Override                             // NOSONAR : Cyclomatic complexity can't be reduced
-    public boolean equals(Object obj) {   // NOSONAR : Sadly this method is that long
+    @Override
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -200,13 +198,6 @@ public class AddressEntity {
         } else if (!postalCode.equals(other.postalCode)) {
             return false;
         }
-        if (primary == null) {
-            if (other.primary != null) {
-                return false;
-            }
-        } else if (!primary.equals(other.primary)) {
-            return false;
-        }
         if (region == null) {
             if (other.region != null) {
                 return false;
@@ -225,6 +216,16 @@ public class AddressEntity {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("AddressEntity [type=").append(type).append(", formatted=").append(formatted)
+                .append(", streetAddress=").append(streetAddress).append(", locality=").append(locality)
+                .append(", region=").append(region).append(", postalCode=").append(postalCode).append(", country=")
+                .append(country).append(", primary=").append(primary).append("]");
+        return builder.toString();
     }
 
     public enum CanonicalAddressTypes {

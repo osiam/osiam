@@ -112,4 +112,75 @@ public class MetaEntity {
         this.resourceType = resourceType;
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((created == null) ? 0 : created.hashCode());
+        result = prime * result + ((lastModified == null) ? 0 : lastModified.hashCode());
+        result = prime * result + ((location == null) ? 0 : location.hashCode());
+        result = prime * result + ((resourceType == null) ? 0 : resourceType.hashCode());
+        result = prime * result + ((version == null) ? 0 : version.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        MetaEntity other = (MetaEntity) obj;
+        if (created == null) {
+            if (other.created != null) {
+                return false;
+            }
+        } else if (!created.equals(other.created)) {
+            return false;
+        }
+        if (lastModified == null) {
+            if (other.lastModified != null) {
+                return false;
+            }
+        } else if (!lastModified.equals(other.lastModified)) {
+            return false;
+        }
+        if (location == null) {
+            if (other.location != null) {
+                return false;
+            }
+        } else if (!location.equals(other.location)) {
+            return false;
+        }
+        if (resourceType == null) {
+            if (other.resourceType != null) {
+                return false;
+            }
+        } else if (!resourceType.equals(other.resourceType)) {
+            return false;
+        }
+        if (version == null) {
+            if (other.version != null) {
+                return false;
+            }
+        } else if (!version.equals(other.version)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("MetaEntity [created=").append(created).append(", lastModified=").append(lastModified)
+                .append(", location=").append(location).append(", version=").append(version).append(", resourceType=")
+                .append(resourceType).append("]");
+        return builder.toString();
+    }
+
 }

@@ -94,10 +94,10 @@ public class GroupEntity extends ResourceEntity {
 
     @Override
     public String toString() {
-        return "GroupEntity{" +
-                "UUID='" + getId() + "\', " +
-                "displayName='" + displayName + '\'' +
-                '}';
+        StringBuilder builder = new StringBuilder();
+        builder.append("GroupEntity [displayName=").append(displayName).append(", getId()=").append(getId())
+                .append("]");
+        return builder.toString();
     }
 
 }
