@@ -58,7 +58,7 @@ class AddressUpdater {
      */
     void update(List<Address> addresss, UserEntity userEntity, Set<String> attributes) {
 
-        if (attributes.contains("addresss")) {
+        if (attributes.contains("addresses")) {
             userEntity.removeAllAddresss();
         }
 
