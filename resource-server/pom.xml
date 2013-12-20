@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.osiam</groupId>
         <artifactId>osiam-server-parent</artifactId>
-        <version>0.14-SNAPSHOT</version>
+        <version>0.14</version>
     </parent>
 
     <artifactId>osiam-resource-server</artifactId>
@@ -345,7 +345,7 @@
         <dependency>
             <groupId>org.osiam</groupId>
             <artifactId>osiam-interaction-model</artifactId>
-            <version>0.14-SNAPSHOT</version>
+            <version>0.14</version>
         </dependency>
 
         <dependency>
