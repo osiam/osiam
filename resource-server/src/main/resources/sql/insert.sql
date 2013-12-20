@@ -18,7 +18,7 @@ INSERT INTO osiam_client(internal_id, accesstokenvalidityseconds, client_secret,
             id, implicit_approval, redirect_uri, refreshtokenvalidityseconds, 
             validityinseconds)
     VALUES (3, 2342, 'secret', null, 
-            'example-client', FALSE, 'http://localhost:5000/oauth2', 2342, 
+            'example-client', FALSE, 'http://localhost:5000/oauth2', 4684,
             1337);
 INSERT INTO osiam_client_scopes VALUES (3, 'GET');
 INSERT INTO osiam_client_scopes VALUES (3, 'POST');
