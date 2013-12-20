@@ -146,11 +146,11 @@ class MeControllerSpec extends Specification {
         e.message == "User was not authenticated with OSIAM."
     }
 
-    def "should not provide an email address if no emails was submitted"() {
+    def "should not provide an email address if no emails were submitted"() {
         given:
-        def user = new UserEntity(active: true, emails: null,
-        name: name, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
-        locale: "de_DE", userName: "fpref")
+        MetaEntity meta = new MetaEntity(GregorianCalendar.getInstance())
+        def user = new UserEntity(active: true, name: name, id: UUID.randomUUID(), meta: meta, locale: "de_DE",
+                userName: "fpref")
         def principal = Mock(LinkedHashMap)
         def userId = "theUserId"
 

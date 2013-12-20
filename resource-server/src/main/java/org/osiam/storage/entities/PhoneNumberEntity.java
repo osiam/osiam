@@ -23,21 +23,24 @@
 
 package org.osiam.storage.entities;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Table;
 
 /**
  * Phone Numbers Entity
  */
-@Entity(name = "scim_phoneNumber")
-public class PhoneNumberEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndType, HasUser {
+@Entity
+@Table(name = "scim_phoneNumber")
+public class PhoneNumberEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndType {
 
     @Column
     @Enumerated(EnumType.STRING)
     private CanonicalPhoneNumberTypes type;
 
-    @ManyToOne
-    private UserEntity user;
-
+    @Override
     public String getType() {
         if (type != null) {
             return type.toString();
@@ -45,21 +48,48 @@ public class PhoneNumberEntity extends MultiValueAttributeEntitySkeleton impleme
         return null;
     }
 
+    @Override
     public void setType(String type) {
         if (type != null) {
             this.type = CanonicalPhoneNumberTypes.valueOf(type);
         }
     }
 
-    public UserEntity getUser() {
-        return user;
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
     }
 
-    public void setUser(UserEntity user) {
-        this.user = user;
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        PhoneNumberEntity other = (PhoneNumberEntity) obj;
+        if (type != other.type) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("PhoneNumberEntity [type=").append(type).append(", getValue()=").append(getValue()).append("]");
+        return builder.toString();
     }
 
     public enum CanonicalPhoneNumberTypes {
         work, home, mobile, fax, pager, other
     }
+
 }

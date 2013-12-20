@@ -46,7 +46,7 @@ public class TypeErrorMessageTransformer implements ErrorMessageTransformer {
         Matcher matcher = pattern.matcher(message);
         if (matcher.matches()) {
             String values = loadEnumConstAsStringByClassName(matcher.group(1) + "$" + matcher.group(3)); // NOSONAR - no need to make a constant for numbers
-            return matcher.group(4) + " is not a valid " + matcher.group(2) + " type only " + values + " are allowed."; // NOSONAR - no need to make a constant for numbers
+            return matcher.group(4) + " is not a valid " + matcher.group(2) + " type. Only " + values + " are allowed."; // NOSONAR - no need to make a constant for numbers
         }
         return message;
     }
@@ -77,11 +77,11 @@ public class TypeErrorMessageTransformer implements ErrorMessageTransformer {
      * @return combined string list of enums separated by comma
      */
     private String combineEnumConstantsToString(Enum<?>[] enumConstants) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder stringBuilder = new StringBuilder();
         for (Enum<?> e : enumConstants) {
-            buf.append(", ");
-            buf.append(e.toString());
+            stringBuilder.append(", ");
+            stringBuilder.append(e.toString());
         }
-        return buf.toString();
+        return stringBuilder.toString();
     }
 }

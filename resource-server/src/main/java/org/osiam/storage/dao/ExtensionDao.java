@@ -23,14 +23,18 @@
 
 package org.osiam.storage.dao;
 
+import java.util.Locale;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.osiam.storage.entities.ExtensionEntity;
+import org.osiam.storage.entities.ExtensionEntity_;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -38,15 +42,43 @@ public class ExtensionDao {
     @PersistenceContext
     private EntityManager em;
 
+    /**
+     * Retrieves the extension with the given URN from the database. The URN is case-sensitive.
+     *
+     * @param urn
+     *            The URN of the extension to look up
+     * @return the extension entity
+     */
     public ExtensionEntity getExtensionByUrn(String urn) {
+        return getExtensionByUrn(urn, false);
+    }
+
+    /**
+     * Retrieves the extension with the given URN from the database
+     *
+     * @param urn
+     *            the URN of the extension to look up
+     * @param caseInsensitive
+     *            should the case of the URN be ignored
+     * @return the extension entity
+     */
+    public ExtensionEntity getExtensionByUrn(String urn, boolean caseInsensitive) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<ExtensionEntity> cq = cb.createQuery(ExtensionEntity.class);
         Root<ExtensionEntity> extension = cq.from(ExtensionEntity.class);
 
-        cq.select(extension).where(cb.equal(extension.get("urn"), urn));
+        Predicate predicate;
+        if (caseInsensitive) {
+            predicate = cb.equal(cb.lower(extension.get(ExtensionEntity_.urn)), urn.toLowerCase(Locale.ENGLISH));
+        } else {
+            predicate = cb.equal(extension.get(ExtensionEntity_.urn), urn);
+        }
+
+        cq.select(extension).where(predicate);
 
         TypedQuery<ExtensionEntity> query = em.createQuery(cq);
 
         return query.getSingleResult();
     }
+
 }

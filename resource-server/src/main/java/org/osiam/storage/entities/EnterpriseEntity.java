@@ -23,11 +23,17 @@
 
 package org.osiam.storage.entities;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import org.osiam.resources.scim.Enterprise;
 
-import javax.persistence.*;
-
-@Entity(name = "scim_enterprise")
+@Entity
+@Table(name = "scim_enterprise")
 public class EnterpriseEntity {
 
     @Id

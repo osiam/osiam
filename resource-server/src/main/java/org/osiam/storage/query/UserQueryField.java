@@ -50,7 +50,6 @@ import org.osiam.storage.entities.GroupEntity_;
 import org.osiam.storage.entities.ImEntity;
 import org.osiam.storage.entities.ImEntity.CanonicalImTypes;
 import org.osiam.storage.entities.ImEntity_;
-import org.osiam.storage.entities.InternalIdSkeleton;
 import org.osiam.storage.entities.MetaEntity_;
 import org.osiam.storage.entities.NameEntity_;
 import org.osiam.storage.entities.PhoneNumberEntity;
@@ -59,6 +58,7 @@ import org.osiam.storage.entities.PhoneNumberEntity_;
 import org.osiam.storage.entities.PhotoEntity;
 import org.osiam.storage.entities.PhotoEntity.CanonicalPhotoTypes;
 import org.osiam.storage.entities.PhotoEntity_;
+import org.osiam.storage.entities.ResourceEntity;
 import org.osiam.storage.entities.RolesEntity;
 import org.osiam.storage.entities.RolesEntity_;
 import org.osiam.storage.entities.UserEntity;
@@ -829,7 +829,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
 
     @SuppressWarnings("unchecked")
     protected SetJoin<UserEntity, GroupEntity> createOrGetJoinForGroups(String alias, Root<UserEntity> root,
-            SetAttribute<InternalIdSkeleton, GroupEntity> attribute) {
+            SetAttribute<ResourceEntity, GroupEntity> attribute) {
 
         for (Join<UserEntity, ?> currentJoin : root.getJoins()) {
             if (currentJoin.getAlias().equals(alias)) {

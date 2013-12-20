@@ -75,7 +75,7 @@ public class ClientDao {
     private ClientEntity getClientById(String id) {
         Query query = em.createNamedQuery("getClientById");
         query.setParameter("id", id);
-        List result = query.getResultList();
+        List<?> result = query.getResultList();
         if (result.isEmpty()) {
             throw new ResourceNotFoundException("Resource " + id + " not found.");
         }

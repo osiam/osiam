@@ -30,23 +30,6 @@ class GroupEntitySpec extends Specification {
 
     GroupEntity groupEntity = new GroupEntity()
 
-    def "setter and getter for the Id should be present"() {
-        def id = UUID.randomUUID()
-        when:
-        groupEntity.setId(id)
-
-        then:
-        groupEntity.getId() == id
-    }
-
-    def "setter and getter for the display name should be present"() {
-        when:
-        groupEntity.setDisplayName("Tour Guides")
-
-        then:
-        groupEntity.getDisplayName() == "Tour Guides"
-    }
-
     def "Group entity should set resourceType to Group"() {
         when:
         def result = new GroupEntity(displayName: "blubb", id: UUID.randomUUID())

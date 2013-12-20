@@ -31,30 +31,6 @@ class PhoneNumberEntitySpec extends Specification {
     PhoneNumberEntity phoneNumberEntity = new PhoneNumberEntity()
     def userEntity = Mock(UserEntity)
 
-    def "setter and getter for the value should be present"() {
-        when:
-        phoneNumberEntity.setValue("555-555-555")
-
-        then:
-        phoneNumberEntity.getValue() == "555-555-555"
-    }
-
-    def "setter and getter for the type should be present"() {
-        when:
-        phoneNumberEntity.setType("work")
-
-        then:
-        phoneNumberEntity.getType() == "work"
-    }
-
-    def "setter and getter for the user should be present"() {
-        when:
-        phoneNumberEntity.setUser(userEntity)
-
-        then:
-        phoneNumberEntity.getUser() == userEntity
-    }
-
     def "should throw an exception if the type is unknown"() {
         when:
         phoneNumberEntity.setType("huch")
@@ -64,11 +40,4 @@ class PhoneNumberEntitySpec extends Specification {
         e.message == "No enum constant org.osiam.storage.entities.PhoneNumberEntity.CanonicalPhoneNumberTypes.huch"
     }
 
-    def "setter and getter for id should be present"() {
-        when:
-        phoneNumberEntity.setMultiValueId(1234)
-
-        then:
-        phoneNumberEntity.getMultiValueId() == 1234
-    }
 }

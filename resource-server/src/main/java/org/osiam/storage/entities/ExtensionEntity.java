@@ -31,11 +31,13 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
  * Defines a SCIM-Extension.
  */
-@Entity(name = "scim_extension")
+@Entity
+@Table(name = "scim_extension")
 public class ExtensionEntity {
 
     @Id
@@ -72,13 +74,24 @@ public class ExtensionEntity {
         return fields;
     }
 
-    public ExtensionFieldEntity getFieldForName(String fieldName) {
+    public ExtensionFieldEntity getFieldForName(String fieldName, boolean caseInsensitive) {
         for (ExtensionFieldEntity field : fields) {
-            if (field.getName().equals(fieldName)) {
-                return field;
+            if(!caseInsensitive) {
+                if (field.getName().equals(fieldName)) {
+                    return field;
+                }
+            } else {
+                if (field.getName().equalsIgnoreCase(fieldName)) {
+                    return field;
+                }
             }
         }
+
         throw new IllegalArgumentException("Field " + fieldName + " not available in extension with URN " + urn);
+    }
+
+    public ExtensionFieldEntity getFieldForName(String fieldName) {
+        return getFieldForName(fieldName, false);
     }
 
     public void setFields(Set<ExtensionFieldEntity> extensionFields) {
@@ -118,6 +131,13 @@ public class ExtensionEntity {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("ExtensionEntity [urn=").append(urn).append("]");
+        return builder.toString();
     }
 
 }

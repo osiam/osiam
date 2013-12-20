@@ -23,12 +23,22 @@
 
 package org.osiam.storage.query;
 
-import org.osiam.resources.scim.ExtensionFieldType;
-import org.osiam.storage.entities.*;
-import org.osiam.storage.helper.NumberPadder;
-
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.SetJoin;
 import javax.persistence.metamodel.SetAttribute;
+
+import org.osiam.resources.scim.ExtensionFieldType;
+import org.osiam.storage.entities.ExtensionFieldEntity;
+import org.osiam.storage.entities.ExtensionFieldEntity_;
+import org.osiam.storage.entities.ExtensionFieldValueEntity;
+import org.osiam.storage.entities.ExtensionFieldValueEntity_;
+import org.osiam.storage.entities.UserEntity;
+import org.osiam.storage.entities.UserEntity_;
+import org.osiam.storage.helper.NumberPadder;
 
 public class ExtensionQueryField {
 
@@ -51,7 +61,7 @@ public class ExtensionQueryField {
             value = numberPadder.pad(value);  // NOSONAR - We want our modify our parameters
         }
 
-        final SetJoin<UserEntity, ExtensionFieldValueEntity> join = createOrGetJoin(aliasForUrn(urn),
+        final SetJoin<UserEntity, ExtensionFieldValueEntity> join = createOrGetJoin(generateAlias(urn + "." + field.getName()),
                 root, UserEntity_.extensionFieldValues);
         Predicate filterPredicate = constraint.createPredicateForExtensionField(
                 join.get(ExtensionFieldValueEntity_.value), // NOSONAR - XEntity_.X will be filled by JPA provider
@@ -62,13 +72,13 @@ public class ExtensionQueryField {
         return cb.and(filterPredicate, joinOnPredicate);
     }
 
-    private String aliasForUrn(String urn) {
-        int hashCode = urn.hashCode();
+    private String generateAlias(String value) {
+        int hashCode = value.hashCode();
         if (hashCode < 0) {
             hashCode *= -1;
         }
 
-        return "extensionAlias" + hashCode;
+        return "extensionFieldAlias" + hashCode;
     }
 
     @SuppressWarnings("unchecked")

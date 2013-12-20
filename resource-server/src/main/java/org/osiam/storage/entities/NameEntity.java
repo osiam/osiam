@@ -27,11 +27,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Name Entity
  */
-@Entity(name = "scim_name")
+@Entity
+@Table(name = "scim_name")
 public class NameEntity {
 
     @Id
@@ -113,47 +115,83 @@ public class NameEntity {
     }
 
     @Override
-    public boolean equals(Object o) { // NOSONAR - Cyclomatic Complexity can be > 10
-        if (this == o) {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (obj == null) {
             return false;
         }
-
-        NameEntity other = (NameEntity) o;
-
-        if (familyName != null ? !familyName.equals(other.familyName) : other.familyName != null) {
+        if (getClass() != obj.getClass()) {
             return false;
         }
-        if (formatted != null ? !formatted.equals(other.formatted) : other.formatted != null) {
+        NameEntity other = (NameEntity) obj;
+        if (familyName == null) {
+            if (other.familyName != null) {
+                return false;
+            }
+        } else if (!familyName.equals(other.familyName)) {
             return false;
         }
-        if (givenName != null ? !givenName.equals(other.givenName) : other.givenName != null) {
+        if (formatted == null) {
+            if (other.formatted != null) {
+                return false;
+            }
+        } else if (!formatted.equals(other.formatted)) {
             return false;
         }
-        if (honorificPrefix != null ? !honorificPrefix.equals(other.honorificPrefix) : other.honorificPrefix != null) {
+        if (givenName == null) {
+            if (other.givenName != null) {
+                return false;
+            }
+        } else if (!givenName.equals(other.givenName)) {
             return false;
         }
-        if (honorificSuffix != null ? !honorificSuffix.equals(other.honorificSuffix) : other.honorificSuffix != null) {
+        if (honorificPrefix == null) {
+            if (other.honorificPrefix != null) {
+                return false;
+            }
+        } else if (!honorificPrefix.equals(other.honorificPrefix)) {
             return false;
         }
-        if (middleName != null ? !middleName.equals(other.middleName) : other.middleName != null) {
+        if (honorificSuffix == null) {
+            if (other.honorificSuffix != null) {
+                return false;
+            }
+        } else if (!honorificSuffix.equals(other.honorificSuffix)) {
             return false;
         }
-
+        if (middleName == null) {
+            if (other.middleName != null) {
+                return false;
+            }
+        } else if (!middleName.equals(other.middleName)) {
+            return false;
+        }
         return true;
     }
 
-    @Override                // NOSONAR : Cyclomatic complexity can't be reduced
-    public int hashCode() {  // NOSONAR : Cyclomatic complexity can't be reduced
+    @Override
+    public int hashCode() {
         final int prime = 31;
-        int result = formatted != null ? formatted.hashCode() : 0;
-        result = prime * result + (familyName != null ? familyName.hashCode() : 0);
-        result = prime * result + (givenName != null ? givenName.hashCode() : 0);
-        result = prime * result + (middleName != null ? middleName.hashCode() : 0);
-        result = prime * result + (honorificPrefix != null ? honorificPrefix.hashCode() : 0);
-        result = prime * result + (honorificSuffix != null ? honorificSuffix.hashCode() : 0);
+        int result = 1;
+        result = prime * result + ((familyName == null) ? 0 : familyName.hashCode());
+        result = prime * result + ((formatted == null) ? 0 : formatted.hashCode());
+        result = prime * result + ((givenName == null) ? 0 : givenName.hashCode());
+        result = prime * result + ((honorificPrefix == null) ? 0 : honorificPrefix.hashCode());
+        result = prime * result + ((honorificSuffix == null) ? 0 : honorificSuffix.hashCode());
+        result = prime * result + ((middleName == null) ? 0 : middleName.hashCode());
         return result;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("NameEntity [formatted=").append(formatted).append(", familyName=").append(familyName)
+                .append(", givenName=").append(givenName).append(", middleName=").append(middleName)
+                .append(", honorificPrefix=").append(honorificPrefix).append(", honorificSuffix=")
+                .append(honorificSuffix).append("]");
+        return builder.toString();
+    }
+
 }

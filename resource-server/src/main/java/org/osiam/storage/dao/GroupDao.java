@@ -23,80 +23,83 @@
 
 package org.osiam.storage.dao;
 
-import java.util.Set;
-import java.util.logging.Level;
-
 import javax.inject.Inject;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Root;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.osiam.resources.exceptions.ResourceNotFoundException;
-import org.osiam.resources.scim.Constants;
 import org.osiam.storage.entities.GroupEntity;
-import org.osiam.storage.query.FilterParser;
+import org.osiam.storage.entities.GroupEntity_;
 import org.osiam.storage.query.GroupFilterParser;
-import org.osiam.storage.query.GroupQueryField;
 import org.springframework.stereotype.Repository;
 
-
 @Repository
-public class GroupDao extends ResourceDao<GroupEntity> implements GenericDao<GroupEntity> {
+public class GroupDao implements GenericDao<GroupEntity> {
 
     @Inject
     private GroupFilterParser filterParser;
 
+    @Inject
+    private ResourceDao resourceDao;
+
+    @PersistenceContext
+    private EntityManager em;
+
     @Override
     public void create(GroupEntity group) {
-        em.persist(group);
+        resourceDao.create(group);
     }
 
     @Override
     public GroupEntity getById(String id) {
         try {
-            return getInternalIdSkeleton(id);
-        } catch (ClassCastException c) {
-            LOGGER.log(Level.WARNING, c.getMessage(), c);
-            throw new ResourceNotFoundException("Resource " + id + " is not a Group.", c);
+            return resourceDao.getById(id, GroupEntity.class);
+        } catch (ResourceNotFoundException rnfe) {
+            throw new ResourceNotFoundException(String.format("Group with id '%s' not found", id), rnfe);
         }
+    }
+
+    /**
+     * Checks if a displayName is already taken by another group.
+     *
+     * @param displayName
+     *            the displayName to check
+     * @return true if the displayName is taken, otherwise false
+     */
+    public boolean isDisplayNameAlreadyTaken(String displayName) {
+        return isDisplayNameAlreadyTaken(displayName, null);
+    }
+
+    /**
+     * Checks if a displayName is already taken by another group. Ignores the group with the given id.
+     *
+     * @param displayName
+     *            the displayName to check
+     * @param id
+     *            the id of the group to ignore
+     * @return true if the displayName is taken, otherwise false
+     */
+    public boolean isDisplayNameAlreadyTaken(String displayName, String id) {
+        return resourceDao.isUniqueAttributeAlreadyTaken(displayName, id, GroupEntity_.displayName, GroupEntity.class);
     }
 
     @Override
     public void delete(String id) {
-        GroupEntity groupEntity = getById(id);
-        Set<GroupEntity> groups = groupEntity.getGroups();
-        for (GroupEntity group : groups) {
-            group.removeMember(groupEntity);
+        try {
+            resourceDao.delete(id);
+        } catch (ResourceNotFoundException rnfe) {
+            throw new ResourceNotFoundException(String.format("Group with id '%s' not found", id), rnfe);
         }
-        em.remove(groupEntity);
     }
 
     @Override
     public GroupEntity update(GroupEntity entity) {
-        return em.merge(entity);
+        return resourceDao.update(entity);
     }
 
     @Override
     public SearchResult<GroupEntity> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
-        return search(GroupEntity.class, filter, count, startIndex, sortBy, sortOrder);
+        return resourceDao.search(GroupEntity.class, filter, count, startIndex, sortBy, sortOrder, filterParser);
     }
 
-    @Override
-    protected FilterParser<GroupEntity> getFilterParser() {
-        return filterParser;
-    }
-
-    @Override
-    protected String getCoreSchema() {
-        return Constants.GROUP_CORE_SCHEMA;
-    }
-
-    @Override
-    protected Class<GroupEntity> getResourceClass() {
-        return GroupEntity.class;
-    }
-
-    @Override
-    protected Expression<?> getDefaultSortByField(Root<GroupEntity> root) {
-        return GroupQueryField.DISPLAYNAME.createSortByField(root, em.getCriteriaBuilder());
-    }
 }

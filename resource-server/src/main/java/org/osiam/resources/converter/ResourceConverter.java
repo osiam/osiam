@@ -24,9 +24,9 @@
 package org.osiam.resources.converter;
 
 import org.osiam.resources.scim.Resource;
-import org.osiam.storage.entities.InternalIdSkeleton;
+import org.osiam.storage.entities.ResourceEntity;
 
-public interface ResourceConverter<S extends Resource, E extends InternalIdSkeleton> extends Converter<S, E> {
+public interface ResourceConverter<S extends Resource, E extends ResourceEntity> extends Converter<S, E> {
 
     E fromScim(S scim);
 

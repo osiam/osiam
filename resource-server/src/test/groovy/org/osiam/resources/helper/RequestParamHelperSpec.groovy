@@ -36,23 +36,6 @@ class RequestParamHelperSpec extends Specification {
     def servletRequestMock = Mock(HttpServletRequest)
     def requestParamHelper = new RequestParamHelper()
 
-    @Ignore('default sort order is determined in ResourceDao now, move this test into dao specs')
-    def "should exist default value if sortBy is null"() {
-        given:
-        servletRequestMock.getParameter("filter") >> "someFilter"
-        servletRequestMock.getParameter("sortBy") >> null
-        servletRequestMock.getParameter("sortOrder") >> "someSortOrder"
-        servletRequestMock.getParameter("startIndex") >> "1"
-        servletRequestMock.getParameter("count") >> "10"
-        servletRequestMock.getParameter("attributes") >> ["userName"]
-
-        when:
-        Map result = requestParamHelper.getRequestParameterValues(servletRequestMock)
-
-        then:
-        result.get("sortBy") == "id"
-    }
-
     def "should not use default value for sortBy if not null"() {
         given:
         servletRequestMock.getParameter("filter") >> "someFilter"

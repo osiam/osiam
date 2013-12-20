@@ -23,17 +23,27 @@
 
 package org.osiam.storage.entities;
 
-import org.osiam.resources.scim.ExtensionFieldType;
-
-import javax.persistence.*;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.osiam.resources.scim.ExtensionFieldType;
+
 /**
  * Defines a field in a scim-extension.
  */
-@Entity(name = "scim_extension_field")
+@Entity
+@Table(name = "scim_extension_field")
 public class ExtensionFieldEntity { // NOSONAR - will be constructed by jackson
 
     @Id
@@ -146,6 +156,14 @@ public class ExtensionFieldEntity { // NOSONAR - will be constructed by jackson
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("ExtensionFieldEntity [name=").append(name).append(", type=").append(type)
+                .append(", isRequired=").append(isRequired).append("]");
+        return builder.toString();
     }
 
     private static Set<ConstraintAndType> invalidTypeForConstraint = new HashSet<>(Arrays.asList(

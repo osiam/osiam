@@ -18,7 +18,6 @@
 package org.osiam.storage.query;
 
 import java.util.Locale;
-import java.util.regex.Matcher;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
@@ -28,34 +27,24 @@ import org.osiam.storage.entities.GroupEntity;
 
 public class GroupSimpleFilterChain implements FilterChain<GroupEntity> {
 
-    private final String field;
-    private final FilterConstraint constraint;
-    private final String value;
+    private final ScimExpression scimExpression;
 
     private final GroupQueryField filterField;
     private final CriteriaBuilder criteriaBuilder;
 
-    public GroupSimpleFilterChain(CriteriaBuilder criteriaBuilder, String filter) {
-        Matcher matcher = FilterParser.SIMPLE_FILTER_PATTERN.matcher(filter);
-        if (!matcher.matches()) {
-            throw new IllegalArgumentException(filter + " is not a simple filter string");
-        }
-
+    public GroupSimpleFilterChain(CriteriaBuilder criteriaBuilder, ScimExpression scimExpression) {
         this.criteriaBuilder = criteriaBuilder;
-        field = matcher.group(1).trim();
-        constraint = FilterConstraint.fromString(matcher.group(2)); // NOSONAR - not a magic number
-        filterField = GroupQueryField.fromString(field.toLowerCase(Locale.ENGLISH));
-
-        value = matcher.group(3).trim().replace("\"", ""); // NOSONAR - not a magic number
+        this.scimExpression = scimExpression;
+        filterField = GroupQueryField.fromString(scimExpression.getField().toLowerCase(Locale.ENGLISH));
     }
 
     @Override
     public Predicate createPredicateAndJoin(Root<GroupEntity> root) {
         if (filterField == null) {
-            throw new IllegalArgumentException("Filtering not possible. Field '" + field + "' not available.");
+            throw new IllegalArgumentException("Filtering not possible. Field '" + scimExpression.getField() + "' not available.");
         }
 
-        return filterField.addFilter(root, constraint, value, criteriaBuilder);
+        return filterField.addFilter(root, scimExpression.getConstraint(), scimExpression.getValue(), criteriaBuilder);
     }
 
 }

@@ -29,17 +29,21 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+
+import org.osiam.resources.scim.Group;
 
 import com.google.common.collect.ImmutableSet;
 
 /**
- * Group Entity
+ * Entity class for {@link Group} resources
  */
-@Entity(name = "scim_group")
-public class GroupEntity extends InternalIdSkeleton {
+@Entity
+@Table(name = "scim_group")
+public class GroupEntity extends ResourceEntity {
 
     @ManyToMany
-    private Set<InternalIdSkeleton> members = new HashSet<>();
+    private Set<ResourceEntity> members = new HashSet<>();
 
     @Column(unique = true, nullable = false)
     private String displayName;
@@ -48,11 +52,11 @@ public class GroupEntity extends InternalIdSkeleton {
         getMeta().setResourceType("Group");
     }
 
-    public Set<InternalIdSkeleton> getMembers() {
+    public Set<ResourceEntity> getMembers() {
         return ImmutableSet.copyOf(members);
     }
 
-    public void addMember(InternalIdSkeleton member) {
+    public void addMember(ResourceEntity member) {
         if (members.contains(member)) {
             return;
         }
@@ -60,12 +64,23 @@ public class GroupEntity extends InternalIdSkeleton {
         member.addToGroup(this);
     }
 
-    public void removeMember(InternalIdSkeleton member) {
+    public void removeMember(ResourceEntity member) {
         if (!members.contains(member)) {
             return;
         }
         members.remove(member);
         member.removeFromGroup(this);
+    }
+
+    /**
+     * Removes all members from this group.
+     */
+    public void removeAllMembers() {
+        Set<ResourceEntity> membersToRemove = ImmutableSet.copyOf(members);
+
+        for (ResourceEntity member : membersToRemove) {
+            removeMember(member);
+        }
     }
 
     @Override
@@ -78,29 +93,11 @@ public class GroupEntity extends InternalIdSkeleton {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        GroupEntity that = (GroupEntity) o;
-
-        return displayName.equals(that.displayName);
-    }
-
-    @Override
-    public int hashCode() {
-        return displayName.hashCode();
-    }
-
-    @Override
     public String toString() {
-        return "GroupEntity{" +
-                "UUID='" + getId() + "\', " +
-                "displayName='" + displayName + '\'' +
-                '}';
+        StringBuilder builder = new StringBuilder();
+        builder.append("GroupEntity [displayName=").append(displayName).append(", getId()=").append(getId())
+                .append("]");
+        return builder.toString();
     }
+
 }

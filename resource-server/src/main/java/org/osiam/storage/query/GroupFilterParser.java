@@ -32,7 +32,7 @@ import org.springframework.stereotype.Service;
 public class GroupFilterParser extends FilterParser<GroupEntity> {
 
     @Override
-    protected FilterChain<GroupEntity> createFilterChain(String filter) {
+    protected FilterChain<GroupEntity> createFilterChain(ScimExpression filter) {
         return new GroupSimpleFilterChain(entityManager.getCriteriaBuilder(), filter);
     }
 

@@ -23,18 +23,27 @@
 
 package org.osiam.storage.entities;
 
-import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * User Entity
  */
-@Entity(name = "scim_user")
-@NamedQueries({@NamedQuery(name = "getUserByUsername", query = "SELECT u FROM scim_user u WHERE u.userName = :username")})
-public class UserEntity extends InternalIdSkeleton {
+@Entity
+@Table(name = "scim_user")
+public class UserEntity extends ResourceEntity {
 
-    private static final String MAPPING_NAME = "user";
+    private static final String JOIN_COLUMN_NAME = "user_internal_id";
 
     @Column(nullable = false, unique = true)
     private String userName;
@@ -72,36 +81,40 @@ public class UserEntity extends InternalIdSkeleton {
     @Column
     private String displayName;
 
-    @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<EmailEntity> emails;
-
-    @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<PhoneNumberEntity> phoneNumbers;
-
-    @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ImEntity> ims;
-
-    @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<PhotoEntity> photos;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
+    private Set<EmailEntity> emails = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<AddressEntity> addresses;
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
+    private Set<PhoneNumberEntity> phoneNumbers = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<EntitlementsEntity> entitlements;
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
+    private Set<ImEntity> ims = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private Set<RolesEntity> roles;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
+    private Set<PhotoEntity> photos = new HashSet<>();
 
-    @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<X509CertificateEntity> x509Certificates;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
+    private Set<AddressEntity> addresses = new HashSet<>();
 
-    @OneToMany
-    @JoinTable(name = "scim_user_scim_extension", joinColumns = {@JoinColumn(name = "scim_user_internal_id", referencedColumnName = "internal_id")},
-            inverseJoinColumns = {@JoinColumn(name = "registered_extensions_internal_id", referencedColumnName = "internal_id")})
-    private Set<ExtensionEntity> registeredExtensions = new HashSet<>();
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
+    private Set<EntitlementsEntity> entitlements = new HashSet<>();
 
-    @OneToMany(mappedBy = MAPPING_NAME, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
+    private Set<RolesEntity> roles = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
+    private Set<X509CertificateEntity> x509Certificates = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
     private Set<ExtensionFieldValueEntity> extensionFieldValues = new HashSet<>();
 
     public UserEntity() {
@@ -116,7 +129,8 @@ public class UserEntity extends InternalIdSkeleton {
     }
 
     /**
-     * @param name the name entity
+     * @param name
+     *            the name entity
      */
     public void setName(NameEntity name) {
         this.name = name;
@@ -130,7 +144,8 @@ public class UserEntity extends InternalIdSkeleton {
     }
 
     /**
-     * @param nickName the nick name
+     * @param nickName
+     *            the nick name
      */
     public void setNickName(String nickName) {
         this.nickName = nickName;
@@ -144,7 +159,8 @@ public class UserEntity extends InternalIdSkeleton {
     }
 
     /**
-     * @param profileUrl the profile url
+     * @param profileUrl
+     *            the profile url
      */
     public void setProfileUrl(String profileUrl) {
         this.profileUrl = profileUrl;
@@ -158,7 +174,8 @@ public class UserEntity extends InternalIdSkeleton {
     }
 
     /**
-     * @param title the title
+     * @param title
+     *            the title
      */
     public void setTitle(String title) {
         this.title = title;
@@ -172,7 +189,8 @@ public class UserEntity extends InternalIdSkeleton {
     }
 
     /**
-     * @param userType the user type
+     * @param userType
+     *            the user type
      */
     public void setUserType(String userType) {
         this.userType = userType;
@@ -186,7 +204,8 @@ public class UserEntity extends InternalIdSkeleton {
     }
 
     /**
-     * @param preferredLanguage the preferred languages
+     * @param preferredLanguage
+     *            the preferred languages
      */
     public void setPreferredLanguage(String preferredLanguage) {
         this.preferredLanguage = preferredLanguage;
@@ -200,7 +219,8 @@ public class UserEntity extends InternalIdSkeleton {
     }
 
     /**
-     * @param locale the locale
+     * @param locale
+     *            the locale
      */
     public void setLocale(String locale) {
         this.locale = locale;
@@ -214,7 +234,8 @@ public class UserEntity extends InternalIdSkeleton {
     }
 
     /**
-     * @param timezone the timezone
+     * @param timezone
+     *            the timezone
      */
     public void setTimezone(String timezone) {
         this.timezone = timezone;
@@ -228,7 +249,8 @@ public class UserEntity extends InternalIdSkeleton {
     }
 
     /**
-     * @param active the active status
+     * @param active
+     *            the active status
      */
     public void setActive(Boolean active) {
         this.active = active;
@@ -242,7 +264,8 @@ public class UserEntity extends InternalIdSkeleton {
     }
 
     /**
-     * @param password the password
+     * @param password
+     *            the password
      */
     public void setPassword(String password) {
         this.password = password;
@@ -257,38 +280,61 @@ public class UserEntity extends InternalIdSkeleton {
         this.displayName = displayName;
     }
 
-
     public String getUserName() {
         return userName;
     }
 
     /**
-     * @param userName the user name
+     * @param userName
+     *            the user name
      */
     public void setUserName(String userName) {
         this.userName = userName;
     }
 
     /**
+     * Returns an immutable view of the list of emails
+     *
      * @return the emails entity
      */
     public Set<EmailEntity> getEmails() {
-        if (emails == null) {
-            emails = new HashSet<>();
-        }
-        return emails;
+        return ImmutableSet.copyOf(emails);
     }
 
     /**
-     * @param emails the emails entity
+     * Adds a new email to this user
+     *
+     * @param email
+     *            the email to add
      */
+    public void addEmail(EmailEntity email) {
+        emails.add(email);
+    }
+
+    /**
+     * Removes the given email from this user
+     *
+     * @param email
+     *            the email to remove
+     */
+    public void removeEmail(EmailEntity email) {
+        emails.remove(email);
+    }
+
+    /**
+     * Removes all email's from this user
+     */
+    public void removeAllEmails(){
+        emails.clear();
+    }
+
+    /**
+     * @param emails
+     *            the emails entity
+     * @deprecated
+     */
+    @Deprecated
     public void setEmails(Set<EmailEntity> emails) {
-        //Setting Foreign key in child entity because hibernate did it not automatically
-        if (emails != null) {
-            for (EmailEntity emailEntity : emails) {
-                emailEntity.setUser(this);
-            }
-        }
         this.emails = emails;
     }
 
@@ -303,14 +349,10 @@ public class UserEntity extends InternalIdSkeleton {
     }
 
     /**
-     * @param userExtensions the extension data of the user
+     * @param userExtensions
+     *            the extension data of the user
      */
     public void setUserExtensions(Set<ExtensionFieldValueEntity> userExtensions) {
-        if (userExtensions != null) {
-            for (ExtensionFieldValueEntity extensionValue : userExtensions) {
-                extensionValue.setUser(this);
-            }
-        }
         this.extensionFieldValues = userExtensions;
     }
 
@@ -318,22 +360,43 @@ public class UserEntity extends InternalIdSkeleton {
      * @return the phone numbers entity
      */
     public Set<PhoneNumberEntity> getPhoneNumbers() {
-        if (phoneNumbers == null) {
-            phoneNumbers = new HashSet<>();
-        }
         return phoneNumbers;
     }
 
     /**
-     * @param phoneNumbers the phone numbers entity
+     * Adds a new phoneNumber to this user
+     *
+     * @param phoneNumber
+     *            the phoneNumnber to add
      */
+    public void addPhoneNumber(PhoneNumberEntity phoneNumber) {
+        phoneNumbers.add(phoneNumber);
+    }
+
+    /**
+     * Removes the given phoneNumber from this user
+     *
+     * @param phoneNumber
+     *            the phoneNumber to remove
+     */
+    public void removePhoneNumber(PhoneNumberEntity phoneNumber) {
+        phoneNumbers.remove(phoneNumber);
+    }
+
+    /**
+     * Removes all phoneNumber's from this user
+     */
+    public void removeAllPhoneNumbers(){
+        phoneNumbers.clear();
+    }
+
+    /**
+     * @param phoneNumbers
+     *            the phone numbers entity
+     * @deprecated
+     */
+    @Deprecated
     public void setPhoneNumbers(Set<PhoneNumberEntity> phoneNumbers) {
-        //Setting Foreign key in child entity because hibernate did it not automatically
-        if (phoneNumbers != null) {
-            for (PhoneNumberEntity phoneNumberEntity : phoneNumbers) {
-                phoneNumberEntity.setUser(this);
-            }
-        }
         this.phoneNumbers = phoneNumbers;
     }
 
@@ -341,191 +404,289 @@ public class UserEntity extends InternalIdSkeleton {
      * @return the instant messaging entity
      */
     public Set<ImEntity> getIms() {
-        if (ims == null) {
-            ims = new HashSet<>();
-        }
         return ims;
     }
 
     /**
-     * @param ims the instant messaging entity
+     * @param ims
+     *            the instant messaging entity
+     * @deprecated
      */
+    @Deprecated
     public void setIms(Set<ImEntity> ims) {
-        //Setting Foreign key in child entity because hibernate did it not automatically
-        if (ims != null) {
-            for (ImEntity imEntity : ims) {
-                imEntity.setUser(this);
-            }
-        }
         this.ims = ims;
+    }
+
+    /**
+     * Adds a new im to this user
+     *
+     * @param im
+     *            the im to add
+     */
+    public void addIm(ImEntity im) {
+        ims.add(im);
+    }
+
+    /**
+     * Removes the given im from this user
+     *
+     * @param im
+     *            the im to remove
+     */
+    public void removeIm(ImEntity im) {
+        ims.remove(im);
+    }
+
+    /**
+     * Removes all im's from this user
+     */
+    public void removeAllIms(){
+        ims.clear();
     }
 
     /**
      * @return the photos entity
      */
     public Set<PhotoEntity> getPhotos() {
-        if (photos == null) {
-            photos = new HashSet<>();
-        }
         return photos;
     }
 
     /**
-     * @param photos the photos entity
+     * @param photos
+     *            the photos entity
+     * @deprecated
      */
+    @Deprecated
     public void setPhotos(Set<PhotoEntity> photos) {
-        //Setting Foreign key in child entity because hibernate did it not automatically
-        if (photos != null) {
-            for (PhotoEntity photoEntity : photos) {
-                photoEntity.setUser(this);
-            }
-        }
         this.photos = photos;
+    }
+
+    /**
+     * Adds a new photo to this user
+     *
+     * @param photo
+     *            the photo to add
+     */
+    public void addPhoto(PhotoEntity photo) {
+        photos.add(photo);
+    }
+
+    /**
+     * Removes the given photo from this user
+     *
+     * @param photo
+     *            the photo to remove
+     */
+    public void removePhoto(PhotoEntity photo) {
+        photos.remove(photo);
+    }
+
+    /**
+     * Removes all photo's from this user
+     */
+    public void removeAllPhotos(){
+        photos.clear();
     }
 
     /**
      * @return the addresses entity
      */
     public Set<AddressEntity> getAddresses() {
-        if (addresses == null) {
-            addresses = new HashSet<>();
-        }
         return addresses;
     }
 
     /**
-     * @param addresses the addresses entity
+     * @param addresses
+     *            the addresses entity
+     * @deprecated
      */
+    @Deprecated
     public void setAddresses(Set<AddressEntity> addresses) {
         this.addresses = addresses;
+    }
+
+    /**
+     * Adds a new address to this user
+     *
+     * @param address
+     *            the address to add
+     */
+    public void addAddress(AddressEntity address) {
+        addresses.add(address);
+    }
+
+    /**
+     * Removes the given address from this user
+     *
+     * @param address
+     *            the address to remove
+     */
+    public void removeAddress(AddressEntity address) {
+        addresses.remove(address);
+    }
+
+    /**
+     * Removes all addresses from this user
+     */
+    public void removeAllAddresses(){
+        addresses.clear();
     }
 
     /**
      * @return the entitlements
      */
     public Set<EntitlementsEntity> getEntitlements() {
-        if (entitlements == null) {
-            entitlements = new HashSet<>();
-        }
         return entitlements;
     }
 
     /**
-     * @param entitlements the entitlements
+     * @param entitlements
+     *            the entitlements
+     * @deprecated
      */
+    @Deprecated
     public void setEntitlements(Set<EntitlementsEntity> entitlements) {
         this.entitlements = entitlements;
+    }
+
+    /**
+     * Adds a new entitlement to this user
+     *
+     * @param entitlement
+     *            the entitlement to add
+     */
+    public void addEntitlement(EntitlementsEntity entitlement) {
+        entitlements.add(entitlement);
+    }
+
+    /**
+     * Removes the given entitlement from this user
+     *
+     * @param entitlement
+     *            the entitlement to remove
+     */
+    public void removeEntitlement(EntitlementsEntity entitlement) {
+        entitlements.remove(entitlement);
+    }
+
+    /**
+     * Removes all entitlement's from this user
+     */
+    public void removeAllEntitlements(){
+        entitlements.clear();
     }
 
     /**
      * @return the roles
      */
     public Set<RolesEntity> getRoles() {
-        if (roles == null) {
-            roles = new HashSet<>();
-        }
         return roles;
     }
 
     /**
-     * @param roles the roles
+     * @param roles
+     *            the roles
+     * @deprecated
      */
+    @Deprecated
     public void setRoles(Set<RolesEntity> roles) {
         this.roles = roles;
+    }
+
+    /**
+     * Adds a new role to this user
+     *
+     * @param role
+     *            the role to add
+     */
+    public void addRole(RolesEntity role) {
+        roles.add(role);
+    }
+
+    /**
+     * Removes the given role from this user
+     *
+     * @param role
+     *            the role to remove
+     */
+    public void removeRole(RolesEntity role) {
+        roles.remove(role);
+    }
+
+    /**
+     * Removes all role's from this user
+     */
+    public void removeAllRoles(){
+        roles.clear();
     }
 
     /**
      * @return the X509 certs
      */
     public Set<X509CertificateEntity> getX509Certificates() {
-        if (x509Certificates == null) {
-            x509Certificates = new HashSet<>();
-        }
         return x509Certificates;
     }
 
     /**
-     * @param x509Certificates the X509 certs
+     * @param x509Certificates
+     *            the X509 certs
+     * @deprecated
      */
+    @Deprecated
     public void setX509Certificates(Set<X509CertificateEntity> x509Certificates) {
-        //Setting Foreign key in child entity because hibernate did it not automatically
-        if (x509Certificates != null) {
-            for (X509CertificateEntity certificateEntity : x509Certificates) {
-                certificateEntity.setUser(this);
-            }
-        }
         this.x509Certificates = x509Certificates;
     }
 
     /**
-     * Registers a new extension for this User. If the given extension is already registered, it will be ignored.
+     * Adds a new x509Certificate to this user
      *
-     * @param extension The extension to register
+     * @param x509Certificate
+     *            the x509Certificate to add
      */
-    public void registerExtension(ExtensionEntity extension) {
-        if (extension == null) {
-            throw new IllegalArgumentException("extension must not be null");
-        }
-
-        registeredExtensions.add(extension);
+    public void addX509Certificate(X509CertificateEntity x509Certificate) {
+        x509Certificates.add(x509Certificate);
     }
 
     /**
-     * Read all registered user extensions.
+     * Removes the given x509Certificate from this user
      *
-     * @return A set of all registered user extensions. Never null;
+     * @param x509Certificate
+     *            the x509Certificate to remove
      */
-    public Set<ExtensionEntity> getRegisteredExtensions() {
-        return registeredExtensions;
+    public void removeX509Certificate(X509CertificateEntity x509Certificate) {
+        x509Certificates.remove(x509Certificate);
     }
 
     /**
-     * Adds or updates an extension field value for this User. When updating, the
-     * old value of the extension field is removed from this user and the new
-     * one will be added.
+     * Removes all x509Certificate's from this user
+     */
+    public void removeAllX509Certificates(){
+        x509Certificates.clear();
+    }
+
+    /**
+     * Adds or updates an extension field value for this User. When updating, the old value of the extension field is
+     * removed from this user and the new one will be added.
      *
-     * @param extensionValue The extension field value to add or update
+     * @param extensionValue
+     *            The extension field value to add or update
      */
     public void addOrUpdateExtensionValue(ExtensionFieldValueEntity extensionValue) {
         if (extensionValue == null) {
             throw new IllegalArgumentException("extensionValue must not be null");
         }
 
-
         if (extensionFieldValues.contains(extensionValue)) {
             extensionFieldValues.remove(extensionValue);
         }
-
-        extensionValue.setUser(this);
 
         extensionFieldValues.add(extensionValue);
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()){
-            return false;
-        }
-
-        UserEntity that = (UserEntity) o;
-
-        return userName.equals(that.userName);
-
-    }
-
-    @Override
-    public int hashCode() {
-        return userName.hashCode();
-    }
-
-    @Override
     public String toString() {
-        return "UserEntity{" +
-                "UUID='" + getId() + "\', " +
-                "userName='" + userName + '\'' +
-                '}';
+        StringBuilder builder = new StringBuilder();
+        builder.append("UserEntity [userName=").append(userName).append(", getId()=").append(getId()).append("]");
+        return builder.toString();
     }
 }

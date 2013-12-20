@@ -31,30 +31,6 @@ class ImEntitySpec extends Specification {
     ImEntity imsEntity = new ImEntity()
     def userEntity = Mock(UserEntity)
 
-    def "setter and getter for the value should be present"() {
-        when:
-        imsEntity.setValue("someone@googlemail.com")
-
-        then:
-        imsEntity.getValue() == "someone@googlemail.com"
-    }
-
-    def "setter and getter for the type should be present"() {
-        when:
-        imsEntity.setType("gtalk")
-
-        then:
-        imsEntity.getType() == "gtalk"
-    }
-
-    def "setter and getter for the user should be present"() {
-        when:
-        imsEntity.setUser(userEntity)
-
-        then:
-        imsEntity.getUser() == userEntity
-    }
-
     def "should throw an exception if the type is unknown"() {
         when:
         imsEntity.setType("huch")
@@ -64,11 +40,4 @@ class ImEntitySpec extends Specification {
         e.message == "No enum constant org.osiam.storage.entities.ImEntity.CanonicalImTypes.huch"
     }
 
-    def "setter and getter for id should be present"() {
-        when:
-        imsEntity.setMultiValueId(1234)
-
-        then:
-        imsEntity.getMultiValueId() == 1234
-    }
 }

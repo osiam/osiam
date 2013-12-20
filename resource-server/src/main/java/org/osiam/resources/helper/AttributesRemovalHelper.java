@@ -26,6 +26,7 @@ package org.osiam.resources.helper;
 import java.io.IOException;
 import java.util.Map;
 
+import org.osiam.resources.scim.Resource;
 import org.osiam.resources.scim.SCIMSearchResult;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -39,11 +40,12 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 public class AttributesRemovalHelper {
 
 
-    public SCIMSearchResult removeSpecifiedAttributes(SCIMSearchResult resultList, Map<String, Object> parameterMap) {
+    public <T extends Resource> SCIMSearchResult<T> removeSpecifiedAttributes(SCIMSearchResult<T> resultList, Map<String, Object> parameterMap) {
         return getJsonResponseWithAdditionalFields(resultList, parameterMap);
     }
 
-    private SCIMSearchResult getJsonResponseWithAdditionalFields(SCIMSearchResult scimSearchResult, Map<String, Object> parameterMap) {
+    @SuppressWarnings("unchecked")
+    private <T extends Resource> SCIMSearchResult<T> getJsonResponseWithAdditionalFields(SCIMSearchResult<T> scimSearchResult, Map<String, Object> parameterMap) {
 
         ObjectMapper mapper = new ObjectMapper();
 

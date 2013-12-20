@@ -40,38 +40,6 @@ class EmailEntitySpec extends Specification {
     EmailEntity emailEntity = new EmailEntity()
     def userEntity = Mock(UserEntity)
 
-    def "setter and getter for the email should be present"() {
-        when:
-        emailEntity.setValue("work@high.tech")
-
-        then:
-        emailEntity.getValue() == "work@high.tech"
-    }
-
-    def "setter and getter for the type should be present"() {
-        when:
-        emailEntity.setType("home")
-
-        then:
-        emailEntity.getType() == "home"
-    }
-
-    def "setter and getter for primary should be present"() {
-        when:
-        emailEntity.setPrimary(true)
-
-        then:
-        emailEntity.isPrimary()
-    }
-
-    def "setter and getter for user should be present"() {
-        when:
-        emailEntity.setUser(userEntity)
-
-        then:
-        emailEntity.getUser() == userEntity
-    }
-
     def "should throw an exception if the type is unknown"() {
         when:
         emailEntity.setType("huch")
@@ -81,11 +49,4 @@ class EmailEntitySpec extends Specification {
         e.message == "No enum constant org.osiam.storage.entities.EmailEntity.CanonicalEmailTypes.huch"
     }
 
-    def "setter and getter for id should be present"() {
-        when:
-        emailEntity.setMultiValueId(1234)
-
-        then:
-        emailEntity.getMultiValueId() == 1234
-    }
 }

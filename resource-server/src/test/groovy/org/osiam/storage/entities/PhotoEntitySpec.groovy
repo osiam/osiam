@@ -33,7 +33,6 @@ class PhotoEntitySpec extends Specification {
     PhotoEntity photoEntity = new PhotoEntity()
     def userEntity = Mock(UserEntity)
 
-
     def "should throw exception if the value has no valid file suffix"() {
         when:
         photoEntity.setValue("https://photos.example.com/profilephoto/72930000000Ccne/T")
@@ -41,22 +40,6 @@ class PhotoEntitySpec extends Specification {
         then:
         def e = thrown(IllegalArgumentException)
         e.getMessage() == "The photo MUST have an attribute 'value' that ends with JPEG, JPG, GIF, PNG."
-    }
-
-    def "setter and getter for the type should be present"() {
-        when:
-        photoEntity.setType("thumbnail")
-
-        then:
-        photoEntity.getType() == "thumbnail"
-    }
-
-    def "setter and getter for the user should be present"() {
-        when:
-        photoEntity.setUser(userEntity)
-
-        then:
-        photoEntity.getUser() == userEntity
     }
 
     def "value should contain a valid file suffix"() {
@@ -76,11 +59,4 @@ class PhotoEntitySpec extends Specification {
         e.message == "No enum constant org.osiam.storage.entities.PhotoEntity.CanonicalPhotoTypes.huch"
     }
 
-    def "setter and getter for id should be present"() {
-        when:
-        photoEntity.setMultiValueId(1234)
-
-        then:
-        photoEntity.getMultiValueId() == 1234
-    }
 }

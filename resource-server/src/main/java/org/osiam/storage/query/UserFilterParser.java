@@ -36,7 +36,7 @@ public class UserFilterParser extends FilterParser<UserEntity> {
     private NumberPadder numberPadder;
 
     @Override
-    protected FilterChain<UserEntity> createFilterChain(String filter) {
+    protected FilterChain<UserEntity> createFilterChain(ScimExpression filter) {
         return new UserSimpleFilterChain(entityManager.getCriteriaBuilder(), extensionDao, filter, numberPadder);
     }
 

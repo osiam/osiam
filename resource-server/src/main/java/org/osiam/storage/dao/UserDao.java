@@ -23,88 +23,86 @@
 
 package org.osiam.storage.dao;
 
-import java.util.Set;
-import java.util.logging.Level;
-
 import javax.inject.Inject;
-import javax.persistence.Query;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Root;
 
 import org.osiam.resources.exceptions.ResourceNotFoundException;
-import org.osiam.resources.scim.Constants;
-import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.UserEntity;
-import org.osiam.storage.query.FilterParser;
+import org.osiam.storage.entities.UserEntity_;
 import org.osiam.storage.query.UserFilterParser;
-import org.osiam.storage.query.UserQueryField;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class UserDao extends ResourceDao<UserEntity> implements GenericDao<UserEntity> {
+public class UserDao implements GenericDao<UserEntity> {
 
     @Inject
     private UserFilterParser filterParser;
 
+    @Inject
+    private ResourceDao resourceDao;
+
     @Override
     public void create(UserEntity userEntity) {
-        em.persist(userEntity);
+        resourceDao.create(userEntity);
     }
 
     @Override
     public UserEntity getById(String id) {
         try {
-            return getInternalIdSkeleton(id);
-        } catch (ClassCastException c) {
-            LOGGER.log(Level.WARNING, c.getMessage(), c);
-            throw new ResourceNotFoundException("Resource " + id + " is not an User.", c);
+            return resourceDao.getById(id, UserEntity.class);
+        } catch (ResourceNotFoundException rnfe) {
+            throw new ResourceNotFoundException(String.format("User with id '%s' not found", id), rnfe);
         }
     }
 
     public UserEntity getByUsername(String userName) {
-        Query query = em.createNamedQuery("getUserByUsername");
-        query.setParameter("username", userName);
-        return getSingleInternalIdSkeleton(query, userName);
+        try {
+            return resourceDao.getByAttribute(UserEntity_.userName, userName, UserEntity.class);
+        } catch (ResourceNotFoundException rnfe) {
+            throw new ResourceNotFoundException(String.format("User with userName '%s' not found", userName), rnfe);
+        }
+    }
+
+    /**
+     * Checks if a userName is already taken by another user.
+     *
+     * @param userName
+     *            the userName to check
+     * @return true if the userName is taken, otherwise false
+     */
+    public boolean isUserNameAlreadyTaken(String userName) {
+        return isUserNameAlreadyTaken(userName, null);
+    }
+
+    /**
+     * Checks if a userName is already taken by another user. Ignores the user with the given id.
+     *
+     * @param userName
+     *            the userName to check
+     * @param id
+     *            the id of the user to ignore
+     * @return true if the userName is taken, otherwise false
+     */
+    public boolean isUserNameAlreadyTaken(String userName, String id) {
+        return resourceDao.isUniqueAttributeAlreadyTaken(userName, id, UserEntity_.userName, UserEntity.class);
     }
 
     @Override
     public UserEntity update(UserEntity entity) {
-        return em.merge(entity);
+        return resourceDao.update(entity);
     }
 
     @Override
     public void delete(String id) {
-        UserEntity userEntity = getById(id);
-        Set<GroupEntity> groups = userEntity.getGroups();
-        for (GroupEntity group : groups) {
-            group.removeMember(userEntity);
+        try {
+            resourceDao.delete(id);
+        } catch (ResourceNotFoundException rnfe) {
+            throw new ResourceNotFoundException(String.format("User with id '%s' not found", id), rnfe);
         }
-        em.remove(userEntity);
     }
 
     @Override
     public SearchResult<UserEntity> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
-        return search(UserEntity.class, filter, count, startIndex, sortBy, sortOrder);
-    }
-
-    @Override
-    protected FilterParser<UserEntity> getFilterParser() {
-        return filterParser;
-    }
-
-    @Override
-    protected Class<UserEntity> getResourceClass() {
-        return UserEntity.class;
-    }
-
-    @Override
-    protected String getCoreSchema() {
-        return Constants.USER_CORE_SCHEMA;
-    }
-
-    @Override
-    protected Expression<?> getDefaultSortByField(Root<UserEntity> root) {
-        return UserQueryField.USERNAME.createSortByField(root, em.getCriteriaBuilder());
+        return resourceDao.search(UserEntity.class, filter, count, startIndex, sortBy, sortOrder, filterParser);
     }
 
 }

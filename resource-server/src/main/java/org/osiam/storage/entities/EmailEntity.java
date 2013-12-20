@@ -27,13 +27,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * Email Entity
  */
-@Entity(name = "scim_email")
-public class EmailEntity extends MultiValueAttributeEntitySkeleton implements HasUser, ChildOfMultiValueAttributeWithIdAndTypeAndPrimary {
+@Entity
+@Table(name = "scim_email")
+public class EmailEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndTypeAndPrimary {
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -42,9 +43,6 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ha
 
     @Column(name = "postgresql_does_not_like_primary")
     private boolean primary;
-
-    @ManyToOne(optional = false)
-    private UserEntity user;
 
     @Override
     public String getType() {
@@ -72,20 +70,9 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ha
     }
 
     @Override
-    public UserEntity getUser() {
-        return user;
-    }
-
-    @Override
-    public void setUser(UserEntity user) {
-        this.user = user;
-    }
-
-    @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + (primary ? 1 : 0);
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         return result;
     }
@@ -102,13 +89,18 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ha
             return false;
         }
         EmailEntity other = (EmailEntity) obj;
-        if (primary != other.primary) {
-            return false;
-        }
         if (type != other.type) {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("EmailEntity [type=").append(type).append(", primary=").append(primary).append(", getValue()=")
+                .append(getValue()).append("]");
+        return builder.toString();
     }
 
     public enum CanonicalEmailTypes {

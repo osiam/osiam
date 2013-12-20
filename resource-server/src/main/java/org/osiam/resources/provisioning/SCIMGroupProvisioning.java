@@ -23,12 +23,124 @@
 
 package org.osiam.resources.provisioning;
 
-import org.osiam.resources.scim.Group;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-/**
- * This interface has the purpose to get SCIM group out of and into a database, which must be provided by the using
- * application.
- */
-public interface SCIMGroupProvisioning extends SCIMProvisioning<Group> {
+import javax.inject.Inject;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
+
+import org.osiam.resources.converter.GroupConverter;
+import org.osiam.resources.exceptions.ResourceExistsException;
+import org.osiam.resources.exceptions.ResourceNotFoundException;
+import org.osiam.resources.provisioning.update.GroupUpdater;
+import org.osiam.resources.scim.Constants;
+import org.osiam.resources.scim.Group;
+import org.osiam.resources.scim.SCIMSearchResult;
+import org.osiam.storage.dao.GroupDao;
+import org.osiam.storage.dao.SearchResult;
+import org.osiam.storage.entities.GroupEntity;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
+
+@Service
+public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
+
+    private static final Logger LOGGER = Logger.getLogger(SCIMGroupProvisioning.class.getName());
+
+    @Inject
+    private GroupConverter groupConverter;
+
+    @Inject
+    private GroupDao groupDao;
+
+    @Inject
+    private GroupUpdater groupUpdater;
+
+    @Override
+    public Group create(Group group) {
+        GroupEntity enrichedGroup = groupConverter.fromScim(group);
+        enrichedGroup.setId(UUID.randomUUID());
+
+        try {
+            groupDao.create(enrichedGroup);
+        } catch (DataIntegrityViolationException e) {
+            LOGGER.log(Level.INFO, "An exception got thrown while creating a group.", e);
+
+            throw new ResourceExistsException(group.getDisplayName() + " already exists.", e);
+        }
+
+        return groupConverter.toScim(enrichedGroup);
+    }
+
+    @Override
+    public Group replace(String id, Group group) {
+
+        GroupEntity existingEntity = groupDao.getById(id);
+
+        GroupEntity groupEntity = groupConverter.fromScim(group);
+
+        groupEntity.setInternalId(existingEntity.getInternalId());
+        groupEntity.setId(existingEntity.getId());
+        groupEntity.setMeta(existingEntity.getMeta());
+        groupEntity.touch();
+
+        groupEntity = groupDao.update(groupEntity);
+        return groupConverter.toScim(groupEntity);
+    }
+
+    @Override
+    public SCIMSearchResult<Group> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
+        List<Group> groups = new ArrayList<>();
+
+        // Decrease startIndex by 1 because scim pagination starts at 1 and JPA doesn't
+        SearchResult<GroupEntity> result = groupDao.search(filter, sortBy, sortOrder, count, startIndex - 1);
+
+        for (GroupEntity group : result.results) {
+            groups.add(groupConverter.toScim(group));
+        }
+
+        return new SCIMSearchResult<>(groups, result.totalResults, count, startIndex, Constants.GROUP_CORE_SCHEMA);
+    }
+
+    @Override
+    public Group getById(String id) {
+        try {
+            return groupConverter.toScim(groupDao.getById(id));
+        } catch (NoResultException nre) {
+            LOGGER.log(Level.INFO, nre.getMessage(), nre);
+
+            throw new ResourceNotFoundException(String.format("Group with id '%s' not found", id), nre);
+        } catch (PersistenceException pe) {
+            LOGGER.log(Level.WARNING, pe.getMessage(), pe);
+
+            throw new ResourceNotFoundException(String.format("Group with id '%s' not found", id), pe);
+        }
+    }
+
+    @Override
+    public Group update(String id, Group group) {
+        GroupEntity groupEntity = groupDao.getById(id);
+
+        groupUpdater.update(group, groupEntity);
+
+        groupEntity.touch();
+
+        Group result = groupConverter.toScim(groupEntity);
+
+        return result;
+    }
+
+    @Override
+    public void delete(String id) {
+        try {
+            groupDao.delete(id);
+        } catch (NoResultException nre) {
+            throw new ResourceNotFoundException(String.format("Group with id '%s' not found", id), nre);
+        }
+    }
 
 }

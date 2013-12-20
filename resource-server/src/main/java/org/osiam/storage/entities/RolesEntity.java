@@ -24,11 +24,20 @@
 package org.osiam.storage.entities;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  * Roles Entity
  */
-@Entity(name = "scim_roles")
+@Entity
+@Table(name = "scim_roles")
 public class RolesEntity extends MultiValueAttributeEntitySkeleton {
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("RolesEntity [getValue()=").append(getValue()).append("]");
+        return builder.toString();
+    }
 
 }

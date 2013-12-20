@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.osiam</groupId>
         <artifactId>osiam-server-parent</artifactId>
-        <version>0.13</version>
+        <version>0.14</version>
     </parent>
 
     <artifactId>osiam-resource-server</artifactId>
@@ -136,6 +136,22 @@
                 </dependencies>
             </plugin>
 
+            <plugin>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <version>4.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
+                        <configuration>
+                            <listener>true</listener>
+                            <visitor>true</visitor>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -329,8 +345,21 @@
         <dependency>
             <groupId>org.osiam</groupId>
             <artifactId>osiam-interaction-model</artifactId>
-            <version>0.13</version>
+            <version>0.14</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4</artifactId>
+            <version>4.1</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>15.0</version>
+        </dependency>
+
     </dependencies>
 
 </project>

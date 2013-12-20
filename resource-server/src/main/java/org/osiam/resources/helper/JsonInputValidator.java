@@ -30,10 +30,12 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.osiam.resources.exceptions.SchemaUnknownException;
 import org.osiam.resources.helper.validators.PatchValidator;
 import org.osiam.resources.helper.validators.PostValidator;
 import org.osiam.resources.helper.validators.PutValidator;
 import org.osiam.resources.helper.validators.Validator;
+import org.osiam.resources.scim.Constants;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.User;
 import org.springframework.stereotype.Service;
@@ -71,6 +73,9 @@ public class JsonInputValidator {
         } catch (JsonParseException ex) {
             throw new IllegalArgumentException("The JSON structure is invalid", ex);
         }
+        if (user.getSchemas() == null || user.getSchemas().isEmpty() || !user.getSchemas().contains(Constants.USER_CORE_SCHEMA)) {
+            throw new SchemaUnknownException();
+        }
         if (user.getId() != null && !user.getId().isEmpty()) {
             user = new User.Builder(user).setId(null).build();
         }
@@ -80,11 +85,16 @@ public class JsonInputValidator {
     public Group validateJsonGroup(HttpServletRequest request) throws IOException {
         String jsonInput = getRequestBody(request);
         Validator validator = validators.get(RequestMethod.valueOf(request.getMethod()));
+        Group group;
         try {
-            return validator.validateGroup(jsonInput);
+            group = validator.validateGroup(jsonInput);
         } catch (JsonParseException ex) {
             throw new IllegalArgumentException("The JSON structure is invalid", ex);
         }
+        if (group.getSchemas() == null || group.getSchemas().isEmpty() || !group.getSchemas().contains(Constants.GROUP_CORE_SCHEMA)) {
+            throw new SchemaUnknownException();
+        }
+        return group;
     }
 
     private String getRequestBody(HttpServletRequest request) throws IOException {

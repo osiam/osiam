@@ -27,10 +27,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.I_AM_A_TEAPOT)
-public class SchemaUnknownException extends IllegalArgumentException {
+public class SchemaUnknownException extends OsiamException {
     private static final long serialVersionUID = 8136231295498687655L;
 
     public SchemaUnknownException() {
-        super("Delivered schema is unknown.");
+        super("Schema provided by consumer is unknown.");
     }
 }

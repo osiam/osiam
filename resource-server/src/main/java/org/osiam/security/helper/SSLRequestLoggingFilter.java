@@ -35,11 +35,10 @@ import javax.servlet.ServletResponse;
 import org.apache.log4j.Logger;
 
 /**
- * Created with IntelliJ IDEA.
+ * Filter to check if TLS is enabled.
  * User: jtodea
  * Date: 25.06.13
  * Time: 15:33
- * To change this template use File | Settings | File Templates.
  */
 public class SSLRequestLoggingFilter implements Filter {
 

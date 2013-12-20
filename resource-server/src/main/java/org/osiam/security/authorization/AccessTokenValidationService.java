@@ -23,11 +23,10 @@
 
 package org.osiam.security.authorization;
 
-import java.io.IOException;
-
 import org.apache.http.HttpStatus;
 import org.osiam.helper.HttpClientHelper;
 import org.osiam.helper.HttpClientRequestResult;
+import org.osiam.helper.ObjectMapperWithExtensionConfig;
 import org.osiam.security.OAuth2AuthenticationSpring;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
@@ -36,12 +35,16 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.inject.Inject;
+import java.io.IOException;
 
 @Service
 public class AccessTokenValidationService implements ResourceServerTokenServices {
 
-    private ObjectMapper mapper;
+    @Inject
+    private ObjectMapperWithExtensionConfig mapper;
+
+    @Inject
     private HttpClientHelper httpClient;
 
     @Value("${osiam.server.port}")
@@ -51,16 +54,11 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
     @Value("${osiam.server.http.scheme}")
     private String httpScheme;
 
-    public AccessTokenValidationService() {
-        mapper = new ObjectMapper();
-        httpClient = new HttpClientHelper();
-    }
-
     @Override
     public OAuth2Authentication loadAuthentication(String accessToken) {
         final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort + "/osiam-auth-server";
 
-        HttpClientRequestResult result = httpClient.executeHttpGet(serverUri + "/token/validate/" + accessToken);
+        HttpClientRequestResult result = httpClient.executeHttpGet(serverUri + "/token/validate/" + accessToken, null, null);
 
         if (result.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
             throw new InvalidTokenException("invalid_token");
@@ -80,7 +78,7 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
     public OAuth2AccessToken readAccessToken(String accessToken) {
         final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort + "/osiam-auth-server";
 
-        HttpClientRequestResult result = httpClient.executeHttpGet(serverUri + "/token/" + accessToken);
+        HttpClientRequestResult result = httpClient.executeHttpGet(serverUri + "/token/" + accessToken, null, null);
 
         if (result.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
             throw new InvalidTokenException("invalid_token");
