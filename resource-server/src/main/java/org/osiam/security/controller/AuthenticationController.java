@@ -107,6 +107,7 @@ public class AuthenticationController {
         springClient.setGrants(dbClient.getGrants());
         springClient.setRedirectUri(dbClient.getRedirectUri());
         springClient.setAccessTokenValiditySeconds(dbClient.getAccessTokenValiditySeconds());
+        springClient.setRefreshTokenValiditySeconds(dbClient.getRefreshTokenValiditySeconds());
         springClient.setImplicit(dbClient.isImplicit());
         springClient.setExpiry(dbClient.getExpiry());
         springClient.setValidityInSeconds(dbClient.getValidityInSeconds());
