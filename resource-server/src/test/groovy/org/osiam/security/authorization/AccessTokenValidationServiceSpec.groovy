@@ -25,6 +25,7 @@ package org.osiam.security.authorization
 
 import org.osiam.helper.HttpClientHelper
 import org.osiam.helper.HttpClientRequestResult
+import org.osiam.helper.ObjectMapperWithExtensionConfig
 import org.osiam.security.AuthenticationSpring
 import org.osiam.security.AuthorizationRequestSpring
 import org.osiam.security.OAuth2AuthenticationSpring
@@ -47,7 +48,7 @@ class AccessTokenValidationServiceSpec extends Specification {
 
     static final String ACCESS_TOKEN = "accessToken"
 
-    def jacksonMapperMock = Mock(ObjectMapper)
+    def jacksonMapperMock = Mock(ObjectMapperWithExtensionConfig)
     def httpClientHelperMock = Mock(HttpClientHelper)
     def accessTokenValidationService = new AccessTokenValidationService(mapper: jacksonMapperMock, httpClient: httpClientHelperMock,
     httpScheme: "http", serverHost: "localhost", serverPort: 8080)
