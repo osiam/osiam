@@ -34,13 +34,12 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "scim_phoneNumber")
-public class PhoneNumberEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndType {
+public class PhoneNumberEntity extends BaseMultiValuedAttributeEntityWithValue {
 
     @Column
     @Enumerated(EnumType.STRING)
     private CanonicalPhoneNumberTypes type;
 
-    @Override
     public String getType() {
         if (type != null) {
             return type.toString();
@@ -48,7 +47,6 @@ public class PhoneNumberEntity extends MultiValueAttributeEntitySkeleton impleme
         return null;
     }
 
-    @Override
     public void setType(String type) {
         if (type != null) {
             this.type = CanonicalPhoneNumberTypes.valueOf(type);
@@ -83,9 +81,7 @@ public class PhoneNumberEntity extends MultiValueAttributeEntitySkeleton impleme
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("PhoneNumberEntity [type=").append(type).append(", getValue()=").append(getValue()).append("]");
-        return builder.toString();
+        return "PhoneNumberEntity [type=" + type + ", value=" + getValue() + ", primary=" + isPrimary() + "]";
     }
 
     public enum CanonicalPhoneNumberTypes {

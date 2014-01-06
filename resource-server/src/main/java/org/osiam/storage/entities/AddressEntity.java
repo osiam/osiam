@@ -27,8 +27,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
@@ -36,11 +34,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "scim_address")
-public class AddressEntity {
-
-    @Id
-    @GeneratedValue
-    private long id;
+public class AddressEntity extends BaseMultiValuedAttributeEntity{
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -67,18 +61,12 @@ public class AddressEntity {
     @Column(name = "postgresql_does_not_like_primary")
     private Boolean primary;
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
+    @Override
     public boolean isPrimary() {
         return primary;
     }
 
+    @Override
     public void setPrimary(boolean primary) {
         this.primary = primary;
     }

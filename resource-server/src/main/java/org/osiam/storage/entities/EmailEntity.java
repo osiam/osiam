@@ -34,17 +34,12 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "scim_email")
-public class EmailEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndTypeAndPrimary {
+public class EmailEntity extends BaseMultiValuedAttributeEntityWithValue {
 
     @Column
     @Enumerated(EnumType.STRING)
     private CanonicalEmailTypes type;
 
-
-    @Column(name = "postgresql_does_not_like_primary")
-    private boolean primary;
-
-    @Override
     public String getType() {
         if (type != null) {
             return type.toString();
@@ -52,21 +47,10 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ch
         return null;
     }
 
-    @Override
     public void setType(String type) {
         if (type != null) {
             this.type = CanonicalEmailTypes.valueOf(type);
         }
-    }
-
-    @Override
-    public boolean isPrimary() {
-        return primary;
-    }
-
-    @Override
-    public void setPrimary(boolean primary) {
-        this.primary = primary;
     }
 
     @Override
@@ -98,7 +82,7 @@ public class EmailEntity extends MultiValueAttributeEntitySkeleton implements Ch
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("EmailEntity [type=").append(type).append(", primary=").append(primary).append(", getValue()=")
+        builder.append("EmailEntity [type=").append(type).append(", primary=").append(isPrimary()).append(", getValue()=")
                 .append(getValue()).append("]");
         return builder.toString();
     }

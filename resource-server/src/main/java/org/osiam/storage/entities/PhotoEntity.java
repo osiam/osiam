@@ -36,7 +36,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "scim_photo")
-public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndType {
+public class PhotoEntity extends BaseMultiValuedAttributeEntityWithValue {
 
     // a valid photo url is everything which does not contain any control character and ends with jpg|jpeg|png|gif
     private static final Pattern PHOTO_SUFFIX = Pattern.compile("(?i)\\S+\\.(jpg|jpeg|png|gif)");
@@ -61,7 +61,6 @@ public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements Ch
         return !PHOTO_SUFFIX.matcher(value).matches();
     }
 
-    @Override
     public String getType() {
         if (type != null) {
             return type.toString();
@@ -69,7 +68,6 @@ public class PhotoEntity extends MultiValueAttributeEntitySkeleton implements Ch
         return null;
     }
 
-    @Override
     public void setType(String type) {
         if (type != null) {
             this.type = CanonicalPhotoTypes.valueOf(type);

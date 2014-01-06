@@ -23,19 +23,34 @@
 
 package org.osiam.storage.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
-/**
- * Roles Entity
- */
-@Entity
-@Table(name = "scim_roles")
-public class RolesEntity extends BaseMultiValuedAttributeEntityWithValue {
+@MappedSuperclass
+public abstract class BaseMultiValuedAttributeEntity {
 
-    @Override
-    public String toString() {
-        return "RolesEntity [value=" + getValue() + ", primary=" + isPrimary() + "]";
+    @Id
+    @GeneratedValue
+    @Column(name = "multi_value_id")
+    private long multiValueId;
+
+    private boolean primary;
+
+    public void setMultiValueId(long id) {
+        this.multiValueId = id;
     }
 
+    public long getMultiValueId() {
+        return multiValueId;
+    }
+
+    public boolean isPrimary() {
+        return primary;
+    }
+
+    public void setPrimary(boolean primary) {
+        this.primary = primary;
+    }
 }

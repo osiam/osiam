@@ -23,19 +23,18 @@
 
 package org.osiam.storage.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.MappedSuperclass;
 
-/**
- * Roles Entity
- */
-@Entity
-@Table(name = "scim_roles")
-public class RolesEntity extends BaseMultiValuedAttributeEntityWithValue {
+@MappedSuperclass
+public abstract class BaseMultiValuedAttributeEntityWithValue extends BaseMultiValuedAttributeEntity{
 
-    @Override
-    public String toString() {
-        return "RolesEntity [value=" + getValue() + ", primary=" + isPrimary() + "]";
+    private String value;
+
+    public String getValue() {
+        return value;
     }
 
+    public void setValue(String value) {
+        this.value = value;
+    }
 }

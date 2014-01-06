@@ -31,6 +31,11 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "scim_entitlements")
-public class EntitlementsEntity extends MultiValueAttributeEntitySkeleton {
+public class EntitlementsEntity extends BaseMultiValuedAttributeEntityWithValue {
+
+    @Override
+    public String toString() {
+        return "EntitlementsEntity [value=" + getValue() + ", primary=" + isPrimary() + "]";
+    }
 
 }
