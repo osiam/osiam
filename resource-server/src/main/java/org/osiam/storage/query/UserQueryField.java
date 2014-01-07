@@ -621,11 +621,13 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
             CanonicalAddressTypes addressType;
+
             if (constraint == FilterConstraint.PRESENT && (value == null || value.isEmpty())) {
                 addressType = null;
             } else {
                 addressType = CanonicalAddressTypes.valueOf(value);
             }
+
             SetJoin<UserEntity, AddressEntity> join = createOrGetJoin(ADDRESS_ALIAS, root, UserEntity_.addresses);
             return constraint.createPredicateForAddressTypeField(join.get(AddressEntity_.type),
                     addressType, cb);

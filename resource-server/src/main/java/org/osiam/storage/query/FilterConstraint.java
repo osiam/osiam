@@ -33,7 +33,7 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
 import org.osiam.resources.exceptions.InvalidConstraintException;
-import org.osiam.storage.entities.AddressEntity.CanonicalAddressTypes;
+import org.osiam.resources.scim.MultiValuedAttributeType;
 import org.osiam.storage.entities.EmailEntity.CanonicalEmailTypes;
 import org.osiam.storage.entities.ExtensionFieldEntity;
 import org.osiam.storage.entities.ImEntity.CanonicalImTypes;
@@ -73,8 +73,8 @@ public enum FilterConstraint {
         }
 
         @Override
-        public Predicate createPredicateForAddressTypeField(Path<CanonicalAddressTypes> path,
-                CanonicalAddressTypes value, CriteriaBuilder cb) {
+        public Predicate createPredicateForMultiValuedAttributeTypeField(Path<MultiValuedAttributeType> path,
+                MultiValuedAttributeType value, CriteriaBuilder cb) {
             return cb.equal(path, value);
         }
 
@@ -129,12 +129,6 @@ public enum FilterConstraint {
         }
 
         @Override
-        public Predicate createPredicateForAddressTypeField(Path<CanonicalAddressTypes> path,
-                CanonicalAddressTypes value, CriteriaBuilder cb) {
-            throw new InvalidConstraintException(toString());
-        }
-
-        @Override
         public Predicate createPredicateForPhoneNumberTypeField(Path<CanonicalPhoneNumberTypes> path,
                 CanonicalPhoneNumberTypes value, CriteriaBuilder cb) {
             throw new InvalidConstraintException(toString());
@@ -149,6 +143,12 @@ public enum FilterConstraint {
         @Override
         public Predicate createPredicateForPhotoTypeField(Path<CanonicalPhotoTypes> path, CanonicalPhotoTypes value,
                 CriteriaBuilder cb) {
+            throw new InvalidConstraintException(toString());
+        }
+
+        @Override
+        public Predicate createPredicateForMultiValuedAttributeTypeField(Path<MultiValuedAttributeType> path,
+                MultiValuedAttributeType value, CriteriaBuilder cb) {
             throw new InvalidConstraintException(toString());
         }
 
@@ -185,12 +185,6 @@ public enum FilterConstraint {
         }
 
         @Override
-        public Predicate createPredicateForAddressTypeField(Path<CanonicalAddressTypes> path,
-                CanonicalAddressTypes value, CriteriaBuilder cb) {
-            throw new InvalidConstraintException(toString());
-        }
-
-        @Override
         public Predicate createPredicateForPhoneNumberTypeField(Path<CanonicalPhoneNumberTypes> path,
                 CanonicalPhoneNumberTypes value, CriteriaBuilder cb) {
             throw new InvalidConstraintException(toString());
@@ -205,6 +199,12 @@ public enum FilterConstraint {
         @Override
         public Predicate createPredicateForPhotoTypeField(Path<CanonicalPhotoTypes> path, CanonicalPhotoTypes value,
                 CriteriaBuilder cb) {
+            throw new InvalidConstraintException(toString());
+        }
+
+        @Override
+        public Predicate createPredicateForMultiValuedAttributeTypeField(Path<MultiValuedAttributeType> path,
+                MultiValuedAttributeType value, CriteriaBuilder cb) {
             throw new InvalidConstraintException(toString());
         }
     },
@@ -240,12 +240,6 @@ public enum FilterConstraint {
         }
 
         @Override
-        public Predicate createPredicateForAddressTypeField(Path<CanonicalAddressTypes> path,
-                CanonicalAddressTypes value, CriteriaBuilder cb) {
-            return cb.isNotNull(path);
-        }
-
-        @Override
         public Predicate createPredicateForPhoneNumberTypeField(Path<CanonicalPhoneNumberTypes> path,
                 CanonicalPhoneNumberTypes value, CriteriaBuilder cb) {
             return cb.isNotNull(path);
@@ -260,6 +254,12 @@ public enum FilterConstraint {
         @Override
         public Predicate createPredicateForPhotoTypeField(Path<CanonicalPhotoTypes> path, CanonicalPhotoTypes value,
                 CriteriaBuilder cb) {
+            return cb.isNotNull(path);
+        }
+
+        @Override
+        public Predicate createPredicateForMultiValuedAttributeTypeField(Path<MultiValuedAttributeType> path,
+                MultiValuedAttributeType value, CriteriaBuilder cb) {
             return cb.isNotNull(path);
         }
     },
@@ -295,12 +295,6 @@ public enum FilterConstraint {
         }
 
         @Override
-        public Predicate createPredicateForAddressTypeField(Path<CanonicalAddressTypes> path,
-                CanonicalAddressTypes value, CriteriaBuilder cb) {
-            throw new InvalidConstraintException(toString());
-        }
-
-        @Override
         public Predicate createPredicateForPhoneNumberTypeField(Path<CanonicalPhoneNumberTypes> path,
                 CanonicalPhoneNumberTypes value, CriteriaBuilder cb) {
             throw new InvalidConstraintException(toString());
@@ -315,6 +309,12 @@ public enum FilterConstraint {
         @Override
         public Predicate createPredicateForPhotoTypeField(Path<CanonicalPhotoTypes> path, CanonicalPhotoTypes value,
                 CriteriaBuilder cb) {
+            throw new InvalidConstraintException(toString());
+        }
+
+        @Override
+        public Predicate createPredicateForMultiValuedAttributeTypeField(Path<MultiValuedAttributeType> path,
+                MultiValuedAttributeType value, CriteriaBuilder cb) {
             throw new InvalidConstraintException(toString());
         }
     },
@@ -350,12 +350,6 @@ public enum FilterConstraint {
         }
 
         @Override
-        public Predicate createPredicateForAddressTypeField(Path<CanonicalAddressTypes> path,
-                CanonicalAddressTypes value, CriteriaBuilder cb) {
-            throw new InvalidConstraintException(toString());
-        }
-
-        @Override
         public Predicate createPredicateForPhoneNumberTypeField(Path<CanonicalPhoneNumberTypes> path,
                 CanonicalPhoneNumberTypes value, CriteriaBuilder cb) {
             throw new InvalidConstraintException(toString());
@@ -370,6 +364,12 @@ public enum FilterConstraint {
         @Override
         public Predicate createPredicateForPhotoTypeField(Path<CanonicalPhotoTypes> path, CanonicalPhotoTypes value,
                 CriteriaBuilder cb) {
+            throw new InvalidConstraintException(toString());
+        }
+
+        @Override
+        public Predicate createPredicateForMultiValuedAttributeTypeField(Path<MultiValuedAttributeType> path,
+                MultiValuedAttributeType value, CriteriaBuilder cb) {
             throw new InvalidConstraintException(toString());
         }
 
@@ -406,12 +406,6 @@ public enum FilterConstraint {
         }
 
         @Override
-        public Predicate createPredicateForAddressTypeField(Path<CanonicalAddressTypes> path,
-                CanonicalAddressTypes value, CriteriaBuilder cb) {
-            throw new InvalidConstraintException(toString());
-        }
-
-        @Override
         public Predicate createPredicateForPhoneNumberTypeField(Path<CanonicalPhoneNumberTypes> path,
                 CanonicalPhoneNumberTypes value, CriteriaBuilder cb) {
             throw new InvalidConstraintException(toString());
@@ -426,6 +420,12 @@ public enum FilterConstraint {
         @Override
         public Predicate createPredicateForPhotoTypeField(Path<CanonicalPhotoTypes> path, CanonicalPhotoTypes value,
                 CriteriaBuilder cb) {
+            throw new InvalidConstraintException(toString());
+        }
+
+        @Override
+        public Predicate createPredicateForMultiValuedAttributeTypeField(Path<MultiValuedAttributeType> path,
+                MultiValuedAttributeType value, CriteriaBuilder cb) {
             throw new InvalidConstraintException(toString());
         }
     },
@@ -461,12 +461,6 @@ public enum FilterConstraint {
         }
 
         @Override
-        public Predicate createPredicateForAddressTypeField(Path<CanonicalAddressTypes> path,
-                CanonicalAddressTypes value, CriteriaBuilder cb) {
-            throw new InvalidConstraintException(toString());
-        }
-
-        @Override
         public Predicate createPredicateForPhoneNumberTypeField(Path<CanonicalPhoneNumberTypes> path,
                 CanonicalPhoneNumberTypes value, CriteriaBuilder cb) {
             throw new InvalidConstraintException(toString());
@@ -481,6 +475,12 @@ public enum FilterConstraint {
         @Override
         public Predicate createPredicateForPhotoTypeField(Path<CanonicalPhotoTypes> path, CanonicalPhotoTypes value,
                 CriteriaBuilder cb) {
+            throw new InvalidConstraintException(toString());
+        }
+
+        @Override
+        public Predicate createPredicateForMultiValuedAttributeTypeField(Path<MultiValuedAttributeType> path,
+                MultiValuedAttributeType value, CriteriaBuilder cb) {
             throw new InvalidConstraintException(toString());
         }
     };
@@ -514,11 +514,11 @@ public enum FilterConstraint {
 
     public abstract Predicate createPredicateForBooleanField(Path<Boolean> path, Boolean value, CriteriaBuilder cb);
 
+    public abstract Predicate createPredicateForMultiValuedAttributeTypeField(Path<MultiValuedAttributeType> path,
+            MultiValuedAttributeType value, CriteriaBuilder cb);
+
     public abstract Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path,
             CanonicalEmailTypes value, CriteriaBuilder cb);
-
-    public abstract Predicate createPredicateForAddressTypeField(Path<CanonicalAddressTypes> path,
-            CanonicalAddressTypes value, CriteriaBuilder cb);
 
     public abstract Predicate createPredicateForExtensionField(Path<String> path, String value,
             ExtensionFieldEntity field, CriteriaBuilder cb);

@@ -43,7 +43,7 @@ public class AddressConverter implements Converter<Address, AddressEntity> {
         addressEntity.setPrimary((scim.isPrimary() == null ? false : scim.isPrimary()));
         addressEntity.setRegion(scim.getRegion());
         addressEntity.setStreetAddress(scim.getStreetAddress());
-        addressEntity.setType(scim.getType());
+        addressEntity.setType(new Address.Type(scim.getType()));
         return addressEntity;
     }
 

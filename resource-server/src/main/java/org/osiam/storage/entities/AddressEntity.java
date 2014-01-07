@@ -23,26 +23,33 @@
 
 package org.osiam.storage.entities;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.Lob;
+import javax.persistence.PostLoad;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
+import org.osiam.resources.scim.Address;
 
 /**
  * Address Entity
  */
 @Entity
 @Table(name = "scim_address")
-public class AddressEntity extends BaseMultiValuedAttributeEntity{
+public class AddressEntity extends BaseMultiValuedAttributeEntity {
 
-    @Enumerated(EnumType.STRING)
-    private CanonicalAddressTypes type;
+    @Column(name="type")
+    private String typeAsString;
+
+    @Transient
+    private Address.Type type;
 
     @Lob
-    @Type(type="org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.StringClobType")
     private String formatted;
 
     private String streetAddress;
@@ -62,10 +69,8 @@ public class AddressEntity extends BaseMultiValuedAttributeEntity{
         return null;
     }
 
-    public void setType(String type) {
-        if (type != null) {
-            this.type = CanonicalAddressTypes.valueOf(type);
-        }
+    public void setType(Address.Type type) {
+        this.type = type;
     }
 
     public String getFormatted() {
@@ -114,6 +119,16 @@ public class AddressEntity extends BaseMultiValuedAttributeEntity{
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    @PrePersist @PreUpdate
+    protected void convertTypeToString() {
+        typeAsString = type.getValue();
+    }
+
+    @PostLoad
+    protected void convertStringTypeToType() {
+        type = new Address.Type(typeAsString);
     }
 
     @Override
@@ -200,7 +215,4 @@ public class AddressEntity extends BaseMultiValuedAttributeEntity{
         return builder.toString();
     }
 
-    public enum CanonicalAddressTypes {
-        work, home, other
-    }
 }
