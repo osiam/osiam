@@ -41,10 +41,8 @@ public class ManagerEntity {
     @GeneratedValue
     private long id;
 
-    @Column
     private UUID managerId;
 
-    @Column
     private String displayName;
 
     public long getId() {

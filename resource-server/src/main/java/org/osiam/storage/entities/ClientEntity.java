@@ -77,13 +77,11 @@ public class ClientEntity {
     @JsonProperty
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "osiam_client_scopes", joinColumns = @JoinColumn(name = "id"))
-    @Column
     private Set<String> scope;
 
     @JsonProperty
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "osiam_client_grants", joinColumns = @JoinColumn(name = "id"))
-    @Column
     private Set<String> grants = generateGrants();
 
     @JsonProperty
@@ -95,7 +93,6 @@ public class ClientEntity {
     private long validityInSeconds;
 
     @JsonProperty
-    @Column
     private Date expiry;
 
     public ClientEntity() {

@@ -36,7 +36,6 @@ import javax.persistence.Table;
 @Table(name = "scim_im")
 public class ImEntity extends BaseMultiValuedAttributeEntityWithValue {
 
-    @Column
     @Enumerated(EnumType.STRING)
     private CanonicalImTypes type;
 

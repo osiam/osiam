@@ -36,7 +36,6 @@ import javax.persistence.Table;
 @Table(name = "scim_phoneNumber")
 public class PhoneNumberEntity extends BaseMultiValuedAttributeEntityWithValue {
 
-    @Column
     @Enumerated(EnumType.STRING)
     private CanonicalPhoneNumberTypes type;
 

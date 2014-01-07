@@ -51,7 +51,6 @@ public class ExtensionFieldEntity { // NOSONAR - will be constructed by jackson
     @Column(name = "internal_id")
     private long internalId;
 
-    @Column
     private String name;
 
     @Transient

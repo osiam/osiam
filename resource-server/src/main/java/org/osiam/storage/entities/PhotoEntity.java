@@ -41,7 +41,6 @@ public class PhotoEntity extends BaseMultiValuedAttributeEntityWithValue {
     // a valid photo url is everything which does not contain any control character and ends with jpg|jpeg|png|gif
     private static final Pattern PHOTO_SUFFIX = Pattern.compile("(?i)\\S+\\.(jpg|jpeg|png|gif)");
 
-    @Column
     @Enumerated(EnumType.STRING)
     private CanonicalPhotoTypes type;
 

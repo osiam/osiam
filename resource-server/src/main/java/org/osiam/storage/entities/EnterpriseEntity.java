@@ -40,19 +40,14 @@ public class EnterpriseEntity {
     @GeneratedValue
     private long id;
 
-    @Column
     private String employeeNumber;
 
-    @Column
     private String costCenter;
 
-    @Column
     private String organization;
 
-    @Column
     private String division;
 
-    @Column
     private String department;
 
     @ManyToOne

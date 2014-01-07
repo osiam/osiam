@@ -36,7 +36,6 @@ import javax.persistence.Table;
 @Table(name = "scim_email")
 public class EmailEntity extends BaseMultiValuedAttributeEntityWithValue {
 
-    @Column
     @Enumerated(EnumType.STRING)
     private CanonicalEmailTypes type;
 

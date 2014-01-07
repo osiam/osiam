@@ -40,22 +40,16 @@ public class NameEntity {
     @GeneratedValue
     private long id;
 
-    @Column
     private String formatted;
 
-    @Column
     private String familyName;
 
-    @Column
     private String givenName;
 
-    @Column
     private String middleName;
 
-    @Column
     private String honorificPrefix;
 
-    @Column
     private String honorificSuffix;
 
     public long getId() {

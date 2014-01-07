@@ -36,40 +36,20 @@ import javax.persistence.Table;
 @Table(name = "scim_address")
 public class AddressEntity extends BaseMultiValuedAttributeEntity{
 
-    @Column
     @Enumerated(EnumType.STRING)
     private CanonicalAddressTypes type;
 
-    @Column
     private String formatted;
 
-    @Column
     private String streetAddress;
 
-    @Column
     private String locality;
 
-    @Column
     private String region;
 
-    @Column
     private String postalCode;
 
-    @Column
     private String country;
-
-    @Column(name = "postgresql_does_not_like_primary")
-    private Boolean primary;
-
-    @Override
-    public boolean isPrimary() {
-        return primary;
-    }
-
-    @Override
-    public void setPrimary(boolean primary) {
-        this.primary = primary;
-    }
 
     public String getType() {
         if (type != null) {
@@ -212,7 +192,7 @@ public class AddressEntity extends BaseMultiValuedAttributeEntity{
         builder.append("AddressEntity [type=").append(type).append(", formatted=").append(formatted)
                 .append(", streetAddress=").append(streetAddress).append(", locality=").append(locality)
                 .append(", region=").append(region).append(", postalCode=").append(postalCode).append(", country=")
-                .append(country).append(", primary=").append(primary).append("]");
+                .append(country).append(", primary=").append(isPrimary()).append("]");
         return builder.toString();
     }
 

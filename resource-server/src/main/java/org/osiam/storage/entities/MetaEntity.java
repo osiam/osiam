@@ -40,19 +40,14 @@ public class MetaEntity {
     @GeneratedValue
     private long id;
 
-    @Column
     private Date created;
 
-    @Column
     private Date lastModified;
 
-    @Column
     private String location;
 
-    @Column
     private String version;
 
-    @Column
     private String resourceType;
 
     public MetaEntity(Calendar instance) {

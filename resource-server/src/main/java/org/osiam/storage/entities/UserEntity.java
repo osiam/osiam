@@ -51,34 +51,25 @@ public class UserEntity extends ResourceEntity {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private NameEntity name;
 
-    @Column
     private String nickName;
 
-    @Column
     private String profileUrl;
 
-    @Column
     private String title;
 
-    @Column
     private String userType;
 
-    @Column
     private String preferredLanguage;
 
-    @Column
     private String locale;
 
-    @Column
     private String timezone;
 
-    @Column
     private Boolean active = Boolean.FALSE;
 
     @Column(nullable = false)
     private String password;
 
-    @Column
     private String displayName;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
