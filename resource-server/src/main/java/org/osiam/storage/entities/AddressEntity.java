@@ -23,11 +23,13 @@
 
 package org.osiam.storage.entities;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Lob;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
 
 /**
  * Address Entity
@@ -39,6 +41,8 @@ public class AddressEntity extends BaseMultiValuedAttributeEntity{
     @Enumerated(EnumType.STRING)
     private CanonicalAddressTypes type;
 
+    @Lob
+    @Type(type="org.hibernate.type.StringClobType")
     private String formatted;
 
     private String streetAddress;

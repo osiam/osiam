@@ -37,9 +37,12 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -62,11 +65,16 @@ public class ClientEntity {
     @JsonProperty
     @Column(unique = true, nullable = false, length = LENGTH)
     private String id;
+
     @JsonProperty
     private int accessTokenValiditySeconds;
+
     @JsonProperty
     private int refreshTokenValiditySeconds;
+
     @JsonProperty
+    @Lob
+    @Type(type="org.hibernate.type.StringClobType")
     @Column(name = "redirect_uri", unique = true, nullable = false)
     private String redirectUri;
 

@@ -30,8 +30,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
 
 /**
  * Defines a SCIM-Extension.
@@ -45,7 +48,9 @@ public class ExtensionEntity {
     @Column(name = "internal_id")
     private long internalId;
 
-    @Column(name = "urn", nullable = false, unique = true)
+    @Lob
+    @Type(type="org.hibernate.type.StringClobType")
+    @Column(nullable = false, unique = true)
     private String urn;
 
     @OneToMany(mappedBy = "extension")
