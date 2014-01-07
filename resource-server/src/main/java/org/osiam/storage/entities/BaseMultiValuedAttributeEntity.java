@@ -36,7 +36,8 @@ public abstract class BaseMultiValuedAttributeEntity {
     @Column(name = "multi_value_id")
     private long multiValueId;
 
-    private boolean primary;
+    @Column(name = "is_primary")
+    private Boolean primary;
 
     public void setMultiValueId(long id) {
         this.multiValueId = id;
@@ -47,10 +48,15 @@ public abstract class BaseMultiValuedAttributeEntity {
     }
 
     public boolean isPrimary() {
+        if(primary == null) {
+            return false;
+        }
         return primary;
     }
 
     public void setPrimary(boolean primary) {
         this.primary = primary;
     }
+
+
 }
