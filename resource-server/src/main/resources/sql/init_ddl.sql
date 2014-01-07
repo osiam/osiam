@@ -1,33 +1,32 @@
-drop table if exists database_scheme_version cascade;
-drop table if exists osiam_client_scopes cascade;
-drop table if exists osiam_client_grants cascade;
-drop table if exists osiam_client cascade;
-drop table if exists scim_group_scim_id cascade;
-drop table if exists scim_extension_field_value cascade;
-drop table if exists scim_im cascade;
-drop table if exists scim_phonenumber cascade;
-drop table if exists scim_photo cascade;
-drop table if exists scim_name cascade;
-drop table if exists scim_entitlements cascade;
-drop table if exists scim_address cascade;
-drop table if exists scim_roles cascade;
-drop table if exists scim_certificate cascade;
-drop table if exists scim_email cascade;
-drop table if exists scim_user cascade;
-drop table if exists scim_group cascade;
-drop table if exists scim_extension_field cascade;
-drop table if exists scim_extension cascade;
-drop table if exists scim_meta cascade;
-drop table if exists scim_id cascade;
-drop table if exists scim_manager cascade;
-drop table if exists scim_enterprise cascade;
-drop table if exists hibernate_sequences cascade;
-drop sequence if exists hibernate_sequence cascade;
+--
+-- PostgreSQL database dump
+--
 
+-- Dumped from database version 9.1.11
+-- Dumped by pg_dump version 9.1.11
+-- Started on 2014-01-07 14:31:18 CET
+
+SET statement_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- TOC entry 185 (class 3079 OID 11689)
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
+--
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
+
+SET search_path = public, pg_catalog;
+
+SET default_with_oids = false;
+
 --
+-- TOC entry 161 (class 1259 OID 27298)
+-- Dependencies: 5
 -- Name: database_scheme_version; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -37,13 +36,8 @@ CREATE TABLE database_scheme_version (
 
 
 --
--- Inserting schema version
---
-
-INSERT INTO database_scheme_version VALUES (0.05);
-
-
---
+-- TOC entry 184 (class 1259 OID 27579)
+-- Dependencies: 5
 -- Name: hibernate_sequence; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -56,23 +50,15 @@ CREATE SEQUENCE hibernate_sequence
 
 
 --
--- Name: hibernate_sequences; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE hibernate_sequences (
-    sequence_name character varying(255),
-    sequence_next_hi_value integer
-);
-
-
---
+-- TOC entry 162 (class 1259 OID 27303)
+-- Dependencies: 5
 -- Name: osiam_client; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE osiam_client (
     internal_id bigint NOT NULL,
     accesstokenvalidityseconds integer NOT NULL,
-    client_secret text NOT NULL,
+    client_secret character varying(255) NOT NULL,
     expiry timestamp without time zone,
     id character varying(32) NOT NULL,
     implicit_approval boolean NOT NULL,
@@ -83,94 +69,112 @@ CREATE TABLE osiam_client (
 
 
 --
+-- TOC entry 163 (class 1259 OID 27311)
+-- Dependencies: 5
 -- Name: osiam_client_grants; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE osiam_client_grants (
     id bigint NOT NULL,
-    grants text
+    grants character varying(255)
 );
 
 
 --
+-- TOC entry 164 (class 1259 OID 27314)
+-- Dependencies: 5
 -- Name: osiam_client_scopes; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE osiam_client_scopes (
     id bigint NOT NULL,
-    scope text
+    scope character varying(255)
 );
 
 
 --
+-- TOC entry 165 (class 1259 OID 27317)
+-- Dependencies: 5
 -- Name: scim_address; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_address (
-    id bigint NOT NULL,
-    country text,
+    multi_value_id bigint NOT NULL,
+    is_primary boolean,
+    country character varying(255),
     formatted text,
-    locality text,
-    postalcode text,
-    postgresql_does_not_like_primary boolean,
-    region text,
-    streetaddress text,
-    type text,
+    locality character varying(255),
+    postalcode character varying(255),
+    region character varying(255),
+    streetaddress character varying(255),
+    type character varying(255),
     user_internal_id bigint NOT NULL
 );
 
 
 --
+-- TOC entry 166 (class 1259 OID 27325)
+-- Dependencies: 5
 -- Name: scim_certificate; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_certificate (
     multi_value_id bigint NOT NULL,
+    is_primary boolean,
     value text,
     user_internal_id bigint NOT NULL
 );
 
 
 --
+-- TOC entry 167 (class 1259 OID 27333)
+-- Dependencies: 5
 -- Name: scim_email; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_email (
     multi_value_id bigint NOT NULL,
+    is_primary boolean,
     value text,
-    postgresql_does_not_like_primary boolean,
-    type text,
+    type character varying(255),
     user_internal_id bigint NOT NULL
 );
 
 
 --
+-- TOC entry 168 (class 1259 OID 27341)
+-- Dependencies: 5
 -- Name: scim_enterprise; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_enterprise (
     id bigint NOT NULL,
-    costcenter text,
-    department text,
-    division text,
-    employeenumber text,
-    organization text,
+    costcenter character varying(255),
+    department character varying(255),
+    division character varying(255),
+    employeenumber character varying(255),
+    organization character varying(255),
     manager_id bigint
 );
 
 
 --
+-- TOC entry 169 (class 1259 OID 27349)
+-- Dependencies: 5
 -- Name: scim_entitlements; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_entitlements (
     multi_value_id bigint NOT NULL,
+    is_primary boolean,
     value text,
     user_internal_id bigint NOT NULL
 );
 
 
 --
+-- TOC entry 170 (class 1259 OID 27357)
+-- Dependencies: 5
 -- Name: scim_extension; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -181,19 +185,23 @@ CREATE TABLE scim_extension (
 
 
 --
+-- TOC entry 171 (class 1259 OID 27365)
+-- Dependencies: 5
 -- Name: scim_extension_field; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_extension_field (
     internal_id bigint NOT NULL,
     is_required boolean,
-    name text,
-    type text,
+    name character varying(255),
+    type character varying(255),
     extension_internal_id bigint
 );
 
 
 --
+-- TOC entry 172 (class 1259 OID 27373)
+-- Dependencies: 5
 -- Name: scim_extension_field_value; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -206,16 +214,20 @@ CREATE TABLE scim_extension_field_value (
 
 
 --
+-- TOC entry 173 (class 1259 OID 27381)
+-- Dependencies: 5
 -- Name: scim_group; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_group (
-    displayname text NOT NULL,
+    displayname character varying(255) NOT NULL,
     internal_id bigint NOT NULL
 );
 
 
 --
+-- TOC entry 174 (class 1259 OID 27386)
+-- Dependencies: 5
 -- Name: scim_group_scim_id; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -226,41 +238,50 @@ CREATE TABLE scim_group_scim_id (
 
 
 --
+-- TOC entry 175 (class 1259 OID 27391)
+-- Dependencies: 5
 -- Name: scim_id; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_id (
     internal_id bigint NOT NULL,
-    externalid text,
-    id text NOT NULL,
+    externalid character varying(255),
+    id character varying(255) NOT NULL,
     meta_id bigint
 );
 
 
 --
+-- TOC entry 176 (class 1259 OID 27399)
+-- Dependencies: 5
 -- Name: scim_im; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_im (
     multi_value_id bigint NOT NULL,
+    is_primary boolean,
     value text,
-    type text,
+    type character varying(255),
     user_internal_id bigint NOT NULL
 );
 
 
 --
+-- TOC entry 177 (class 1259 OID 27407)
+-- Dependencies: 5
 -- Name: scim_manager; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_manager (
     id bigint NOT NULL,
-    displayname text,
+    displayname character varying(255),
     managerid bytea
 );
 
 
 --
+-- TOC entry 178 (class 1259 OID 27415)
+-- Dependencies: 5
 -- Name: scim_meta; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -269,83 +290,98 @@ CREATE TABLE scim_meta (
     created timestamp without time zone,
     lastmodified timestamp without time zone,
     location text,
-    resourcetype text,
-    version text
+    resourcetype character varying(255),
+    version character varying(255)
 );
 
 
 --
+-- TOC entry 179 (class 1259 OID 27423)
+-- Dependencies: 5
 -- Name: scim_name; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_name (
     id bigint NOT NULL,
-    familyname text,
+    familyname character varying(255),
     formatted text,
-    givenname text,
-    honorificprefix text,
-    honorificsuffix text,
-    middlename text
+    givenname character varying(255),
+    honorificprefix character varying(255),
+    honorificsuffix character varying(255),
+    middlename character varying(255)
 );
 
 
 --
+-- TOC entry 180 (class 1259 OID 27431)
+-- Dependencies: 5
 -- Name: scim_phonenumber; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_phonenumber (
     multi_value_id bigint NOT NULL,
+    is_primary boolean,
     value text,
-    type text,
+    type character varying(255),
     user_internal_id bigint NOT NULL
 );
 
 
 --
+-- TOC entry 181 (class 1259 OID 27439)
+-- Dependencies: 5
 -- Name: scim_photo; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_photo (
     multi_value_id bigint NOT NULL,
+    is_primary boolean,
     value text,
-    type text,
+    type character varying(255),
     user_internal_id bigint NOT NULL
 );
 
 
 --
+-- TOC entry 182 (class 1259 OID 27447)
+-- Dependencies: 5
 -- Name: scim_roles; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_roles (
     multi_value_id bigint NOT NULL,
+    is_primary boolean,
     value text,
     user_internal_id bigint NOT NULL
 );
 
 
 --
+-- TOC entry 183 (class 1259 OID 27455)
+-- Dependencies: 5
 -- Name: scim_user; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE scim_user (
     active boolean,
-    displayname text,
-    locale text,
-    nickname text,
-    password text NOT NULL,
-    preferredlanguage text,
+    displayname character varying(255),
+    locale character varying(255),
+    nickname character varying(255),
+    password character varying(255) NOT NULL,
+    preferredlanguage character varying(255),
     profileurl text,
-    timezone text,
-    title text,
-    username text NOT NULL,
-    usertype text,
+    timezone character varying(255),
+    title character varying(255),
+    username character varying(255) NOT NULL,
+    usertype character varying(255),
     internal_id bigint NOT NULL,
     name_id bigint
 );
 
 
 --
+-- TOC entry 1902 (class 2606 OID 27302)
+-- Dependencies: 161 161 2081
 -- Name: database_scheme_version_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -354,6 +390,8 @@ ALTER TABLE ONLY database_scheme_version
 
 
 --
+-- TOC entry 1904 (class 2606 OID 27310)
+-- Dependencies: 162 162 2081
 -- Name: osiam_client_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -362,14 +400,18 @@ ALTER TABLE ONLY osiam_client
 
 
 --
+-- TOC entry 1912 (class 2606 OID 27324)
+-- Dependencies: 165 165 2081
 -- Name: scim_address_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY scim_address
-    ADD CONSTRAINT scim_address_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT scim_address_pkey PRIMARY KEY (multi_value_id);
 
 
 --
+-- TOC entry 1914 (class 2606 OID 27332)
+-- Dependencies: 166 166 2081
 -- Name: scim_certificate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -378,6 +420,8 @@ ALTER TABLE ONLY scim_certificate
 
 
 --
+-- TOC entry 1916 (class 2606 OID 27340)
+-- Dependencies: 167 167 2081
 -- Name: scim_email_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -386,6 +430,8 @@ ALTER TABLE ONLY scim_email
 
 
 --
+-- TOC entry 1918 (class 2606 OID 27348)
+-- Dependencies: 168 168 2081
 -- Name: scim_enterprise_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -394,6 +440,8 @@ ALTER TABLE ONLY scim_enterprise
 
 
 --
+-- TOC entry 1920 (class 2606 OID 27356)
+-- Dependencies: 169 169 2081
 -- Name: scim_entitlements_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -402,6 +450,8 @@ ALTER TABLE ONLY scim_entitlements
 
 
 --
+-- TOC entry 1926 (class 2606 OID 27372)
+-- Dependencies: 171 171 2081
 -- Name: scim_extension_field_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -410,6 +460,8 @@ ALTER TABLE ONLY scim_extension_field
 
 
 --
+-- TOC entry 1928 (class 2606 OID 27380)
+-- Dependencies: 172 172 2081
 -- Name: scim_extension_field_value_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -418,6 +470,8 @@ ALTER TABLE ONLY scim_extension_field_value
 
 
 --
+-- TOC entry 1922 (class 2606 OID 27364)
+-- Dependencies: 170 170 2081
 -- Name: scim_extension_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -426,6 +480,8 @@ ALTER TABLE ONLY scim_extension
 
 
 --
+-- TOC entry 1930 (class 2606 OID 27385)
+-- Dependencies: 173 173 2081
 -- Name: scim_group_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -434,6 +490,8 @@ ALTER TABLE ONLY scim_group
 
 
 --
+-- TOC entry 1934 (class 2606 OID 27390)
+-- Dependencies: 174 174 174 2081
 -- Name: scim_group_scim_id_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -442,6 +500,8 @@ ALTER TABLE ONLY scim_group_scim_id
 
 
 --
+-- TOC entry 1936 (class 2606 OID 27398)
+-- Dependencies: 175 175 2081
 -- Name: scim_id_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -450,6 +510,8 @@ ALTER TABLE ONLY scim_id
 
 
 --
+-- TOC entry 1942 (class 2606 OID 27406)
+-- Dependencies: 176 176 2081
 -- Name: scim_im_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -458,6 +520,8 @@ ALTER TABLE ONLY scim_im
 
 
 --
+-- TOC entry 1944 (class 2606 OID 27414)
+-- Dependencies: 177 177 2081
 -- Name: scim_manager_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -466,6 +530,8 @@ ALTER TABLE ONLY scim_manager
 
 
 --
+-- TOC entry 1946 (class 2606 OID 27422)
+-- Dependencies: 178 178 2081
 -- Name: scim_meta_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -474,6 +540,8 @@ ALTER TABLE ONLY scim_meta
 
 
 --
+-- TOC entry 1948 (class 2606 OID 27430)
+-- Dependencies: 179 179 2081
 -- Name: scim_name_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -482,6 +550,8 @@ ALTER TABLE ONLY scim_name
 
 
 --
+-- TOC entry 1950 (class 2606 OID 27438)
+-- Dependencies: 180 180 2081
 -- Name: scim_phonenumber_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -490,6 +560,8 @@ ALTER TABLE ONLY scim_phonenumber
 
 
 --
+-- TOC entry 1952 (class 2606 OID 27446)
+-- Dependencies: 181 181 2081
 -- Name: scim_photo_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -498,6 +570,8 @@ ALTER TABLE ONLY scim_photo
 
 
 --
+-- TOC entry 1954 (class 2606 OID 27454)
+-- Dependencies: 182 182 2081
 -- Name: scim_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -506,6 +580,8 @@ ALTER TABLE ONLY scim_roles
 
 
 --
+-- TOC entry 1956 (class 2606 OID 27462)
+-- Dependencies: 183 183 2081
 -- Name: scim_user_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -514,6 +590,8 @@ ALTER TABLE ONLY scim_user
 
 
 --
+-- TOC entry 1938 (class 2606 OID 27474)
+-- Dependencies: 175 175 2081
 -- Name: uk_164dcfif0r82xubvindi9vrnc; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -522,6 +600,8 @@ ALTER TABLE ONLY scim_id
 
 
 --
+-- TOC entry 1932 (class 2606 OID 27472)
+-- Dependencies: 173 173 2081
 -- Name: uk_1dt64mbf4gp83rwy18jofwwf; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -530,6 +610,8 @@ ALTER TABLE ONLY scim_group
 
 
 --
+-- TOC entry 1958 (class 2606 OID 27478)
+-- Dependencies: 183 183 2081
 -- Name: uk_1onynolltgwuk8a5ngjhkqcl1; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -538,6 +620,8 @@ ALTER TABLE ONLY scim_user
 
 
 --
+-- TOC entry 1924 (class 2606 OID 27470)
+-- Dependencies: 170 170 2081
 -- Name: uk_60sysrrwavtwwnji8nw5tng2x; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -546,6 +630,8 @@ ALTER TABLE ONLY scim_extension
 
 
 --
+-- TOC entry 1906 (class 2606 OID 27466)
+-- Dependencies: 162 162 2081
 -- Name: uk_c34iilt4h1ln91s9ro8m96hru; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -554,6 +640,8 @@ ALTER TABLE ONLY osiam_client
 
 
 --
+-- TOC entry 1908 (class 2606 OID 27468)
+-- Dependencies: 162 162 2081
 -- Name: uk_jj3o15pxbkaf4p88paf4l6ax0; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -562,6 +650,8 @@ ALTER TABLE ONLY osiam_client
 
 
 --
+-- TOC entry 1910 (class 2606 OID 27464)
+-- Dependencies: 162 162 2081
 -- Name: uk_ktjxo7vyfs0veopytnh1x68sm; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -570,6 +660,8 @@ ALTER TABLE ONLY osiam_client
 
 
 --
+-- TOC entry 1940 (class 2606 OID 27476)
+-- Dependencies: 175 175 2081
 -- Name: uk_q4ya5m8v6tafgtvw1inqtmm42; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -578,6 +670,8 @@ ALTER TABLE ONLY scim_id
 
 
 --
+-- TOC entry 1967 (class 2606 OID 27519)
+-- Dependencies: 171 1925 172 2081
 -- Name: fk_6y0v7g2y69nkvody9jv5q3tuo; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -586,6 +680,8 @@ ALTER TABLE ONLY scim_extension_field_value
 
 
 --
+-- TOC entry 1965 (class 2606 OID 27509)
+-- Dependencies: 183 169 1955 2081
 -- Name: fk_7jnl5vqcfg1j9plj4py1qvxcp; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -594,6 +690,8 @@ ALTER TABLE ONLY scim_entitlements
 
 
 --
+-- TOC entry 1970 (class 2606 OID 27534)
+-- Dependencies: 1935 174 175 2081
 -- Name: fk_b29y2qc2j5uu49wa9grpbulb0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -602,6 +700,8 @@ ALTER TABLE ONLY scim_group_scim_id
 
 
 --
+-- TOC entry 1972 (class 2606 OID 27544)
+-- Dependencies: 1945 178 175 2081
 -- Name: fk_byxttqfbmb2wcj4ud3hd53mw3; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -610,6 +710,8 @@ ALTER TABLE ONLY scim_id
 
 
 --
+-- TOC entry 1959 (class 2606 OID 27479)
+-- Dependencies: 1903 163 162 2081
 -- Name: fk_ctvkl0udnj6jpn1p93vbwywte; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -618,6 +720,8 @@ ALTER TABLE ONLY osiam_client_grants
 
 
 --
+-- TOC entry 1977 (class 2606 OID 27569)
+-- Dependencies: 1947 179 183 2081
 -- Name: fk_d2ji7ipe62fbg8uu2ir7b9ls4; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -626,6 +730,8 @@ ALTER TABLE ONLY scim_user
 
 
 --
+-- TOC entry 1963 (class 2606 OID 27499)
+-- Dependencies: 183 167 1955 2081
 -- Name: fk_dmfj3s46npn4p1pcrc3iur2mp; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -634,6 +740,8 @@ ALTER TABLE ONLY scim_email
 
 
 --
+-- TOC entry 1966 (class 2606 OID 27514)
+-- Dependencies: 171 1921 170 2081
 -- Name: fk_eksek96tmtxkaqe5a7hfmoswo; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -642,6 +750,8 @@ ALTER TABLE ONLY scim_extension_field
 
 
 --
+-- TOC entry 1971 (class 2606 OID 27539)
+-- Dependencies: 173 174 1929 2081
 -- Name: fk_gct22972jrrv22crorixfdlmi; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -650,6 +760,8 @@ ALTER TABLE ONLY scim_group_scim_id
 
 
 --
+-- TOC entry 1962 (class 2606 OID 27494)
+-- Dependencies: 183 166 1955 2081
 -- Name: fk_ghdpgmh1b8suimtfxdl8653bj; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -658,6 +770,8 @@ ALTER TABLE ONLY scim_certificate
 
 
 --
+-- TOC entry 1960 (class 2606 OID 27484)
+-- Dependencies: 164 162 1903 2081
 -- Name: fk_gl93uw092wua8dl5cpb5ysn3f; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -666,6 +780,8 @@ ALTER TABLE ONLY osiam_client_scopes
 
 
 --
+-- TOC entry 1973 (class 2606 OID 27549)
+-- Dependencies: 1955 183 176 2081
 -- Name: fk_hmsah9dinhk7f8k4lf50h658; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -674,6 +790,8 @@ ALTER TABLE ONLY scim_im
 
 
 --
+-- TOC entry 1968 (class 2606 OID 27524)
+-- Dependencies: 183 172 1955 2081
 -- Name: fk_in6gs4safpkntvac3v88ke54r; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -682,6 +800,8 @@ ALTER TABLE ONLY scim_extension_field_value
 
 
 --
+-- TOC entry 1964 (class 2606 OID 27504)
+-- Dependencies: 177 168 1943 2081
 -- Name: fk_jxkq2wka34t20eejcvycluyr6; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -690,6 +810,8 @@ ALTER TABLE ONLY scim_enterprise
 
 
 --
+-- TOC entry 1976 (class 2606 OID 27564)
+-- Dependencies: 183 182 1955 2081
 -- Name: fk_n5und6lnrtblhgs2ococpglyi; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -698,6 +820,8 @@ ALTER TABLE ONLY scim_roles
 
 
 --
+-- TOC entry 1978 (class 2606 OID 27574)
+-- Dependencies: 175 1935 183 2081
 -- Name: fk_nx0839hyqd5yrfelxkr2fpr7a; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -706,6 +830,8 @@ ALTER TABLE ONLY scim_user
 
 
 --
+-- TOC entry 1969 (class 2606 OID 27529)
+-- Dependencies: 175 173 1935 2081
 -- Name: fk_oari88x9o5j9jmigtt5s20m4k; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -714,6 +840,8 @@ ALTER TABLE ONLY scim_group
 
 
 --
+-- TOC entry 1975 (class 2606 OID 27559)
+-- Dependencies: 183 181 1955 2081
 -- Name: fk_q3rk61yla08pvod7gq8av7i0l; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -722,6 +850,8 @@ ALTER TABLE ONLY scim_photo
 
 
 --
+-- TOC entry 1961 (class 2606 OID 27489)
+-- Dependencies: 1955 165 183 2081
 -- Name: fk_qr6gtqi0h9r6yp034tarlry1k; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -730,8 +860,18 @@ ALTER TABLE ONLY scim_address
 
 
 --
+-- TOC entry 1974 (class 2606 OID 27554)
+-- Dependencies: 183 1955 180 2081
 -- Name: fk_rpqvdf1p9twdigaq1wclu5wm8; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY scim_phonenumber
     ADD CONSTRAINT fk_rpqvdf1p9twdigaq1wclu5wm8 FOREIGN KEY (user_internal_id) REFERENCES scim_user(internal_id);
+
+
+-- Completed on 2014-01-07 14:31:18 CET
+
+--
+-- PostgreSQL database dump complete
+--
+

@@ -1,4 +1,4 @@
-﻿--
+--
 -- Updating hibernate sequence start value
 --
 SELECT
