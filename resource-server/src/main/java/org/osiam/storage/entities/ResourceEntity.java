@@ -47,7 +47,7 @@ import com.google.common.collect.ImmutableSet;
 @Entity
 @Table(name = "scim_id")
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class ResourceEntity implements ChildOfMultiValueAttribute {
+public abstract class ResourceEntity {
 
     @Column(unique = true, nullable = false)
     private String id;
@@ -129,13 +129,11 @@ public abstract class ResourceEntity implements ChildOfMultiValueAttribute {
         group.removeMember(this);
     }
 
-    @Override
     @Transient
     public String getValue() {
         return id;
     }
 
-    @Override
     public void setValue(String value) {
         id = value;
     }
