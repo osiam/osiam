@@ -24,8 +24,11 @@
 package org.osiam.resources.converter;
 
 import org.osiam.resources.scim.MultiValuedAttribute;
+import org.osiam.resources.scim.Photo;
 import org.osiam.storage.entities.PhotoEntity;
 import org.springframework.stereotype.Service;
+
+import com.google.common.base.Strings;
 
 @Service
 public class PhotoConverter implements Converter<MultiValuedAttribute, PhotoEntity> {
@@ -33,15 +36,19 @@ public class PhotoConverter implements Converter<MultiValuedAttribute, PhotoEnti
     @Override
     public PhotoEntity fromScim(MultiValuedAttribute scim) {
         PhotoEntity photoEntity = new PhotoEntity();
-        photoEntity.setType(scim.getType());
         photoEntity.setValue(String.valueOf(scim.getValue()));
+
+        if (!Strings.isNullOrEmpty(scim.getType())) {
+            photoEntity.setType(new Photo.Type(scim.getType()));
+        }
+
         return photoEntity;
     }
 
     @Override
     public MultiValuedAttribute toScim(PhotoEntity entity) {
         return new MultiValuedAttribute.Builder().
-                setType(entity.getType()).
+                setType(entity.getType() != null ? entity.getType().getValue() : null).
                 setValue(entity.getValue()).
                 build();
     }

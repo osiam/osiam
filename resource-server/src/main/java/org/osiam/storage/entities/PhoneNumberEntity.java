@@ -23,10 +23,12 @@
 
 package org.osiam.storage.entities;
 
+import javax.persistence.Basic;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.Table;
+
+import org.osiam.resources.scim.PhoneNumber;
+import org.osiam.storage.entities.jpa_converters.PhoneNumberTypeConverter;
 
 /**
  * Phone Numbers Entity
@@ -35,20 +37,24 @@ import javax.persistence.Table;
 @Table(name = "scim_phoneNumber")
 public class PhoneNumberEntity extends BaseMultiValuedAttributeEntityWithValue {
 
-    @Enumerated(EnumType.STRING)
-    private CanonicalPhoneNumberTypes type;
+    /**
+     * <p>
+     * The type of this PhoneNumber.
+     * </p>
+     *
+     * <p>
+     * Custom type mapping is provided by {@link PhoneNumberTypeConverter}.
+     * </p>
+     */
+    @Basic
+    private PhoneNumber.Type type; // @Basic is needed for JPA meta model generator
 
-    public String getType() {
-        if (type != null) {
-            return type.toString();
-        }
-        return null;
+    public PhoneNumber.Type getType() {
+        return type;
     }
 
-    public void setType(String type) {
-        if (type != null) {
-            this.type = CanonicalPhoneNumberTypes.valueOf(type);
-        }
+    public void setType(PhoneNumber.Type type) {
+        this.type = type;
     }
 
     @Override
@@ -71,7 +77,11 @@ public class PhoneNumberEntity extends BaseMultiValuedAttributeEntityWithValue {
             return false;
         }
         PhoneNumberEntity other = (PhoneNumberEntity) obj;
-        if (type != other.type) {
+        if (type == null) {
+            if (other.type != null) {
+                return false;
+            }
+        } else if (!type.equals(other.type)) {
             return false;
         }
         return true;
@@ -80,10 +90,6 @@ public class PhoneNumberEntity extends BaseMultiValuedAttributeEntityWithValue {
     @Override
     public String toString() {
         return "PhoneNumberEntity [type=" + type + ", value=" + getValue() + ", primary=" + isPrimary() + "]";
-    }
-
-    public enum CanonicalPhoneNumberTypes {
-        work, home, mobile, fax, pager, other
     }
 
 }

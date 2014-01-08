@@ -20,50 +20,34 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+package org.osiam.storage.entities.jpa_converters;
 
-package org.osiam.resources.converter
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 
-import org.osiam.resources.scim.Im
-import org.osiam.resources.scim.MultiValuedAttribute
-import org.osiam.storage.entities.ImEntity
+import org.osiam.resources.scim.Photo;
 
-import spock.lang.Specification
+import com.google.common.base.Strings;
 
-class ImConverterSpec extends Specification {
+@Converter(autoApply = true)
+public class PhotoTypeConverter implements AttributeConverter<Photo.Type, String> {
 
-    ImEntity entity
-    MultiValuedAttribute attribute
-    ImConverter converter
+    @Override
+    public String convertToDatabaseColumn(Photo.Type attribute) {
+        if (attribute == null || Strings.isNullOrEmpty(attribute.getValue())) {
+            return null;
+        }
 
-    def setup(){
-        def value = 'user@gmail.com'
-        def type = Im.Type.GTALK
-
-        entity = new ImEntity()
-        entity.setValue(value)
-        entity.setType(type)
-
-        attribute = new MultiValuedAttribute.Builder()
-                .setValue(value)
-                .setType(type.getValue())
-                .build()
-
-        converter = new ImConverter()
+        return attribute.getValue();
     }
 
-    def 'convert Entity to scim IM MultiValueAttribute works'() {
-        when:
-        def attribute = converter.toScim(entity)
+    @Override
+    public Photo.Type convertToEntityAttribute(String dbData) {
+        if (Strings.isNullOrEmpty(dbData)) {
+            return null;
+        }
 
-        then:
-        attribute.equals(this.attribute)
+        return new Photo.Type(dbData);
     }
 
-    def 'convert scim IM MultiValueAttribuite to Entity works'() {
-        when:
-        def entity = converter.fromScim(this.attribute)
-
-        then:
-        entity == this.entity
-    }
 }

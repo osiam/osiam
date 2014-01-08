@@ -23,10 +23,11 @@
 
 package org.osiam.storage.entities;
 
+import javax.persistence.Basic;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.Table;
+
+import org.osiam.resources.scim.Im;
 
 /**
  * Instant messaging Entity
@@ -35,20 +36,24 @@ import javax.persistence.Table;
 @Table(name = "scim_im")
 public class ImEntity extends BaseMultiValuedAttributeEntityWithValue {
 
-    @Enumerated(EnumType.STRING)
-    private CanonicalImTypes type;
+    /**
+     * <p>
+     * The type of this Im.
+     * </p>
+     *
+     * <p>
+     * Custom type mapping is provided by {@link ImTypeConverter}.
+     * </p>
+     */
+    @Basic
+    private Im.Type type; // @Basic is needed for JPA meta model generator
 
-    public String getType() {
-        if (type != null) {
-            return type.toString();
-        }
-        return null;
+    public Im.Type getType() {
+        return type;
     }
 
-    public void setType(String type) {
-        if (type != null) {
-            this.type = CanonicalImTypes.valueOf(type);
-        }
+    public void setType(Im.Type type) {
+        this.type = type;
     }
 
     @Override
@@ -71,7 +76,11 @@ public class ImEntity extends BaseMultiValuedAttributeEntityWithValue {
             return false;
         }
         ImEntity other = (ImEntity) obj;
-        if (type != other.type) {
+        if (type == null) {
+            if (other.type != null) {
+                return false;
+            }
+        } else if (!type.equals(other.type)) {
             return false;
         }
         return true;
@@ -82,7 +91,4 @@ public class ImEntity extends BaseMultiValuedAttributeEntityWithValue {
         return "ImEntity [type=" + type + ", value=" + getValue() + ", primary=" + isPrimary() + "]";
     }
 
-    public enum CanonicalImTypes {
-        aim, gtalk, icq, xmpp, msn, skype, qq, yahoo
-    }
 }

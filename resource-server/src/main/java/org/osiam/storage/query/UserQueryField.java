@@ -38,6 +38,9 @@ import javax.persistence.metamodel.SetAttribute;
 
 import org.joda.time.format.ISODateTimeFormat;
 import org.osiam.resources.scim.Address;
+import org.osiam.resources.scim.Im;
+import org.osiam.resources.scim.PhoneNumber;
+import org.osiam.resources.scim.Photo;
 import org.osiam.storage.entities.AddressEntity;
 import org.osiam.storage.entities.AddressEntity_;
 import org.osiam.storage.entities.EmailEntity;
@@ -48,15 +51,12 @@ import org.osiam.storage.entities.EntitlementsEntity_;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.GroupEntity_;
 import org.osiam.storage.entities.ImEntity;
-import org.osiam.storage.entities.ImEntity.CanonicalImTypes;
 import org.osiam.storage.entities.ImEntity_;
 import org.osiam.storage.entities.MetaEntity_;
 import org.osiam.storage.entities.NameEntity_;
 import org.osiam.storage.entities.PhoneNumberEntity;
-import org.osiam.storage.entities.PhoneNumberEntity.CanonicalPhoneNumberTypes;
 import org.osiam.storage.entities.PhoneNumberEntity_;
 import org.osiam.storage.entities.PhotoEntity;
-import org.osiam.storage.entities.PhotoEntity.CanonicalPhotoTypes;
 import org.osiam.storage.entities.PhotoEntity_;
 import org.osiam.storage.entities.ResourceEntity;
 import org.osiam.storage.entities.RolesEntity;
@@ -65,8 +65,6 @@ import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.entities.UserEntity_;
 import org.osiam.storage.entities.X509CertificateEntity;
 import org.osiam.storage.entities.X509CertificateEntity_;
-
-import com.google.common.base.Strings;
 
 public enum UserQueryField implements QueryField<UserEntity> {
     EXTERNALID("externalid") {
@@ -439,15 +437,14 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            CanonicalPhoneNumberTypes phoneNumberType;
-            if (constraint == FilterConstraint.PRESENT && (value == null || value.isEmpty())) {
-                phoneNumberType = null;
-            } else {
-                phoneNumberType = CanonicalPhoneNumberTypes.valueOf(value);
+            PhoneNumber.Type phoneNumberType = null;
+
+            if (constraint != FilterConstraint.PRESENT) {
+                phoneNumberType = new PhoneNumber.Type(value);
             }
             SetJoin<UserEntity, PhoneNumberEntity> join = createOrGetJoin(PHONENUMBERS_ALIAS, root,
                     UserEntity_.phoneNumbers);
-            return constraint.createPredicateForPhoneNumberTypeField(join.get(PhoneNumberEntity_.type), // NOSONAR -
+            return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(PhoneNumberEntity_.type), // NOSONAR -
                     // XEntity_.X will be filled by JPA provider
                     phoneNumberType, cb);
         }
@@ -489,14 +486,14 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            CanonicalImTypes imType;
-            if (constraint == FilterConstraint.PRESENT && (value == null || value.isEmpty())) {
-                imType = null;
-            } else {
-                imType = CanonicalImTypes.valueOf(value);
+            Im.Type imType = null;
+
+            if (constraint != FilterConstraint.PRESENT) {
+                imType = new Im.Type(value);
             }
+
             SetJoin<UserEntity, ImEntity> join = createOrGetJoin(IMS_ALIAS, root, UserEntity_.ims);
-            return constraint.createPredicateForImTypeField(join.get(ImEntity_.type), imType, cb); // NOSONAR -
+            return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(ImEntity_.type), imType, cb); // NOSONAR -
             // XEntity_.X will be filled by JPA provider
         }
 
@@ -538,14 +535,14 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            CanonicalPhotoTypes photoType;
-            if (constraint == FilterConstraint.PRESENT && (value == null || value.isEmpty())) {
-                photoType = null;
-            } else {
-                photoType = CanonicalPhotoTypes.valueOf(value);
+            Photo.Type photoType = null;
+
+            if (constraint != FilterConstraint.PRESENT) {
+                photoType = new Photo.Type(value);
             }
+
             SetJoin<UserEntity, PhotoEntity> join = createOrGetJoin(PHOTOS_ALIAS, root, UserEntity_.photos);
-            return constraint.createPredicateForPhotoTypeField(join.get(PhotoEntity_.type), photoType, cb); // NOSONAR -
+            return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(PhotoEntity_.type), photoType, cb); // NOSONAR -
             // XEntity_.X will be filled by JPA provider
         }
 

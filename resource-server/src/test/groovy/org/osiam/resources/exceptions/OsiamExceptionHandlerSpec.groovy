@@ -81,30 +81,6 @@ class OsiamExceptionHandlerSpec extends Specification {
         (result.getBody() as OsiamExceptionHandler.JsonErrorResult).error_code == HttpStatus.I_AM_A_TEAPOT.name()
     }
 
-    @Unroll
-    def "should transform #name Entity No enum constant error message to a more readable error response"() {
-        when:
-        def result = exceptionHandler.handleConflict(e, request)
-        then:
-        (result.getBody() as OsiamExceptionHandler.JsonErrorResult).description ==
-                "$IRRELEVANT is not a valid " + name + " are allowed."
-        where:
-        name                                                           | e
-        "PhoneNumber type. Only work, home, mobile, fax, pager, other" | get_exception {
-            new PhoneNumberEntity().setType(IRRELEVANT)
-        }
-        "Im type. Only aim, gtalk, icq, xmpp, msn, skype, qq, yahoo"   | get_exception {
-            new ImEntity().setType(IRRELEVANT)
-        }
-        "Email type. Only work, home, other"                           | get_exception {
-            new EmailEntity().setType(IRRELEVANT)
-        }
-        "Photo type. Only photo, thumbnail"                            | get_exception {
-            new PhotoEntity().setType(IRRELEVANT)
-        }
-
-    }
-
     def get_exception(Closure c) {
         try {
             c.call()
@@ -125,9 +101,9 @@ class OsiamExceptionHandlerSpec extends Specification {
     def generate_wrong_json_exception(String input, Class clazz) {
 
         try {
-            new ObjectMapper().readValue(input, clazz);
+            new ObjectMapper().readValue(input, clazz)
         } catch (Exception e) {
-            return e;
+            return e
         }
 
     }
