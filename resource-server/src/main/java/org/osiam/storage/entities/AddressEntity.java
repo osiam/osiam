@@ -40,12 +40,16 @@ import org.osiam.storage.entities.jpa_converters.AddressTypeConverter;
 public class AddressEntity extends BaseMultiValuedAttributeEntity {
 
     /**
-     * <p>The type of this Address.</p>
+     * <p>
+     * The type of this Address.
+     * </p>
      *
-     * <p>Custom type mapping is provided by {@link AddressTypeConverter}.</p>
+     * <p>
+     * Custom type mapping is provided by {@link AddressTypeConverter}.
+     * </p>
      */
-    @Basic // needed for JPA meta model generator
-    private Address.Type type;
+    @Basic
+    private Address.Type type;  // @Basic is needed for JPA meta model generator
 
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
