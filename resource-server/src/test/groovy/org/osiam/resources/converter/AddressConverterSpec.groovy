@@ -66,7 +66,7 @@ class AddressConverterSpec extends Specification {
         address.equals(scimAddress)
     }
 
-    def 'convert scim address to  addressEntity works'() {
+    def 'convert scim address to addressEntity works'() {
         when:
         AddressEntity entity = addressConverter.fromScim(scimAddress)
 
