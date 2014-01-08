@@ -38,10 +38,10 @@ import javax.persistence.metamodel.SetAttribute;
 
 import org.joda.time.format.ISODateTimeFormat;
 import org.osiam.resources.scim.Address;
+import org.osiam.resources.scim.Email;
 import org.osiam.storage.entities.AddressEntity;
 import org.osiam.storage.entities.AddressEntity_;
 import org.osiam.storage.entities.EmailEntity;
-import org.osiam.storage.entities.EmailEntity.CanonicalEmailTypes;
 import org.osiam.storage.entities.EmailEntity_;
 import org.osiam.storage.entities.EntitlementsEntity;
 import org.osiam.storage.entities.EntitlementsEntity_;
@@ -65,8 +65,6 @@ import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.entities.UserEntity_;
 import org.osiam.storage.entities.X509CertificateEntity;
 import org.osiam.storage.entities.X509CertificateEntity_;
-
-import com.google.common.base.Strings;
 
 public enum UserQueryField implements QueryField<UserEntity> {
     EXTERNALID("externalid") {
@@ -372,14 +370,13 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            CanonicalEmailTypes emailType;
-            if (constraint == FilterConstraint.PRESENT && (value == null || value.isEmpty())) {
-                emailType = null;
-            } else {
-                emailType = CanonicalEmailTypes.valueOf(value);
+            Email.Type emailType = null;
+
+            if (constraint != FilterConstraint.PRESENT) {
+                emailType = new Email.Type(value);
             }
             SetJoin<UserEntity, EmailEntity> join = createOrGetJoin(EMAIL_ALIAS, root, UserEntity_.emails);
-            return constraint.createPredicateForEmailTypeField(join.get(EmailEntity_.type), // NOSONAR - XEntity_.X will
+            return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(EmailEntity_.type), // NOSONAR - XEntity_.X will
                                                                                             // be filled by JPA provider
                     emailType, cb);
         }

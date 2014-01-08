@@ -34,7 +34,6 @@ import javax.persistence.criteria.Predicate;
 
 import org.osiam.resources.exceptions.InvalidConstraintException;
 import org.osiam.resources.scim.MultiValuedAttributeType;
-import org.osiam.storage.entities.EmailEntity.CanonicalEmailTypes;
 import org.osiam.storage.entities.ExtensionFieldEntity;
 import org.osiam.storage.entities.ImEntity.CanonicalImTypes;
 import org.osiam.storage.entities.PhoneNumberEntity.CanonicalPhoneNumberTypes;
@@ -54,12 +53,6 @@ public enum FilterConstraint {
 
         @Override
         public Predicate createPredicateForBooleanField(Path<Boolean> path, Boolean value, CriteriaBuilder cb) {
-            return cb.equal(path, value);
-        }
-
-        @Override
-        public Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path, CanonicalEmailTypes value,
-                CriteriaBuilder cb) {
             return cb.equal(path, value);
         }
 
@@ -114,12 +107,6 @@ public enum FilterConstraint {
         }
 
         @Override
-        public Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path, CanonicalEmailTypes value,
-                CriteriaBuilder cb) {
-            throw new InvalidConstraintException(toString());
-        }
-
-        @Override
         public Predicate createPredicateForExtensionField(Path<String> path, String value, ExtensionFieldEntity field,
                 CriteriaBuilder cb) {
             if (!field.isConstrainedValid(toString())) {
@@ -166,12 +153,6 @@ public enum FilterConstraint {
 
         @Override
         public Predicate createPredicateForBooleanField(Path<Boolean> path, Boolean value, CriteriaBuilder cb) {
-            throw new InvalidConstraintException(toString());
-        }
-
-        @Override
-        public Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path, CanonicalEmailTypes value,
-                CriteriaBuilder cb) {
             throw new InvalidConstraintException(toString());
         }
 
@@ -225,12 +206,6 @@ public enum FilterConstraint {
         }
 
         @Override
-        public Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path, CanonicalEmailTypes value,
-                CriteriaBuilder cb) {
-            return cb.isNotNull(path);
-        }
-
-        @Override
         public Predicate createPredicateForExtensionField(Path<String> path, String value, ExtensionFieldEntity field,
                 CriteriaBuilder cb) {
             if (!field.isConstrainedValid(toString())) {
@@ -280,12 +255,6 @@ public enum FilterConstraint {
         }
 
         @Override
-        public Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path, CanonicalEmailTypes value,
-                CriteriaBuilder cb) {
-            throw new InvalidConstraintException(toString());
-        }
-
-        @Override
         public Predicate createPredicateForExtensionField(Path<String> path, String value, ExtensionFieldEntity field,
                 CriteriaBuilder cb) {
             if (!field.isConstrainedValid(toString())) {
@@ -331,12 +300,6 @@ public enum FilterConstraint {
 
         @Override
         public Predicate createPredicateForBooleanField(Path<Boolean> path, Boolean value, CriteriaBuilder cb) {
-            throw new InvalidConstraintException(toString());
-        }
-
-        @Override
-        public Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path, CanonicalEmailTypes value,
-                CriteriaBuilder cb) {
             throw new InvalidConstraintException(toString());
         }
 
@@ -391,12 +354,6 @@ public enum FilterConstraint {
         }
 
         @Override
-        public Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path, CanonicalEmailTypes value,
-                CriteriaBuilder cb) {
-            throw new InvalidConstraintException(toString());
-        }
-
-        @Override
         public Predicate createPredicateForExtensionField(Path<String> path, String value, ExtensionFieldEntity field,
                 CriteriaBuilder cb) {
             if (!field.isConstrainedValid(toString())) {
@@ -442,12 +399,6 @@ public enum FilterConstraint {
 
         @Override
         public Predicate createPredicateForBooleanField(Path<Boolean> path, Boolean value, CriteriaBuilder cb) {
-            throw new InvalidConstraintException(toString());
-        }
-
-        @Override
-        public Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path, CanonicalEmailTypes value,
-                CriteriaBuilder cb) {
             throw new InvalidConstraintException(toString());
         }
 
@@ -516,9 +467,6 @@ public enum FilterConstraint {
 
     public abstract <T extends MultiValuedAttributeType> Predicate createPredicateForMultiValuedAttributeTypeField(
             Path<T> path, T value, CriteriaBuilder cb);
-
-    public abstract Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path,
-            CanonicalEmailTypes value, CriteriaBuilder cb);
 
     public abstract Predicate createPredicateForExtensionField(Path<String> path, String value,
             ExtensionFieldEntity field, CriteriaBuilder cb);

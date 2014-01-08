@@ -23,10 +23,12 @@
 
 package org.osiam.storage.entities;
 
+import javax.persistence.Basic;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.Table;
+
+import org.osiam.resources.scim.Email;
+import org.osiam.storage.entities.jpa_converters.EmailTypeConverter;
 
 /**
  * Email Entity
@@ -35,20 +37,24 @@ import javax.persistence.Table;
 @Table(name = "scim_email")
 public class EmailEntity extends BaseMultiValuedAttributeEntityWithValue {
 
-    @Enumerated(EnumType.STRING)
-    private CanonicalEmailTypes type;
+    /**
+     * <p>
+     * The type of this Email.
+     * </p>
+     *
+     * <p>
+     * Custom type mapping is provided by {@link EmailTypeConverter}.
+     * </p>
+     */
+    @Basic
+    private Email.Type type; // @Basic is needed for JPA meta model generator
 
-    public String getType() {
-        if (type != null) {
-            return type.toString();
-        }
-        return null;
+    public Email.Type getType() {
+        return type;
     }
 
-    public void setType(String type) {
-        if (type != null) {
-            this.type = CanonicalEmailTypes.valueOf(type);
-        }
+    public void setType(Email.Type type) {
+        this.type = type;
     }
 
     @Override
@@ -71,7 +77,11 @@ public class EmailEntity extends BaseMultiValuedAttributeEntityWithValue {
             return false;
         }
         EmailEntity other = (EmailEntity) obj;
-        if (type != other.type) {
+        if (type == null) {
+            if (other.type != null) {
+                return false;
+            }
+        } else if (!type.equals(other.type)) {
             return false;
         }
         return true;
@@ -80,12 +90,10 @@ public class EmailEntity extends BaseMultiValuedAttributeEntityWithValue {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("EmailEntity [type=").append(type).append(", primary=").append(isPrimary()).append(", getValue()=")
+        builder.append("EmailEntity [type=").append(type).append(", primary=").append(isPrimary())
+                .append(", getValue()=")
                 .append(getValue()).append("]");
         return builder.toString();
     }
 
-    public enum CanonicalEmailTypes {
-        work, home, other
-    }
 }

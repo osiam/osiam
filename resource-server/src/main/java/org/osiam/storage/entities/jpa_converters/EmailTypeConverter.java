@@ -20,33 +20,34 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+package org.osiam.storage.entities.jpa_converters;
 
-package org.osiam.storage.entities
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 
-import org.osiam.resources.scim.MultiValuedAttribute
+import org.osiam.resources.scim.Email;
 
-import spock.lang.Ignore
-import spock.lang.Specification
+import com.google.common.base.Strings;
 
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 15.03.13
- * Time: 13:56
- * To change this template use File | Settings | File Templates.
- */
-class EmailEntitySpec extends Specification {
+@Converter(autoApply=true)
+public class EmailTypeConverter implements AttributeConverter<Email.Type, String> {
 
-    EmailEntity emailEntity = new EmailEntity()
-    def userEntity = Mock(UserEntity)
+    @Override
+    public String convertToDatabaseColumn(Email.Type attribute) {
+        if(attribute == null || Strings.isNullOrEmpty(attribute.getValue())) {
+            return null;
+        }
 
-    def "should throw an exception if the type is unknown"() {
-        when:
-        emailEntity.setType("huch")
+        return attribute.getValue();
+    }
 
-        then:
-        def e = thrown(IllegalArgumentException)
-        e.message == "No enum constant org.osiam.storage.entities.EmailEntity.CanonicalEmailTypes.huch"
+    @Override
+    public Email.Type convertToEntityAttribute(String dbData) {
+        if(Strings.isNullOrEmpty(dbData)) {
+            return null;
+        }
+
+        return new Email.Type(dbData);
     }
 
 }
