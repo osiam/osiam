@@ -20,37 +20,34 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+package org.osiam.storage.entities.jpa_converters;
 
-package org.osiam.resources.converter;
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 
 import org.osiam.resources.scim.Entitlement;
-import org.osiam.resources.scim.MultiValuedAttribute;
-import org.osiam.storage.entities.EntitlementsEntity;
-import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
 
-@Service
-public class EntitlementConverter implements Converter<MultiValuedAttribute, EntitlementsEntity> {
+@Converter(autoApply=true)
+public class EntitlementTypeConverter implements AttributeConverter<Entitlement.Type, String> {
 
     @Override
-    public EntitlementsEntity fromScim(MultiValuedAttribute scim) {
-        EntitlementsEntity entitlementsEntity = new EntitlementsEntity();
-        entitlementsEntity.setValue(String.valueOf(scim.getValue()));
-
-        if (!Strings.isNullOrEmpty(scim.getType())) {
-            entitlementsEntity.setType(new Entitlement.Type(scim.getType()));
+    public String convertToDatabaseColumn(Entitlement.Type attribute) {
+        if(attribute == null || Strings.isNullOrEmpty(attribute.getValue())) {
+            return null;
         }
 
-        return entitlementsEntity;
+        return attribute.getValue();
     }
 
     @Override
-    public MultiValuedAttribute toScim(EntitlementsEntity entity) {
-        return new MultiValuedAttribute.Builder()
-                .setValue(entity.getValue())
-                .setType(entity.getType() != null ? entity.getType().getValue() : null)
-                .build();
+    public Entitlement.Type convertToEntityAttribute(String dbData) {
+        if(Strings.isNullOrEmpty(dbData)) {
+            return null;
+        }
+
+        return new Entitlement.Type(dbData);
     }
 
 }

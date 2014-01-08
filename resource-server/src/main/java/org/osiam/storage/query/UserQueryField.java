@@ -39,8 +39,11 @@ import javax.persistence.metamodel.SetAttribute;
 import org.joda.time.format.ISODateTimeFormat;
 import org.osiam.resources.scim.Address;
 import org.osiam.resources.scim.Email;
+import org.osiam.resources.scim.Entitlement;
 import org.osiam.storage.entities.AddressEntity;
 import org.osiam.storage.entities.AddressEntity_;
+import org.osiam.storage.entities.BaseMultiValuedAttributeEntityWithValue_;
+import org.osiam.storage.entities.BaseMultiValuedAttributeEntity_;
 import org.osiam.storage.entities.EmailEntity;
 import org.osiam.storage.entities.EmailEntity_;
 import org.osiam.storage.entities.EntitlementsEntity;
@@ -59,24 +62,23 @@ import org.osiam.storage.entities.PhotoEntity;
 import org.osiam.storage.entities.PhotoEntity.CanonicalPhotoTypes;
 import org.osiam.storage.entities.PhotoEntity_;
 import org.osiam.storage.entities.ResourceEntity;
+import org.osiam.storage.entities.ResourceEntity_;
 import org.osiam.storage.entities.RolesEntity;
-import org.osiam.storage.entities.RolesEntity_;
 import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.entities.UserEntity_;
 import org.osiam.storage.entities.X509CertificateEntity;
-import org.osiam.storage.entities.X509CertificateEntity_;
 
 public enum UserQueryField implements QueryField<UserEntity> {
     EXTERNALID("externalid") {
         @Override
         public Predicate addFilter(Root<UserEntity> root,
                 FilterConstraint constraint, String value, CriteriaBuilder cb) {
-            return constraint.createPredicateForStringField(root.get(UserEntity_.externalId), value, cb);
+            return constraint.createPredicateForStringField(root.get(ResourceEntity_.externalId), value, cb);
         }
 
         @Override
         public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
-            return root.get(UserEntity_.externalId);
+            return root.get(ResourceEntity_.externalId);
         }
     },
     META_CREATED("meta.created") {
@@ -84,13 +86,13 @@ public enum UserQueryField implements QueryField<UserEntity> {
         public Predicate addFilter(Root<UserEntity> root,
                 FilterConstraint constraint, String value, CriteriaBuilder cb) {
             Date date = ISODateTimeFormat.dateTimeParser().parseDateTime(value).toDate();
-            return constraint.createPredicateForDateField(root.get(UserEntity_.meta).get(MetaEntity_.created),
+            return constraint.createPredicateForDateField(root.get(ResourceEntity_.meta).get(MetaEntity_.created),
                     date, cb);
         }
 
         @Override
         public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
-            return root.get(UserEntity_.meta).get(MetaEntity_.created);
+            return root.get(ResourceEntity_.meta).get(MetaEntity_.created);
         }
     },
     META_LASTMODIFIED("meta.lastmodified") {
@@ -99,26 +101,26 @@ public enum UserQueryField implements QueryField<UserEntity> {
                 FilterConstraint constraint, String value, CriteriaBuilder cb) {
             Date date = ISODateTimeFormat.dateTimeParser().parseDateTime(value).toDate();
             return constraint.createPredicateForDateField(
-                    root.get(UserEntity_.meta).get(MetaEntity_.lastModified),
+                    root.get(ResourceEntity_.meta).get(MetaEntity_.lastModified),
                     date, cb);
         }
 
         @Override
         public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
-            return root.get(UserEntity_.meta).get(MetaEntity_.lastModified);
+            return root.get(ResourceEntity_.meta).get(MetaEntity_.lastModified);
         }
     },
     META_LOCATION("meta.location") {
         @Override
         public Predicate addFilter(Root<UserEntity> root,
                 FilterConstraint constraint, String value, CriteriaBuilder cb) {
-            return constraint.createPredicateForStringField(root.get(UserEntity_.meta)
+            return constraint.createPredicateForStringField(root.get(ResourceEntity_.meta)
                     .get(MetaEntity_.location), value, cb);
         }
 
         @Override
         public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
-            return root.get(UserEntity_.meta).get(MetaEntity_.location);
+            return root.get(ResourceEntity_.meta).get(MetaEntity_.location);
         }
     },
     USERNAME("username") {
@@ -342,7 +344,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
                 String value, CriteriaBuilder cb) {
 
             SetJoin<UserEntity, EmailEntity> join = createOrGetJoin(EMAIL_ALIAS, root, UserEntity_.emails);
-            return constraint.createPredicateForStringField(join.get(EmailEntity_.value), value, cb);
+            return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
+                    value, cb);
         }
 
         @Override
@@ -357,7 +360,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
                 String value, CriteriaBuilder cb) {
 
             SetJoin<UserEntity, EmailEntity> join = createOrGetJoin(EMAIL_ALIAS, root, UserEntity_.emails);
-            return constraint.createPredicateForStringField(join.get(EmailEntity_.value), value, cb);
+            return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
+                    value, cb);
         }
 
         @Override
@@ -376,8 +380,10 @@ public enum UserQueryField implements QueryField<UserEntity> {
                 emailType = new Email.Type(value);
             }
             SetJoin<UserEntity, EmailEntity> join = createOrGetJoin(EMAIL_ALIAS, root, UserEntity_.emails);
-            return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(EmailEntity_.type), // NOSONAR - XEntity_.X will
-                                                                                            // be filled by JPA provider
+            return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(EmailEntity_.type), // NOSONAR -
+                                                                                                           // XEntity_.X
+                                                                                                           // will
+                    // be filled by JPA provider
                     emailType, cb);
         }
 
@@ -393,7 +399,9 @@ public enum UserQueryField implements QueryField<UserEntity> {
                 String value, CriteriaBuilder cb) {
 
             SetJoin<UserEntity, EmailEntity> join = createOrGetJoin(EMAIL_ALIAS, root, UserEntity_.emails);
-            return constraint.createPredicateForBooleanField(join.get(EmailEntity_.primary), // NOSONAR - XEntity_.X
+            return constraint.createPredicateForBooleanField(join.get(BaseMultiValuedAttributeEntity_.primary), // NOSONAR
+                                                                                                                // -
+                                                                                                                // XEntity_.X
                     // will be filled by JPA provider
                     Boolean.valueOf(value), cb);
         }
@@ -410,7 +418,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
                 String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, PhoneNumberEntity> join = createOrGetJoin(PHONENUMBERS_ALIAS, root,
                     UserEntity_.phoneNumbers);
-            return constraint.createPredicateForStringField(join.get(PhoneNumberEntity_.value), value, cb);
+            return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
+                    value, cb);
         }
 
         @Override
@@ -424,7 +433,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
                 String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, PhoneNumberEntity> join = createOrGetJoin(PHONENUMBERS_ALIAS, root,
                     UserEntity_.phoneNumbers);
-            return constraint.createPredicateForStringField(join.get(PhoneNumberEntity_.value), value, cb);
+            return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
+                    value, cb);
         }
 
         @Override
@@ -459,7 +469,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, ImEntity> join = createOrGetJoin(IMS_ALIAS, root, UserEntity_.ims);
-            return constraint.createPredicateForStringField(join.get(ImEntity_.value), value, cb);
+            return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
+                    value, cb);
 
         }
 
@@ -473,7 +484,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, ImEntity> join = createOrGetJoin(IMS_ALIAS, root, UserEntity_.ims);
-            return constraint.createPredicateForStringField(join.get(ImEntity_.value), value, cb);
+            return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
+                    value, cb);
         }
 
         @Override
@@ -507,7 +519,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, PhotoEntity> join = createOrGetJoin(PHOTOS_ALIAS, root, UserEntity_.photos);
-            return constraint.createPredicateForStringField(join.get(PhotoEntity_.value), value, cb); // NOSONAR -
+            return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
+                    value, cb); // NOSONAR -
             // XEntity_.X will be filled by JPA provider
 
         }
@@ -522,7 +535,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, PhotoEntity> join = createOrGetJoin(PHOTOS_ALIAS, root, UserEntity_.photos);
-            return constraint.createPredicateForStringField(join.get(PhotoEntity_.value), value, cb);
+            return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
+                    value, cb);
 
         }
 
@@ -654,7 +668,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
                 String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, EntitlementsEntity> join = createOrGetJoin("entitlements", root,
                     UserEntity_.entitlements);
-            return constraint.createPredicateForStringField(join.get(EntitlementsEntity_.value), value, cb);
+            return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
+                    value, cb);
         }
 
         @Override
@@ -668,7 +683,27 @@ public enum UserQueryField implements QueryField<UserEntity> {
                 String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, EntitlementsEntity> join = createOrGetJoin("entitlements", root,
                     UserEntity_.entitlements);
-            return constraint.createPredicateForStringField(join.get(EntitlementsEntity_.value), value, cb);
+            return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
+                    value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
+    },
+    ENTITLEMENTS_TYPE("entitlements.type") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
+            Entitlement.Type type = null;
+
+            if (constraint != FilterConstraint.PRESENT) {
+                type = new Entitlement.Type(value);
+            }
+
+            SetJoin<UserEntity, EntitlementsEntity> join = createOrGetJoin(ENTITLEMENTS_ALIAS, root, UserEntity_.entitlements);
+            return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(EntitlementsEntity_.type),
+                    type, cb);
         }
 
         @Override
@@ -682,7 +717,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
                 String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, RolesEntity> join = createOrGetJoin("roles", root,
                     UserEntity_.roles);
-            return constraint.createPredicateForStringField(join.get(RolesEntity_.value), value, cb);
+            return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
+                    value, cb);
         }
 
         @Override
@@ -696,7 +732,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
                 String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, RolesEntity> join = createOrGetJoin("roles", root,
                     UserEntity_.roles);
-            return constraint.createPredicateForStringField(join.get(RolesEntity_.value), value, cb);
+            return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
+                    value, cb);
         }
 
         @Override
@@ -710,7 +747,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
                 String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, X509CertificateEntity> join = createOrGetJoin("x509Certificates", root,
                     UserEntity_.x509Certificates);
-            return constraint.createPredicateForStringField(join.get(X509CertificateEntity_.value), value, cb);
+            return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
+                    value, cb);
         }
 
         @Override
@@ -724,7 +762,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
                 String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, X509CertificateEntity> join = createOrGetJoin("x509Certificates", root,
                     UserEntity_.x509Certificates);
-            return constraint.createPredicateForStringField(join.get(X509CertificateEntity_.value), value, cb);
+            return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
+                    value, cb);
         }
 
         @Override
@@ -737,8 +776,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, GroupEntity> join = createOrGetJoinForGroups(GROUPS_ALIAS, root,
-                    UserEntity_.groups);
-            return constraint.createPredicateForStringField(join.get(GroupEntity_.id), value, cb);
+                    ResourceEntity_.groups);
+            return constraint.createPredicateForStringField(join.get(ResourceEntity_.id), value, cb);
         }
 
         @Override
@@ -751,8 +790,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, GroupEntity> join = createOrGetJoinForGroups(GROUPS_ALIAS, root,
-                    UserEntity_.groups);
-            return constraint.createPredicateForStringField(join.get(GroupEntity_.id), value, cb);
+                    ResourceEntity_.groups);
+            return constraint.createPredicateForStringField(join.get(ResourceEntity_.id), value, cb);
         }
 
         @Override
@@ -765,7 +804,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, GroupEntity> join = createOrGetJoinForGroups(GROUPS_ALIAS, root,
-                    UserEntity_.groups);
+                    ResourceEntity_.groups);
             return constraint.createPredicateForStringField(join.get(GroupEntity_.displayName), value, cb);
         }
 
@@ -791,6 +830,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
     private static final String PHOTOS_ALIAS = "photos";
     private static final String ADDRESS_ALIAS = "addresses";
     private static final String GROUPS_ALIAS = "groups";
+    private static final String ENTITLEMENTS_ALIAS = "entitlements";
 
     private UserQueryField(String name) {
         this.name = name;

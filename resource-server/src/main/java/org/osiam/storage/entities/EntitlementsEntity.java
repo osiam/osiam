@@ -23,8 +23,12 @@
 
 package org.osiam.storage.entities;
 
+import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+
+import org.osiam.resources.scim.Entitlement;
+import org.osiam.storage.entities.jpa_converters.EntitlementTypeConverter;
 
 /**
  * Entitlements Entity
@@ -33,9 +37,62 @@ import javax.persistence.Table;
 @Table(name = "scim_entitlements")
 public class EntitlementsEntity extends BaseMultiValuedAttributeEntityWithValue {
 
+    /**
+     * <p>
+     * The type of this Entitlement.
+     * </p>
+     *
+     * <p>
+     * Custom type mapping is provided by {@link EntitlementTypeConverter}.
+     * </p>
+     */
+    @Basic
+    private Entitlement.Type type; // @Basic is needed for JPA meta model generator
+
+    public Entitlement.Type getType() {
+        return type;
+    }
+
+    public void setType(Entitlement.Type type) {
+        this.type = type;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + (type == null ? 0 : type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        EntitlementsEntity other = (EntitlementsEntity) obj;
+        if (type == null) {
+            if (other.type != null) {
+                return false;
+            }
+        } else if (!type.equals(other.type)) {
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public String toString() {
-        return "EntitlementsEntity [value=" + getValue() + ", primary=" + isPrimary() + "]";
+        StringBuilder builder = new StringBuilder();
+        builder.append("EntitlementsEntity [type=").append(type).append(", getValue()=").append(getValue())
+                .append(", isPrimary()=").append(isPrimary()).append("]");
+        return builder.toString();
     }
 
 }
