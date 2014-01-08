@@ -61,7 +61,7 @@ public class EmailEntity extends BaseMultiValuedAttributeEntityWithValue {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + (type == null ? 0 : type.hashCode());
         return result;
     }
 
@@ -90,9 +90,8 @@ public class EmailEntity extends BaseMultiValuedAttributeEntityWithValue {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("EmailEntity [type=").append(type).append(", primary=").append(isPrimary())
-                .append(", getValue()=")
-                .append(getValue()).append("]");
+        builder.append("EmailEntity [type=").append(type).append(", getValue()=").append(getValue())
+                .append(", isPrimary()=").append(isPrimary()).append("]");
         return builder.toString();
     }
 
