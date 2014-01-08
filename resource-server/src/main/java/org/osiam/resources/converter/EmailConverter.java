@@ -37,7 +37,7 @@ public class EmailConverter implements Converter<MultiValuedAttribute, EmailEnti
     public EmailEntity fromScim(MultiValuedAttribute scim) {
         EmailEntity emailEntity = new EmailEntity();
         emailEntity.setValue(scim.getValue());
-        emailEntity.setPrimary((scim.isPrimary() == null ? false : scim.isPrimary()));
+        emailEntity.setPrimary(scim.isPrimary() == null ? false : scim.isPrimary());
 
         if (!Strings.isNullOrEmpty(scim.getType())) {
             emailEntity.setType(new Email.Type(scim.getType()));
@@ -48,11 +48,11 @@ public class EmailConverter implements Converter<MultiValuedAttribute, EmailEnti
 
     @Override
     public MultiValuedAttribute toScim(EmailEntity entity) {
-        return new MultiValuedAttribute.Builder().
-                setPrimary(entity.isPrimary()).
-                setType(entity.getType() != null ? entity.getType().getValue() : null).
-                setValue(entity.getValue()).
-                build();
+        return new MultiValuedAttribute.Builder()
+                .setPrimary(entity.isPrimary())
+                .setType(entity.getType() != null ? entity.getType().getValue() : null)
+                .setValue(entity.getValue())
+                .build();
     }
 
 }
