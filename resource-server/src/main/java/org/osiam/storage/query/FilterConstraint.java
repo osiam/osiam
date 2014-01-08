@@ -73,12 +73,6 @@ public enum FilterConstraint {
         }
 
         @Override
-        public Predicate createPredicateForMultiValuedAttributeTypeField(Path<MultiValuedAttributeType> path,
-                MultiValuedAttributeType value, CriteriaBuilder cb) {
-            return cb.equal(path, value);
-        }
-
-        @Override
         public Predicate createPredicateForPhoneNumberTypeField(Path<CanonicalPhoneNumberTypes> path,
                 CanonicalPhoneNumberTypes value, CriteriaBuilder cb) {
             return cb.equal(path, value);
@@ -93,6 +87,12 @@ public enum FilterConstraint {
         @Override
         public Predicate createPredicateForPhotoTypeField(Path<CanonicalPhotoTypes> path, CanonicalPhotoTypes value,
                 CriteriaBuilder cb) {
+            return cb.equal(path, value);
+        }
+
+        @Override
+        public <T extends MultiValuedAttributeType> Predicate createPredicateForMultiValuedAttributeTypeField(
+                Path<T> path, T value, CriteriaBuilder cb) {
             return cb.equal(path, value);
         }
 
@@ -147,8 +147,8 @@ public enum FilterConstraint {
         }
 
         @Override
-        public Predicate createPredicateForMultiValuedAttributeTypeField(Path<MultiValuedAttributeType> path,
-                MultiValuedAttributeType value, CriteriaBuilder cb) {
+        public <T extends MultiValuedAttributeType> Predicate createPredicateForMultiValuedAttributeTypeField(
+                Path<T> path, T value, CriteriaBuilder cb) {
             throw new InvalidConstraintException(toString());
         }
 
@@ -203,8 +203,8 @@ public enum FilterConstraint {
         }
 
         @Override
-        public Predicate createPredicateForMultiValuedAttributeTypeField(Path<MultiValuedAttributeType> path,
-                MultiValuedAttributeType value, CriteriaBuilder cb) {
+        public <T extends MultiValuedAttributeType> Predicate createPredicateForMultiValuedAttributeTypeField(
+                Path<T> path, T value, CriteriaBuilder cb) {
             throw new InvalidConstraintException(toString());
         }
     },
@@ -258,8 +258,8 @@ public enum FilterConstraint {
         }
 
         @Override
-        public Predicate createPredicateForMultiValuedAttributeTypeField(Path<MultiValuedAttributeType> path,
-                MultiValuedAttributeType value, CriteriaBuilder cb) {
+        public <T extends MultiValuedAttributeType> Predicate createPredicateForMultiValuedAttributeTypeField(
+                Path<T> path, T value, CriteriaBuilder cb) {
             return cb.isNotNull(path);
         }
     },
@@ -313,8 +313,8 @@ public enum FilterConstraint {
         }
 
         @Override
-        public Predicate createPredicateForMultiValuedAttributeTypeField(Path<MultiValuedAttributeType> path,
-                MultiValuedAttributeType value, CriteriaBuilder cb) {
+        public <T extends MultiValuedAttributeType> Predicate createPredicateForMultiValuedAttributeTypeField(
+                Path<T> path, T value, CriteriaBuilder cb) {
             throw new InvalidConstraintException(toString());
         }
     },
@@ -368,8 +368,8 @@ public enum FilterConstraint {
         }
 
         @Override
-        public Predicate createPredicateForMultiValuedAttributeTypeField(Path<MultiValuedAttributeType> path,
-                MultiValuedAttributeType value, CriteriaBuilder cb) {
+        public <T extends MultiValuedAttributeType> Predicate createPredicateForMultiValuedAttributeTypeField(
+                Path<T> path, T value, CriteriaBuilder cb) {
             throw new InvalidConstraintException(toString());
         }
 
@@ -424,8 +424,8 @@ public enum FilterConstraint {
         }
 
         @Override
-        public Predicate createPredicateForMultiValuedAttributeTypeField(Path<MultiValuedAttributeType> path,
-                MultiValuedAttributeType value, CriteriaBuilder cb) {
+        public <T extends MultiValuedAttributeType> Predicate createPredicateForMultiValuedAttributeTypeField(
+                Path<T> path, T value, CriteriaBuilder cb) {
             throw new InvalidConstraintException(toString());
         }
     },
@@ -479,8 +479,8 @@ public enum FilterConstraint {
         }
 
         @Override
-        public Predicate createPredicateForMultiValuedAttributeTypeField(Path<MultiValuedAttributeType> path,
-                MultiValuedAttributeType value, CriteriaBuilder cb) {
+        public <T extends MultiValuedAttributeType> Predicate createPredicateForMultiValuedAttributeTypeField(
+                Path<T> path, T value, CriteriaBuilder cb) {
             throw new InvalidConstraintException(toString());
         }
     };
@@ -514,8 +514,8 @@ public enum FilterConstraint {
 
     public abstract Predicate createPredicateForBooleanField(Path<Boolean> path, Boolean value, CriteriaBuilder cb);
 
-    public abstract Predicate createPredicateForMultiValuedAttributeTypeField(Path<MultiValuedAttributeType> path,
-            MultiValuedAttributeType value, CriteriaBuilder cb);
+    public abstract <T extends MultiValuedAttributeType> Predicate createPredicateForMultiValuedAttributeTypeField(
+            Path<T> path, T value, CriteriaBuilder cb);
 
     public abstract Predicate createPredicateForEmailTypeField(Path<CanonicalEmailTypes> path,
             CanonicalEmailTypes value, CriteriaBuilder cb);

@@ -37,8 +37,8 @@ import javax.persistence.criteria.SetJoin;
 import javax.persistence.metamodel.SetAttribute;
 
 import org.joda.time.format.ISODateTimeFormat;
+import org.osiam.resources.scim.Address;
 import org.osiam.storage.entities.AddressEntity;
-import org.osiam.storage.entities.AddressEntity.CanonicalAddressTypes;
 import org.osiam.storage.entities.AddressEntity_;
 import org.osiam.storage.entities.EmailEntity;
 import org.osiam.storage.entities.EmailEntity.CanonicalEmailTypes;
@@ -65,6 +65,8 @@ import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.entities.UserEntity_;
 import org.osiam.storage.entities.X509CertificateEntity;
 import org.osiam.storage.entities.X509CertificateEntity_;
+
+import com.google.common.base.Strings;
 
 public enum UserQueryField implements QueryField<UserEntity> {
     EXTERNALID("externalid") {
@@ -620,16 +622,14 @@ public enum UserQueryField implements QueryField<UserEntity> {
     ADDRESS_TYPE("address.type") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
-            CanonicalAddressTypes addressType;
+            Address.Type addressType = null;
 
-            if (constraint == FilterConstraint.PRESENT && (value == null || value.isEmpty())) {
-                addressType = null;
-            } else {
-                addressType = CanonicalAddressTypes.valueOf(value);
+            if (constraint != FilterConstraint.PRESENT) {
+                addressType = new Address.Type(value);
             }
 
             SetJoin<UserEntity, AddressEntity> join = createOrGetJoin(ADDRESS_ALIAS, root, UserEntity_.addresses);
-            return constraint.createPredicateForAddressTypeField(join.get(AddressEntity_.type),
+            return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(AddressEntity_.type),
                     addressType, cb);
         }
 

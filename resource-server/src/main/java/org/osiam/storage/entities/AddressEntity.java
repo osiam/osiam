@@ -23,17 +23,14 @@
 
 package org.osiam.storage.entities;
 
-import javax.persistence.Column;
+import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
-import javax.persistence.PostLoad;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 import org.osiam.resources.scim.Address;
+import org.osiam.storage.entities.jpa_converters.AddressTypeConverter;
 
 /**
  * Address Entity
@@ -42,10 +39,12 @@ import org.osiam.resources.scim.Address;
 @Table(name = "scim_address")
 public class AddressEntity extends BaseMultiValuedAttributeEntity {
 
-    @Column(name="type")
-    private String typeAsString;
-
-    @Transient
+    /**
+     * <p>The type of this Address.</p>
+     *
+     * <p>Custom type mapping is provided by {@link AddressTypeConverter}.</p>
+     */
+    @Basic // needed for JPA meta model generator
     private Address.Type type;
 
     @Lob
@@ -62,11 +61,8 @@ public class AddressEntity extends BaseMultiValuedAttributeEntity {
 
     private String country;
 
-    public String getType() {
-        if (type != null) {
-            return type.toString();
-        }
-        return null;
+    public Address.Type getType() {
+        return type;
     }
 
     public void setType(Address.Type type) {
@@ -119,16 +115,6 @@ public class AddressEntity extends BaseMultiValuedAttributeEntity {
 
     public void setCountry(String country) {
         this.country = country;
-    }
-
-    @PrePersist @PreUpdate
-    protected void convertTypeToString() {
-        typeAsString = type.getValue();
-    }
-
-    @PostLoad
-    protected void convertStringTypeToType() {
-        type = new Address.Type(typeAsString);
     }
 
     @Override
@@ -199,7 +185,11 @@ public class AddressEntity extends BaseMultiValuedAttributeEntity {
         } else if (!streetAddress.equals(other.streetAddress)) {
             return false;
         }
-        if (type != other.type) {
+        if (type == null) {
+            if (other.type != null) {
+                return false;
+            }
+        } else if (!type.equals(other.type)) {
             return false;
         }
         return true;
