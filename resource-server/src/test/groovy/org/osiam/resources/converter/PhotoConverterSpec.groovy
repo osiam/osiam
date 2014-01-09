@@ -24,6 +24,7 @@
 package org.osiam.resources.converter
 
 import org.osiam.resources.scim.MultiValuedAttribute
+import org.osiam.resources.scim.Photo
 import org.osiam.storage.entities.PhotoEntity
 
 import spock.lang.Specification
@@ -32,11 +33,11 @@ class PhotoConverterSpec extends Specification {
 
     PhotoEntity entity
     MultiValuedAttribute attribute
-    PhotoConverter converter;
+    PhotoConverter converter
 
     def setup(){
         def value = 'myphoto.com/me.JPG'
-        def type = 'photo'
+        def type = Photo.Type.PHOTO
 
         entity = new PhotoEntity()
         entity.setValue(value)
@@ -44,7 +45,7 @@ class PhotoConverterSpec extends Specification {
 
         attribute = new MultiValuedAttribute.Builder()
                 .setValue(value)
-                .setType(type)
+                .setType(type.getValue())
                 .build()
 
         converter = new PhotoConverter()

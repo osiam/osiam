@@ -25,10 +25,12 @@ package org.osiam.storage.entities;
 
 import java.util.regex.Pattern;
 
+import javax.persistence.Basic;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.Table;
+
+import org.osiam.resources.scim.Photo;
+import org.osiam.storage.entities.jpa_converters.PhotoTypeConverter;
 
 /**
  * Photos Entity
@@ -40,8 +42,17 @@ public class PhotoEntity extends BaseMultiValuedAttributeEntityWithValue {
     // a valid photo url is everything which does not contain any control character and ends with jpg|jpeg|png|gif
     private static final Pattern PHOTO_SUFFIX = Pattern.compile("(?i)\\S+\\.(jpg|jpeg|png|gif)");
 
-    @Enumerated(EnumType.STRING)
-    private CanonicalPhotoTypes type;
+    /**
+     * <p>
+     * The type of this Photo.
+     * </p>
+     *
+     * <p>
+     * Custom type mapping is provided by {@link PhotoTypeConverter}.
+     * </p>
+     */
+    @Basic
+    private Photo.Type type; // @Basic is needed for JPA meta model generator
 
     @Override
     public void setValue(String value) {
@@ -59,17 +70,12 @@ public class PhotoEntity extends BaseMultiValuedAttributeEntityWithValue {
         return !PHOTO_SUFFIX.matcher(value).matches();
     }
 
-    public String getType() {
-        if (type != null) {
-            return type.toString();
-        }
-        return null;
+    public Photo.Type getType() {
+        return type;
     }
 
-    public void setType(String type) {
-        if (type != null) {
-            this.type = CanonicalPhotoTypes.valueOf(type);
-        }
+    public void setType(Photo.Type type) {
+            this.type = type;
     }
 
     @Override
@@ -92,7 +98,11 @@ public class PhotoEntity extends BaseMultiValuedAttributeEntityWithValue {
             return false;
         }
         PhotoEntity other = (PhotoEntity) obj;
-        if (type != other.type) {
+        if (type == null) {
+            if (other.type != null) {
+                return false;
+            }
+        } else if (!type.equals(other.type)) {
             return false;
         }
         return true;
@@ -105,7 +115,4 @@ public class PhotoEntity extends BaseMultiValuedAttributeEntityWithValue {
         return builder.toString();
     }
 
-    public enum CanonicalPhotoTypes {
-        photo, thumbnail
-    }
 }

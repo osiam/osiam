@@ -24,8 +24,11 @@
 package org.osiam.resources.converter;
 
 import org.osiam.resources.scim.MultiValuedAttribute;
+import org.osiam.resources.scim.PhoneNumber;
 import org.osiam.storage.entities.PhoneNumberEntity;
 import org.springframework.stereotype.Service;
+
+import com.google.common.base.Strings;
 
 @Service
 public class PhoneNumberConverter implements Converter<MultiValuedAttribute, PhoneNumberEntity> {
@@ -33,15 +36,19 @@ public class PhoneNumberConverter implements Converter<MultiValuedAttribute, Pho
     @Override
     public PhoneNumberEntity fromScim(MultiValuedAttribute scim) {
         PhoneNumberEntity phoneNumberEntity = new PhoneNumberEntity();
-        phoneNumberEntity.setType(scim.getType());
         phoneNumberEntity.setValue(String.valueOf(scim.getValue()));
+
+        if (!Strings.isNullOrEmpty(scim.getType())) {
+            phoneNumberEntity.setType(new PhoneNumber.Type(scim.getType()));
+        }
+
         return phoneNumberEntity;
     }
 
     @Override
     public MultiValuedAttribute toScim(PhoneNumberEntity entity) {
         return new MultiValuedAttribute.Builder().
-                setType(entity.getType()).
+                setType(entity.getType() != null ? entity.getType().getValue() : null).
                 setValue(entity.getValue()).
                 build();
     }

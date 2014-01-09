@@ -20,24 +20,34 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+package org.osiam.storage.entities.jpa_converters;
 
-package org.osiam.storage.entities
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 
-import spock.lang.Specification
+import org.osiam.resources.scim.PhoneNumber;
 
+import com.google.common.base.Strings;
 
-class PhoneNumberEntitySpec extends Specification {
+@Converter(autoApply = true)
+public class PhoneNumberTypeConverter implements AttributeConverter<PhoneNumber.Type, String> {
 
-    PhoneNumberEntity phoneNumberEntity = new PhoneNumberEntity()
-    def userEntity = Mock(UserEntity)
+    @Override
+    public String convertToDatabaseColumn(PhoneNumber.Type attribute) {
+        if (attribute == null || Strings.isNullOrEmpty(attribute.getValue())) {
+            return null;
+        }
 
-    def "should throw an exception if the type is unknown"() {
-        when:
-        phoneNumberEntity.setType("huch")
+        return attribute.getValue();
+    }
 
-        then:
-        def e = thrown(IllegalArgumentException)
-        e.message == "No enum constant org.osiam.storage.entities.PhoneNumberEntity.CanonicalPhoneNumberTypes.huch"
+    @Override
+    public PhoneNumber.Type convertToEntityAttribute(String dbData) {
+        if (Strings.isNullOrEmpty(dbData)) {
+            return null;
+        }
+
+        return new PhoneNumber.Type(dbData);
     }
 
 }
