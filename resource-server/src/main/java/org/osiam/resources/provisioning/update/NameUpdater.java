@@ -152,13 +152,7 @@ class NameUpdater {
             return;
         }
 
-        if (Strings.isNullOrEmpty(name.getFormatted())
-                && Strings.isNullOrEmpty(name.getFamilyName())
-                && Strings.isNullOrEmpty(name.getGivenName())
-                && Strings.isNullOrEmpty(name.getMiddleName())
-                && Strings.isNullOrEmpty(name.getHonorificPrefix())
-                && Strings.isNullOrEmpty(name.getHonorificSuffix())) {
-
+        if (name.isEmpty()) {
             return;
         }
 
