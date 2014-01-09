@@ -50,7 +50,7 @@ import org.osiam.storage.entities.BaseMultiValuedAttributeEntity_;
 import org.osiam.storage.entities.EmailEntity;
 import org.osiam.storage.entities.EmailEntity_;
 import org.osiam.storage.entities.EntitlementEntity;
-import org.osiam.storage.entities.EntitlementsEntity_;
+import org.osiam.storage.entities.EntitlementEntity_;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.GroupEntity_;
 import org.osiam.storage.entities.ImEntity;
@@ -701,7 +701,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
             }
 
             SetJoin<UserEntity, EntitlementEntity> join = createOrGetJoin(ENTITLEMENTS_ALIAS, root, UserEntity_.entitlements);
-            return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(EntitlementsEntity_.type),
+            return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(EntitlementEntity_.type),
                     type, cb);
         }
 
