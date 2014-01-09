@@ -28,7 +28,6 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import org.osiam.resources.scim.Email;
-import org.osiam.storage.entities.jpa_converters.EmailTypeConverter;
 
 /**
  * Email Entity
@@ -43,7 +42,7 @@ public class EmailEntity extends BaseMultiValuedAttributeEntityWithValue {
      * </p>
      *
      * <p>
-     * Custom type mapping is provided by {@link EmailTypeConverter}.
+     * Custom type mapping is provided by {@link org.osiam.storage.entities.jpa_converters.EmailTypeConverter}.
      * </p>
      */
     @Basic

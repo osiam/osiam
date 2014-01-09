@@ -26,7 +26,6 @@ package org.osiam.resources.provisioning.update;
 import java.util.Set;
 
 import org.osiam.resources.scim.Name;
-import org.osiam.storage.entities.EmailEntity;
 import org.osiam.storage.entities.NameEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.stereotype.Service;
@@ -34,21 +33,21 @@ import org.springframework.stereotype.Service;
 import com.google.common.base.Strings;
 
 /**
- * The NameUpdater provides the functionality to update the {@link NameEntity} of a UserEntity
+ * The NameUpdater provides the functionality to update the {@link org.osiam.storage.entities.NameEntity} of a given {@link org.osiam.storage.entities.UserEntity}
  */
 @Service
 class NameUpdater {
 
     /**
-     * updates (adds new, delete, updates) the {@link EmailEntity}'s of the given {@link UserEntity} based on the given
-     * Name
+     * updates (adds new, delete, updates) the {@link org.osiam.storage.entities.NameEntity}s of the given {@link org.osiam.storage.entities.UserEntity} based on the given
+     * {@link org.osiam.resources.scim.Name}
      *
      * @param name
-     *            {@link Name} to be deleted or updated
+     *            {@link org.osiam.resources.scim.Name} to be deleted or updated
      * @param userEntity
      *            user who needs to be updated
      * @param attributes
-     *            the complete {@link NameEntity}'s will be deleted if this Set contains 'name'
+     *            the complete {@link org.osiam.storage.entities.NameEntity}'s will be deleted if this Set contains 'name'
      */
     void update(Name name, UserEntity userEntity, Set<String> attributes) {
 

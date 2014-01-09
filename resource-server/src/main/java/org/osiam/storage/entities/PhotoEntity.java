@@ -30,7 +30,6 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import org.osiam.resources.scim.Photo;
-import org.osiam.storage.entities.jpa_converters.PhotoTypeConverter;
 
 /**
  * Photos Entity
@@ -48,7 +47,7 @@ public class PhotoEntity extends BaseMultiValuedAttributeEntityWithValue {
      * </p>
      *
      * <p>
-     * Custom type mapping is provided by {@link PhotoTypeConverter}.
+     * Custom type mapping is provided by {@link org.osiam.storage.entities.jpa_converters.PhotoTypeConverter}.
      * </p>
      */
     @Basic
@@ -82,7 +81,7 @@ public class PhotoEntity extends BaseMultiValuedAttributeEntityWithValue {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + (type == null ? 0 : type.hashCode());
         return result;
     }
 

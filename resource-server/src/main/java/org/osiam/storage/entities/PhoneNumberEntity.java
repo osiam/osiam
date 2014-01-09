@@ -28,7 +28,6 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import org.osiam.resources.scim.PhoneNumber;
-import org.osiam.storage.entities.jpa_converters.PhoneNumberTypeConverter;
 
 /**
  * Phone Numbers Entity
@@ -43,7 +42,7 @@ public class PhoneNumberEntity extends BaseMultiValuedAttributeEntityWithValue {
      * </p>
      *
      * <p>
-     * Custom type mapping is provided by {@link PhoneNumberTypeConverter}.
+     * Custom type mapping is provided by {@link org.osiam.storage.entities.jpa_converters.PhoneNumberTypeConverter}.
      * </p>
      */
     @Basic
@@ -61,7 +60,7 @@ public class PhoneNumberEntity extends BaseMultiValuedAttributeEntityWithValue {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + (type == null ? 0 : type.hashCode());
         return result;
     }
 

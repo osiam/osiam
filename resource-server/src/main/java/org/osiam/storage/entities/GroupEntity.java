@@ -31,12 +31,10 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
-import org.osiam.resources.scim.Group;
-
 import com.google.common.collect.ImmutableSet;
 
 /**
- * Entity class for {@link Group} resources
+ * Entity class for {@link org.osiam.resources.scim.Group} resources
  */
 @Entity
 @Table(name = "scim_group")
@@ -60,7 +58,7 @@ public class GroupEntity extends ResourceEntity {
         if (members.contains(member)) {
             return;
         }
-        this.members.add(member);
+        members.add(member);
         member.addToGroup(this);
     }
 

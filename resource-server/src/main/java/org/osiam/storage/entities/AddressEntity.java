@@ -30,7 +30,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 import org.osiam.resources.scim.Address;
-import org.osiam.storage.entities.jpa_converters.AddressTypeConverter;
 
 /**
  * Address Entity
@@ -45,7 +44,7 @@ public class AddressEntity extends BaseMultiValuedAttributeEntity {
      * </p>
      *
      * <p>
-     * Custom type mapping is provided by {@link AddressTypeConverter}.
+     * Custom type mapping is provided by {@link org.osiam.storage.entities.jpa_converters.AddressTypeConverter}.
      * </p>
      */
     @Basic
@@ -125,13 +124,13 @@ public class AddressEntity extends BaseMultiValuedAttributeEntity {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((country == null) ? 0 : country.hashCode());
-        result = prime * result + ((formatted == null) ? 0 : formatted.hashCode());
-        result = prime * result + ((locality == null) ? 0 : locality.hashCode());
-        result = prime * result + ((postalCode == null) ? 0 : postalCode.hashCode());
-        result = prime * result + ((region == null) ? 0 : region.hashCode());
-        result = prime * result + ((streetAddress == null) ? 0 : streetAddress.hashCode());
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + (country == null ? 0 : country.hashCode());
+        result = prime * result + (formatted == null ? 0 : formatted.hashCode());
+        result = prime * result + (locality == null ? 0 : locality.hashCode());
+        result = prime * result + (postalCode == null ? 0 : postalCode.hashCode());
+        result = prime * result + (region == null ? 0 : region.hashCode());
+        result = prime * result + (streetAddress == null ? 0 : streetAddress.hashCode());
+        result = prime * result + (type == null ? 0 : type.hashCode());
         return result;
     }
 
