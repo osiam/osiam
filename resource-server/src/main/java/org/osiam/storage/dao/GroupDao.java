@@ -24,8 +24,6 @@
 package org.osiam.storage.dao;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.storage.entities.GroupEntity;
@@ -41,9 +39,6 @@ public class GroupDao implements GenericDao<GroupEntity> {
 
     @Inject
     private ResourceDao resourceDao;
-
-    @PersistenceContext
-    private EntityManager em;
 
     @Override
     public void create(GroupEntity group) {
