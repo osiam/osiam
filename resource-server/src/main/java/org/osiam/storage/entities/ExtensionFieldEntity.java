@@ -27,15 +27,13 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.osiam.resources.scim.ExtensionFieldType;
 
@@ -53,11 +51,20 @@ public class ExtensionFieldEntity { // NOSONAR - will be constructed by jackson
 
     private String name;
 
-    @Transient
+    /**
+     * <p>
+     * The type of this extension field.
+     * </p>
+     *
+     * <p>
+     * Custom type mapping is provided by {@link org.osiam.storage.entities.jpa_converters.ExtensionFieldTypeConverter}.
+     * </p>
+     */
+    @Basic(optional = false)
     private ExtensionFieldType<?> type;
 
     @Column(name = "is_required")
-    private boolean isRequired;
+    private boolean required;
 
     @ManyToOne
     private ExtensionEntity extension;
@@ -94,25 +101,12 @@ public class ExtensionFieldEntity { // NOSONAR - will be constructed by jackson
         this.type = type;
     }
 
-    // @Access is necessary to provide a portable way of mapping our new extension field type in
-    // anything < JPA 2.1 Should be replaced by a custom user type at some point.
-
-    @Column(name = "type")
-    @Access(AccessType.PROPERTY)
-    private String getTypeAsString() { // NOSONAR : This method is needed to serialize our type
-        return type.toString(); // NOSONAR : This method is needed to serialize our type
-    }
-
-    private void setTypeAsString(String typeAsString) { // NOSONAR : This method is needed to deserialize our type
-        type = ExtensionFieldType.valueOf(typeAsString); // NOSONAR : This method is needed to deserialize our type
-    }
-
     public boolean isRequired() {
-        return isRequired;
+        return required;
     }
 
     public void setRequired(boolean required) {
-        isRequired = required;
+        this.required = required;
     }
 
     public boolean isConstrainedValid(String constraint) {
@@ -161,7 +155,7 @@ public class ExtensionFieldEntity { // NOSONAR - will be constructed by jackson
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("ExtensionFieldEntity [name=").append(name).append(", type=").append(type)
-                .append(", isRequired=").append(isRequired).append("]");
+                .append(", isRequired=").append(required).append("]");
         return builder.toString();
     }
 
