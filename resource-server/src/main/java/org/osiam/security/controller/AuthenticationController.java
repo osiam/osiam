@@ -39,7 +39,7 @@ import org.osiam.resources.UserSpring;
 import org.osiam.storage.dao.ClientDao;
 import org.osiam.storage.dao.UserDao;
 import org.osiam.storage.entities.ClientEntity;
-import org.osiam.storage.entities.RolesEntity;
+import org.osiam.storage.entities.RoleEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -76,7 +76,7 @@ public class AuthenticationController {
     private UserSpring getUserSpring(UserEntity dbUser) {
 
         Set<RoleSpring> springRoles = new HashSet<>();
-        for (RolesEntity role : dbUser.getRoles()) {
+        for (RoleEntity role : dbUser.getRoles()) {
             RoleSpring springRole = new RoleSpring();
             springRole.setValue(role.getValue());
             springRoles.add(springRole);

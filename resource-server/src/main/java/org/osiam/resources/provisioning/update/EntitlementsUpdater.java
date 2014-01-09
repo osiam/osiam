@@ -30,14 +30,14 @@ import javax.inject.Inject;
 
 import org.osiam.resources.converter.EntitlementConverter;
 import org.osiam.resources.scim.MultiValuedAttribute;
-import org.osiam.storage.entities.EntitlementsEntity;
+import org.osiam.storage.entities.EntitlementEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
 
 /**
- * The EntitlementsUpdater provides the functionality to update the {@link EntitlementsEntity} of a UserEntity
+ * The EntitlementsUpdater provides the functionality to update the {@link EntitlementEntity} of a UserEntity
  */
 @Service
 class EntitlementsUpdater {
@@ -46,7 +46,7 @@ class EntitlementsUpdater {
     private EntitlementConverter entitlementConverter;
 
     /**
-     * updates (adds new, delete, updates) the {@link EntitlementsEntity}'s of the given {@link UserEntity} based on the
+     * updates (adds new, delete, updates) the {@link EntitlementEntity}'s of the given {@link UserEntity} based on the
      * given List of Entitlement's
      *
      * @param entitlements
@@ -54,7 +54,7 @@ class EntitlementsUpdater {
      * @param userEntity
      *            user who needs to be updated
      * @param attributes
-     *            all {@link EntitlementsEntity}'s will be deleted if this Set contains 'entitlements'
+     *            all {@link EntitlementEntity}'s will be deleted if this Set contains 'entitlements'
      */
     void update(List<MultiValuedAttribute> entitlements, UserEntity userEntity, Set<String> attributes) {
 
@@ -64,7 +64,7 @@ class EntitlementsUpdater {
 
         if (entitlements != null) {
             for (MultiValuedAttribute scimEntitlements : entitlements) {
-                EntitlementsEntity entitlementsEntity = entitlementConverter.fromScim(scimEntitlements);
+                EntitlementEntity entitlementsEntity = entitlementConverter.fromScim(scimEntitlements);
                 userEntity.removeEntitlement(entitlementsEntity); // we always have to remove the entitlement's in case
                                                                   // the primary attribute has changed
                 if (Strings.isNullOrEmpty(scimEntitlements.getOperation())

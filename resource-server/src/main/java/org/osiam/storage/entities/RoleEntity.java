@@ -31,7 +31,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "scim_roles")
-public class RolesEntity extends BaseMultiValuedAttributeEntityWithValue {
+public class RoleEntity extends BaseMultiValuedAttributeEntityWithValue {
 
     @Override
     public String toString() {

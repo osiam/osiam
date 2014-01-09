@@ -30,7 +30,7 @@ import org.osiam.resources.UserSpring
 import org.osiam.storage.dao.ClientDao
 import org.osiam.storage.dao.UserDao
 import org.osiam.storage.entities.ClientEntity
-import org.osiam.storage.entities.RolesEntity
+import org.osiam.storage.entities.RoleEntity
 import org.osiam.storage.entities.UserEntity
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.RequestMapping
@@ -49,7 +49,7 @@ class AuthenticationControllerSpec extends Specification {
     def "Should be able to load an User by his name an getting a UserSpring representation"() {
         given:
         def userEntityMock = Mock(UserEntity)
-        def role = new RolesEntity()
+        def role = new RoleEntity()
         role.setValue("TestRole")
         def roles = [role] as Set
         def userId = UUID.randomUUID()

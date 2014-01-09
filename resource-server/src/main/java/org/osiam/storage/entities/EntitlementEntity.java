@@ -35,7 +35,7 @@ import org.osiam.storage.entities.jpa_converters.EntitlementTypeConverter;
  */
 @Entity
 @Table(name = "scim_entitlements")
-public class EntitlementsEntity extends BaseMultiValuedAttributeEntityWithValue {
+public class EntitlementEntity extends BaseMultiValuedAttributeEntityWithValue {
 
     /**
      * <p>
@@ -76,7 +76,7 @@ public class EntitlementsEntity extends BaseMultiValuedAttributeEntityWithValue 
         if (getClass() != obj.getClass()) {
             return false;
         }
-        EntitlementsEntity other = (EntitlementsEntity) obj;
+        EntitlementEntity other = (EntitlementEntity) obj;
         if (type == null) {
             if (other.type != null) {
                 return false;

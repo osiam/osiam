@@ -30,7 +30,7 @@ import javax.persistence.Query
 import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.ResourceEntity
-import org.osiam.storage.entities.RolesEntity
+import org.osiam.storage.entities.RoleEntity
 import org.osiam.storage.entities.UserEntity
 import org.osiam.storage.query.UserFilterParser
 
