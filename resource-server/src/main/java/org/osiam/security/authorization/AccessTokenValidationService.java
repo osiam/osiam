@@ -23,6 +23,10 @@
 
 package org.osiam.security.authorization;
 
+import java.io.IOException;
+
+import javax.inject.Inject;
+
 import org.apache.http.HttpStatus;
 import org.osiam.helper.HttpClientHelper;
 import org.osiam.helper.HttpClientRequestResult;
@@ -34,9 +38,6 @@ import org.springframework.security.oauth2.common.exceptions.InvalidTokenExcepti
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.stereotype.Service;
-
-import javax.inject.Inject;
-import java.io.IOException;
 
 @Service
 public class AccessTokenValidationService implements ResourceServerTokenServices {

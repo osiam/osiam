@@ -28,6 +28,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import org.osiam.resources.scim.Im;
+import org.osiam.storage.entities.jpa_converters.ImTypeConverter;
 
 /**
  * Instant messaging Entity
