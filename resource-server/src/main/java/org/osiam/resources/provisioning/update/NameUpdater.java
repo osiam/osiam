@@ -145,18 +145,25 @@ class NameUpdater {
     }
 
     private void ensureNameEntityIsNotNull(Name name, UserEntity userEntity) {
-        if (userEntity.getName() == null &&
-                name != null &&
-                (!Strings.isNullOrEmpty(name.getFormatted())
-                        || !Strings.isNullOrEmpty(name.getFamilyName())
-                        || !Strings.isNullOrEmpty(name.getGivenName())
-                        || !Strings.isNullOrEmpty(name.getMiddleName())
-                        || !Strings.isNullOrEmpty(name.getHonorificPrefix())
-                        || !Strings.isNullOrEmpty(name.getHonorificSuffix())
-                )) {
-
-            userEntity.setName(new NameEntity());
+        if (userEntity.getName() != null) {
+            return;
         }
+
+        if (name == null) {
+            return;
+        }
+
+        if (Strings.isNullOrEmpty(name.getFormatted())
+                && Strings.isNullOrEmpty(name.getFamilyName())
+                && Strings.isNullOrEmpty(name.getGivenName())
+                && Strings.isNullOrEmpty(name.getMiddleName())
+                && Strings.isNullOrEmpty(name.getHonorificPrefix())
+                && Strings.isNullOrEmpty(name.getHonorificSuffix())) {
+
+            return;
+        }
+
+        userEntity.setName(new NameEntity());
     }
 
 }
