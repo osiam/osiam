@@ -136,6 +136,7 @@ public class AddressEntity extends BaseMultiValuedAttributeEntity {
     }
 
     @Override
+    @SuppressWarnings("all")
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;

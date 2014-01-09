@@ -43,7 +43,7 @@ public class NameEntity {
     private long id;
 
     @Lob
-    @Type(type="org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.StringClobType")
     private String formatted;
 
     private String familyName;
@@ -113,6 +113,7 @@ public class NameEntity {
     }
 
     @Override
+    @SuppressWarnings("all")
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
