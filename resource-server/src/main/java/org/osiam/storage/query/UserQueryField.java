@@ -665,7 +665,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            SetJoin<UserEntity, EntitlementEntity> join = createOrGetJoin("entitlements", root,
+            SetJoin<UserEntity, EntitlementEntity> join = createOrGetJoin(ENTITLEMENTS_ALIAS, root,
                     UserEntity_.entitlements);
             return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
                     value, cb);
@@ -680,7 +680,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            SetJoin<UserEntity, EntitlementEntity> join = createOrGetJoin("entitlements", root,
+            SetJoin<UserEntity, EntitlementEntity> join = createOrGetJoin(ENTITLEMENTS_ALIAS, root,
                     UserEntity_.entitlements);
             return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
                     value, cb);
