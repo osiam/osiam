@@ -289,7 +289,7 @@ public enum FilterConstraint {
         }
     };
 
-    private static Map<String, FilterConstraint> STRING_TO_ENUM = new ConcurrentHashMap<>();
+    private static final Map<String, FilterConstraint> STRING_TO_ENUM = new ConcurrentHashMap<>();
 
     static {
         for (final FilterConstraint constraint : values()) {
@@ -309,7 +309,7 @@ public enum FilterConstraint {
     private final String name; // NOSONAR - is not singular because it is used in the static block
 
     FilterConstraint(String constraint) {
-        this.name = constraint;
+        name = constraint;
     }
 
     public abstract Predicate createPredicateForStringField(Path<String> path, String value, CriteriaBuilder cb);
