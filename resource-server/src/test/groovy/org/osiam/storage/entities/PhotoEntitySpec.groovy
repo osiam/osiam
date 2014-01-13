@@ -50,13 +50,4 @@ class PhotoEntitySpec extends Specification {
         photoEntity.getValue() == "file.JPG"
     }
 
-    def "should throw an exception if the type is unknown"() {
-        when:
-        photoEntity.setType("huch")
-
-        then:
-        def e = thrown(IllegalArgumentException)
-        e.message == "No enum constant org.osiam.storage.entities.PhotoEntity.CanonicalPhotoTypes.huch"
-    }
-
 }

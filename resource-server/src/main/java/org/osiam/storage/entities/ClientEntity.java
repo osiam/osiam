@@ -37,9 +37,12 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -62,11 +65,16 @@ public class ClientEntity {
     @JsonProperty
     @Column(unique = true, nullable = false, length = LENGTH)
     private String id;
+
     @JsonProperty
     private int accessTokenValiditySeconds;
+
     @JsonProperty
     private int refreshTokenValiditySeconds;
+
     @JsonProperty
+    @Lob
+    @Type(type="org.hibernate.type.StringClobType")
     @Column(name = "redirect_uri", unique = true, nullable = false)
     private String redirectUri;
 
@@ -77,13 +85,11 @@ public class ClientEntity {
     @JsonProperty
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "osiam_client_scopes", joinColumns = @JoinColumn(name = "id"))
-    @Column
     private Set<String> scope;
 
     @JsonProperty
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "osiam_client_grants", joinColumns = @JoinColumn(name = "id"))
-    @Column
     private Set<String> grants = generateGrants();
 
     @JsonProperty
@@ -95,7 +101,6 @@ public class ClientEntity {
     private long validityInSeconds;
 
     @JsonProperty
-    @Column
     private Date expiry;
 
     public ClientEntity() {

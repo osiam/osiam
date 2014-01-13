@@ -92,13 +92,6 @@ public class EqualsValidatorTest {
     }
 
     @Test
-    public void multiValueAttributeEntity_honors_equals_contract() {
-        EqualsVerifier.forClass(MultiValueAttributeEntitySkeleton.class)
-                .usingGetClass()
-                .verify();
-    }
-
-    @Test
     public void nameEntity_honors_equals_contract() {
         EqualsVerifier.forClass(NameEntity.class)
                 .usingGetClass()

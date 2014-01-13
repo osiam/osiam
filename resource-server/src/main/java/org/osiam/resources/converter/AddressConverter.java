@@ -27,6 +27,8 @@ import org.osiam.resources.scim.Address;
 import org.osiam.storage.entities.AddressEntity;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Strings;
+
 @Service
 public class AddressConverter implements Converter<Address, AddressEntity> {
 
@@ -43,7 +45,11 @@ public class AddressConverter implements Converter<Address, AddressEntity> {
         addressEntity.setPrimary((scim.isPrimary() == null ? false : scim.isPrimary()));
         addressEntity.setRegion(scim.getRegion());
         addressEntity.setStreetAddress(scim.getStreetAddress());
-        addressEntity.setType(scim.getType());
+
+        if (!Strings.isNullOrEmpty(scim.getType())) {
+            addressEntity.setType(new Address.Type(scim.getType()));
+        }
+
         return addressEntity;
     }
 
@@ -52,15 +58,16 @@ public class AddressConverter implements Converter<Address, AddressEntity> {
         if (entity == null) {
             return null;
         }
-        return new Address.Builder().
-                setCountry(entity.getCountry()).
-                setFormatted(entity.getFormatted()).
-                setLocality(entity.getLocality()).
-                setPostalCode(String.valueOf(entity.getPostalCode())).
-                setRegion(entity.getRegion()).
-                setStreetAddress(entity.getStreetAddress()).
-                setPrimary(entity.isPrimary()).
-                build();
+        return new Address.Builder()
+                .setCountry(entity.getCountry())
+                .setFormatted(entity.getFormatted())
+                .setLocality(entity.getLocality())
+                .setPostalCode(String.valueOf(entity.getPostalCode()))
+                .setRegion(entity.getRegion())
+                .setStreetAddress(entity.getStreetAddress())
+                .setPrimary(entity.isPrimary())
+                .setType(entity.getType() != null ? entity.getType().getValue() : null)
+                .build();
     }
 
 }

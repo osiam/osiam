@@ -30,7 +30,7 @@ import javax.inject.Inject;
 
 import org.osiam.resources.converter.RoleConverter;
 import org.osiam.resources.scim.MultiValuedAttribute;
-import org.osiam.storage.entities.RolesEntity;
+import org.osiam.storage.entities.RoleEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.stereotype.Service;
 
@@ -64,7 +64,7 @@ class RoleUpdater {
 
         if (roles != null) {
             for (MultiValuedAttribute scimRole : roles) {
-                RolesEntity roleEntity = roleConverter.fromScim(scimRole);
+                RoleEntity roleEntity = roleConverter.fromScim(scimRole);
                 userEntity.removeRole(roleEntity); // we always have to remove the role in case
                                                    // the primary attribute has changed
                 if (Strings.isNullOrEmpty(scimRole.getOperation())

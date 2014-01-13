@@ -23,58 +23,37 @@
 
 package org.osiam.storage.entities;
 
-import java.util.regex.Pattern;
-
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import org.osiam.resources.scim.Photo;
+import org.osiam.resources.scim.Entitlement;
 
 /**
- * Photos Entity
+ * Entitlements Entity
  */
 @Entity
-@Table(name = "scim_photo")
-public class PhotoEntity extends BaseMultiValuedAttributeEntityWithValue {
-
-    // a valid photo url is everything which does not contain any control character and ends with jpg|jpeg|png|gif
-    private static final Pattern PHOTO_SUFFIX = Pattern.compile("(?i)\\S+\\.(jpg|jpeg|png|gif)");
+@Table(name = "scim_entitlements")
+public class EntitlementEntity extends BaseMultiValuedAttributeEntityWithValue {
 
     /**
      * <p>
-     * The type of this Photo.
+     * The type of this Entitlement.
      * </p>
      *
      * <p>
-     * Custom type mapping is provided by {@link org.osiam.storage.entities.jpa_converters.PhotoTypeConverter}.
+     * Custom type mapping is provided by {@link org.osiam.storage.entities.jpa_converters.EntitlementTypeConverter}.
      * </p>
      */
     @Basic
-    private Photo.Type type; // @Basic is needed for JPA meta model generator
+    private Entitlement.Type type; // @Basic is needed for JPA meta model generator
 
-    @Override
-    public void setValue(String value) {
-        if (isValueIncorrect(value)) {
-            throw new IllegalArgumentException("The photo MUST have an attribute 'value' that ends with " +
-                    "JPEG, JPG, GIF, PNG.");
-        }
-        super.setValue(value);
-    }
-
-    private boolean isValueIncorrect(String value) {
-        if (value == null || value.isEmpty()) {
-            return false;
-        }
-        return !PHOTO_SUFFIX.matcher(value).matches();
-    }
-
-    public Photo.Type getType() {
+    public Entitlement.Type getType() {
         return type;
     }
 
-    public void setType(Photo.Type type) {
-            this.type = type;
+    public void setType(Entitlement.Type type) {
+        this.type = type;
     }
 
     @Override
@@ -96,7 +75,7 @@ public class PhotoEntity extends BaseMultiValuedAttributeEntityWithValue {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        PhotoEntity other = (PhotoEntity) obj;
+        EntitlementEntity other = (EntitlementEntity) obj;
         if (type == null) {
             if (other.type != null) {
                 return false;
@@ -110,7 +89,8 @@ public class PhotoEntity extends BaseMultiValuedAttributeEntityWithValue {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("PhotoEntity [type=").append(type).append(", getValue()=").append(getValue()).append("]");
+        builder.append("EntitlementsEntity [type=").append(type).append(", getValue()=").append(getValue())
+                .append(", isPrimary()=").append(isPrimary()).append("]");
         return builder.toString();
     }
 

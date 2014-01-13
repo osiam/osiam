@@ -23,6 +23,7 @@
 
 package org.osiam.resources.converter
 
+import org.osiam.resources.scim.Im
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.storage.entities.ImEntity
 
@@ -32,11 +33,11 @@ class ImConverterSpec extends Specification {
 
     ImEntity entity
     MultiValuedAttribute attribute
-    ImConverter converter;
+    ImConverter converter
 
     def setup(){
         def value = 'user@gmail.com'
-        def type = 'gtalk'
+        def type = Im.Type.GTALK
 
         entity = new ImEntity()
         entity.setValue(value)
@@ -44,7 +45,7 @@ class ImConverterSpec extends Specification {
 
         attribute = new MultiValuedAttribute.Builder()
                 .setValue(value)
-                .setType(type)
+                .setType(type.getValue())
                 .build()
 
         converter = new ImConverter()

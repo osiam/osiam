@@ -20,24 +20,34 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+package org.osiam.storage.entities.jpa_converters;
 
-package org.osiam.storage.entities;
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 
-/**
- * Means that an Entity is expressed by an MultiValuedAttribute in SCIM.
- * <p/>
- * It must have at least the methods get- and setValue
- */
-public interface ChildOfMultiValueAttribute {
-    /**
-     * Returns the value of a multi value attribute, in lists this value is also used as a key.
-     *
-     * @return the value of a multi value attribute
-     */
-    String getValue();
+import org.osiam.resources.scim.Photo;
 
-    /**
-     * Sets the value of a multi value attribute, in lists this value is also used as a key.
-     */
-    void setValue(String value);
+import com.google.common.base.Strings;
+
+@Converter(autoApply = true)
+public class PhotoTypeConverter implements AttributeConverter<Photo.Type, String> {
+
+    @Override
+    public String convertToDatabaseColumn(Photo.Type attribute) {
+        if (attribute == null || Strings.isNullOrEmpty(attribute.getValue())) {
+            return null;
+        }
+
+        return attribute.getValue();
+    }
+
+    @Override
+    public Photo.Type convertToEntityAttribute(String dbData) {
+        if (Strings.isNullOrEmpty(dbData)) {
+            return null;
+        }
+
+        return new Photo.Type(dbData);
+    }
+
 }

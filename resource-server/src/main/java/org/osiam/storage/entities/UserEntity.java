@@ -30,9 +30,12 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -51,34 +54,27 @@ public class UserEntity extends ResourceEntity {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private NameEntity name;
 
-    @Column
     private String nickName;
 
-    @Column
+    @Lob
+    @Type(type="org.hibernate.type.StringClobType")
     private String profileUrl;
 
-    @Column
     private String title;
 
-    @Column
     private String userType;
 
-    @Column
     private String preferredLanguage;
 
-    @Column
     private String locale;
 
-    @Column
     private String timezone;
 
-    @Column
     private Boolean active = Boolean.FALSE;
 
     @Column(nullable = false)
     private String password;
 
-    @Column
     private String displayName;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -103,11 +99,11 @@ public class UserEntity extends ResourceEntity {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
-    private Set<EntitlementsEntity> entitlements = new HashSet<>();
+    private Set<EntitlementEntity> entitlements = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
-    private Set<RolesEntity> roles = new HashSet<>();
+    private Set<RoleEntity> roles = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
@@ -535,7 +531,7 @@ public class UserEntity extends ResourceEntity {
     /**
      * @return the entitlements
      */
-    public Set<EntitlementsEntity> getEntitlements() {
+    public Set<EntitlementEntity> getEntitlements() {
         return entitlements;
     }
 
@@ -545,7 +541,7 @@ public class UserEntity extends ResourceEntity {
      * @deprecated
      */
     @Deprecated
-    public void setEntitlements(Set<EntitlementsEntity> entitlements) {
+    public void setEntitlements(Set<EntitlementEntity> entitlements) {
         this.entitlements = entitlements;
     }
 
@@ -555,7 +551,7 @@ public class UserEntity extends ResourceEntity {
      * @param entitlement
      *            the entitlement to add
      */
-    public void addEntitlement(EntitlementsEntity entitlement) {
+    public void addEntitlement(EntitlementEntity entitlement) {
         entitlements.add(entitlement);
     }
 
@@ -565,7 +561,7 @@ public class UserEntity extends ResourceEntity {
      * @param entitlement
      *            the entitlement to remove
      */
-    public void removeEntitlement(EntitlementsEntity entitlement) {
+    public void removeEntitlement(EntitlementEntity entitlement) {
         entitlements.remove(entitlement);
     }
 
@@ -579,7 +575,7 @@ public class UserEntity extends ResourceEntity {
     /**
      * @return the roles
      */
-    public Set<RolesEntity> getRoles() {
+    public Set<RoleEntity> getRoles() {
         return roles;
     }
 
@@ -589,7 +585,7 @@ public class UserEntity extends ResourceEntity {
      * @deprecated
      */
     @Deprecated
-    public void setRoles(Set<RolesEntity> roles) {
+    public void setRoles(Set<RoleEntity> roles) {
         this.roles = roles;
     }
 
@@ -599,7 +595,7 @@ public class UserEntity extends ResourceEntity {
      * @param role
      *            the role to add
      */
-    public void addRole(RolesEntity role) {
+    public void addRole(RoleEntity role) {
         roles.add(role);
     }
 
@@ -609,7 +605,7 @@ public class UserEntity extends ResourceEntity {
      * @param role
      *            the role to remove
      */
-    public void removeRole(RolesEntity role) {
+    public void removeRole(RoleEntity role) {
         roles.remove(role);
     }
 

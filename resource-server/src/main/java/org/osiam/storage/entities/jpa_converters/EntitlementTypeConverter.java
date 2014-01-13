@@ -20,24 +20,34 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+package org.osiam.storage.entities.jpa_converters;
 
-package org.osiam.storage.entities;
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 
-/**
- * Means that an Entity is expressed by an MultiValuedAttribute in SCIM and has also a type.
- */
-public interface ChildOfMultiValueAttributeWithIdAndType extends ChildOfMultiValueAttributeWithId {
-    /**
-     * The type of a multi value attribute (e.q. home, work)
-     *
-     * @return String containing the value of the type or null if not set
-     */
-    String getType();
+import org.osiam.resources.scim.Entitlement;
 
-    /**
-     * Sets the type of a multi value attribute (e.q. home, work)
-     */
-    void setType(String type);
+import com.google.common.base.Strings;
 
+@Converter(autoApply=true)
+public class EntitlementTypeConverter implements AttributeConverter<Entitlement.Type, String> {
+
+    @Override
+    public String convertToDatabaseColumn(Entitlement.Type attribute) {
+        if(attribute == null || Strings.isNullOrEmpty(attribute.getValue())) {
+            return null;
+        }
+
+        return attribute.getValue();
+    }
+
+    @Override
+    public Entitlement.Type convertToEntityAttribute(String dbData) {
+        if(Strings.isNullOrEmpty(dbData)) {
+            return null;
+        }
+
+        return new Entitlement.Type(dbData);
+    }
 
 }

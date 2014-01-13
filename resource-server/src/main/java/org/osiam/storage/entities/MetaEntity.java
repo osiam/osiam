@@ -26,11 +26,13 @@ package org.osiam.storage.entities;
 import java.util.Calendar;
 import java.util.Date;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name = "scim_meta")
@@ -40,19 +42,16 @@ public class MetaEntity {
     @GeneratedValue
     private long id;
 
-    @Column
     private Date created;
 
-    @Column
     private Date lastModified;
 
-    @Column
+    @Lob
+    @Type(type = "org.hibernate.type.StringClobType")
     private String location;
 
-    @Column
     private String version;
 
-    @Column
     private String resourceType;
 
     public MetaEntity(Calendar instance) {
@@ -62,7 +61,6 @@ public class MetaEntity {
 
     public MetaEntity() {
     }
-
 
     public long getId() {
         return id;
@@ -125,6 +123,7 @@ public class MetaEntity {
     }
 
     @Override
+    @SuppressWarnings("all")
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;

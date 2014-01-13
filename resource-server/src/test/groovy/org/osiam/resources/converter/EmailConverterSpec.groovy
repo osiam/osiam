@@ -23,6 +23,7 @@
 
 package org.osiam.resources.converter
 
+import org.osiam.resources.scim.Email
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.storage.entities.EmailEntity
 
@@ -32,11 +33,11 @@ class EmailConverterSpec extends Specification {
 
     EmailEntity entity
     MultiValuedAttribute attribute
-    EmailConverter converter;
+    EmailConverter converter
 
     def setup(){
         def value = 'example@web.com'
-        def type = 'work'
+        def type = Email.Type.WORK
 
         entity = new EmailEntity()
         entity.setValue(value)
@@ -45,7 +46,7 @@ class EmailConverterSpec extends Specification {
 
         attribute = new MultiValuedAttribute.Builder()
                 .setValue(value)
-                .setType(type)
+                .setType(type.value)
                 .setPrimary(true)
                 .build()
 

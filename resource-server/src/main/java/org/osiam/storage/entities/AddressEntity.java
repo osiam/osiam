@@ -23,77 +23,53 @@
 
 package org.osiam.storage.entities;
 
-import javax.persistence.Column;
+import javax.persistence.Basic;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
+import org.osiam.resources.scim.Address;
 
 /**
  * Address Entity
  */
 @Entity
 @Table(name = "scim_address")
-public class AddressEntity {
+public class AddressEntity extends BaseMultiValuedAttributeEntity {
 
-    @Id
-    @GeneratedValue
-    private long id;
+    /**
+     * <p>
+     * The type of this Address.
+     * </p>
+     *
+     * <p>
+     * Custom type mapping is provided by {@link org.osiam.storage.entities.jpa_converters.AddressTypeConverter}.
+     * </p>
+     */
+    @Basic
+    private Address.Type type;  // @Basic is needed for JPA meta model generator
 
-    @Column
-    @Enumerated(EnumType.STRING)
-    private CanonicalAddressTypes type;
-
-    @Column
+    @Lob
+    @Type(type = "org.hibernate.type.StringClobType")
     private String formatted;
 
-    @Column
     private String streetAddress;
 
-    @Column
     private String locality;
 
-    @Column
     private String region;
 
-    @Column
     private String postalCode;
 
-    @Column
     private String country;
 
-    @Column(name = "postgresql_does_not_like_primary")
-    private Boolean primary;
-
-    public long getId() {
-        return id;
+    public Address.Type getType() {
+        return type;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public boolean isPrimary() {
-        return primary;
-    }
-
-    public void setPrimary(boolean primary) {
-        this.primary = primary;
-    }
-
-    public String getType() {
-        if (type != null) {
-            return type.toString();
-        }
-        return null;
-    }
-
-    public void setType(String type) {
-        if (type != null) {
-            this.type = CanonicalAddressTypes.valueOf(type);
-        }
+    public void setType(Address.Type type) {
+        this.type = type;
     }
 
     public String getFormatted() {
@@ -148,17 +124,18 @@ public class AddressEntity {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((country == null) ? 0 : country.hashCode());
-        result = prime * result + ((formatted == null) ? 0 : formatted.hashCode());
-        result = prime * result + ((locality == null) ? 0 : locality.hashCode());
-        result = prime * result + ((postalCode == null) ? 0 : postalCode.hashCode());
-        result = prime * result + ((region == null) ? 0 : region.hashCode());
-        result = prime * result + ((streetAddress == null) ? 0 : streetAddress.hashCode());
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + (country == null ? 0 : country.hashCode());
+        result = prime * result + (formatted == null ? 0 : formatted.hashCode());
+        result = prime * result + (locality == null ? 0 : locality.hashCode());
+        result = prime * result + (postalCode == null ? 0 : postalCode.hashCode());
+        result = prime * result + (region == null ? 0 : region.hashCode());
+        result = prime * result + (streetAddress == null ? 0 : streetAddress.hashCode());
+        result = prime * result + (type == null ? 0 : type.hashCode());
         return result;
     }
 
     @Override
+    @SuppressWarnings("all")
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -212,7 +189,11 @@ public class AddressEntity {
         } else if (!streetAddress.equals(other.streetAddress)) {
             return false;
         }
-        if (type != other.type) {
+        if (type == null) {
+            if (other.type != null) {
+                return false;
+            }
+        } else if (!type.equals(other.type)) {
             return false;
         }
         return true;
@@ -224,11 +205,8 @@ public class AddressEntity {
         builder.append("AddressEntity [type=").append(type).append(", formatted=").append(formatted)
                 .append(", streetAddress=").append(streetAddress).append(", locality=").append(locality)
                 .append(", region=").append(region).append(", postalCode=").append(postalCode).append(", country=")
-                .append(country).append(", primary=").append(primary).append("]");
+                .append(country).append(", primary=").append(isPrimary()).append("]");
         return builder.toString();
     }
 
-    public enum CanonicalAddressTypes {
-        work, home, other
-    }
 }

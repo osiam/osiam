@@ -23,44 +23,24 @@
 
 package org.osiam.storage.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
+import javax.persistence.Lob;
+import javax.persistence.MappedSuperclass;
 
+import org.hibernate.annotations.Type;
 
-@Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithId {
+@MappedSuperclass
+public abstract class BaseMultiValuedAttributeEntityWithValue extends BaseMultiValuedAttributeEntity{
 
-    @Id
-    @Column(name = "multi_value_id")
-    @GeneratedValue(strategy = GenerationType.TABLE)
-    private long multiValueId;
-
+    @Lob
+    @Type(type="org.hibernate.type.StringClobType")
     private String value;
 
-    @Override
     public String getValue() {
         return value;
     }
 
-    @Override
     public void setValue(String value) {
         this.value = value;
-    }
-
-    @Override
-    public void setMultiValueId(long id) {
-        this.multiValueId = id;
-    }
-
-    @Override
-    public long getMultiValueId() {
-        return multiValueId;
     }
 
     @Override
@@ -82,7 +62,7 @@ public abstract class MultiValueAttributeEntitySkeleton implements ChildOfMultiV
         if (getClass() != obj.getClass()) {
             return false;
         }
-        MultiValueAttributeEntitySkeleton other = (MultiValueAttributeEntitySkeleton) obj;
+        BaseMultiValuedAttributeEntityWithValue other = (BaseMultiValuedAttributeEntityWithValue) obj;
         if (value == null) {
             if (other.value != null) {
                 return false;
@@ -93,11 +73,5 @@ public abstract class MultiValueAttributeEntitySkeleton implements ChildOfMultiV
         return true;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("MultiValueAttributeEntitySkeleton [value=").append(value).append("]");
-        return builder.toString();
-    }
 
 }

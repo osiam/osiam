@@ -38,7 +38,7 @@ import org.springframework.stereotype.Service;
 public class ResourceUpdater {
 
     @Inject
-    ResourceDao resourceDao;
+    private ResourceDao resourceDao;
 
     /**
      * updates (adds new, delete, updates) the given {@link ResourceEntity} based on the given {@link Resource}

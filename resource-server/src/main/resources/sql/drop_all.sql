@@ -21,5 +21,4 @@ drop table if exists scim_meta cascade;
 drop table if exists scim_id cascade;
 drop table if exists scim_manager cascade;
 drop table if exists scim_enterprise cascade;
-drop table if exists hibernate_sequences cascade;
 drop sequence if exists hibernate_sequence cascade;

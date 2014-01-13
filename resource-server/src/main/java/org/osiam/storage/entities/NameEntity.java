@@ -23,11 +23,13 @@
 
 package org.osiam.storage.entities;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Type;
 
 /**
  * Name Entity
@@ -40,22 +42,18 @@ public class NameEntity {
     @GeneratedValue
     private long id;
 
-    @Column
+    @Lob
+    @Type(type = "org.hibernate.type.StringClobType")
     private String formatted;
 
-    @Column
     private String familyName;
 
-    @Column
     private String givenName;
 
-    @Column
     private String middleName;
 
-    @Column
     private String honorificPrefix;
 
-    @Column
     private String honorificSuffix;
 
     public long getId() {
@@ -115,6 +113,7 @@ public class NameEntity {
     }
 
     @Override
+    @SuppressWarnings("all")
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;

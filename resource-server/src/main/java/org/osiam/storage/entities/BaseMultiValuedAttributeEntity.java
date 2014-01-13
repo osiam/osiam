@@ -21,32 +21,42 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.storage.entities
+package org.osiam.storage.entities;
 
-import org.osiam.resources.scim.MultiValuedAttribute
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
-import spock.lang.Ignore
-import spock.lang.Specification
+@MappedSuperclass
+public abstract class BaseMultiValuedAttributeEntity {
 
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 15.03.13
- * Time: 13:56
- * To change this template use File | Settings | File Templates.
- */
-class EmailEntitySpec extends Specification {
+    @Id
+    @GeneratedValue
+    @Column(name = "multi_value_id")
+    private long multiValueId;
 
-    EmailEntity emailEntity = new EmailEntity()
-    def userEntity = Mock(UserEntity)
+    @Column(name = "is_primary")
+    private Boolean primary;
 
-    def "should throw an exception if the type is unknown"() {
-        when:
-        emailEntity.setType("huch")
-
-        then:
-        def e = thrown(IllegalArgumentException)
-        e.message == "No enum constant org.osiam.storage.entities.EmailEntity.CanonicalEmailTypes.huch"
+    public void setMultiValueId(long id) {
+        this.multiValueId = id;
     }
+
+    public long getMultiValueId() {
+        return multiValueId;
+    }
+
+    public boolean isPrimary() {
+        if(primary == null) {
+            return false;
+        }
+        return primary;
+    }
+
+    public void setPrimary(boolean primary) {
+        this.primary = primary;
+    }
+
 
 }

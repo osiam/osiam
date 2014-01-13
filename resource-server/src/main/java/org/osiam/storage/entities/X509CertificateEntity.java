@@ -31,13 +31,11 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "scim_certificate")
-public class X509CertificateEntity extends MultiValueAttributeEntitySkeleton {
+public class X509CertificateEntity extends BaseMultiValuedAttributeEntityWithValue {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("X509CertificateEntity [getValue()=").append(getValue()).append("]");
-        return builder.toString();
+        return "X509CertificateEntity [value=" + getValue() + ", primary=" + isPrimary() + "]";
     }
 
 }

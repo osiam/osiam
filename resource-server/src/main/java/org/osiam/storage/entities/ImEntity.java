@@ -23,43 +23,44 @@
 
 package org.osiam.storage.entities;
 
-import javax.persistence.Column;
+import javax.persistence.Basic;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.Table;
+
+import org.osiam.resources.scim.Im;
 
 /**
  * Instant messaging Entity
  */
 @Entity
 @Table(name = "scim_im")
-public class ImEntity extends MultiValueAttributeEntitySkeleton implements ChildOfMultiValueAttributeWithIdAndType {
+public class ImEntity extends BaseMultiValuedAttributeEntityWithValue {
 
-    @Column
-    @Enumerated(EnumType.STRING)
-    private CanonicalImTypes type;
+    /**
+     * <p>
+     * The type of this Im.
+     * </p>
+     *
+     * <p>
+     * Custom type mapping is provided by {@link org.osiam.storage.entities.jpa_converters.ImTypeConverter}.
+     * </p>
+     */
+    @Basic
+    private Im.Type type; // @Basic is needed for JPA meta model generator
 
-    @Override
-    public String getType() {
-        if (type != null) {
-            return type.toString();
-        }
-        return null;
+    public Im.Type getType() {
+        return type;
     }
 
-    @Override
-    public void setType(String type) {
-        if (type != null) {
-            this.type = CanonicalImTypes.valueOf(type);
-        }
+    public void setType(Im.Type type) {
+        this.type = type;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + (type == null ? 0 : type.hashCode());
         return result;
     }
 
@@ -75,7 +76,11 @@ public class ImEntity extends MultiValueAttributeEntitySkeleton implements Child
             return false;
         }
         ImEntity other = (ImEntity) obj;
-        if (type != other.type) {
+        if (type == null) {
+            if (other.type != null) {
+                return false;
+            }
+        } else if (!type.equals(other.type)) {
             return false;
         }
         return true;
@@ -83,12 +88,7 @@ public class ImEntity extends MultiValueAttributeEntitySkeleton implements Child
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("ImEntity [type=").append(type).append(", getValue()=").append(getValue()).append("]");
-        return builder.toString();
+        return "ImEntity [type=" + type + ", value=" + getValue() + ", primary=" + isPrimary() + "]";
     }
 
-    public enum CanonicalImTypes {
-        aim, gtalk, icq, xmpp, msn, skype, qq, yahoo
-    }
 }

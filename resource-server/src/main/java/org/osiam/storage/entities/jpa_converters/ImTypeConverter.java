@@ -20,24 +20,34 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+package org.osiam.storage.entities.jpa_converters;
 
-package org.osiam.storage.entities;
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import org.osiam.resources.scim.Im;
 
-/**
- * Roles Entity
- */
-@Entity
-@Table(name = "scim_roles")
-public class RolesEntity extends MultiValueAttributeEntitySkeleton {
+import com.google.common.base.Strings;
+
+@Converter(autoApply = true)
+public class ImTypeConverter implements AttributeConverter<Im.Type, String> {
 
     @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("RolesEntity [getValue()=").append(getValue()).append("]");
-        return builder.toString();
+    public String convertToDatabaseColumn(Im.Type attribute) {
+        if (attribute == null || Strings.isNullOrEmpty(attribute.getValue())) {
+            return null;
+        }
+
+        return attribute.getValue();
+    }
+
+    @Override
+    public Im.Type convertToEntityAttribute(String dbData) {
+        if (Strings.isNullOrEmpty(dbData)) {
+            return null;
+        }
+
+        return new Im.Type(dbData);
     }
 
 }

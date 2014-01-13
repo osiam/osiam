@@ -24,21 +24,21 @@
 package org.osiam.resources.converter;
 
 import org.osiam.resources.scim.MultiValuedAttribute;
-import org.osiam.storage.entities.RolesEntity;
+import org.osiam.storage.entities.RoleEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RoleConverter implements Converter<MultiValuedAttribute, RolesEntity> {
+public class RoleConverter implements Converter<MultiValuedAttribute, RoleEntity> {
 
     @Override
-    public RolesEntity fromScim(MultiValuedAttribute scim) {
-        RolesEntity rolesEntity = new RolesEntity();
+    public RoleEntity fromScim(MultiValuedAttribute scim) {
+        RoleEntity rolesEntity = new RoleEntity();
         rolesEntity.setValue(String.valueOf(scim.getValue()));
         return rolesEntity;
     }
 
     @Override
-    public MultiValuedAttribute toScim(RolesEntity entity) {
+    public MultiValuedAttribute toScim(RoleEntity entity) {
         return new MultiValuedAttribute.Builder().
                 setValue(entity.getValue()).
                 build();

@@ -20,24 +20,28 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+package org.osiam.storage.entities.jpa_converters;
 
-package org.osiam.storage.entities
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 
-import spock.lang.Specification
+import org.osiam.resources.scim.ExtensionFieldType;
 
+@SuppressWarnings("rawtypes")
+@Converter(autoApply=true)
+public class ExtensionFieldTypeConverter implements AttributeConverter<ExtensionFieldType, String> {
 
-class PhoneNumberEntitySpec extends Specification {
+    @Override
+    public String convertToDatabaseColumn(ExtensionFieldType attribute) {
+        if(attribute == null){
+            throw new IllegalArgumentException("The extension type can't be null.");
+        }
+        return attribute.toString();
+    }
 
-    PhoneNumberEntity phoneNumberEntity = new PhoneNumberEntity()
-    def userEntity = Mock(UserEntity)
-
-    def "should throw an exception if the type is unknown"() {
-        when:
-        phoneNumberEntity.setType("huch")
-
-        then:
-        def e = thrown(IllegalArgumentException)
-        e.message == "No enum constant org.osiam.storage.entities.PhoneNumberEntity.CanonicalPhoneNumberTypes.huch"
+    @Override
+    public ExtensionFieldType convertToEntityAttribute(String dbData) {
+        return ExtensionFieldType.valueOf(dbData);
     }
 
 }

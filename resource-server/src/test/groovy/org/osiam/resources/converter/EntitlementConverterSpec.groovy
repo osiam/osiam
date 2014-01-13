@@ -24,20 +24,20 @@
 package org.osiam.resources.converter
 
 import org.osiam.resources.scim.MultiValuedAttribute
-import org.osiam.storage.entities.EntitlementsEntity
+import org.osiam.storage.entities.EntitlementEntity
 
 import spock.lang.Specification
 
 class EntitlementConverterSpec extends Specification {
 
-    EntitlementsEntity entity
+    EntitlementEntity entity
     MultiValuedAttribute attribute
     EntitlementConverter converter;
 
     def setup(){
         def value = 'example'
 
-        entity = new EntitlementsEntity()
+        entity = new EntitlementEntity()
         entity.setValue(value)
 
         attribute = new MultiValuedAttribute.Builder()

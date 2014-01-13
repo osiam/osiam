@@ -23,13 +23,19 @@
 
 package org.osiam.storage.entities;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
 /**
- * Means that an Entity is expressed by an MultiValuedAttribute in SCIM and has also a type and primary field.
- *
+ * Roles Entity
  */
-public interface ChildOfMultiValueAttributeWithIdAndTypeAndPrimary extends ChildOfMultiValueAttributeWithIdAndType {
+@Entity
+@Table(name = "scim_roles")
+public class RoleEntity extends BaseMultiValuedAttributeEntityWithValue {
 
-    boolean isPrimary();
+    @Override
+    public String toString() {
+        return "RolesEntity [value=" + getValue() + ", primary=" + isPrimary() + "]";
+    }
 
-    void setPrimary(boolean primary);
 }
