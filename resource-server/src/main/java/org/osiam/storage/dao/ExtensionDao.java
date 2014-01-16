@@ -26,6 +26,7 @@ package org.osiam.storage.dao;
 import java.util.Locale;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -33,6 +34,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.osiam.resources.exceptions.OsiamException;
 import org.osiam.storage.entities.ExtensionEntity;
 import org.osiam.storage.entities.ExtensionEntity_;
 import org.springframework.stereotype.Repository;
@@ -44,9 +46,9 @@ public class ExtensionDao {
 
     /**
      * Retrieves the extension with the given URN from the database. The URN is case-sensitive.
-     *
+     * 
      * @param urn
-     *            The URN of the extension to look up
+     *        The URN of the extension to look up
      * @return the extension entity
      */
     public ExtensionEntity getExtensionByUrn(String urn) {
@@ -55,11 +57,11 @@ public class ExtensionDao {
 
     /**
      * Retrieves the extension with the given URN from the database
-     *
+     * 
      * @param urn
-     *            the URN of the extension to look up
+     *        the URN of the extension to look up
      * @param caseInsensitive
-     *            should the case of the URN be ignored
+     *        should the case of the URN be ignored
      * @return the extension entity
      */
     public ExtensionEntity getExtensionByUrn(String urn, boolean caseInsensitive) {
@@ -78,7 +80,15 @@ public class ExtensionDao {
 
         TypedQuery<ExtensionEntity> query = em.createQuery(cq);
 
-        return query.getSingleResult();
+        ExtensionEntity singleExtension;
+
+        try {
+            singleExtension = query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new OsiamException("Could not find the Extension '" + urn + "'.", e);
+        }
+
+        return singleExtension;
     }
 
 }
