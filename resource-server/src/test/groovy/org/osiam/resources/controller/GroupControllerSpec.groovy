@@ -50,7 +50,7 @@ class GroupControllerSpec extends Specification {
     def underTest = new GroupController(scimGroupProvisioning: provisioning, requestParamHelper: requestParamHelper,
             jsonInputValidator: jsonInputValidator, attributesRemovalHelper: attributesRemovalHelper)
     def httpServletResponse = Mock(HttpServletResponse)
-    Group group = new Group.Builder().setDisplayName("group1").setId(UUID.randomUUID().toString()).build()
+    Group group = new Group.Builder("group1").setId(UUID.randomUUID().toString()).build()
 
 
     def "should contain a method to POST a group"() {
