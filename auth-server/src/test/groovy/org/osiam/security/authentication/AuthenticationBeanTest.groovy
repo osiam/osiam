@@ -23,17 +23,19 @@
 
 package org.osiam.security.authentication
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.osiam.helper.HttpClientHelper
 import org.osiam.helper.HttpClientRequestResult
 import org.osiam.resources.UserSpring
+
 import spock.lang.Specification
+
+import com.fasterxml.jackson.databind.ObjectMapper
 
 class AuthenticationBeanTest extends Specification {
 
-    def jacksonMapperMock = Mock(ObjectMapper)
-    def httpClientHelperMock = Mock(HttpClientHelper)
-    def authenticationBean = new AuthenticationBean(mapper: jacksonMapperMock, httpClientHelper: httpClientHelperMock,
+    ObjectMapper jacksonMapperMock = Mock()
+    HttpClientHelper httpClientHelperMock = Mock()
+    AuthenticationBean authenticationBean = new AuthenticationBean(mapper: jacksonMapperMock, httpClientHelper: httpClientHelperMock,
             httpScheme: "http", serverHost: "localhost", serverPort: 8080)
 
     def "AuthenticationBean should implement springs UserDetailsService and therefore returning a user found by user name as UserSpring representation"() {
@@ -46,22 +48,9 @@ class AuthenticationBeanTest extends Specification {
         def result = authenticationBean.loadUserByUsername("UserName")
 
         then:
-        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-resource-server/authentication/user/UserName", null, null) >> response
+        1 * httpClientHelperMock.executeHttpPost("http://localhost:8080/osiam-resource-server/authentication/user", "UserName", null, null) >> response
         1 * jacksonMapperMock.readValue(response.body, UserSpring.class) >> userSpringMock
         result instanceof UserSpring
     }
 
-    def "If jackson throws an IOException it should be mapped to an RuntimeException"() {
-        given:
-        def resultingUser = "the resulting user as JSON string"
-        def response = new HttpClientRequestResult(resultingUser, 200)
-
-        when:
-        authenticationBean.loadUserByUsername("UserName")
-
-        then:
-        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-resource-server/authentication/user/UserName", null, null) >> response
-        1 * jacksonMapperMock.readValue(response.getBody(), UserSpring.class) >> { throw new IOException() }
-        thrown(RuntimeException.class)
-    }
 }

@@ -23,7 +23,11 @@
 
 package org.osiam.security.authentication;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.osiam.helper.HttpClientHelper;
 import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.resources.UserSpring;
@@ -31,13 +35,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.io.IOException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * Mainly used for demonstration, it is used to validate the user login, before he grants or denies the client access
- * to a resource.
+ * Mainly used for demonstration, it is used to validate the user login, before he grants or denies the client access to
+ * a resource.
  */
 @Named("userDetailsService")
 public class AuthenticationBean implements UserDetailsService {
@@ -51,7 +53,7 @@ public class AuthenticationBean implements UserDetailsService {
     @Inject
     private HttpClientHelper httpClientHelper;
 
-    private ObjectMapper mapper; //NOSONAR : need to mock the dependency therefor the final identifier was removed
+    private ObjectMapper mapper; // NOSONAR : need to mock the dependency therefor the final identifier was removed
 
     public AuthenticationBean() {
         mapper = new ObjectMapper();
@@ -59,15 +61,16 @@ public class AuthenticationBean implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(final String username) {
-        final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort + "/osiam-resource-server/authentication/user/";
+        final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort
+                + "/osiam-resource-server/authentication/user";
 
-        final HttpClientRequestResult result = httpClientHelper.executeHttpGet(serverUri + username, null, null);
+        final HttpClientRequestResult result = httpClientHelper.executeHttpPost(serverUri, username, null, null);
 
         final UserSpring userSpring;
         try {
             userSpring = mapper.readValue(result.getBody(), UserSpring.class);
         } catch (IOException e) {
-            throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
+            throw new RuntimeException(e); // NOSONAR : Need only wrapping to a runtime exception
         }
 
         return userSpring;
