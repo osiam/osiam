@@ -42,6 +42,7 @@ import org.osiam.storage.entities.ClientEntity;
 import org.osiam.storage.entities.RoleEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -65,10 +66,11 @@ public class AuthenticationController {
     @Inject
     private ClientDao clientDao;
 
-    @RequestMapping(value = "/user/{userName:.+}", method = RequestMethod.GET)
+    @RequestMapping(value = "/user",
+            method = RequestMethod.POST,
+            produces = { MediaType.APPLICATION_JSON_VALUE })
     @ResponseBody
-    public UserSpring getUser(@PathVariable final String userName) {
-
+    public UserSpring getUser(@RequestBody final String userName) {
         UserEntity dbUser = userDao.getByUsername(userName);
         return getUserSpring(dbUser);
     }
@@ -116,7 +118,8 @@ public class AuthenticationController {
 
     @RequestMapping(value = "/client/{id}", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
-    public void updateClientExpiry(@PathVariable final String id, @RequestBody String body) throws IOException, ParseException {
+    public void updateClientExpiry(@PathVariable final String id, @RequestBody String body) throws IOException,
+            ParseException {
 
         final SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
 
