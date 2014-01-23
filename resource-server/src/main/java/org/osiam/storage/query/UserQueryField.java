@@ -61,7 +61,6 @@ import org.osiam.storage.entities.PhoneNumberEntity;
 import org.osiam.storage.entities.PhoneNumberEntity_;
 import org.osiam.storage.entities.PhotoEntity;
 import org.osiam.storage.entities.PhotoEntity_;
-import org.osiam.storage.entities.ResourceEntity;
 import org.osiam.storage.entities.ResourceEntity_;
 import org.osiam.storage.entities.RoleEntity;
 import org.osiam.storage.entities.UserEntity;
@@ -774,8 +773,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            SetJoin<UserEntity, GroupEntity> join = createOrGetJoinForGroups(GROUPS_ALIAS, root,
-                    ResourceEntity_.groups);
+        	final SetJoin<UserEntity, GroupEntity> join = root.join(ResourceEntity_.groups, JoinType.LEFT);
             return constraint.createPredicateForStringField(join.get(ResourceEntity_.id), value, cb);
         }
 
@@ -788,8 +786,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            SetJoin<UserEntity, GroupEntity> join = createOrGetJoinForGroups(GROUPS_ALIAS, root,
-                    ResourceEntity_.groups);
+        	final SetJoin<UserEntity, GroupEntity> join = root.join(ResourceEntity_.groups, JoinType.LEFT);
             return constraint.createPredicateForStringField(join.get(ResourceEntity_.id), value, cb);
         }
 
@@ -802,8 +799,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            SetJoin<UserEntity, GroupEntity> join = createOrGetJoinForGroups(GROUPS_ALIAS, root,
-                    ResourceEntity_.groups);
+            final SetJoin<UserEntity, GroupEntity> join = root.join(ResourceEntity_.groups, JoinType.LEFT);
             return constraint.createPredicateForStringField(join.get(GroupEntity_.displayName), value, cb);
         }
 
@@ -828,7 +824,6 @@ public enum UserQueryField implements QueryField<UserEntity> {
     private static final String IMS_ALIAS = "ims";
     private static final String PHOTOS_ALIAS = "photos";
     private static final String ADDRESS_ALIAS = "addresses";
-    private static final String GROUPS_ALIAS = "groups";
     private static final String ENTITLEMENTS_ALIAS = "entitlements";
 
     private UserQueryField(String name) {
@@ -864,21 +859,4 @@ public enum UserQueryField implements QueryField<UserEntity> {
 
         return join;
     }
-
-    @SuppressWarnings("unchecked")
-    protected SetJoin<UserEntity, GroupEntity> createOrGetJoinForGroups(String alias, Root<UserEntity> root,
-            SetAttribute<ResourceEntity, GroupEntity> attribute) {
-
-        for (Join<UserEntity, ?> currentJoin : root.getJoins()) {
-            if (currentJoin.getAlias().equals(alias)) {
-                return (SetJoin<UserEntity, GroupEntity>) currentJoin;
-            }
-        }
-
-        final SetJoin<UserEntity, GroupEntity> join = root.join(attribute, JoinType.LEFT);
-        join.alias(alias);
-
-        return join;
-    }
-
 }
