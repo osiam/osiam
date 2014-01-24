@@ -358,7 +358,6 @@
         <dependency>
             <groupId>org.osiam</groupId>
             <artifactId>osiam-interaction-model</artifactId>
-            <version>0.16-SNAPSHOT</version>
         </dependency>
 
         <dependency>
