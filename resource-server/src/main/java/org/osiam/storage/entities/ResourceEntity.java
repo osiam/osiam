@@ -98,10 +98,6 @@ public abstract class ResourceEntity {
 
     public abstract String getDisplayName();
 
-    public MultiValuedAttribute toMultiValueScim() {
-        return new MultiValuedAttribute.Builder().setDisplay(getDisplayName()).setValue(id).build();
-    }
-
     /**
      * Update the last modified date for this entity.
      */

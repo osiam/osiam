@@ -24,32 +24,26 @@
 package org.osiam.resources.converter;
 
 import org.osiam.resources.scim.Entitlement;
-import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.storage.entities.EntitlementEntity;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Strings;
-
 @Service
-public class EntitlementConverter implements Converter<MultiValuedAttribute, EntitlementEntity> {
+public class EntitlementConverter implements Converter<Entitlement, EntitlementEntity> {
 
     @Override
-    public EntitlementEntity fromScim(MultiValuedAttribute scim) {
+    public EntitlementEntity fromScim(Entitlement scim) {
         EntitlementEntity entitlementsEntity = new EntitlementEntity();
         entitlementsEntity.setValue(String.valueOf(scim.getValue()));
-
-        if (!Strings.isNullOrEmpty(scim.getType())) {
-            entitlementsEntity.setType(new Entitlement.Type(scim.getType()));
-        }
+        entitlementsEntity.setType(scim.getType());
 
         return entitlementsEntity;
     }
 
     @Override
-    public MultiValuedAttribute toScim(EntitlementEntity entity) {
-        return new MultiValuedAttribute.Builder()
+    public Entitlement toScim(EntitlementEntity entity) {
+        return new Entitlement.Builder()
                 .setValue(entity.getValue())
-                .setType(entity.getType() != null ? entity.getType().getValue() : null)
+                .setType(entity.getType())
                 .build();
     }
 

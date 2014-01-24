@@ -25,6 +25,7 @@ package org.osiam.resources.provisioning.update
 
 import org.osiam.resources.converter.PhoneNumberConverter
 import org.osiam.resources.scim.MultiValuedAttribute
+import org.osiam.resources.scim.PhoneNumber
 import org.osiam.storage.entities.PhoneNumberEntity
 import org.osiam.storage.entities.UserEntity
 
@@ -54,7 +55,7 @@ class PhoneNumbersUpdaterSpec extends Specification {
 
     def 'removing an phoneNumber is possible'(){
         given:
-        MultiValuedAttribute phoneNumber01 = new MultiValuedAttribute.Builder(value : IRRELEVANT, operation : 'delete', ).build()
+        MultiValuedAttribute phoneNumber01 = new PhoneNumber.Builder(value : IRRELEVANT, operation : 'delete', ).build()
         PhoneNumberEntity phoneNumberEntity01 = new PhoneNumberEntity(value : IRRELEVANT)
 
         when:
@@ -67,7 +68,7 @@ class PhoneNumbersUpdaterSpec extends Specification {
 
     def 'adding a new phoneNumber is possible'(){
         given:
-        MultiValuedAttribute phoneNumber = new MultiValuedAttribute.Builder(value : IRRELEVANT).build()
+        MultiValuedAttribute phoneNumber = new PhoneNumber.Builder(value : IRRELEVANT).build()
         PhoneNumberEntity phoneNumberEntity = new PhoneNumberEntity(value : IRRELEVANT)
 
         when:

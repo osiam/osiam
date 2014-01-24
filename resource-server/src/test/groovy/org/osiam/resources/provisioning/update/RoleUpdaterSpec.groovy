@@ -25,6 +25,7 @@ package org.osiam.resources.provisioning.update
 
 import org.osiam.resources.converter.RoleConverter
 import org.osiam.resources.scim.MultiValuedAttribute
+import org.osiam.resources.scim.Role
 import org.osiam.storage.entities.RoleEntity
 import org.osiam.storage.entities.UserEntity
 
@@ -54,7 +55,7 @@ class RoleUpdaterSpec extends Specification {
 
     def 'removing an role is possible'(){
         given:
-        MultiValuedAttribute role01 = new MultiValuedAttribute.Builder(value : IRRELEVANT, operation : 'delete', ).build()
+        MultiValuedAttribute role01 = new Role.Builder(value : IRRELEVANT, operation : 'delete', ).build()
         RoleEntity roleEntity01 = new RoleEntity(value : IRRELEVANT)
 
         when:
@@ -67,7 +68,7 @@ class RoleUpdaterSpec extends Specification {
 
     def 'adding a new role is possible'(){
         given:
-        MultiValuedAttribute role = new MultiValuedAttribute.Builder(value : IRRELEVANT).build()
+        MultiValuedAttribute role = new Role.Builder(value : IRRELEVANT).build()
         RoleEntity roleEntity = new RoleEntity(value : IRRELEVANT)
 
         when:

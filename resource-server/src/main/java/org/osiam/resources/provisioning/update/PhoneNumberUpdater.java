@@ -30,6 +30,7 @@ import javax.inject.Inject;
 
 import org.osiam.resources.converter.PhoneNumberConverter;
 import org.osiam.resources.scim.MultiValuedAttribute;
+import org.osiam.resources.scim.PhoneNumber;
 import org.osiam.storage.entities.PhoneNumberEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.stereotype.Service;
@@ -56,14 +57,14 @@ class PhoneNumberUpdater {
      * @param attributes
      *            all {@link PhoneNumberEntity}'s will be deleted if this Set contains 'phoneNumbers'
      */
-    void update(List<MultiValuedAttribute> phoneNumbers, UserEntity userEntity, Set<String> attributes) {
+    void update(List<PhoneNumber> phoneNumbers, UserEntity userEntity, Set<String> attributes) {
 
         if (attributes.contains("phoneNumbers")) {
             userEntity.removeAllPhoneNumbers();
         }
 
         if (phoneNumbers != null) {
-            for (MultiValuedAttribute scimPhoneNumber : phoneNumbers) {
+            for (PhoneNumber scimPhoneNumber : phoneNumbers) {
                 PhoneNumberEntity phoneNumberEntity = phoneNumberConverter.fromScim(scimPhoneNumber);
                 userEntity.removePhoneNumber(phoneNumberEntity); // we always have to remove the phoneNumber in case
                                                                  // the primary attribute has changed

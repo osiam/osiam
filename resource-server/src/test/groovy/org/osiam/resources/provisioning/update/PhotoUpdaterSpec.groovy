@@ -25,6 +25,7 @@ package org.osiam.resources.provisioning.update
 
 import org.osiam.resources.converter.PhotoConverter
 import org.osiam.resources.scim.MultiValuedAttribute
+import org.osiam.resources.scim.Photo
 import org.osiam.storage.entities.PhotoEntity
 import org.osiam.storage.entities.UserEntity
 
@@ -54,7 +55,7 @@ class PhotoUpdaterSpec extends Specification {
 
     def 'removing an photo is possible'(){
         given:
-        MultiValuedAttribute photo01 = new MultiValuedAttribute.Builder(value : IRRELEVANT, operation : 'delete', ).build()
+        MultiValuedAttribute photo01 = new Photo.Builder(value : IRRELEVANT, operation : 'delete', ).build()
         PhotoEntity photoEntity01 = new PhotoEntity(value : IRRELEVANT)
 
         when:
@@ -67,7 +68,7 @@ class PhotoUpdaterSpec extends Specification {
 
     def 'adding a new photo is possible'(){
         given:
-        MultiValuedAttribute photo = new MultiValuedAttribute.Builder(value : IRRELEVANT).build()
+        MultiValuedAttribute photo = new Photo.Builder(value : IRRELEVANT).build()
         PhotoEntity photoEntity = new PhotoEntity(value : IRRELEVANT)
 
         when:

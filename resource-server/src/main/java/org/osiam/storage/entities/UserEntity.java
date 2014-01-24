@@ -325,16 +325,6 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
-     * @param emails
-     *            the emails entity
-     * @deprecated
-     */
-    @Deprecated
-    public void setEmails(Set<EmailEntity> emails) {
-        this.emails = emails;
-    }
-
-    /**
      * @return the extensions data of the user
      */
     public Set<ExtensionFieldValueEntity> getUserExtensions() {
@@ -387,30 +377,10 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
-     * @param phoneNumbers
-     *            the phone numbers entity
-     * @deprecated
-     */
-    @Deprecated
-    public void setPhoneNumbers(Set<PhoneNumberEntity> phoneNumbers) {
-        this.phoneNumbers = phoneNumbers;
-    }
-
-    /**
      * @return the instant messaging entity
      */
     public Set<ImEntity> getIms() {
         return ims;
-    }
-
-    /**
-     * @param ims
-     *            the instant messaging entity
-     * @deprecated
-     */
-    @Deprecated
-    public void setIms(Set<ImEntity> ims) {
-        this.ims = ims;
     }
 
     /**
@@ -448,16 +418,6 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
-     * @param photos
-     *            the photos entity
-     * @deprecated
-     */
-    @Deprecated
-    public void setPhotos(Set<PhotoEntity> photos) {
-        this.photos = photos;
-    }
-
-    /**
      * Adds a new photo to this user
      *
      * @param photo
@@ -489,16 +449,6 @@ public class UserEntity extends ResourceEntity {
      */
     public Set<AddressEntity> getAddresses() {
         return addresses;
-    }
-
-    /**
-     * @param addresses
-     *            the addresses entity
-     * @deprecated
-     */
-    @Deprecated
-    public void setAddresses(Set<AddressEntity> addresses) {
-        this.addresses = addresses;
     }
 
     /**
@@ -536,16 +486,6 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
-     * @param entitlements
-     *            the entitlements
-     * @deprecated
-     */
-    @Deprecated
-    public void setEntitlements(Set<EntitlementEntity> entitlements) {
-        this.entitlements = entitlements;
-    }
-
-    /**
      * Adds a new entitlement to this user
      *
      * @param entitlement
@@ -580,16 +520,6 @@ public class UserEntity extends ResourceEntity {
     }
 
     /**
-     * @param roles
-     *            the roles
-     * @deprecated
-     */
-    @Deprecated
-    public void setRoles(Set<RoleEntity> roles) {
-        this.roles = roles;
-    }
-
-    /**
      * Adds a new role to this user
      *
      * @param role
@@ -621,16 +551,6 @@ public class UserEntity extends ResourceEntity {
      */
     public Set<X509CertificateEntity> getX509Certificates() {
         return x509Certificates;
-    }
-
-    /**
-     * @param x509Certificates
-     *            the X509 certs
-     * @deprecated
-     */
-    @Deprecated
-    public void setX509Certificates(Set<X509CertificateEntity> x509Certificates) {
-        this.x509Certificates = x509Certificates;
     }
 
     /**

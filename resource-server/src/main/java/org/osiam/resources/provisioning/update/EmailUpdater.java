@@ -29,6 +29,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.osiam.resources.converter.EmailConverter;
+import org.osiam.resources.scim.Email;
 import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.storage.entities.EmailEntity;
 import org.osiam.storage.entities.UserEntity;
@@ -56,14 +57,14 @@ class EmailUpdater {
      * @param attributes
      *            all {@link EmailEntity}'s will be deleted if this Set contains 'emails'
      */
-    void update(List<MultiValuedAttribute> emails, UserEntity userEntity, Set<String> attributes) {
+    void update(List<Email> emails, UserEntity userEntity, Set<String> attributes) {
 
         if (attributes.contains("emails")) {
             userEntity.removeAllEmails();
         }
 
         if (emails != null) {
-            for (MultiValuedAttribute scimEmail : emails) {
+            for (Email scimEmail : emails) {
                 EmailEntity emailEntity = emailConverter.fromScim(scimEmail);
                 userEntity.removeEmail(emailEntity); // we always have to remove the email in case
                                                      // the primary attribute has changed

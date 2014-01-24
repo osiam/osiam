@@ -29,7 +29,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.osiam.resources.converter.RoleConverter;
-import org.osiam.resources.scim.MultiValuedAttribute;
+import org.osiam.resources.scim.Role;
 import org.osiam.storage.entities.RoleEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.stereotype.Service;
@@ -56,14 +56,14 @@ class RoleUpdater {
      * @param attributes
      *            all {@link RoleEntity}'s will be deleted if this Set contains 'roles'
      */
-    void update(List<MultiValuedAttribute> roles, UserEntity userEntity, Set<String> attributes) {
+    void update(List<Role> roles, UserEntity userEntity, Set<String> attributes) {
 
         if (attributes.contains("roles")) {
             userEntity.removeAllRoles();
         }
 
         if (roles != null) {
-            for (MultiValuedAttribute scimRole : roles) {
+            for (Role scimRole : roles) {
                 RoleEntity roleEntity = roleConverter.fromScim(scimRole);
                 userEntity.removeRole(roleEntity); // we always have to remove the role in case
                                                    // the primary attribute has changed

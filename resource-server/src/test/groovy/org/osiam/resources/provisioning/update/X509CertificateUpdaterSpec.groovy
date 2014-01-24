@@ -25,8 +25,9 @@ package org.osiam.resources.provisioning.update
 
 import org.osiam.resources.converter.X509CertificateConverter
 import org.osiam.resources.scim.MultiValuedAttribute
-import org.osiam.storage.entities.X509CertificateEntity
+import org.osiam.resources.scim.X509Certificate
 import org.osiam.storage.entities.UserEntity
+import org.osiam.storage.entities.X509CertificateEntity
 
 import spock.lang.Specification
 
@@ -54,7 +55,7 @@ class X509CertificateUpdaterSpec extends Specification {
 
     def 'removing an x509Certificate is possible'(){
         given:
-        MultiValuedAttribute x509Certificate01 = new MultiValuedAttribute.Builder(value : IRRELEVANT, operation : 'delete', ).build()
+        MultiValuedAttribute x509Certificate01 = new X509Certificate.Builder(value : IRRELEVANT, operation : 'delete', ).build()
         X509CertificateEntity x509CertificateEntity01 = new X509CertificateEntity(value : IRRELEVANT)
 
         when:
@@ -67,7 +68,7 @@ class X509CertificateUpdaterSpec extends Specification {
 
     def 'adding a new x509Certificate is possible'(){
         given:
-        MultiValuedAttribute x509Certificate = new MultiValuedAttribute.Builder(value : IRRELEVANT).build()
+        MultiValuedAttribute x509Certificate = new X509Certificate.Builder(value : IRRELEVANT).build()
         X509CertificateEntity x509CertificateEntity = new X509CertificateEntity(value : IRRELEVANT)
 
         when:

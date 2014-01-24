@@ -24,6 +24,7 @@
 package org.osiam.resources.converter
 
 import org.osiam.resources.scim.MultiValuedAttribute
+import org.osiam.resources.scim.X509Certificate
 import org.osiam.storage.entities.X509CertificateEntity
 
 import spock.lang.Specification
@@ -32,7 +33,7 @@ class X509CertificateConverterSpec extends Specification {
 
     X509CertificateEntity entity
     MultiValuedAttribute attribute
-    X509CertificateConverter converter;
+    X509CertificateConverter converter
 
     def setup(){
         def value = 'example'
@@ -40,7 +41,7 @@ class X509CertificateConverterSpec extends Specification {
         entity = new X509CertificateEntity()
         entity.setValue(value)
 
-        attribute = new MultiValuedAttribute.Builder()
+        attribute = new X509Certificate.Builder()
                 .setValue(value)
                 .build()
 

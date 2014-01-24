@@ -24,6 +24,7 @@
 package org.osiam.resources.provisioning.update
 
 import org.osiam.resources.converter.ImConverter
+import org.osiam.resources.scim.Im
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.storage.entities.ImEntity
 import org.osiam.storage.entities.UserEntity
@@ -54,7 +55,7 @@ class ImUpdaterSpec extends Specification {
 
     def 'removing an im is possible'(){
         given:
-        MultiValuedAttribute im01 = new MultiValuedAttribute.Builder(value : IRRELEVANT, operation : 'delete', ).build()
+        MultiValuedAttribute im01 = new Im.Builder(value : IRRELEVANT, operation : 'delete', ).build()
         ImEntity imEntity01 = new ImEntity(value : IRRELEVANT)
 
         when:
@@ -67,7 +68,7 @@ class ImUpdaterSpec extends Specification {
 
     def 'adding a new im is possible'(){
         given:
-        MultiValuedAttribute im = new MultiValuedAttribute.Builder(value : IRRELEVANT).build()
+        MultiValuedAttribute im = new Im.Builder(value : IRRELEVANT).build()
         ImEntity imEntity = new ImEntity(value : IRRELEVANT)
 
         when:

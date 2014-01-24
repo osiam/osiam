@@ -29,7 +29,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.osiam.resources.converter.PhotoConverter;
-import org.osiam.resources.scim.MultiValuedAttribute;
+import org.osiam.resources.scim.Photo;
 import org.osiam.storage.entities.PhotoEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.stereotype.Service;
@@ -48,22 +48,22 @@ class PhotoUpdater {
     /**
      * updates (adds new, delete, updates) the {@link PhotoEntity}'s of the given {@link UserEntity} based on the given
      * List of Photo's
-     *
+     * 
      * @param photos
-     *            list of Photo's to be deleted, updated or added
+     *        list of Photo's to be deleted, updated or added
      * @param userEntity
-     *            user who needs to be updated
+     *        user who needs to be updated
      * @param attributes
-     *            all {@link PhotoEntity}'s will be deleted if this Set contains 'photos'
+     *        all {@link PhotoEntity}'s will be deleted if this Set contains 'photos'
      */
-    void update(List<MultiValuedAttribute> photos, UserEntity userEntity, Set<String> attributes) {
+    void update(List<Photo> photos, UserEntity userEntity, Set<String> attributes) {
 
         if (attributes.contains("photos")) {
             userEntity.removeAllPhotos();
         }
 
         if (photos != null) {
-            for (MultiValuedAttribute scimPhoto : photos) {
+            for (Photo scimPhoto : photos) {
                 PhotoEntity photoEntity = photoConverter.fromScim(scimPhoto);
                 userEntity.removePhoto(photoEntity); // we always have to remove the photo in case
                                                      // the primary attribute has changed

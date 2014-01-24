@@ -29,7 +29,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.osiam.resources.converter.X509CertificateConverter;
-import org.osiam.resources.scim.MultiValuedAttribute;
+import org.osiam.resources.scim.X509Certificate;
 import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.entities.X509CertificateEntity;
 import org.springframework.stereotype.Service;
@@ -48,22 +48,22 @@ class X509CertificateUpdater {
     /**
      * updates (adds new, delete, updates) the {@link X509CertificateEntity}'s of the given {@link UserEntity} based on
      * the given List of X509Certificate's
-     *
+     * 
      * @param x509Certificates
-     *            list of X509Certificate's to be deleted, updated or added
+     *        list of X509Certificate's to be deleted, updated or added
      * @param userEntity
-     *            user who needs to be updated
+     *        user who needs to be updated
      * @param attributes
-     *            all {@link X509CertificateEntity}'s will be deleted if this Set contains 'x509Certificates'
+     *        all {@link X509CertificateEntity}'s will be deleted if this Set contains 'x509Certificates'
      */
-    void update(List<MultiValuedAttribute> x509Certificates, UserEntity userEntity, Set<String> attributes) {
+    void update(List<X509Certificate> x509Certificates, UserEntity userEntity, Set<String> attributes) {
 
         if (attributes.contains("x509Certificates")) {
             userEntity.removeAllX509Certificates();
         }
 
         if (x509Certificates != null) {
-            for (MultiValuedAttribute scimX509Certificate : x509Certificates) {
+            for (X509Certificate scimX509Certificate : x509Certificates) {
                 X509CertificateEntity x509CertificateEntity = x509CertificateConverter.fromScim(scimX509Certificate);
                 userEntity.removeX509Certificate(x509CertificateEntity); // we always have to remove the x509Certificate
                                                                          // the primary attribute has changed

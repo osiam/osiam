@@ -24,6 +24,7 @@
 package org.osiam.resources.provisioning.update
 
 import org.osiam.resources.converter.EmailConverter
+import org.osiam.resources.scim.Email
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.storage.entities.EmailEntity
 import org.osiam.storage.entities.UserEntity
@@ -54,7 +55,7 @@ class EmailUpdaterSpec extends Specification {
 
     def 'removing an email is possible'(){
         given:
-        MultiValuedAttribute email01 = new MultiValuedAttribute.Builder(value : IRRELEVANT, operation : 'delete', ).build()
+        MultiValuedAttribute email01 = new Email.Builder(value : IRRELEVANT, operation : 'delete', ).build()
         EmailEntity emailEntity01 = new EmailEntity(value : IRRELEVANT)
 
         when:
@@ -67,7 +68,7 @@ class EmailUpdaterSpec extends Specification {
 
     def 'adding a new email is possible'(){
         given:
-        MultiValuedAttribute email = new MultiValuedAttribute.Builder(value : IRRELEVANT).build()
+        MultiValuedAttribute email = new Email.Builder(value : IRRELEVANT).build()
         EmailEntity emailEntity = new EmailEntity(value : IRRELEVANT)
 
         when:
@@ -80,7 +81,7 @@ class EmailUpdaterSpec extends Specification {
 
     def 'adding a new primary email removes the primary attribite from the old one'(){
         given:
-        MultiValuedAttribute newPrimaryEmail = new MultiValuedAttribute.Builder(value : IRRELEVANT, primary : true).build()
+        MultiValuedAttribute newPrimaryEmail = new Email.Builder(value : IRRELEVANT, primary : true).build()
         EmailEntity newPrimaryEmailEntity = new EmailEntity(value : IRRELEVANT, primary : true)
 
         EmailEntity oldPrimaryEmailEntity = Spy()
