@@ -53,22 +53,23 @@ public class ExtensionQueryField {
     }
 
     public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
-                               String value, CriteriaBuilder cb) {
+            String value, CriteriaBuilder cb) {
 
         if (constraint != FilterConstraint.PRESENT && (field.getType() == ExtensionFieldType.INTEGER ||
                 field.getType() == ExtensionFieldType.DECIMAL)) {
 
-            value = numberPadder.pad(value);  // NOSONAR - We want our modify our parameters
+            value = numberPadder.pad(value); // NOSONAR - We want our modify our parameters
         }
 
-        final SetJoin<UserEntity, ExtensionFieldValueEntity> join = createOrGetJoin(generateAlias(urn + "." + field.getName()),
-                root, UserEntity_.extensionFieldValues);
+        final SetJoin<UserEntity, ExtensionFieldValueEntity> join = createOrGetJoin(
+                generateAlias(urn + "." + field.getName()), root, UserEntity_.extensionFieldValues);
+
         Predicate filterPredicate = constraint.createPredicateForExtensionField(
                 join.get(ExtensionFieldValueEntity_.value), // NOSONAR - XEntity_.X will be filled by JPA provider
                 value, field, cb);
         Predicate joinOnPredicate = cb.equal(join.get(ExtensionFieldValueEntity_.extensionField)
-                .get(ExtensionFieldEntity_.internalId)
-                , field.getInternalId()); // NOSONAR - XEntity_.X will be filled by JPA provider
+                .get(ExtensionFieldEntity_.internalId) // NOSONAR - XEntity_.X will be filled by JPA provider
+                , field.getInternalId());
         return cb.and(filterPredicate, joinOnPredicate);
     }
 
@@ -83,9 +84,14 @@ public class ExtensionQueryField {
 
     @SuppressWarnings("unchecked")
     protected <T> SetJoin<UserEntity, T> createOrGetJoin(String alias, Root<UserEntity> root,
-                                                         SetAttribute<UserEntity, T> attribute) {
+            SetAttribute<UserEntity, T> attribute) {
 
         for (Join<UserEntity, ?> currentJoin : root.getJoins()) {
+            if(currentJoin.getAlias() == null) {
+                // if alias is null, it is not an alias for an extension join, so we ignore it
+                continue;
+            }
+            
             if (currentJoin.getAlias().equals(alias)) {
                 return (SetJoin<UserEntity, T>) currentJoin;
             }
