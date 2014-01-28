@@ -30,7 +30,6 @@ import javax.inject.Inject;
 
 import org.osiam.resources.converter.EmailConverter;
 import org.osiam.resources.scim.Email;
-import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.storage.entities.EmailEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.stereotype.Service;
@@ -49,13 +48,13 @@ class EmailUpdater {
     /**
      * updates (adds new, delete, updates) the {@link EmailEntity}'s of the given {@link UserEntity} based on the given
      * List of Email's
-     *
+     * 
      * @param emails
-     *            list of Email's to be deleted, updated or added
+     *        list of Email's to be deleted, updated or added
      * @param userEntity
-     *            user who needs to be updated
+     *        user who needs to be updated
      * @param attributes
-     *            all {@link EmailEntity}'s will be deleted if this Set contains 'emails'
+     *        all {@link EmailEntity}'s will be deleted if this Set contains 'emails'
      */
     void update(List<Email> emails, UserEntity userEntity, Set<String> attributes) {
 
@@ -81,11 +80,11 @@ class EmailUpdater {
     /**
      * if the given newEmail is set to primary the primary attribute of all existing email's in the {@link UserEntity}
      * will be removed
-     *
+     * 
      * @param newEmail
-     *            to be checked if it is primary
+     *        to be checked if it is primary
      * @param emails
-     *            all existing email's of the {@link UserEntity}
+     *        all existing email's of the {@link UserEntity}
      */
     private void ensureOnlyOnePrimaryEmailExists(EmailEntity newEmail, Set<EmailEntity> emails) {
         if (newEmail.isPrimary()) {

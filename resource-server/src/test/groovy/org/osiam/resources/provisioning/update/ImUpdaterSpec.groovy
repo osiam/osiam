@@ -78,4 +78,25 @@ class ImUpdaterSpec extends Specification {
         1 * imConverter.fromScim(im) >> imEntity
         1 * userEntity.addIm(imEntity)
     }
+    
+    def 'adding a new primary im removes the primary attribite from the old one'(){
+        given:
+        MultiValuedAttribute newPrimaryIm = new Im.Builder(value : IRRELEVANT, primary : true).build()
+        ImEntity newPrimaryImEntity = new ImEntity(value : IRRELEVANT, primary : true)
+
+        ImEntity oldPrimaryImEntity = Spy()
+        oldPrimaryImEntity.setValue(IRRELEVANT_02)
+        oldPrimaryImEntity.setPrimary(true)
+
+        ImEntity imEntity = new ImEntity(value : IRRELEVANT_02, primary : false)
+
+        when:
+        imUpdater.update([newPrimaryIm] as List, userEntity, [] as Set)
+
+        then:
+        1 * imConverter.fromScim(newPrimaryIm) >> newPrimaryImEntity
+        1 * userEntity.getIms() >> ([oldPrimaryImEntity] as Set)
+        1 * userEntity.addIm(newPrimaryImEntity)
+        1 * oldPrimaryImEntity.setPrimary(false)
+    }
 }

@@ -29,7 +29,6 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.osiam.resources.converter.PhoneNumberConverter;
-import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.resources.scim.PhoneNumber;
 import org.osiam.storage.entities.PhoneNumberEntity;
 import org.osiam.storage.entities.UserEntity;
@@ -49,13 +48,13 @@ class PhoneNumberUpdater {
     /**
      * updates (adds new, delete, updates) the {@link PhoneNumberEntity}'s of the given {@link UserEntity} based on the
      * given List of PhoneNumber's
-     *
+     * 
      * @param phoneNumbers
-     *            list of PhoneNumber's to be deleted, updated or added
+     *        list of PhoneNumber's to be deleted, updated or added
      * @param userEntity
-     *            user who needs to be updated
+     *        user who needs to be updated
      * @param attributes
-     *            all {@link PhoneNumberEntity}'s will be deleted if this Set contains 'phoneNumbers'
+     *        all {@link PhoneNumberEntity}'s will be deleted if this Set contains 'phoneNumbers'
      */
     void update(List<PhoneNumber> phoneNumbers, UserEntity userEntity, Set<String> attributes) {
 
@@ -71,8 +70,28 @@ class PhoneNumberUpdater {
                 if (Strings.isNullOrEmpty(scimPhoneNumber.getOperation())
                         || !scimPhoneNumber.getOperation().equalsIgnoreCase("delete")) {
 
-                    // TODO primary is not implemented yet. If it is see EmailUpdater how to implement it here
+                    ensureOnlyOnePrimaryPhoneNumberExists(phoneNumberEntity, userEntity.getPhoneNumbers());
                     userEntity.addPhoneNumber(phoneNumberEntity);
+                }
+            }
+        }
+    }
+
+    /**
+     * if the given newPhoneNumber is set to primary the primary attribute of all existing phoneNumber's in the
+     * {@link UserEntity} will be removed
+     * 
+     * @param newPhoneNumber
+     *        to be checked if it is primary
+     * @param phoneNumbers
+     *        all existing phoneNumber's of the {@link UserEntity}
+     */
+    private void ensureOnlyOnePrimaryPhoneNumberExists(PhoneNumberEntity newPhoneNumber,
+            Set<PhoneNumberEntity> phoneNumbers) {
+        if (newPhoneNumber.isPrimary()) {
+            for (PhoneNumberEntity exisitngPhoneNumberEntity : phoneNumbers) {
+                if (exisitngPhoneNumberEntity.isPrimary()) {
+                    exisitngPhoneNumberEntity.setPrimary(false);
                 }
             }
         }

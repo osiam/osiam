@@ -78,4 +78,25 @@ class PhoneNumbersUpdaterSpec extends Specification {
         1 * phoneNumberConverter.fromScim(phoneNumber) >> phoneNumberEntity
         1 * userEntity.addPhoneNumber(phoneNumberEntity)
     }
+    
+    def 'adding a new primary phoneNumber removes the primary attribite from the old one'(){
+        given:
+        MultiValuedAttribute newPrimaryPhoneNumber = new PhoneNumber.Builder(value : IRRELEVANT, primary : true).build()
+        PhoneNumberEntity newPrimaryPhoneNumberEntity = new PhoneNumberEntity(value : IRRELEVANT, primary : true)
+
+        PhoneNumberEntity oldPrimaryPhoneNumberEntity = Spy()
+        oldPrimaryPhoneNumberEntity.setValue(IRRELEVANT_02)
+        oldPrimaryPhoneNumberEntity.setPrimary(true)
+
+        PhoneNumberEntity phoneNumberEntity = new PhoneNumberEntity(value : IRRELEVANT_02, primary : false)
+
+        when:
+        phoneNumberUpdater.update([newPrimaryPhoneNumber] as List, userEntity, [] as Set)
+
+        then:
+        1 * phoneNumberConverter.fromScim(newPrimaryPhoneNumber) >> newPrimaryPhoneNumberEntity
+        1 * userEntity.getPhoneNumbers() >> ([oldPrimaryPhoneNumberEntity] as Set)
+        1 * userEntity.addPhoneNumber(newPrimaryPhoneNumberEntity)
+        1 * oldPrimaryPhoneNumberEntity.setPrimary(false)
+    }
 }

@@ -78,4 +78,25 @@ class X509CertificateUpdaterSpec extends Specification {
         1 * x509CertificateConverter.fromScim(x509Certificate) >> x509CertificateEntity
         1 * userEntity.addX509Certificate(x509CertificateEntity)
     }
+    
+    def 'adding a new primary x509Certificate removes the primary attribite from the old one'(){
+        given:
+        MultiValuedAttribute newPrimaryX509Certificate = new X509Certificate.Builder(value : IRRELEVANT, primary : true).build()
+        X509CertificateEntity newPrimaryX509CertificateEntity = new X509CertificateEntity(value : IRRELEVANT, primary : true)
+
+        X509CertificateEntity oldPrimaryX509CertificateEntity = Spy()
+        oldPrimaryX509CertificateEntity.setValue(IRRELEVANT_02)
+        oldPrimaryX509CertificateEntity.setPrimary(true)
+
+        X509CertificateEntity x509CertificateEntity = new X509CertificateEntity(value : IRRELEVANT_02, primary : false)
+
+        when:
+        x509CertificateUpdater.update([newPrimaryX509Certificate] as List, userEntity, [] as Set)
+
+        then:
+        1 * x509CertificateConverter.fromScim(newPrimaryX509Certificate) >> newPrimaryX509CertificateEntity
+        1 * userEntity.getX509Certificates() >> ([oldPrimaryX509CertificateEntity] as Set)
+        1 * userEntity.addX509Certificate(newPrimaryX509CertificateEntity)
+        1 * oldPrimaryX509CertificateEntity.setPrimary(false)
+    }
 }

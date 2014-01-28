@@ -70,8 +70,27 @@ class PhotoUpdater {
                 if (Strings.isNullOrEmpty(scimPhoto.getOperation())
                         || !scimPhoto.getOperation().equalsIgnoreCase("delete")) {
 
-                    // TODO primary is not implemented yet. If it is see EmailUpdater how to implement it here
+                    ensureOnlyOnePrimaryPhotoExists(photoEntity, userEntity.getPhotos());
                     userEntity.addPhoto(photoEntity);
+                }
+            }
+        }
+    }
+
+    /**
+     * if the given newPhoto is set to primary the primary attribute of all existing photo's in the {@link UserEntity}
+     * will be removed
+     * 
+     * @param newPhoto
+     *        to be checked if it is primary
+     * @param photos
+     *        all existing photo's of the {@link UserEntity}
+     */
+    private void ensureOnlyOnePrimaryPhotoExists(PhotoEntity newPhoto, Set<PhotoEntity> photos) {
+        if (newPhoto.isPrimary()) {
+            for (PhotoEntity exisitngPhotoEntity : photos) {
+                if (exisitngPhotoEntity.isPrimary()) {
+                    exisitngPhotoEntity.setPrimary(false);
                 }
             }
         }

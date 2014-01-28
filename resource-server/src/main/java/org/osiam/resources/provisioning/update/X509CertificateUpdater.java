@@ -70,8 +70,28 @@ class X509CertificateUpdater {
                 if (Strings.isNullOrEmpty(scimX509Certificate.getOperation())
                         || !scimX509Certificate.getOperation().equalsIgnoreCase("delete")) {
 
-                    // TODO primary is not implemented yet. If it is see EmailUpdater how to implement it here
+                    ensureOnlyOnePrimaryX509CertificateExists(x509CertificateEntity, userEntity.getX509Certificates());
                     userEntity.addX509Certificate(x509CertificateEntity);
+                }
+            }
+        }
+    }
+
+    /**
+     * if the given newX509Certificate is set to primary the primary attribute of all existing x509Certificate's in the
+     * {@link UserEntity} will be removed
+     * 
+     * @param newX509Certificate
+     *        to be checked if it is primary
+     * @param x509Certificates
+     *        all existing x509Certificate's of the {@link UserEntity}
+     */
+    private void ensureOnlyOnePrimaryX509CertificateExists(X509CertificateEntity newX509Certificate,
+            Set<X509CertificateEntity> x509Certificates) {
+        if (newX509Certificate.isPrimary()) {
+            for (X509CertificateEntity exisitngX509CertificateEntity : x509Certificates) {
+                if (exisitngX509CertificateEntity.isPrimary()) {
+                    exisitngX509CertificateEntity.setPrimary(false);
                 }
             }
         }

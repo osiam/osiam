@@ -78,4 +78,25 @@ class EntitlementUpdaterSpec extends Specification {
         1 * entitlementConverter.fromScim(entitlement) >> entitlementEntity
         1 * userEntity.addEntitlement(entitlementEntity)
     }
+    
+    def 'adding a new primary entitlement removes the primary attribite from the old one'(){
+        given:
+        MultiValuedAttribute newPrimaryEntitlement = new Entitlement.Builder(value : IRRELEVANT, primary : true).build()
+        EntitlementEntity newPrimaryEntitlementEntity = new EntitlementEntity(value : IRRELEVANT, primary : true)
+
+        EntitlementEntity oldPrimaryEntitlementEntity = Spy()
+        oldPrimaryEntitlementEntity.setValue(IRRELEVANT_02)
+        oldPrimaryEntitlementEntity.setPrimary(true)
+
+        EntitlementEntity entitlementEntity = new EntitlementEntity(value : IRRELEVANT_02, primary : false)
+
+        when:
+        entitlementUpdater.update([newPrimaryEntitlement] as List, userEntity, [] as Set)
+
+        then:
+        1 * entitlementConverter.fromScim(newPrimaryEntitlement) >> newPrimaryEntitlementEntity
+        1 * userEntity.getEntitlements() >> ([oldPrimaryEntitlementEntity] as Set)
+        1 * userEntity.addEntitlement(newPrimaryEntitlementEntity)
+        1 * oldPrimaryEntitlementEntity.setPrimary(false)
+    }
 }

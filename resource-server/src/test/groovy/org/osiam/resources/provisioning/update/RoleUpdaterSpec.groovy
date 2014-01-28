@@ -78,4 +78,25 @@ class RoleUpdaterSpec extends Specification {
         1 * roleConverter.fromScim(role) >> roleEntity
         1 * userEntity.addRole(roleEntity)
     }
+    
+    def 'adding a new primary role removes the primary attribite from the old one'(){
+        given:
+        MultiValuedAttribute newPrimaryRole = new Role.Builder(value : IRRELEVANT, primary : true).build()
+        RoleEntity newPrimaryRoleEntity = new RoleEntity(value : IRRELEVANT, primary : true)
+
+        RoleEntity oldPrimaryRoleEntity = Spy()
+        oldPrimaryRoleEntity.setValue(IRRELEVANT_02)
+        oldPrimaryRoleEntity.setPrimary(true)
+
+        RoleEntity roleEntity = new RoleEntity(value : IRRELEVANT_02, primary : false)
+
+        when:
+        roleUpdater.update([newPrimaryRole] as List, userEntity, [] as Set)
+
+        then:
+        1 * roleConverter.fromScim(newPrimaryRole) >> newPrimaryRoleEntity
+        1 * userEntity.getRoles() >> ([oldPrimaryRoleEntity] as Set)
+        1 * userEntity.addRole(newPrimaryRoleEntity)
+        1 * oldPrimaryRoleEntity.setPrimary(false)
+    }
 }

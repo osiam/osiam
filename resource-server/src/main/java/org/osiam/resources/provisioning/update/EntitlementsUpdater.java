@@ -30,7 +30,6 @@ import javax.inject.Inject;
 
 import org.osiam.resources.converter.EntitlementConverter;
 import org.osiam.resources.scim.Entitlement;
-import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.storage.entities.EntitlementEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.stereotype.Service;
@@ -71,8 +70,28 @@ class EntitlementsUpdater {
                 if (Strings.isNullOrEmpty(scimEntitlements.getOperation())
                         || !scimEntitlements.getOperation().equalsIgnoreCase("delete")) {
 
-                    // TODO primary is not implemented yet. If it is see EmailUpdater how to implement it here
+                    ensureOnlyOnePrimaryEntitlementExists(entitlementsEntity, userEntity.getEntitlements());
                     userEntity.addEntitlement(entitlementsEntity);
+                }
+            }
+        }
+    }
+
+    /**
+     * if the given newEntitlement is set to primary the primary attribute of all existing entitlement's in the
+     * {@link UserEntity} will be removed
+     * 
+     * @param newEntitlement
+     *        to be checked if it is primary
+     * @param entitlements
+     *        all existing entitlement's of the {@link UserEntity}
+     */
+    private void ensureOnlyOnePrimaryEntitlementExists(EntitlementEntity newEntitlement,
+            Set<EntitlementEntity> entitlements) {
+        if (newEntitlement.isPrimary()) {
+            for (EntitlementEntity exisitngEntitlementEntity : entitlements) {
+                if (exisitngEntitlementEntity.isPrimary()) {
+                    exisitngEntitlementEntity.setPrimary(false);
                 }
             }
         }

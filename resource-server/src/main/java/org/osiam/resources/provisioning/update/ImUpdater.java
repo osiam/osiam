@@ -70,11 +70,29 @@ class ImUpdater {
                 if (Strings.isNullOrEmpty(scimIm.getOperation())
                         || !scimIm.getOperation().equalsIgnoreCase("delete")) {
 
-                    // TODO primary is not implemented yet. If it is see EmailUpdater how to implement it here
+                    ensureOnlyOnePrimaryImExists(imEntity, userEntity.getIms());
                     userEntity.addIm(imEntity);
                 }
             }
         }
     }
 
+    /**
+     * if the given newIm is set to primary the primary attribute of all existing im's in the {@link UserEntity} will be
+     * removed
+     * 
+     * @param newIm
+     *        to be checked if it is primary
+     * @param ims
+     *        all existing im's of the {@link UserEntity}
+     */
+    private void ensureOnlyOnePrimaryImExists(ImEntity newIm, Set<ImEntity> ims) {
+        if (newIm.isPrimary()) {
+            for (ImEntity exisitngImEntity : ims) {
+                if (exisitngImEntity.isPrimary()) {
+                    exisitngImEntity.setPrimary(false);
+                }
+            }
+        }
+    }
 }
