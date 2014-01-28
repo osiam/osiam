@@ -34,14 +34,17 @@ public class RoleConverter implements Converter<Role, RoleEntity> {
     public RoleEntity fromScim(Role scim) {
         RoleEntity rolesEntity = new RoleEntity();
         rolesEntity.setValue(String.valueOf(scim.getValue()));
+        rolesEntity.setPrimary(scim.isPrimary());
+        
         return rolesEntity;
     }
 
     @Override
     public Role toScim(RoleEntity entity) {
-        return new Role.Builder().
-                setValue(entity.getValue()).
-                build();
+        return new Role.Builder()
+                .setValue(entity.getValue())
+                .setPrimary(entity.isPrimary())
+                .build();
     }
 
 }
