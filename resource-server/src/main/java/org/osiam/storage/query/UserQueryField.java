@@ -409,7 +409,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
         }
 
     },
-    PHONENUMBERS("phoneNumbers") {
+    PHONENUMBERS("phonenumbers") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
@@ -649,6 +649,18 @@ public enum UserQueryField implements QueryField<UserEntity> {
             throw handleSortByFieldNotSupported(toString());
         }
     },
+    ADDRESS_PRIMARY("address.primary") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
+            SetJoin<UserEntity, AddressEntity> join = root.join(UserEntity_.addresses, JoinType.LEFT);
+            return constraint.createPredicateForBooleanField(join.get(AddressEntity_.primary), Boolean.valueOf(value), cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
+    },
     ENTITLEMENTS("entitlements") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
@@ -689,6 +701,18 @@ public enum UserQueryField implements QueryField<UserEntity> {
             SetJoin<UserEntity, EntitlementEntity> join = root.join(UserEntity_.entitlements, JoinType.LEFT);
             return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(EntitlementEntity_.type),
                     type, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
+    },
+    ENTITLEMENTS_PRIMARY("entitlements.primary") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
+            SetJoin<UserEntity, EntitlementEntity> join = root.join(UserEntity_.entitlements, JoinType.LEFT);
+            return constraint.createPredicateForBooleanField(join.get(EntitlementEntity_.primary), Boolean.valueOf(value), cb);
         }
 
         @Override
