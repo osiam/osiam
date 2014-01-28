@@ -35,6 +35,7 @@ public class EntitlementConverter implements Converter<Entitlement, EntitlementE
         EntitlementEntity entitlementsEntity = new EntitlementEntity();
         entitlementsEntity.setValue(String.valueOf(scim.getValue()));
         entitlementsEntity.setType(scim.getType());
+        entitlementsEntity.setPrimary(scim.isPrimary());
 
         return entitlementsEntity;
     }
@@ -44,6 +45,7 @@ public class EntitlementConverter implements Converter<Entitlement, EntitlementE
         return new Entitlement.Builder()
                 .setValue(entity.getValue())
                 .setType(entity.getType())
+                .setPrimary(entity.isPrimary())
                 .build();
     }
 

@@ -35,16 +35,18 @@ public class ImConverter implements Converter<Im, ImEntity> {
         ImEntity imEntity = new ImEntity();
         imEntity.setValue(String.valueOf(scim.getValue()));
         imEntity.setType(scim.getType());
+        imEntity.setPrimary(scim.isPrimary());
 
         return imEntity;
     }
 
     @Override
     public Im toScim(ImEntity entity) {
-        return new Im.Builder().
-                setType(entity.getType()).
-                setValue(entity.getValue()).
-                build();
+        return new Im.Builder()
+                .setType(entity.getType())
+                .setValue(entity.getValue())
+                .setPrimary(entity.isPrimary())
+                .build();
     }
 
 }

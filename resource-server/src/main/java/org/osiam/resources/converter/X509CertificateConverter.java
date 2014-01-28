@@ -34,14 +34,17 @@ public class X509CertificateConverter implements Converter<X509Certificate, X509
     public X509CertificateEntity fromScim(X509Certificate scim) {
         X509CertificateEntity x509CertificateEntity = new X509CertificateEntity();
         x509CertificateEntity.setValue(scim.getValue());
+        x509CertificateEntity.setPrimary(scim.isPrimary());
+        
         return x509CertificateEntity;
     }
 
     @Override
     public X509Certificate toScim(X509CertificateEntity entity) {
-        return new X509Certificate.Builder().
-                setValue(entity.getValue()).
-                build();
+        return new X509Certificate.Builder()
+                .setValue(entity.getValue())
+                .setPrimary(entity.isPrimary())
+                .build();
     }
 
 }

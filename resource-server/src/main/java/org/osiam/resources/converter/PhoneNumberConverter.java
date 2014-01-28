@@ -35,16 +35,18 @@ public class PhoneNumberConverter implements Converter<PhoneNumber, PhoneNumberE
         PhoneNumberEntity phoneNumberEntity = new PhoneNumberEntity();
         phoneNumberEntity.setValue(String.valueOf(scim.getValue()));
         phoneNumberEntity.setType(scim.getType());
+        phoneNumberEntity.setPrimary(scim.isPrimary());
 
         return phoneNumberEntity;
     }
 
     @Override
     public PhoneNumber toScim(PhoneNumberEntity entity) {
-        return new PhoneNumber.Builder().
-                setType(entity.getType()).
-                setValue(entity.getValue()).
-                build();
+        return new PhoneNumber.Builder()
+                .setType(entity.getType())
+                .setValue(entity.getValue())
+                .setPrimary(entity.isPrimary())
+                .build();
     }
 
 }
