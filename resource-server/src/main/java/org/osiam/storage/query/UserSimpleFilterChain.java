@@ -25,11 +25,11 @@ package org.osiam.storage.query;
 
 import java.util.Locale;
 
-import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.osiam.resources.exceptions.OsiamException;
 import org.osiam.storage.dao.ExtensionDao;
 import org.osiam.storage.entities.ExtensionEntity;
 import org.osiam.storage.entities.ExtensionFieldEntity;
@@ -76,8 +76,8 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
         final ExtensionEntity extension;
         try {
             extension = extensionDao.getExtensionByUrn(urn, true);
-        } catch (NoResultException ex) {
-            throw new IllegalArgumentException("Filtering not possible. Field '" + scimExpression.getField()
+        } catch (OsiamException ex) {
+            throw new IllegalArgumentException("Filtering not possible. Field '" + fieldString
                     + "' not available.", ex);
         }
         final ExtensionFieldEntity fieldEntity = extension.getFieldForName(fieldName, true);
