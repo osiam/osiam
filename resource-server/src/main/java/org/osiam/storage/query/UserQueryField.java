@@ -61,6 +61,7 @@ import org.osiam.storage.entities.PhotoEntity;
 import org.osiam.storage.entities.PhotoEntity_;
 import org.osiam.storage.entities.ResourceEntity_;
 import org.osiam.storage.entities.RoleEntity;
+import org.osiam.storage.entities.RoleEntity_;
 import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.entities.UserEntity_;
 import org.osiam.storage.entities.X509CertificateEntity;
@@ -409,7 +410,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
         }
 
     },
-    PHONENUMBERS("phoneNumbers") {
+    PHONENUMBERS("phonenumbers") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
@@ -450,6 +451,18 @@ public enum UserQueryField implements QueryField<UserEntity> {
             return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(PhoneNumberEntity_.type), // NOSONAR -
                     // XEntity_.X will be filled by JPA provider
                     phoneNumberType, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
+    },
+    PHONENUMBERS_PRIMARY("phonenumbers.primary") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
+            SetJoin<UserEntity, PhoneNumberEntity> join = root.join(UserEntity_.phoneNumbers, JoinType.LEFT);
+            return constraint.createPredicateForBooleanField(join.get(PhoneNumberEntity_.primary), Boolean.valueOf(value), cb);
         }
 
         @Override
@@ -500,6 +513,18 @@ public enum UserQueryField implements QueryField<UserEntity> {
             SetJoin<UserEntity, ImEntity> join = root.join(UserEntity_.ims, JoinType.LEFT);
             return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(ImEntity_.type), imType, cb); // NOSONAR -
             // XEntity_.X will be filled by JPA provider
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
+    },
+    IMS_PRIMARY("ims.primary") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
+            SetJoin<UserEntity, ImEntity> join = root.join(UserEntity_.ims, JoinType.LEFT);
+            return constraint.createPredicateForBooleanField(join.get(ImEntity_.primary), Boolean.valueOf(value), cb);
         }
 
         @Override
@@ -558,7 +583,19 @@ public enum UserQueryField implements QueryField<UserEntity> {
             throw handleSortByFieldNotSupported(toString());
         }
     },
-    ADDRESS_REGION("address.region") {
+    PHOTOS_PRIMARY("photos.primary") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
+            SetJoin<UserEntity, PhotoEntity> join = root.join(UserEntity_.photos, JoinType.LEFT);
+            return constraint.createPredicateForBooleanField(join.get(PhotoEntity_.primary), Boolean.valueOf(value), cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
+    },
+    ADDRESSES_REGION("addresses.region") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, AddressEntity> join = root.join(UserEntity_.addresses, JoinType.LEFT);
@@ -570,7 +607,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
             throw handleSortByFieldNotSupported(toString());
         }
     },
-    ADDRESS_STREETADDRESS("address.streetaddress") {
+    ADDRESSES_STREETADDRESS("addresses.streetaddress") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, AddressEntity> join = root.join(UserEntity_.addresses, JoinType.LEFT);
@@ -582,7 +619,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
             throw handleSortByFieldNotSupported(toString());
         }
     },
-    ADDRESS_FORMATTED("address.formatted") {
+    ADDRESSES_FORMATTED("addresses.formatted") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, AddressEntity> join = root.join(UserEntity_.addresses, JoinType.LEFT);
@@ -594,7 +631,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
             throw handleSortByFieldNotSupported(toString());
         }
     },
-    ADDRESS_POSTALCODE("address.postalcode") {
+    ADDRESSES_POSTALCODE("addresses.postalcode") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, AddressEntity> join = root.join(UserEntity_.addresses, JoinType.LEFT);
@@ -606,7 +643,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
             throw handleSortByFieldNotSupported(toString());
         }
     },
-    ADDRESS_LOCALITY("address.locality") {
+    ADDRESSES_LOCALITY("addresses.locality") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, AddressEntity> join = root.join(UserEntity_.addresses, JoinType.LEFT);
@@ -618,7 +655,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
             throw handleSortByFieldNotSupported(toString());
         }
     },
-    ADDRESS_TYPE("address.type") {
+    ADDRESSES_TYPE("addresses.type") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
             Address.Type addressType = null;
@@ -637,11 +674,23 @@ public enum UserQueryField implements QueryField<UserEntity> {
             throw handleSortByFieldNotSupported(toString());
         }
     },
-    ADDRESS_COUNTRY("address.country") {
+    ADDRESSES_COUNTRY("addresses.country") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, AddressEntity> join = root.join(UserEntity_.addresses, JoinType.LEFT);
             return constraint.createPredicateForStringField(join.get(AddressEntity_.country), value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
+    },
+    ADDRESSES_PRIMARY("addresses.primary") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
+            SetJoin<UserEntity, AddressEntity> join = root.join(UserEntity_.addresses, JoinType.LEFT);
+            return constraint.createPredicateForBooleanField(join.get(AddressEntity_.primary), Boolean.valueOf(value), cb);
         }
 
         @Override
@@ -696,6 +745,18 @@ public enum UserQueryField implements QueryField<UserEntity> {
             throw handleSortByFieldNotSupported(toString());
         }
     },
+    ENTITLEMENTS_PRIMARY("entitlements.primary") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
+            SetJoin<UserEntity, EntitlementEntity> join = root.join(UserEntity_.entitlements, JoinType.LEFT);
+            return constraint.createPredicateForBooleanField(join.get(EntitlementEntity_.primary), Boolean.valueOf(value), cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
+    },
     ROLES("roles") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
@@ -717,6 +778,18 @@ public enum UserQueryField implements QueryField<UserEntity> {
             SetJoin<UserEntity, RoleEntity> join = root.join(UserEntity_.roles, JoinType.LEFT);
             return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
                     value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
+    },
+    ROLES_PRIMARY("roles.primary") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
+            SetJoin<UserEntity, RoleEntity> join = root.join(UserEntity_.roles, JoinType.LEFT);
+            return constraint.createPredicateForBooleanField(join.get(RoleEntity_.primary), Boolean.valueOf(value), cb);
         }
 
         @Override
