@@ -39,6 +39,8 @@ import org.osiam.storage.entities.ExtensionFieldValueEntity;
 import org.osiam.storage.helper.NumberPadder;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Strings;
+
 @Service
 public class ExtensionConverter implements Converter<Set<Extension>, Set<ExtensionFieldValueEntity>> {
 
@@ -58,6 +60,11 @@ public class ExtensionConverter implements Converter<Set<Extension>, Set<Extensi
 
             for (ExtensionFieldEntity field : extensionEntity.getFields()) {
                 if (extension.isFieldPresent(field.getName())) {
+
+                    if (Strings.isNullOrEmpty(extension.getField(field.getName(), ExtensionFieldType.STRING))) {
+                        continue;
+                    }
+
                     ExtensionFieldValueEntity value = new ExtensionFieldValueEntity();
 
                     String typeCheckedStringValue = getTypeCheckedStringValue(field.getType(), field.getName(),
