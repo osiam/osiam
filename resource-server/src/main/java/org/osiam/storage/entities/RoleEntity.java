@@ -23,8 +23,11 @@
 
 package org.osiam.storage.entities;
 
+import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+
+import org.osiam.resources.scim.Role;
 
 /**
  * Roles Entity
@@ -32,6 +35,56 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "scim_roles")
 public class RoleEntity extends BaseMultiValuedAttributeEntityWithValue {
+
+    /**
+     * <p>
+     * The type of this Role.
+     * </p>
+     * 
+     * <p>
+     * Custom type mapping is provided by {@link org.osiam.storage.entities.jpa_converters.RoleTypeConverter}.
+     * </p>
+     */
+    @Basic
+    private Role.Type type; // @Basic is needed for JPA meta model generator
+
+    public Role.Type getType() {
+        return type;
+    }
+
+    public void setType(Role.Type type) {
+        this.type = type;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        RoleEntity other = (RoleEntity) obj;
+        if (type == null) {
+            if (other.type != null) {
+                return false;
+            }
+        } else if (!type.equals(other.type)) {
+            return false;
+        }
+        return true;
+    }
 
     @Override
     public String toString() {
