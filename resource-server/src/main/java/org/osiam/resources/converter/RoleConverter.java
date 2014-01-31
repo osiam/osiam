@@ -34,6 +34,7 @@ public class RoleConverter implements Converter<Role, RoleEntity> {
     public RoleEntity fromScim(Role scim) {
         RoleEntity rolesEntity = new RoleEntity();
         rolesEntity.setValue(String.valueOf(scim.getValue()));
+        rolesEntity.setType(scim.getType());
         rolesEntity.setPrimary(scim.isPrimary());
         
         return rolesEntity;
@@ -44,6 +45,7 @@ public class RoleConverter implements Converter<Role, RoleEntity> {
         return new Role.Builder()
                 .setValue(entity.getValue())
                 .setPrimary(entity.isPrimary())
+                .setType(entity.getType())
                 .build();
     }
 

@@ -20,33 +20,34 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+package org.osiam.storage.entities.jpa_converters;
 
-package org.osiam.resources.converter;
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 
-import org.osiam.resources.scim.X509Certificate;
-import org.osiam.storage.entities.X509CertificateEntity;
-import org.springframework.stereotype.Service;
+import org.osiam.resources.scim.Role;
 
-@Service
-public class X509CertificateConverter implements Converter<X509Certificate, X509CertificateEntity> {
+import com.google.common.base.Strings;
+
+@Converter(autoApply = true)
+public class RoleTypeConverter implements AttributeConverter<Role.Type, String> {
 
     @Override
-    public X509CertificateEntity fromScim(X509Certificate scim) {
-        X509CertificateEntity x509CertificateEntity = new X509CertificateEntity();
-        x509CertificateEntity.setValue(scim.getValue());
-        x509CertificateEntity.setType(scim.getType());
-        x509CertificateEntity.setPrimary(scim.isPrimary());
-        
-        return x509CertificateEntity;
+    public String convertToDatabaseColumn(Role.Type attribute) {
+        if (attribute == null || Strings.isNullOrEmpty(attribute.getValue())) {
+            return null;
+        }
+
+        return attribute.getValue();
     }
 
     @Override
-    public X509Certificate toScim(X509CertificateEntity entity) {
-        return new X509Certificate.Builder()
-                .setValue(entity.getValue())
-                .setPrimary(entity.isPrimary())
-                .setType(entity.getType())
-                .build();
+    public Role.Type convertToEntityAttribute(String dbData) {
+        if (Strings.isNullOrEmpty(dbData)) {
+            return null;
+        }
+
+        return new Role.Type(dbData);
     }
 
 }
