@@ -28,8 +28,12 @@ import javax.inject.Inject;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.GroupEntity_;
+import org.osiam.storage.entities.ResourceEntity;
+import org.osiam.storage.entities.ResourceEntity_;
 import org.osiam.storage.query.GroupFilterParser;
 import org.springframework.stereotype.Repository;
+
+import com.google.common.base.Strings;
 
 @Repository
 public class GroupDao implements GenericDao<GroupEntity> {
@@ -77,6 +81,31 @@ public class GroupDao implements GenericDao<GroupEntity> {
     public boolean isDisplayNameAlreadyTaken(String displayName, String id) {
         return resourceDao.isUniqueAttributeAlreadyTaken(displayName, id, GroupEntity_.displayName, GroupEntity.class);
     }
+    
+    /**
+     * Checks if a external id is already taken by another group or user.
+     *
+     * @param externalId
+     *            the external id to check
+     * @return true if the external id is taken, otherwise false
+     */
+    public boolean isExternalIdAlreadyTaken(String externalId) {
+        return resourceDao.isExternalIdAlreadyTaken(externalId);
+    }
+    
+    /**
+     * Checks if a external id is already taken by another group or user. Ignores the group with the given id.
+     *
+     * @param externalId
+     *            the external id to check
+     * @param id
+     *            the id of the group to ignore
+     * @return true if the displayName is taken, otherwise false
+     */
+    public boolean isExternalIdAlreadyTaken(String externalId, String id) {
+        return resourceDao.isExternalIdAlreadyTaken(externalId, id);
+    }
+    
 
     @Override
     public void delete(String id) {
