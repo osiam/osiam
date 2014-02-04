@@ -23,9 +23,11 @@
 
 package org.osiam.storage.entities
 
+import org.osiam.resources.exceptions.OsiamException;
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.storage.entities.PhotoEntity
 import org.osiam.storage.entities.UserEntity
+
 import spock.lang.Specification
 
 class PhotoEntitySpec extends Specification {
@@ -33,13 +35,12 @@ class PhotoEntitySpec extends Specification {
     PhotoEntity photoEntity = new PhotoEntity()
     def userEntity = Mock(UserEntity)
 
-    def "should throw exception if the value has no valid file suffix"() {
+    def "should throw exception if the value is not a valid URL"() {
         when:
-        photoEntity.setValue("https://photos.example.com/profilephoto/72930000000Ccne/T")
+        photoEntity.setValue(" ")
 
         then:
-        def e = thrown(IllegalArgumentException)
-        e.getMessage() == "The photo MUST have an attribute 'value' that ends with JPEG, JPG, GIF, PNG."
+        thrown(OsiamException)
     }
 
     def "value should contain a valid file suffix"() {

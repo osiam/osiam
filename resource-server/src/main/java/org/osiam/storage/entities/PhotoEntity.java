@@ -23,8 +23,8 @@
 
 package org.osiam.storage.entities;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;
@@ -54,15 +54,15 @@ public class PhotoEntity extends BaseMultiValuedAttributeEntityWithValue {
 
     @Override
     public void setValue(String value) {
-        ensureGivenValueIsAnUrl(value);
+        ensureGivenValueIsAnUri(value);
         super.setValue(value);
     }
 
-    private void ensureGivenValueIsAnUrl(String value) {
+    private void ensureGivenValueIsAnUri(String value) {
         try {
-            new URL(value);
-        } catch (MalformedURLException e) {
-            throw new OsiamException("The given value MUST be an URL pointing to an photo.", e);
+            new URI(value);
+        } catch (URISyntaxException e) {
+            throw new OsiamException("The given value MUST be a URI pointing to a photo.", e);
         }
     }
 
