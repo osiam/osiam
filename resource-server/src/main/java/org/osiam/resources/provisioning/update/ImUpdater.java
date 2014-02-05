@@ -29,7 +29,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.osiam.resources.converter.ImConverter;
-import org.osiam.resources.scim.MultiValuedAttribute;
+import org.osiam.resources.scim.Im;
 import org.osiam.storage.entities.ImEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.stereotype.Service;
@@ -48,33 +48,51 @@ class ImUpdater {
     /**
      * updates (adds new, delete, updates) the {@link ImEntity}'s of the given {@link UserEntity} based on the given
      * List of Im's
-     *
+     * 
      * @param ims
-     *            list of Im's to be deleted, updated or added
+     *        list of Im's to be deleted, updated or added
      * @param userEntity
-     *            user who needs to be updated
+     *        user who needs to be updated
      * @param attributes
-     *            all {@link ImEntity}'s will be deleted if this Set contains 'ims'
+     *        all {@link ImEntity}'s will be deleted if this Set contains 'ims'
      */
-    void update(List<MultiValuedAttribute> ims, UserEntity userEntity, Set<String> attributes) {
+    void update(List<Im> ims, UserEntity userEntity, Set<String> attributes) {
 
         if (attributes.contains("ims")) {
             userEntity.removeAllIms();
         }
 
         if (ims != null) {
-            for (MultiValuedAttribute scimIm : ims) {
+            for (Im scimIm : ims) {
                 ImEntity imEntity = imConverter.fromScim(scimIm);
                 userEntity.removeIm(imEntity); // we always have to remove the im in case
                                                // the primary attribute has changed
                 if (Strings.isNullOrEmpty(scimIm.getOperation())
                         || !scimIm.getOperation().equalsIgnoreCase("delete")) {
 
-                    // TODO primary is not implemented yet. If it is see EmailUpdater how to implement it here
+                    ensureOnlyOnePrimaryImExists(imEntity, userEntity.getIms());
                     userEntity.addIm(imEntity);
                 }
             }
         }
     }
 
+    /**
+     * if the given newIm is set to primary the primary attribute of all existing im's in the {@link UserEntity} will be
+     * removed
+     * 
+     * @param newIm
+     *        to be checked if it is primary
+     * @param ims
+     *        all existing im's of the {@link UserEntity}
+     */
+    private void ensureOnlyOnePrimaryImExists(ImEntity newIm, Set<ImEntity> ims) {
+        if (newIm.isPrimary()) {
+            for (ImEntity exisitngImEntity : ims) {
+                if (exisitngImEntity.isPrimary()) {
+                    exisitngImEntity.setPrimary(false);
+                }
+            }
+        }
+    }
 }

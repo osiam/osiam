@@ -43,9 +43,9 @@ class ImConverterSpec extends Specification {
         entity.setValue(value)
         entity.setType(type)
 
-        attribute = new MultiValuedAttribute.Builder()
+        attribute = new Im.Builder()
                 .setValue(value)
-                .setType(type.getValue())
+                .setType(type)
                 .build()
 
         converter = new ImConverter()

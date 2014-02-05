@@ -29,7 +29,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.osiam.resources.converter.X509CertificateConverter;
-import org.osiam.resources.scim.MultiValuedAttribute;
+import org.osiam.resources.scim.X509Certificate;
 import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.entities.X509CertificateEntity;
 import org.springframework.stereotype.Service;
@@ -48,30 +48,50 @@ class X509CertificateUpdater {
     /**
      * updates (adds new, delete, updates) the {@link X509CertificateEntity}'s of the given {@link UserEntity} based on
      * the given List of X509Certificate's
-     *
+     * 
      * @param x509Certificates
-     *            list of X509Certificate's to be deleted, updated or added
+     *        list of X509Certificate's to be deleted, updated or added
      * @param userEntity
-     *            user who needs to be updated
+     *        user who needs to be updated
      * @param attributes
-     *            all {@link X509CertificateEntity}'s will be deleted if this Set contains 'x509Certificates'
+     *        all {@link X509CertificateEntity}'s will be deleted if this Set contains 'x509Certificates'
      */
-    void update(List<MultiValuedAttribute> x509Certificates, UserEntity userEntity, Set<String> attributes) {
+    void update(List<X509Certificate> x509Certificates, UserEntity userEntity, Set<String> attributes) {
 
         if (attributes.contains("x509Certificates")) {
             userEntity.removeAllX509Certificates();
         }
 
         if (x509Certificates != null) {
-            for (MultiValuedAttribute scimX509Certificate : x509Certificates) {
+            for (X509Certificate scimX509Certificate : x509Certificates) {
                 X509CertificateEntity x509CertificateEntity = x509CertificateConverter.fromScim(scimX509Certificate);
                 userEntity.removeX509Certificate(x509CertificateEntity); // we always have to remove the x509Certificate
                                                                          // the primary attribute has changed
                 if (Strings.isNullOrEmpty(scimX509Certificate.getOperation())
                         || !scimX509Certificate.getOperation().equalsIgnoreCase("delete")) {
 
-                    // TODO primary is not implemented yet. If it is see EmailUpdater how to implement it here
+                    ensureOnlyOnePrimaryX509CertificateExists(x509CertificateEntity, userEntity.getX509Certificates());
                     userEntity.addX509Certificate(x509CertificateEntity);
+                }
+            }
+        }
+    }
+
+    /**
+     * if the given newX509Certificate is set to primary the primary attribute of all existing x509Certificate's in the
+     * {@link UserEntity} will be removed
+     * 
+     * @param newX509Certificate
+     *        to be checked if it is primary
+     * @param x509Certificates
+     *        all existing x509Certificate's of the {@link UserEntity}
+     */
+    private void ensureOnlyOnePrimaryX509CertificateExists(X509CertificateEntity newX509Certificate,
+            Set<X509CertificateEntity> x509Certificates) {
+        if (newX509Certificate.isPrimary()) {
+            for (X509CertificateEntity exisitngX509CertificateEntity : x509Certificates) {
+                if (exisitngX509CertificateEntity.isPrimary()) {
+                    exisitngX509CertificateEntity.setPrimary(false);
                 }
             }
         }

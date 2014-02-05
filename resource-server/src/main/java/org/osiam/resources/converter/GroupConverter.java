@@ -75,8 +75,7 @@ public class GroupConverter implements Converter<Group, GroupEntity> {
             return null;
         }
 
-        Group.Builder groupBuilder = new Group.Builder()
-                .setDisplayName(group.getDisplayName())
+        Group.Builder groupBuilder = new Group.Builder(group.getDisplayName())
                 .setId(group.getId().toString())
                 .setMeta(metaConverter.toScim(group.getMeta()))
                 .setExternalId(group.getExternalId());

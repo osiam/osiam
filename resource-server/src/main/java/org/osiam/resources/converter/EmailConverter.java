@@ -24,33 +24,27 @@
 package org.osiam.resources.converter;
 
 import org.osiam.resources.scim.Email;
-import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.storage.entities.EmailEntity;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Strings;
-
 @Service
-public class EmailConverter implements Converter<MultiValuedAttribute, EmailEntity> {
+public class EmailConverter implements Converter<Email, EmailEntity> {
 
     @Override
-    public EmailEntity fromScim(MultiValuedAttribute scim) {
+    public EmailEntity fromScim(Email scim) {
         EmailEntity emailEntity = new EmailEntity();
         emailEntity.setValue(scim.getValue());
-        emailEntity.setPrimary(scim.isPrimary() == null ? false : scim.isPrimary());
-
-        if (!Strings.isNullOrEmpty(scim.getType())) {
-            emailEntity.setType(new Email.Type(scim.getType()));
-        }
+        emailEntity.setPrimary(scim.isPrimary());
+        emailEntity.setType(scim.getType());
 
         return emailEntity;
     }
 
     @Override
-    public MultiValuedAttribute toScim(EmailEntity entity) {
-        return new MultiValuedAttribute.Builder()
+    public Email toScim(EmailEntity entity) {
+        return new Email.Builder()
                 .setPrimary(entity.isPrimary())
-                .setType(entity.getType() != null ? entity.getType().getValue() : null)
+                .setType(entity.getType())
                 .setValue(entity.getValue())
                 .build();
     }

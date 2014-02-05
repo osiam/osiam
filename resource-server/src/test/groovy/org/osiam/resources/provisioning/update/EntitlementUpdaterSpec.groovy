@@ -24,6 +24,7 @@
 package org.osiam.resources.provisioning.update
 
 import org.osiam.resources.converter.EntitlementConverter
+import org.osiam.resources.scim.Entitlement
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.storage.entities.EntitlementEntity
 import org.osiam.storage.entities.UserEntity
@@ -54,7 +55,7 @@ class EntitlementUpdaterSpec extends Specification {
 
     def 'removing an entitlement is possible'(){
         given:
-        MultiValuedAttribute entitlement01 = new MultiValuedAttribute.Builder(value : IRRELEVANT, operation : 'delete', ).build()
+        MultiValuedAttribute entitlement01 = new Entitlement.Builder(value : IRRELEVANT, operation : 'delete', ).build()
         EntitlementEntity entitlementEntity01 = new EntitlementEntity(value : IRRELEVANT)
 
         when:
@@ -67,7 +68,7 @@ class EntitlementUpdaterSpec extends Specification {
 
     def 'adding a new entitlement is possible'(){
         given:
-        MultiValuedAttribute entitlement = new MultiValuedAttribute.Builder(value : IRRELEVANT).build()
+        MultiValuedAttribute entitlement = new Entitlement.Builder(value : IRRELEVANT).build()
         EntitlementEntity entitlementEntity = new EntitlementEntity(value : IRRELEVANT)
 
         when:
@@ -76,5 +77,26 @@ class EntitlementUpdaterSpec extends Specification {
         then:
         1 * entitlementConverter.fromScim(entitlement) >> entitlementEntity
         1 * userEntity.addEntitlement(entitlementEntity)
+    }
+    
+    def 'adding a new primary entitlement removes the primary attribite from the old one'(){
+        given:
+        MultiValuedAttribute newPrimaryEntitlement = new Entitlement.Builder(value : IRRELEVANT, primary : true).build()
+        EntitlementEntity newPrimaryEntitlementEntity = new EntitlementEntity(value : IRRELEVANT, primary : true)
+
+        EntitlementEntity oldPrimaryEntitlementEntity = Spy()
+        oldPrimaryEntitlementEntity.setValue(IRRELEVANT_02)
+        oldPrimaryEntitlementEntity.setPrimary(true)
+
+        EntitlementEntity entitlementEntity = new EntitlementEntity(value : IRRELEVANT_02, primary : false)
+
+        when:
+        entitlementUpdater.update([newPrimaryEntitlement] as List, userEntity, [] as Set)
+
+        then:
+        1 * entitlementConverter.fromScim(newPrimaryEntitlement) >> newPrimaryEntitlementEntity
+        1 * userEntity.getEntitlements() >> ([oldPrimaryEntitlementEntity] as Set)
+        1 * userEntity.addEntitlement(newPrimaryEntitlementEntity)
+        1 * oldPrimaryEntitlementEntity.setPrimary(false)
     }
 }

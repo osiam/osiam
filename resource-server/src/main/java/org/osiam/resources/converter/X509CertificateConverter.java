@@ -23,25 +23,30 @@
 
 package org.osiam.resources.converter;
 
-import org.osiam.resources.scim.MultiValuedAttribute;
+import org.osiam.resources.scim.X509Certificate;
 import org.osiam.storage.entities.X509CertificateEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-public class X509CertificateConverter implements Converter<MultiValuedAttribute, X509CertificateEntity> {
+public class X509CertificateConverter implements Converter<X509Certificate, X509CertificateEntity> {
 
     @Override
-    public X509CertificateEntity fromScim(MultiValuedAttribute scim) {
+    public X509CertificateEntity fromScim(X509Certificate scim) {
         X509CertificateEntity x509CertificateEntity = new X509CertificateEntity();
-        x509CertificateEntity.setValue(String.valueOf(scim.getValue()));
+        x509CertificateEntity.setValue(scim.getValue());
+        x509CertificateEntity.setType(scim.getType());
+        x509CertificateEntity.setPrimary(scim.isPrimary());
+        
         return x509CertificateEntity;
     }
 
     @Override
-    public MultiValuedAttribute toScim(X509CertificateEntity entity) {
-        return new MultiValuedAttribute.Builder().
-                setValue(entity.getValue()).
-                build();
+    public X509Certificate toScim(X509CertificateEntity entity) {
+        return new X509Certificate.Builder()
+                .setValue(entity.getValue())
+                .setPrimary(entity.isPrimary())
+                .setType(entity.getType())
+                .build();
     }
 
 }

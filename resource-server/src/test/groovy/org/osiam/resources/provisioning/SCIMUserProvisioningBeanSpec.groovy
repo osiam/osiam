@@ -97,8 +97,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         scimUserProvisioningBean.create(userScim)
 
         then:
-        1 * userConverter.fromScim(userScim) >> userEntity
-        1 * userDao.create(userEntity) >> { throw new Exception('scim_user_username_key') }
+        1 * userDao.isUserNameAlreadyTaken(_) >> true
         def e = thrown(ResourceExistsException)
         e.getMessage().contains(userName)
     }
@@ -113,8 +112,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         scimUserProvisioningBean.create(userScim)
 
         then:
-        1 * userConverter.fromScim(userScim) >> userEntity
-        1 * userDao.create(userEntity) >> { throw new Exception('scim_id_externalid_key') }
+        1 * userDao.isExternalIdAlreadyTaken(_) >> true
         def e = thrown(ResourceExistsException)
         e.getMessage().contains(externalId)
     }

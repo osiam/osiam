@@ -24,7 +24,6 @@
 package org.osiam.resources.converter
 
 import org.osiam.resources.scim.Email
-import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.storage.entities.EmailEntity
 
 import spock.lang.Specification
@@ -32,7 +31,7 @@ import spock.lang.Specification
 class EmailConverterSpec extends Specification {
 
     EmailEntity entity
-    MultiValuedAttribute attribute
+    Email attribute
     EmailConverter converter
 
     def setup(){
@@ -44,9 +43,9 @@ class EmailConverterSpec extends Specification {
         entity.setType(type)
         entity.setPrimary(true)
 
-        attribute = new MultiValuedAttribute.Builder()
+        attribute = new Email.Builder()
                 .setValue(value)
-                .setType(type.value)
+                .setType(type)
                 .setPrimary(true)
                 .build()
 

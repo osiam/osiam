@@ -25,8 +25,9 @@ package org.osiam.resources.provisioning.update
 
 import org.osiam.resources.converter.X509CertificateConverter
 import org.osiam.resources.scim.MultiValuedAttribute
-import org.osiam.storage.entities.X509CertificateEntity
+import org.osiam.resources.scim.X509Certificate
 import org.osiam.storage.entities.UserEntity
+import org.osiam.storage.entities.X509CertificateEntity
 
 import spock.lang.Specification
 
@@ -54,7 +55,7 @@ class X509CertificateUpdaterSpec extends Specification {
 
     def 'removing an x509Certificate is possible'(){
         given:
-        MultiValuedAttribute x509Certificate01 = new MultiValuedAttribute.Builder(value : IRRELEVANT, operation : 'delete', ).build()
+        MultiValuedAttribute x509Certificate01 = new X509Certificate.Builder(value : IRRELEVANT, operation : 'delete', ).build()
         X509CertificateEntity x509CertificateEntity01 = new X509CertificateEntity(value : IRRELEVANT)
 
         when:
@@ -67,7 +68,7 @@ class X509CertificateUpdaterSpec extends Specification {
 
     def 'adding a new x509Certificate is possible'(){
         given:
-        MultiValuedAttribute x509Certificate = new MultiValuedAttribute.Builder(value : IRRELEVANT).build()
+        MultiValuedAttribute x509Certificate = new X509Certificate.Builder(value : IRRELEVANT).build()
         X509CertificateEntity x509CertificateEntity = new X509CertificateEntity(value : IRRELEVANT)
 
         when:
@@ -76,5 +77,26 @@ class X509CertificateUpdaterSpec extends Specification {
         then:
         1 * x509CertificateConverter.fromScim(x509Certificate) >> x509CertificateEntity
         1 * userEntity.addX509Certificate(x509CertificateEntity)
+    }
+    
+    def 'adding a new primary x509Certificate removes the primary attribite from the old one'(){
+        given:
+        MultiValuedAttribute newPrimaryX509Certificate = new X509Certificate.Builder(value : IRRELEVANT, primary : true).build()
+        X509CertificateEntity newPrimaryX509CertificateEntity = new X509CertificateEntity(value : IRRELEVANT, primary : true)
+
+        X509CertificateEntity oldPrimaryX509CertificateEntity = Spy()
+        oldPrimaryX509CertificateEntity.setValue(IRRELEVANT_02)
+        oldPrimaryX509CertificateEntity.setPrimary(true)
+
+        X509CertificateEntity x509CertificateEntity = new X509CertificateEntity(value : IRRELEVANT_02, primary : false)
+
+        when:
+        x509CertificateUpdater.update([newPrimaryX509Certificate] as List, userEntity, [] as Set)
+
+        then:
+        1 * x509CertificateConverter.fromScim(newPrimaryX509Certificate) >> newPrimaryX509CertificateEntity
+        1 * userEntity.getX509Certificates() >> ([oldPrimaryX509CertificateEntity] as Set)
+        1 * userEntity.addX509Certificate(newPrimaryX509CertificateEntity)
+        1 * oldPrimaryX509CertificateEntity.setPrimary(false)
     }
 }

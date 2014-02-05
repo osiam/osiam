@@ -25,6 +25,7 @@ package org.osiam.resources.provisioning.update
 
 import org.osiam.resources.converter.PhoneNumberConverter
 import org.osiam.resources.scim.MultiValuedAttribute
+import org.osiam.resources.scim.PhoneNumber
 import org.osiam.storage.entities.PhoneNumberEntity
 import org.osiam.storage.entities.UserEntity
 
@@ -54,7 +55,7 @@ class PhoneNumbersUpdaterSpec extends Specification {
 
     def 'removing an phoneNumber is possible'(){
         given:
-        MultiValuedAttribute phoneNumber01 = new MultiValuedAttribute.Builder(value : IRRELEVANT, operation : 'delete', ).build()
+        MultiValuedAttribute phoneNumber01 = new PhoneNumber.Builder(value : IRRELEVANT, operation : 'delete', ).build()
         PhoneNumberEntity phoneNumberEntity01 = new PhoneNumberEntity(value : IRRELEVANT)
 
         when:
@@ -67,7 +68,7 @@ class PhoneNumbersUpdaterSpec extends Specification {
 
     def 'adding a new phoneNumber is possible'(){
         given:
-        MultiValuedAttribute phoneNumber = new MultiValuedAttribute.Builder(value : IRRELEVANT).build()
+        MultiValuedAttribute phoneNumber = new PhoneNumber.Builder(value : IRRELEVANT).build()
         PhoneNumberEntity phoneNumberEntity = new PhoneNumberEntity(value : IRRELEVANT)
 
         when:
@@ -76,5 +77,26 @@ class PhoneNumbersUpdaterSpec extends Specification {
         then:
         1 * phoneNumberConverter.fromScim(phoneNumber) >> phoneNumberEntity
         1 * userEntity.addPhoneNumber(phoneNumberEntity)
+    }
+    
+    def 'adding a new primary phoneNumber removes the primary attribite from the old one'(){
+        given:
+        MultiValuedAttribute newPrimaryPhoneNumber = new PhoneNumber.Builder(value : IRRELEVANT, primary : true).build()
+        PhoneNumberEntity newPrimaryPhoneNumberEntity = new PhoneNumberEntity(value : IRRELEVANT, primary : true)
+
+        PhoneNumberEntity oldPrimaryPhoneNumberEntity = Spy()
+        oldPrimaryPhoneNumberEntity.setValue(IRRELEVANT_02)
+        oldPrimaryPhoneNumberEntity.setPrimary(true)
+
+        PhoneNumberEntity phoneNumberEntity = new PhoneNumberEntity(value : IRRELEVANT_02, primary : false)
+
+        when:
+        phoneNumberUpdater.update([newPrimaryPhoneNumber] as List, userEntity, [] as Set)
+
+        then:
+        1 * phoneNumberConverter.fromScim(newPrimaryPhoneNumber) >> newPrimaryPhoneNumberEntity
+        1 * userEntity.getPhoneNumbers() >> ([oldPrimaryPhoneNumberEntity] as Set)
+        1 * userEntity.addPhoneNumber(newPrimaryPhoneNumberEntity)
+        1 * oldPrimaryPhoneNumberEntity.setPrimary(false)
     }
 }

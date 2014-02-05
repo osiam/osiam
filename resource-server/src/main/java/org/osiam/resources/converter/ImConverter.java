@@ -24,33 +24,29 @@
 package org.osiam.resources.converter;
 
 import org.osiam.resources.scim.Im;
-import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.storage.entities.ImEntity;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Strings;
-
 @Service
-public class ImConverter implements Converter<MultiValuedAttribute, ImEntity> {
+public class ImConverter implements Converter<Im, ImEntity> {
 
     @Override
-    public ImEntity fromScim(MultiValuedAttribute scim) {
+    public ImEntity fromScim(Im scim) {
         ImEntity imEntity = new ImEntity();
         imEntity.setValue(String.valueOf(scim.getValue()));
-
-        if (!Strings.isNullOrEmpty(scim.getType())) {
-            imEntity.setType(new Im.Type(scim.getType()));
-        }
+        imEntity.setType(scim.getType());
+        imEntity.setPrimary(scim.isPrimary());
 
         return imEntity;
     }
 
     @Override
-    public MultiValuedAttribute toScim(ImEntity entity) {
-        return new MultiValuedAttribute.Builder().
-                setType(entity.getType() != null ? entity.getType().getValue() : null).
-                setValue(entity.getValue()).
-                build();
+    public Im toScim(ImEntity entity) {
+        return new Im.Builder()
+                .setType(entity.getType())
+                .setValue(entity.getValue())
+                .setPrimary(entity.isPrimary())
+                .build();
     }
 
 }

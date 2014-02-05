@@ -29,7 +29,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.osiam.resources.converter.EntitlementConverter;
-import org.osiam.resources.scim.MultiValuedAttribute;
+import org.osiam.resources.scim.Entitlement;
 import org.osiam.storage.entities.EntitlementEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.stereotype.Service;
@@ -48,30 +48,50 @@ class EntitlementsUpdater {
     /**
      * updates (adds new, delete, updates) the {@link EntitlementEntity}'s of the given {@link UserEntity} based on the
      * given List of Entitlement's
-     *
+     * 
      * @param entitlements
-     *            list of Entitlement's to be deleted, updated or added
+     *        list of Entitlement's to be deleted, updated or added
      * @param userEntity
-     *            user who needs to be updated
+     *        user who needs to be updated
      * @param attributes
-     *            all {@link EntitlementEntity}'s will be deleted if this Set contains 'entitlements'
+     *        all {@link EntitlementEntity}'s will be deleted if this Set contains 'entitlements'
      */
-    void update(List<MultiValuedAttribute> entitlements, UserEntity userEntity, Set<String> attributes) {
+    void update(List<Entitlement> entitlements, UserEntity userEntity, Set<String> attributes) {
 
         if (attributes.contains("entitlements")) {
             userEntity.removeAllEntitlements();
         }
 
         if (entitlements != null) {
-            for (MultiValuedAttribute scimEntitlements : entitlements) {
+            for (Entitlement scimEntitlements : entitlements) {
                 EntitlementEntity entitlementsEntity = entitlementConverter.fromScim(scimEntitlements);
                 userEntity.removeEntitlement(entitlementsEntity); // we always have to remove the entitlement's in case
                                                                   // the primary attribute has changed
                 if (Strings.isNullOrEmpty(scimEntitlements.getOperation())
                         || !scimEntitlements.getOperation().equalsIgnoreCase("delete")) {
 
-                    // TODO primary is not implemented yet. If it is see EmailUpdater how to implement it here
+                    ensureOnlyOnePrimaryEntitlementExists(entitlementsEntity, userEntity.getEntitlements());
                     userEntity.addEntitlement(entitlementsEntity);
+                }
+            }
+        }
+    }
+
+    /**
+     * if the given newEntitlement is set to primary the primary attribute of all existing entitlement's in the
+     * {@link UserEntity} will be removed
+     * 
+     * @param newEntitlement
+     *        to be checked if it is primary
+     * @param entitlements
+     *        all existing entitlement's of the {@link UserEntity}
+     */
+    private void ensureOnlyOnePrimaryEntitlementExists(EntitlementEntity newEntitlement,
+            Set<EntitlementEntity> entitlements) {
+        if (newEntitlement.isPrimary()) {
+            for (EntitlementEntity exisitngEntitlementEntity : entitlements) {
+                if (exisitngEntitlementEntity.isPrimary()) {
+                    exisitngEntitlementEntity.setPrimary(false);
                 }
             }
         }

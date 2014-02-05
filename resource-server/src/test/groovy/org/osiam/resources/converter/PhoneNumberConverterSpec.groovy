@@ -23,7 +23,6 @@
 
 package org.osiam.resources.converter
 
-import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.PhoneNumber
 import org.osiam.storage.entities.PhoneNumberEntity
 
@@ -32,7 +31,7 @@ import spock.lang.Specification
 class PhoneNumberConverterSpec extends Specification {
 
     PhoneNumberEntity entity
-    MultiValuedAttribute attribute
+    PhoneNumber attribute
     PhoneNumberConverter converter
 
     def setup(){
@@ -43,9 +42,9 @@ class PhoneNumberConverterSpec extends Specification {
         entity.setValue(value)
         entity.setType(type)
 
-        attribute = new MultiValuedAttribute.Builder()
+        attribute = new PhoneNumber.Builder()
                 .setValue(value)
-                .setType(type.getValue())
+                .setType(type)
                 .build()
 
         converter = new PhoneNumberConverter()

@@ -25,6 +25,7 @@ package org.osiam.resources.provisioning.update
 
 import org.osiam.resources.converter.RoleConverter
 import org.osiam.resources.scim.MultiValuedAttribute
+import org.osiam.resources.scim.Role
 import org.osiam.storage.entities.RoleEntity
 import org.osiam.storage.entities.UserEntity
 
@@ -54,7 +55,7 @@ class RoleUpdaterSpec extends Specification {
 
     def 'removing an role is possible'(){
         given:
-        MultiValuedAttribute role01 = new MultiValuedAttribute.Builder(value : IRRELEVANT, operation : 'delete', ).build()
+        MultiValuedAttribute role01 = new Role.Builder(value : IRRELEVANT, operation : 'delete', ).build()
         RoleEntity roleEntity01 = new RoleEntity(value : IRRELEVANT)
 
         when:
@@ -67,7 +68,7 @@ class RoleUpdaterSpec extends Specification {
 
     def 'adding a new role is possible'(){
         given:
-        MultiValuedAttribute role = new MultiValuedAttribute.Builder(value : IRRELEVANT).build()
+        MultiValuedAttribute role = new Role.Builder(value : IRRELEVANT).build()
         RoleEntity roleEntity = new RoleEntity(value : IRRELEVANT)
 
         when:
@@ -76,5 +77,26 @@ class RoleUpdaterSpec extends Specification {
         then:
         1 * roleConverter.fromScim(role) >> roleEntity
         1 * userEntity.addRole(roleEntity)
+    }
+    
+    def 'adding a new primary role removes the primary attribite from the old one'(){
+        given:
+        MultiValuedAttribute newPrimaryRole = new Role.Builder(value : IRRELEVANT, primary : true).build()
+        RoleEntity newPrimaryRoleEntity = new RoleEntity(value : IRRELEVANT, primary : true)
+
+        RoleEntity oldPrimaryRoleEntity = Spy()
+        oldPrimaryRoleEntity.setValue(IRRELEVANT_02)
+        oldPrimaryRoleEntity.setPrimary(true)
+
+        RoleEntity roleEntity = new RoleEntity(value : IRRELEVANT_02, primary : false)
+
+        when:
+        roleUpdater.update([newPrimaryRole] as List, userEntity, [] as Set)
+
+        then:
+        1 * roleConverter.fromScim(newPrimaryRole) >> newPrimaryRoleEntity
+        1 * userEntity.getRoles() >> ([oldPrimaryRoleEntity] as Set)
+        1 * userEntity.addRole(newPrimaryRoleEntity)
+        1 * oldPrimaryRoleEntity.setPrimary(false)
     }
 }

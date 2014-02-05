@@ -29,7 +29,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.osiam.resources.converter.RoleConverter;
-import org.osiam.resources.scim.MultiValuedAttribute;
+import org.osiam.resources.scim.Role;
 import org.osiam.storage.entities.RoleEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.stereotype.Service;
@@ -48,30 +48,49 @@ class RoleUpdater {
     /**
      * updates (adds new, delete, updates) the {@link RoleEntity}'s of the given {@link UserEntity} based on the given
      * List of Role's
-     *
+     * 
      * @param roles
-     *            list of Role's to be deleted, updated or added
+     *        list of Role's to be deleted, updated or added
      * @param userEntity
-     *            user who needs to be updated
+     *        user who needs to be updated
      * @param attributes
-     *            all {@link RoleEntity}'s will be deleted if this Set contains 'roles'
+     *        all {@link RoleEntity}'s will be deleted if this Set contains 'roles'
      */
-    void update(List<MultiValuedAttribute> roles, UserEntity userEntity, Set<String> attributes) {
+    void update(List<Role> roles, UserEntity userEntity, Set<String> attributes) {
 
         if (attributes.contains("roles")) {
             userEntity.removeAllRoles();
         }
 
         if (roles != null) {
-            for (MultiValuedAttribute scimRole : roles) {
+            for (Role scimRole : roles) {
                 RoleEntity roleEntity = roleConverter.fromScim(scimRole);
                 userEntity.removeRole(roleEntity); // we always have to remove the role in case
                                                    // the primary attribute has changed
                 if (Strings.isNullOrEmpty(scimRole.getOperation())
                         || !scimRole.getOperation().equalsIgnoreCase("delete")) {
 
-                    // TODO primary is not implemented yet. If it is see EmailUpdater how to implement it here
+                    ensureOnlyOnePrimaryRoleExists(roleEntity, userEntity.getRoles());
                     userEntity.addRole(roleEntity);
+                }
+            }
+        }
+    }
+
+    /**
+     * if the given newRole is set to primary the primary attribute of all existing role's in the {@link UserEntity}
+     * will be removed
+     * 
+     * @param newRole
+     *        to be checked if it is primary
+     * @param roles
+     *        all existing role's of the {@link UserEntity}
+     */
+    private void ensureOnlyOnePrimaryRoleExists(RoleEntity newRole, Set<RoleEntity> roles) {
+        if (newRole.isPrimary()) {
+            for (RoleEntity exisitngRoleEntity : roles) {
+                if (exisitngRoleEntity.isPrimary()) {
+                    exisitngRoleEntity.setPrimary(false);
                 }
             }
         }

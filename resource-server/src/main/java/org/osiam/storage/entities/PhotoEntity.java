@@ -23,12 +23,14 @@
 
 package org.osiam.storage.entities;
 
-import java.util.regex.Pattern;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import org.osiam.resources.exceptions.OsiamException;
 import org.osiam.resources.scim.Photo;
 
 /**
@@ -38,14 +40,11 @@ import org.osiam.resources.scim.Photo;
 @Table(name = "scim_photo")
 public class PhotoEntity extends BaseMultiValuedAttributeEntityWithValue {
 
-    // a valid photo url is everything which does not contain any control character and ends with jpg|jpeg|png|gif
-    private static final Pattern PHOTO_SUFFIX = Pattern.compile("(?i)\\S+\\.(jpg|jpeg|png|gif)");
-
     /**
      * <p>
      * The type of this Photo.
      * </p>
-     *
+     * 
      * <p>
      * Custom type mapping is provided by {@link org.osiam.storage.entities.jpa_converters.PhotoTypeConverter}.
      * </p>
@@ -55,18 +54,16 @@ public class PhotoEntity extends BaseMultiValuedAttributeEntityWithValue {
 
     @Override
     public void setValue(String value) {
-        if (isValueIncorrect(value)) {
-            throw new IllegalArgumentException("The photo MUST have an attribute 'value' that ends with " +
-                    "JPEG, JPG, GIF, PNG.");
-        }
+        ensureGivenValueIsAnUri(value);
         super.setValue(value);
     }
 
-    private boolean isValueIncorrect(String value) {
-        if (value == null || value.isEmpty()) {
-            return false;
+    private void ensureGivenValueIsAnUri(String value) {
+        try {
+            new URI(value);
+        } catch (URISyntaxException e) {
+            throw new OsiamException("The given value MUST be a URI pointing to a photo.", e);
         }
-        return !PHOTO_SUFFIX.matcher(value).matches();
     }
 
     public Photo.Type getType() {
@@ -74,7 +71,7 @@ public class PhotoEntity extends BaseMultiValuedAttributeEntityWithValue {
     }
 
     public void setType(Photo.Type type) {
-            this.type = type;
+        this.type = type;
     }
 
     @Override

@@ -30,12 +30,22 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.osiam.resources.scim.Address;
 import org.osiam.resources.scim.Extension;
+import org.osiam.resources.scim.GroupRef;
 import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.resources.scim.User;
+import org.osiam.storage.entities.AddressEntity;
+import org.osiam.storage.entities.EmailEntity;
+import org.osiam.storage.entities.EntitlementEntity;
 import org.osiam.storage.entities.ExtensionFieldValueEntity;
 import org.osiam.storage.entities.GroupEntity;
+import org.osiam.storage.entities.ImEntity;
+import org.osiam.storage.entities.PhoneNumberEntity;
+import org.osiam.storage.entities.PhotoEntity;
+import org.osiam.storage.entities.RoleEntity;
 import org.osiam.storage.entities.UserEntity;
+import org.osiam.storage.entities.X509CertificateEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -90,19 +100,43 @@ public class UserConverter implements Converter<User, UserEntity> {
 
         userEntity.setName(nameConverter.fromScim(user.getName()));
 
-        userEntity.setAddresses(convertMultiValueFromScim(addressConverter, new HashSet<>(user.getAddresses())));
-        userEntity.setEmails(convertMultiValueFromScim(emailConverter, new HashSet<>(user.getEmails())));
-        userEntity.setEntitlements(convertMultiValueFromScim(entitlementConverter, new HashSet<>(user.getEntitlements())));
-        userEntity.setIms(convertMultiValueFromScim(imConverter, new HashSet<>(user.getIms())));
-        userEntity.setPhoneNumbers(convertMultiValueFromScim(phoneNumberConverter, new HashSet<>(user.getPhoneNumbers())));
-        userEntity.setPhotos(convertMultiValueFromScim(photoConverter, new HashSet<>(user.getPhotos())));
-        userEntity.setRoles(convertMultiValueFromScim(roleConverter, new HashSet<>(user.getRoles())));
-        userEntity.setX509Certificates(convertMultiValueFromScim(x509CertificateConverter,
-                new HashSet<>(user.getX509Certificates())));
-
+        Set<AddressEntity> addresses = convertMultiValueFromScim(addressConverter, new HashSet<>(user.getAddresses()));
+        for (AddressEntity addressEntity : addresses) {
+            userEntity.addAddress(addressEntity);
+        }
+        Set<EmailEntity> emails = convertMultiValueFromScim(emailConverter, new HashSet<>(user.getEmails()));
+        for (EmailEntity emailEntitty : emails) {
+            userEntity.addEmail(emailEntitty);
+        }
+        Set<EntitlementEntity> entitlements = convertMultiValueFromScim(entitlementConverter,
+                new HashSet<>(user.getEntitlements()));
+        for (EntitlementEntity entitlementEntitty : entitlements) {
+            userEntity.addEntitlement(entitlementEntitty);
+        }
+        Set<ImEntity> ims = convertMultiValueFromScim(imConverter, new HashSet<>(user.getIms()));
+        for (ImEntity imEntity : ims) {
+            userEntity.addIm(imEntity);
+        }
+        Set<PhoneNumberEntity> phoneNumbers = convertMultiValueFromScim(phoneNumberConverter,
+                new HashSet<>(user.getPhoneNumbers()));
+        for (PhoneNumberEntity phoneNumberEntity : phoneNumbers) {
+            userEntity.addPhoneNumber(phoneNumberEntity);
+        }
+        Set<PhotoEntity> photos = convertMultiValueFromScim(photoConverter, new HashSet<>(user.getPhotos()));
+        for (PhotoEntity photoEntity : photos) {
+            userEntity.addPhoto(photoEntity);
+        }
+        Set<RoleEntity> roles = convertMultiValueFromScim(roleConverter, new HashSet<>(user.getRoles()));
+        for (RoleEntity roleEntity : roles) {
+            userEntity.addRole(roleEntity);
+        }
+        Set<X509CertificateEntity> x509Certificates = convertMultiValueFromScim(x509CertificateConverter,
+                new HashSet<>(user.getX509Certificates()));
+        for (X509CertificateEntity x509CertificateEntity : x509Certificates) {
+            userEntity.addX509Certificate(x509CertificateEntity);
+        }
         Set<ExtensionFieldValueEntity> fieldValues = extensionConverter.fromScim(new HashSet<>(user.getAllExtensions()
                 .values()));
-
         for (ExtensionFieldValueEntity fieldValue : fieldValues) {
             userEntity.addOrUpdateExtensionValue(fieldValue);
         }
@@ -175,14 +209,14 @@ public class UserConverter implements Converter<User, UserEntity> {
         return multiValues;
     }
 
-    private List<MultiValuedAttribute> entityGroupsToScim(Set<GroupEntity> groupEntities) {
-        List<MultiValuedAttribute> groupsForMapping = new ArrayList<>();
+    private List<GroupRef> entityGroupsToScim(Set<GroupEntity> groupEntities) {
+        List<GroupRef> groupsForMapping = new ArrayList<>();
 
         if (groupEntities != null) {
             for (GroupEntity groupEntity : groupEntities) {
-                MultiValuedAttribute multiValue = new MultiValuedAttribute.Builder()
+                GroupRef groupRef = new GroupRef.Builder()
                         .setDisplay(groupEntity.getDisplayName()).setValue(groupEntity.getId().toString()).build();
-                groupsForMapping.add(multiValue);
+                groupsForMapping.add(groupRef);
             }
         }
 

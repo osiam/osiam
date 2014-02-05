@@ -23,6 +23,7 @@
 
 package org.osiam.resources.converter
 
+import org.osiam.resources.scim.Entitlement
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.storage.entities.EntitlementEntity
 
@@ -32,7 +33,7 @@ class EntitlementConverterSpec extends Specification {
 
     EntitlementEntity entity
     MultiValuedAttribute attribute
-    EntitlementConverter converter;
+    EntitlementConverter converter
 
     def setup(){
         def value = 'example'
@@ -40,7 +41,7 @@ class EntitlementConverterSpec extends Specification {
         entity = new EntitlementEntity()
         entity.setValue(value)
 
-        attribute = new MultiValuedAttribute.Builder()
+        attribute = new Entitlement.Builder()
                 .setValue(value)
                 .build()
 

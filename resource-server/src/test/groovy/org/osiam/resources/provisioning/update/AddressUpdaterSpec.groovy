@@ -78,4 +78,25 @@ class AddressUpdaterSpec extends Specification {
         1 * addressConverter.fromScim(address) >> addressEntity
         1 * userEntity.addAddress(addressEntity)
     }
+    
+    def 'adding a new primary address removes the primary attribite from the old one'(){
+        given:
+        Address newPrimaryAddress = new Address.Builder(formatted : IRRELEVANT, primary : true).build()
+        AddressEntity newPrimaryAddressEntity = new AddressEntity(formatted : IRRELEVANT, primary : true)
+
+        AddressEntity oldPrimaryAddressEntity = Spy()
+        oldPrimaryAddressEntity.setFormatted(IRRELEVANT_02)
+        oldPrimaryAddressEntity.setPrimary(true)
+
+        AddressEntity addressEntity = new AddressEntity(formatted : IRRELEVANT_02, primary : false)
+
+        when:
+        addressUpdater.update([newPrimaryAddress] as List, userEntity, [] as Set)
+
+        then:
+        1 * addressConverter.fromScim(newPrimaryAddress) >> newPrimaryAddressEntity
+        1 * userEntity.getAddresses() >> ([oldPrimaryAddressEntity] as Set)
+        1 * userEntity.addAddress(newPrimaryAddressEntity)
+        1 * oldPrimaryAddressEntity.setPrimary(false)
+    }
 }

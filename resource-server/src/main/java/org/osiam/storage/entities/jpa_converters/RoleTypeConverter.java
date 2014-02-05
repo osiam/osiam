@@ -20,35 +20,34 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+package org.osiam.storage.entities.jpa_converters;
 
-package org.osiam.storage.entities
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 
-import org.osiam.resources.exceptions.OsiamException;
-import org.osiam.resources.scim.MultiValuedAttribute
-import org.osiam.storage.entities.PhotoEntity
-import org.osiam.storage.entities.UserEntity
+import org.osiam.resources.scim.Role;
 
-import spock.lang.Specification
+import com.google.common.base.Strings;
 
-class PhotoEntitySpec extends Specification {
+@Converter(autoApply = true)
+public class RoleTypeConverter implements AttributeConverter<Role.Type, String> {
 
-    PhotoEntity photoEntity = new PhotoEntity()
-    def userEntity = Mock(UserEntity)
+    @Override
+    public String convertToDatabaseColumn(Role.Type attribute) {
+        if (attribute == null || Strings.isNullOrEmpty(attribute.getValue())) {
+            return null;
+        }
 
-    def "should throw exception if the value is not a valid URL"() {
-        when:
-        photoEntity.setValue(" ")
-
-        then:
-        thrown(OsiamException)
+        return attribute.getValue();
     }
 
-    def "value should contain a valid file suffix"() {
-        when:
-        photoEntity.setValue("file.JPG")
+    @Override
+    public Role.Type convertToEntityAttribute(String dbData) {
+        if (Strings.isNullOrEmpty(dbData)) {
+            return null;
+        }
 
-        then:
-        photoEntity.getValue() == "file.JPG"
+        return new Role.Type(dbData);
     }
 
 }

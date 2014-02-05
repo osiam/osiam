@@ -89,14 +89,12 @@ class SCIMGroupProvisioningBeanSpec extends Specification {
         thrown(ResourceNotFoundException)
     }
 
-    // TODO: check if groupDao.create() really throws DataIntegrityViolationException
     def 'creating an existing group raises exception'() {
         when:
         scimGroupProvisioning.create(group)
 
         then:
-        1 * groupConverter.fromScim(group) >> groupEntity
-        1 * groupDao.create(groupEntity) >> { throw new DataIntegrityViolationException('') }
+        1 * groupDao.isDisplayNameAlreadyTaken(_) >> true
         thrown(ResourceExistsException)
     }
 

@@ -48,13 +48,13 @@ class AddressUpdater {
     /**
      * updates (adds new, delete, updates) the addresses of the given {@link UserEntity} based on the given List of
      * {@link Address}
-     *
+     * 
      * @param addresss
-     *            list of {@link Address} to be deleted, updated or added
+     *        list of {@link Address} to be deleted, updated or added
      * @param userEntity
-     *            user who needs to be updated
+     *        user who needs to be updated
      * @param attributes
-     *            all {@link AddressEntity}'s will be deleted if this Set contains 'address'
+     *        all {@link AddressEntity}'s will be deleted if this Set contains 'address'
      */
     void update(List<Address> addresss, UserEntity userEntity, Set<String> attributes) {
 
@@ -70,8 +70,27 @@ class AddressUpdater {
                 if (Strings.isNullOrEmpty(scimAddress.getOperation())
                         || !scimAddress.getOperation().equalsIgnoreCase("delete")) {
 
-                    // TODO primary is not implemented yet. If it is see EmailUpdater how to implement it here
+                    ensureOnlyOnePrimaryAddressExists(addressEntity, userEntity.getAddresses());
                     userEntity.addAddress(addressEntity);
+                }
+            }
+        }
+    }
+
+    /**
+     * if the given newAddress is set to primary the primary attribute of all existing address's in the
+     * {@link UserEntity} will be removed
+     * 
+     * @param newAddress
+     *        to be checked if it is primary
+     * @param addresss
+     *        all existing address's of the {@link UserEntity}
+     */
+    private void ensureOnlyOnePrimaryAddressExists(AddressEntity newAddress, Set<AddressEntity> addresss) {
+        if (newAddress.isPrimary()) {
+            for (AddressEntity exisitngAddressEntity : addresss) {
+                if (exisitngAddressEntity.isPrimary()) {
+                    exisitngAddressEntity.setPrimary(false);
                 }
             }
         }
