@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.osiam</groupId>
         <artifactId>osiam-server-parent</artifactId>
-        <version>0.16-SNAPSHOT</version>
+        <version>0.16</version>
     </parent>
 
     <artifactId>osiam-resource-server</artifactId>
