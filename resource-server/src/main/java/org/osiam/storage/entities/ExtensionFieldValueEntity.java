@@ -51,9 +51,13 @@ public class ExtensionFieldValueEntity {
     private ExtensionFieldEntity extensionField;
 
     @Lob
-    @Type(type="org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.StringClobType")
     @Column(nullable = false)
     private String value;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = UserEntity.JOIN_COLUMN_NAME, nullable = false, insertable = false, updatable = false)
+    private UserEntity user;
 
     public long getInternalId() {
         return internalId;
@@ -118,5 +122,3 @@ public class ExtensionFieldValueEntity {
     }
 
 }
-
-

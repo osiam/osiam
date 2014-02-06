@@ -46,7 +46,7 @@ import com.google.common.collect.ImmutableSet;
 @Table(name = "scim_user")
 public class UserEntity extends ResourceEntity {
 
-    private static final String JOIN_COLUMN_NAME = "user_internal_id";
+    public static final String JOIN_COLUMN_NAME = "user_internal_id";
 
     @Column(nullable = false, unique = true)
     private String userName;
