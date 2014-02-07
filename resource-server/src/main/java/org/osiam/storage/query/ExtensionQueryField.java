@@ -62,11 +62,16 @@ public class ExtensionQueryField {
         }
 
         final SetJoin<UserEntity, ExtensionFieldValueEntity> join = createOrGetJoin(
-                generateAlias(urn + "." + field.getName()), root, UserEntity_.extensionFieldValues, cb);
-
+                generateAlias(urn + "." + field.getName()), root, UserEntity_.extensionFieldValues);
+        
         Predicate filterPredicate = constraint.createPredicateForExtensionField(
                 join.get(ExtensionFieldValueEntity_.value), // NOSONAR - XEntity_.X will be filled by JPA provider
                 value, field, cb);
+        
+        Predicate valueBelongsToField = cb.equal(join.get(ExtensionFieldValueEntity_.extensionField)
+                .get(ExtensionFieldEntity_.internalId), field.getInternalId());
+        
+        join.on(valueBelongsToField);
 
         return filterPredicate;
     }
@@ -82,7 +87,7 @@ public class ExtensionQueryField {
 
     @SuppressWarnings("unchecked")
     protected SetJoin<UserEntity, ExtensionFieldValueEntity> createOrGetJoin(String alias, Root<UserEntity> root,
-            SetAttribute<UserEntity, ExtensionFieldValueEntity> attribute, CriteriaBuilder cb) {
+            SetAttribute<UserEntity, ExtensionFieldValueEntity> attribute) {
 
         for (Join<UserEntity, ?> currentJoin : root.getJoins()) {
             if (currentJoin.getAlias() == null) {
@@ -97,10 +102,6 @@ public class ExtensionQueryField {
 
         final SetJoin<UserEntity, ExtensionFieldValueEntity> join = root.join(attribute, JoinType.LEFT);
 
-        Predicate valueBelongsToField = cb.equal(join.get(ExtensionFieldValueEntity_.extensionField)
-                .get(ExtensionFieldEntity_.internalId), field.getInternalId());
-
-        join.on(valueBelongsToField);
         join.alias(alias);
 
         return join;
