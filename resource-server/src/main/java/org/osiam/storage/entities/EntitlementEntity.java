@@ -25,6 +25,7 @@ package org.osiam.storage.entities;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
 import org.osiam.resources.scim.Entitlement;
@@ -33,7 +34,11 @@ import org.osiam.resources.scim.Entitlement;
  * Entitlements Entity
  */
 @Entity
-@Table(name = "scim_entitlements")
+@Table(name = "scim_entitlements",
+    indexes = {
+        @Index(columnList = "value, type"),
+    }
+)
 public class EntitlementEntity extends BaseMultiValuedAttributeEntityWithValue {
 
     /**

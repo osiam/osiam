@@ -25,6 +25,7 @@ package org.osiam.storage.entities;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
@@ -35,7 +36,11 @@ import org.osiam.resources.scim.Address;
  * Address Entity
  */
 @Entity
-@Table(name = "scim_address")
+@Table(name = "scim_address",
+    indexes = {
+        @Index(columnList = "type"),
+    }
+)
 public class AddressEntity extends BaseMultiValuedAttributeEntity {
 
     /**

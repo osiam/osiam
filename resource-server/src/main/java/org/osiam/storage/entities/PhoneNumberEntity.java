@@ -25,6 +25,7 @@ package org.osiam.storage.entities;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
 import org.osiam.resources.scim.PhoneNumber;
@@ -33,7 +34,11 @@ import org.osiam.resources.scim.PhoneNumber;
  * Phone Numbers Entity
  */
 @Entity
-@Table(name = "scim_phoneNumber")
+@Table(name = "scim_phoneNumber",
+    indexes = {
+        @Index(columnList = "value, type"),
+    }
+)
 public class PhoneNumberEntity extends BaseMultiValuedAttributeEntityWithValue {
 
     /**

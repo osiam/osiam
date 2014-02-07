@@ -31,6 +31,8 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.BatchSize;
+
 import com.google.common.collect.ImmutableSet;
 
 /**
@@ -41,6 +43,7 @@ import com.google.common.collect.ImmutableSet;
 public class GroupEntity extends ResourceEntity {
 
     @ManyToMany
+    @BatchSize(size = 100)
     private Set<ResourceEntity> members = new HashSet<>();
 
     @Column(unique = true, nullable = false)

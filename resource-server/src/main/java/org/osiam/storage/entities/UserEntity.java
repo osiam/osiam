@@ -29,12 +29,14 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
 
 import com.google.common.collect.ImmutableSet;
@@ -43,7 +45,11 @@ import com.google.common.collect.ImmutableSet;
  * User Entity
  */
 @Entity
-@Table(name = "scim_user")
+@Table(name = "scim_user",
+    indexes = {
+        @Index(columnList = "userName, nickName, title, displayName"),
+    }
+)
 public class UserEntity extends ResourceEntity {
 
     public static final String JOIN_COLUMN_NAME = "user_internal_id";
@@ -77,38 +83,47 @@ public class UserEntity extends ResourceEntity {
 
     private String displayName;
 
+    @BatchSize(size = 100)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
     private Set<EmailEntity> emails = new HashSet<>();
 
+    @BatchSize(size = 100)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
     private Set<PhoneNumberEntity> phoneNumbers = new HashSet<>();
 
+    @BatchSize(size = 100)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
     private Set<ImEntity> ims = new HashSet<>();
 
+    @BatchSize(size = 100)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
     private Set<PhotoEntity> photos = new HashSet<>();
 
+    @BatchSize(size = 100)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
     private Set<AddressEntity> addresses = new HashSet<>();
 
+    @BatchSize(size = 100)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
     private Set<EntitlementEntity> entitlements = new HashSet<>();
 
+    @BatchSize(size = 100)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
     private Set<RoleEntity> roles = new HashSet<>();
 
+    @BatchSize(size = 100)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
     private Set<X509CertificateEntity> x509Certificates = new HashSet<>();
 
+    @BatchSize(size = 100)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
     private Set<ExtensionFieldValueEntity> extensionFieldValues = new HashSet<>();
