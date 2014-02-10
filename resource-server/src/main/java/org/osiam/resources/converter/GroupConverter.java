@@ -64,7 +64,7 @@ public class GroupConverter implements Converter<Group, GroupEntity> {
     private void addMember(MemberRef member, GroupEntity groupEntity) {
         String uuid = member.getValue();
 
-        ResourceEntity resource = resourceDao.getById(uuid, ResourceEntity.class);
+        ResourceEntity resource = resourceDao.getById(uuid, ResourceEntity.class, ResourceEntity.ENTITYGRAPH_GROUPS);
 
         groupEntity.addMember(resource);
     }

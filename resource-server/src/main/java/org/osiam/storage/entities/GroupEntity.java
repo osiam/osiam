@@ -29,6 +29,8 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.BatchSize;
@@ -40,7 +42,13 @@ import com.google.common.collect.ImmutableSet;
  */
 @Entity
 @Table(name = "scim_group")
+@NamedEntityGraph(
+        name = GroupEntity.ENTITYGRAPH_ATTRIBUTES,
+        attributeNodes = {
+                @NamedAttributeNode("members")})
 public class GroupEntity extends ResourceEntity {
+    
+    public static final String ENTITYGRAPH_ATTRIBUTES = "Group.attributes";
 
     @ManyToMany
     @BatchSize(size = 100)

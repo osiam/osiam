@@ -39,7 +39,7 @@ class GroupDaoSpec extends Specification {
         groupDao.getById(IRRELEVANT)
 
         then:
-        1 * resourceDao.getById(IRRELEVANT, GroupEntity)
+        1 * resourceDao.getById(IRRELEVANT, GroupEntity, GroupEntity.ENTITYGRAPH_ATTRIBUTES)
     }
 
     def 'creating a group calls resourceDao.create()'() {

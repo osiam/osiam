@@ -35,17 +35,18 @@ import org.osiam.resources.scim.Entitlement;
  */
 @Entity
 @Table(name = "scim_entitlements",
-    indexes = {
-        @Index(columnList = "value, type"),
-    }
-)
+        indexes = {
+                @Index(columnList = "value"),
+                @Index(columnList = "type"),
+                @Index(columnList = "value, type"),
+        })
 public class EntitlementEntity extends BaseMultiValuedAttributeEntityWithValue {
 
     /**
      * <p>
      * The type of this Entitlement.
      * </p>
-     *
+     * 
      * <p>
      * Custom type mapping is provided by {@link org.osiam.storage.entities.jpa_converters.EntitlementTypeConverter}.
      * </p>

@@ -60,7 +60,7 @@ class GroupConverterSpec extends Specification {
         GroupEntity GroupEntity = groupConverter.fromScim(group)
 
         then:
-        1 * resourceDao.getById(memberUuidFixtures['user'], ResourceEntity.class) >> new UserEntity(id: UUID.fromString(memberUuidFixtures['user']), userName: IRRELEVANT)
+        1 * resourceDao.getById(memberUuidFixtures['user'], ResourceEntity.class, ResourceEntity.ENTITYGRAPH_GROUPS) >> new UserEntity(id: UUID.fromString(memberUuidFixtures['user']), userName: IRRELEVANT)
         GroupEntity.getMembers().size() == 1
     }
 
@@ -73,7 +73,7 @@ class GroupConverterSpec extends Specification {
         GroupEntity GroupEntity = groupConverter.fromScim(group)
 
         then:
-        1 * resourceDao.getById(memberUuidFixtures['group'], ResourceEntity.class) >> new GroupEntity(id: UUID.fromString(memberUuidFixtures['group']), displayName: IRRELEVANT)
+        1 * resourceDao.getById(memberUuidFixtures['group'], ResourceEntity.class, ResourceEntity.ENTITYGRAPH_GROUPS) >> new GroupEntity(id: UUID.fromString(memberUuidFixtures['group']), displayName: IRRELEVANT)
         GroupEntity.getMembers().size() == 1
     }
 
@@ -86,7 +86,7 @@ class GroupConverterSpec extends Specification {
         GroupEntity GroupEntity = groupConverter.fromScim(group)
 
         then:
-        1 * resourceDao.getById(memberUuidFixtures['non-existant'], ResourceEntity.class) >> { throw new ResourceNotFoundException('') }
+        1 * resourceDao.getById(memberUuidFixtures['non-existant'], ResourceEntity.class, ResourceEntity.ENTITYGRAPH_GROUPS) >> { throw new ResourceNotFoundException('') }
         thrown(ResourceNotFoundException)
     }
 

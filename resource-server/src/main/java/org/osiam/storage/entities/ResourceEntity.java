@@ -37,17 +37,23 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import org.osiam.resources.scim.MultiValuedAttribute;
 
 import com.google.common.collect.ImmutableSet;
 
 @Entity
 @Table(name = "scim_id")
 @Inheritance(strategy = InheritanceType.JOINED)
+@NamedEntityGraph(
+        name = ResourceEntity.ENTITYGRAPH_GROUPS,
+        attributeNodes = {
+                @NamedAttributeNode("groups")})
 public abstract class ResourceEntity {
+    
+    public static final String ENTITYGRAPH_GROUPS = "Resource.groups";
 
     @Column(unique = true, nullable = false)
     private String id;

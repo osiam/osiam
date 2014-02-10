@@ -48,7 +48,7 @@ class UserDaoSpec extends Specification {
         userDao.getById(IRRELEVANT)
 
         then:
-        1 * resourceDao.getById(IRRELEVANT, UserEntity)
+        1 * resourceDao.getById(IRRELEVANT, UserEntity, UserEntity.ENTITYGRAPH_ATTRIBUTES)
     }
 
     def 'retrieving a user by userName calls resourceDao.getByAttribute()'() {
@@ -57,7 +57,7 @@ class UserDaoSpec extends Specification {
 
         then:
         // The meta model attribute is null, because it is initialized by the JPA provider
-        1 * resourceDao.getByAttribute(null, IRRELEVANT, UserEntity)
+        1 * resourceDao.getByAttribute(null, IRRELEVANT, UserEntity, UserEntity.ENTITYGRAPH_ATTRIBUTES)
     }
 
     def 'creating a user calls resourceDao.create()'() {

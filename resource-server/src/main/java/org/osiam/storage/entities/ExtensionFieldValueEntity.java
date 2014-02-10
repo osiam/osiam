@@ -41,7 +41,7 @@ import org.hibernate.annotations.Type;
 @Entity
 @Table(name = "scim_extension_field_value",
     indexes = {
-        @Index(columnList = "value"),
+        @Index(unique = true, columnList = UserEntity.JOIN_COLUMN_NAME + ", extension_field_internal_id"),
     }
 )
 public class ExtensionFieldValueEntity {

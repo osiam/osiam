@@ -30,6 +30,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -40,7 +41,9 @@ import org.hibernate.annotations.Type;
  * Defines a SCIM-Extension.
  */
 @Entity
-@Table(name = "scim_extension")
+@Table(name = "scim_extension",
+        indexes = {
+                @Index(unique = true, columnList = "urn") })
 public class ExtensionEntity {
 
     @Id
@@ -49,8 +52,8 @@ public class ExtensionEntity {
     private long internalId;
 
     @Lob
-    @Type(type="org.hibernate.type.StringClobType")
-    @Column(nullable = false, unique = true)
+    @Type(type = "org.hibernate.type.StringClobType")
+    @Column(nullable = false)
     private String urn;
 
     @OneToMany(mappedBy = "extension")
@@ -81,7 +84,7 @@ public class ExtensionEntity {
 
     public ExtensionFieldEntity getFieldForName(String fieldName, boolean caseInsensitive) {
         for (ExtensionFieldEntity field : fields) {
-            if(!caseInsensitive) {
+            if (!caseInsensitive) {
                 if (field.getName().equals(fieldName)) {
                     return field;
                 }

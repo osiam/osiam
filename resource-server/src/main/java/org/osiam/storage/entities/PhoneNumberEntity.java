@@ -35,17 +35,18 @@ import org.osiam.resources.scim.PhoneNumber;
  */
 @Entity
 @Table(name = "scim_phoneNumber",
-    indexes = {
-        @Index(columnList = "value, type"),
-    }
-)
+        indexes = {
+                @Index(columnList = "value"),
+                @Index(columnList = "type"),
+                @Index(columnList = "value, type"),
+        })
 public class PhoneNumberEntity extends BaseMultiValuedAttributeEntityWithValue {
 
     /**
      * <p>
      * The type of this PhoneNumber.
      * </p>
-     *
+     * 
      * <p>
      * Custom type mapping is provided by {@link org.osiam.storage.entities.jpa_converters.PhoneNumberTypeConverter}.
      * </p>

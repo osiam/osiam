@@ -28,12 +28,8 @@ import javax.inject.Inject;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.GroupEntity_;
-import org.osiam.storage.entities.ResourceEntity;
-import org.osiam.storage.entities.ResourceEntity_;
 import org.osiam.storage.query.GroupFilterParser;
 import org.springframework.stereotype.Repository;
-
-import com.google.common.base.Strings;
 
 @Repository
 public class GroupDao implements GenericDao<GroupEntity> {
@@ -52,7 +48,7 @@ public class GroupDao implements GenericDao<GroupEntity> {
     @Override
     public GroupEntity getById(String id) {
         try {
-            return resourceDao.getById(id, GroupEntity.class);
+            return resourceDao.getById(id, GroupEntity.class, GroupEntity.ENTITYGRAPH_ATTRIBUTES);
         } catch (ResourceNotFoundException rnfe) {
             throw new ResourceNotFoundException(String.format("Group with id '%s' not found", id), rnfe);
         }

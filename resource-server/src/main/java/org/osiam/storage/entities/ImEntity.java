@@ -25,6 +25,7 @@ package org.osiam.storage.entities;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
 import org.osiam.resources.scim.Im;
@@ -33,14 +34,19 @@ import org.osiam.resources.scim.Im;
  * Instant messaging Entity
  */
 @Entity
-@Table(name = "scim_im")
+@Table(name = "scim_im",
+        indexes = {
+                @Index(columnList = "value"),
+                @Index(columnList = "type"),
+                @Index(columnList = "value, type"),
+        })
 public class ImEntity extends BaseMultiValuedAttributeEntityWithValue {
 
     /**
      * <p>
      * The type of this Im.
      * </p>
-     *
+     * 
      * <p>
      * Custom type mapping is provided by {@link org.osiam.storage.entities.jpa_converters.ImTypeConverter}.
      * </p>

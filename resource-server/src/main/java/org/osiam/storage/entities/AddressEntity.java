@@ -37,23 +37,23 @@ import org.osiam.resources.scim.Address;
  */
 @Entity
 @Table(name = "scim_address",
-    indexes = {
-        @Index(columnList = "type"),
-    }
-)
+        indexes = {
+                @Index(columnList = "type"),
+                @Index(columnList = "country, region, locality, postalCode, streetAddress"),
+        })
 public class AddressEntity extends BaseMultiValuedAttributeEntity {
 
     /**
      * <p>
      * The type of this Address.
      * </p>
-     *
+     * 
      * <p>
      * Custom type mapping is provided by {@link org.osiam.storage.entities.jpa_converters.AddressTypeConverter}.
      * </p>
      */
     @Basic
-    private Address.Type type;  // @Basic is needed for JPA meta model generator
+    private Address.Type type; // @Basic is needed for JPA meta model generator
 
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")

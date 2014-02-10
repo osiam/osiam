@@ -36,6 +36,8 @@ import org.osiam.resources.scim.Email;
 @Entity
 @Table(name = "scim_email",
     indexes = {
+        @Index(columnList = "value"),
+        @Index(columnList = "type"),
         @Index(columnList = "value, type"),
     }
 )
