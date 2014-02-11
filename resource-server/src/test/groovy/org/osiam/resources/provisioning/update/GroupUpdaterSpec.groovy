@@ -128,7 +128,7 @@ class GroupUpdaterSpec extends Specification {
         groupUpdater.update(group, groupEntity)
 
         then: 'the member was retrieved via the ResourceDao'
-        1 * resourceDao.getById(memberId, ResourceEntity, ResourceEntity.ENTITYGRAPH_GROUPS) >> member
+        1 * resourceDao.getById(memberId, ResourceEntity) >> member
         and: 'the retrieved member was added to the group'
         1 * groupEntity.addMember(member)
         and: 'nothing else was changed'

@@ -38,8 +38,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
 
 import com.google.common.collect.ImmutableSet;
@@ -49,22 +47,9 @@ import com.google.common.collect.ImmutableSet;
  */
 @Entity
 @Table(name = "scim_user")
-@NamedEntityGraph(
-        name = UserEntity.ENTITYGRAPH_ATTRIBUTES,
-        attributeNodes = {
-                @NamedAttributeNode("emails"),
-                @NamedAttributeNode("ims"),
-                @NamedAttributeNode("phoneNumbers"),
-                @NamedAttributeNode("photos"),
-                @NamedAttributeNode("addresses"),
-                @NamedAttributeNode("entitlements"),
-                @NamedAttributeNode("roles"),
-                @NamedAttributeNode("x509Certificates"),
-                @NamedAttributeNode("extensionFieldValues")})
 public class UserEntity extends ResourceEntity {
 
     public static final String JOIN_COLUMN_NAME = "user_internal_id";
-    public static final String ENTITYGRAPH_ATTRIBUTES = "User.attributes";
 
     @Column(nullable = false, unique = true)
     private String userName;
@@ -76,7 +61,6 @@ public class UserEntity extends ResourceEntity {
 
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
-    @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
     private String profileUrl;
 
     private String title;

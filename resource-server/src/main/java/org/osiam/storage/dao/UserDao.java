@@ -48,7 +48,7 @@ public class UserDao implements GenericDao<UserEntity> {
     @Override
     public UserEntity getById(String id) {
         try {
-            return resourceDao.getById(id, UserEntity.class, UserEntity.ENTITYGRAPH_ATTRIBUTES);
+            return resourceDao.getById(id, UserEntity.class);
         } catch (ResourceNotFoundException rnfe) {
             throw new ResourceNotFoundException(String.format("User with id '%s' not found", id), rnfe);
         }
@@ -56,7 +56,7 @@ public class UserDao implements GenericDao<UserEntity> {
 
     public UserEntity getByUsername(String userName) {
         try {
-            return resourceDao.getByAttribute(UserEntity_.userName, userName, UserEntity.class, UserEntity.ENTITYGRAPH_ATTRIBUTES);
+            return resourceDao.getByAttribute(UserEntity_.userName, userName, UserEntity.class);
         } catch (ResourceNotFoundException rnfe) {
             throw new ResourceNotFoundException(String.format("User with userName '%s' not found", userName), rnfe);
         }

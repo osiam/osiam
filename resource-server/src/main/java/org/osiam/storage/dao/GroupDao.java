@@ -48,7 +48,7 @@ public class GroupDao implements GenericDao<GroupEntity> {
     @Override
     public GroupEntity getById(String id) {
         try {
-            return resourceDao.getById(id, GroupEntity.class, GroupEntity.ENTITYGRAPH_ATTRIBUTES);
+            return resourceDao.getById(id, GroupEntity.class);
         } catch (ResourceNotFoundException rnfe) {
             throw new ResourceNotFoundException(String.format("Group with id '%s' not found", id), rnfe);
         }

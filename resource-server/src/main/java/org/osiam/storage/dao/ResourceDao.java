@@ -48,8 +48,6 @@ import org.osiam.storage.entities.ResourceEntity_;
 import org.osiam.storage.query.FilterParser;
 import org.springframework.stereotype.Repository;
 
-import com.google.common.base.Strings;
-
 @Repository
 public class ResourceDao {
 
@@ -121,38 +119,34 @@ public class ResourceDao {
      * Retrieves a single {@link ResourceEntity} by the given id.
      * 
      * @param id
-     *            the id of the resource to retrieve it by
+     *        the id of the resource to retrieve it by
      * @param clazz
-     *            the concrete resource entity class to retrieve (may also be {@link ResourceEntity})
-     * @param graphName
-     *            the name of the entity graph to fetch attributes of the resource eager
+     *        the concrete resource entity class to retrieve (may also be {@link ResourceEntity})
      * @return The matching {@link ResourceEntity}
      * @throws ResourceNotFoundException
-     *             if no {@link ResourceEntity} with the given id could be found
+     *         if no {@link ResourceEntity} with the given id could be found
      */
-    public <T extends ResourceEntity> T getById(String id, Class<T> clazz, String graphName) {
-        return getByAttribute(ResourceEntity_.id, id, clazz, graphName);
+    public <T extends ResourceEntity> T getById(String id, Class<T> clazz) {
+        return getByAttribute(ResourceEntity_.id, id, clazz);
     }
 
     /**
      * Retrieves a single {@link ResourceEntity} by the given attribute and value.
      * 
      * @param attribute
-     *            The attribute of the resource entity to retrieve it by
+     *        The attribute of the resource entity to retrieve it by
      * @param value
-     *            The value of the attribute to compare it to
+     *        The value of the attribute to compare it to
      * @param clazz
-     *            The concrete resource entity class to retrieve (may also be {@link ResourceEntity})
-     * @param graphName
-     *            the name of the entity graph to fetch attributes of the resource eager
+     *        The concrete resource entity class to retrieve (may also be {@link ResourceEntity})
      * @return The matching {@link ResourceEntity}
      * @throws ResourceNotFoundException
-     *             If no {@link ResourceEntity} could be found
+     *         If no {@link ResourceEntity} could be found
      * @throws OsiamException
-     *             If more than 1 {@link ResourceEntity} was found
+     *         If more than 1 {@link ResourceEntity} was found
      */
     public <T extends ResourceEntity, V> T getByAttribute(SingularAttribute<? super T, V> attribute, V value,
-            Class<T> clazz, String graphName) {
+            Class<T> clazz) {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<T> cq = cb.createQuery(clazz);
@@ -161,10 +155,6 @@ public class ResourceDao {
         cq.select(resource).where(cb.equal(resource.get(attribute), value));
 
         TypedQuery<T> q = em.createQuery(cq);
-
-        if (!Strings.isNullOrEmpty(graphName)) {
-            q.setHint("javax.persistence.loadgraph", em.getEntityGraph(graphName));
-        }
 
         try {
             return q.getSingleResult();
@@ -209,14 +199,14 @@ public class ResourceDao {
      * Removes a {@link ResourceEntity} from the database by its id
      * 
      * @param id
-     *            id of the {@link ResourceEntity}
+     *        id of the {@link ResourceEntity}
      * @throws ResourceNotFoundException
-     *             if no {@link ResourceEntity} could be found with the given id
+     *         if no {@link ResourceEntity} could be found with the given id
      * @throws IllegalArgumentException
-     *             if the instance is not a managed {@link ResourceEntity}
+     *         if the instance is not a managed {@link ResourceEntity}
      */
     public void delete(String id) {
-        ResourceEntity resourceEntity = getById(id, ResourceEntity.class, ResourceEntity.ENTITYGRAPH_GROUPS);
+        ResourceEntity resourceEntity = getById(id, ResourceEntity.class);
 
         Set<GroupEntity> groups = resourceEntity.getGroups();
         for (GroupEntity group : groups) {

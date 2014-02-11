@@ -103,7 +103,7 @@ public class GroupUpdater {
                         groupEntity.removeMember(member);
                     }
                 } else {
-                    ResourceEntity member = resourceDao.getById(memberId, ResourceEntity.class, ResourceEntity.ENTITYGRAPH_GROUPS);
+                    ResourceEntity member = resourceDao.getById(memberId, ResourceEntity.class);
                     groupEntity.addMember(member);
                 }
             }
