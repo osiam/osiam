@@ -232,7 +232,7 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
     }
 
     private ExtensionFieldValueEntity findExtensionFieldValue(ExtensionFieldEntity extensionField, UserEntity userEntity) {
-        for (ExtensionFieldValueEntity extensionFieldValue : userEntity.getUserExtensions()) {
+        for (ExtensionFieldValueEntity extensionFieldValue : userEntity.getExtensionFieldValues()) {
             if (extensionFieldValue.getExtensionField().equals(extensionField)) {
                 return extensionFieldValue;
             }

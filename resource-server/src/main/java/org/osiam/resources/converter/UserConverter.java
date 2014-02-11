@@ -30,10 +30,8 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.osiam.resources.scim.Address;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.GroupRef;
-import org.osiam.resources.scim.MultiValuedAttribute;
 import org.osiam.resources.scim.User;
 import org.osiam.storage.entities.AddressEntity;
 import org.osiam.storage.entities.EmailEntity;
@@ -172,20 +170,18 @@ public class UserConverter implements Converter<User, UserEntity> {
                 .setRoles(convertMultiValueToScim(roleConverter, entity.getRoles()))
                 .setX509Certificates(convertMultiValueToScim(x509CertificateConverter, entity.getX509Certificates()));
 
-        addExtensionField(userBuilder, entity.getUserExtensions());
+        addExtensions(userBuilder, entity.getExtensionFieldValues());
 
         return userBuilder.build();
 
     }
 
-    private void addExtensionField(User.Builder userBuilder, Set<ExtensionFieldValueEntity> extensionEntities) {
+    private void addExtensions(User.Builder userBuilder, Set<ExtensionFieldValueEntity> extensionFieldValues) {
 
-        Set<Extension> extensions = extensionConverter.toScim(extensionEntities);
+        Set<Extension> extensions = extensionConverter.toScim(extensionFieldValues);
 
-        if (extensions != null) {
-            for (Extension extension : extensions) {
-                userBuilder.addExtension(extension);
-            }
+        for (Extension extension : extensions) {
+            userBuilder.addExtension(extension);
         }
     }
 

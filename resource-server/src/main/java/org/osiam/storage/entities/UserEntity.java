@@ -31,8 +31,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -339,19 +337,17 @@ public class UserEntity extends ResourceEntity {
     /**
      * @return the extensions data of the user
      */
-    public Set<ExtensionFieldValueEntity> getUserExtensions() {
-        if (extensionFieldValues == null) {
-            extensionFieldValues = new HashSet<>();
-        }
+    public Set<ExtensionFieldValueEntity> getExtensionFieldValues() {
         return extensionFieldValues;
     }
 
     /**
-     * @param userExtensions
+     * @param extensionFieldValues
      *            the extension data of the user
      */
-    public void setUserExtensions(Set<ExtensionFieldValueEntity> userExtensions) {
-        this.extensionFieldValues = userExtensions;
+    @Deprecated
+    public void setExtensionFieldValues(Set<ExtensionFieldValueEntity> extensionFieldValues) {
+        this.extensionFieldValues = extensionFieldValues;
     }
 
     /**

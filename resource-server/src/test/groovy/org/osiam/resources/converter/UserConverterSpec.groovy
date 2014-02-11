@@ -187,7 +187,7 @@ class UserConverterSpec extends Specification {
         userEntity.addPhoto(Mock(PhotoEntity))
         userEntity.addRole(Mock(RoleEntity))
         userEntity.addX509Certificate(Mock(X509CertificateEntity))
-        userEntity.setUserExtensions([
+        userEntity.setExtensionFieldValues([
             Mock(ExtensionFieldValueEntity)] as Set<ExtensionFieldValueEntity>)
         userEntity.setMeta(Mock(MetaEntity))
 
