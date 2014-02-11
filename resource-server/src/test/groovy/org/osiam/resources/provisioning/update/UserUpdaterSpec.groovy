@@ -50,6 +50,7 @@ class UserUpdaterSpec extends Specification {
     AddressUpdater addressUpdater = Mock()
     UserDao userDao = Mock()
     PasswordEncoder passwordEncoder = Mock()
+    ExtensionUpdater extensionUpdater = Mock()
 
     ResourceUpdater resourceUpdater = Mock()
     UserUpdater userUpdater = new UserUpdater(resourceUpdater: resourceUpdater,
@@ -63,7 +64,8 @@ class UserUpdaterSpec extends Specification {
             x509CertificateUpdater: x509CertificateUpdater,
             addressUpdater: addressUpdater,
             userDao: userDao,
-            passwordEncoder: passwordEncoder)
+            passwordEncoder: passwordEncoder,
+            extensionUpdater : extensionUpdater)
 
     User user
     UserEntity userEntity = Mock()

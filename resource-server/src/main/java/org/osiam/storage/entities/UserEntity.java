@@ -349,6 +349,33 @@ public class UserEntity extends ResourceEntity {
     public void setExtensionFieldValues(Set<ExtensionFieldValueEntity> extensionFieldValues) {
         this.extensionFieldValues = extensionFieldValues;
     }
+    
+    /**
+     * Adds a new extensionFieldValue to this user
+     * 
+     * @param extensionFieldValue
+     *            the extensionFieldValue to add
+     */
+    public void addExtensionFieldValue(ExtensionFieldValueEntity extensionFieldValue) {
+        extensionFieldValues.add(extensionFieldValue);
+    }
+    
+    /**
+     * Removes the given extensionFieldValue from this user
+     * 
+     * @param extensionFieldValue
+     *            the extensionFieldValue to remove
+     */
+    public void removeExtensionFieldValue(ExtensionFieldValueEntity extensionFieldValue) {
+        extensionFieldValues.remove(extensionFieldValue);
+    }
+
+    /**
+     * Removes all extensionFieldValues from this user
+     */
+    public void removeAllExtensionFieldValues() {
+        extensionFieldValues.clear();
+    }
 
     /**
      * @return the phone numbers entity

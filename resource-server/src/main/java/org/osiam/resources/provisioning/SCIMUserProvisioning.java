@@ -178,67 +178,11 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
 
         userUpdater.update(user, userEntity);
 
-        if (user.getAllExtensions().size() != 0) {
-            for (Entry<String, Extension> extensionEntry : user.getAllExtensions().entrySet()) {
-                updateExtension(extensionEntry, userEntity);
-            }
-        }
-
         userEntity.touch();
 
         User result = removePassword(userConverter.toScim(userEntity));
 
         return result;
-    }
-
-    private void updateExtension(Entry<String, Extension> extensionEntry, UserEntity userEntity) {
-        String urn = extensionEntry.getKey();
-        Extension updatedExtension = extensionEntry.getValue();
-        ExtensionEntity extensionEntity = extensionDao.getExtensionByUrn(urn);
-
-        for (ExtensionFieldEntity extensionField : extensionEntity.getFields()) {
-            String fieldName = extensionField.getName();
-            ExtensionFieldValueEntity extensionFieldValue = findExtensionFieldValue(extensionField, userEntity);
-
-            boolean isFieldPresent = updatedExtension.isFieldPresent(fieldName);
-            if (extensionFieldValue == null && !isFieldPresent) {
-                continue;
-            } else if (extensionFieldValue == null && isFieldPresent) {
-                extensionFieldValue = new ExtensionFieldValueEntity();
-            } else if (extensionFieldValue != null && !isFieldPresent) {
-                continue;
-            }
-
-            String newValue = getNewExtensionValue(extensionField, updatedExtension, fieldName);
-            if (newValue == null) {
-                continue;
-            }
-
-            extensionFieldValue.setValue(newValue);
-            extensionFieldValue.setExtensionField(extensionField);
-            userEntity.addOrUpdateExtensionValue(extensionFieldValue);
-        }
-    }
-
-    private String getNewExtensionValue(ExtensionFieldEntity extensionField, Extension updatedExtension,
-            String fieldName) {
-        String newValue = updatedExtension.getField(fieldName, ExtensionFieldType.STRING);
-        if (newValue != null &&
-                (extensionField.getType() == ExtensionFieldType.INTEGER
-                || extensionField.getType() == ExtensionFieldType.DECIMAL)) {
-            newValue = numberPadder.pad(newValue);
-        }
-        return newValue;
-    }
-
-    private ExtensionFieldValueEntity findExtensionFieldValue(ExtensionFieldEntity extensionField, UserEntity userEntity) {
-        for (ExtensionFieldValueEntity extensionFieldValue : userEntity.getExtensionFieldValues()) {
-            if (extensionFieldValue.getExtensionField().equals(extensionField)) {
-                return extensionFieldValue;
-            }
-        }
-
-        return null;
     }
 
     @Override
