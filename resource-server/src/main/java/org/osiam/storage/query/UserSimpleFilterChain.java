@@ -23,6 +23,7 @@
 
 package org.osiam.storage.query;
 
+import java.io.ObjectInputStream.GetField;
 import java.util.Locale;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -55,20 +56,25 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
         this.extensionDao = extensionDao;
         this.numberPadder = numberPadder;
         this.scimExpression = scimExpression;
+        
+        String field = scimExpression.getField();
 
-        userFilterField = UserQueryField.fromString(scimExpression.getField().toLowerCase(Locale.ENGLISH));
+        userFilterField = UserQueryField.fromString(field.toLowerCase(Locale.ENGLISH));
 
         // It's not a known user field, so try to build a extension filter
         if (userFilterField == null) {
-            extensionFilterField = getExtensionFilterField(scimExpression.getField().toLowerCase(Locale.ENGLISH));
+            extensionFilterField = getExtensionFilterField(field.toLowerCase(Locale.ENGLISH));
+        }
+        
+        if(extensionFilterField == null) {
+            throw new IllegalArgumentException("Filtering not possible: '" + field + "' not available");
         }
     }
 
     private ExtensionQueryField getExtensionFilterField(String fieldString) {
         int lastIndexOf = fieldString.lastIndexOf('.');
         if (lastIndexOf == -1) {
-            throw new IllegalArgumentException("Filtering not possible. Field '" + scimExpression.getField()
-                    + "' not available.");
+            return null;
         }
 
         String urn = fieldString.substring(0, lastIndexOf);
@@ -77,8 +83,7 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
         try {
             extension = extensionDao.getExtensionByUrn(urn, true);
         } catch (OsiamException ex) {
-            throw new IllegalArgumentException("Filtering not possible. Field '" + fieldString
-                    + "' not available.", ex);
+            return null;
         }
         final ExtensionFieldEntity fieldEntity = extension.getFieldForName(fieldName, true);
         return new ExtensionQueryField(urn, fieldEntity, numberPadder);
