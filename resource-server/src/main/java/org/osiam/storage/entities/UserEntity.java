@@ -23,6 +23,7 @@
 
 package org.osiam.storage.entities;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -369,12 +370,17 @@ public class UserEntity extends ResourceEntity {
     public void removeExtensionFieldValue(ExtensionFieldValueEntity extensionFieldValue) {
         extensionFieldValues.remove(extensionFieldValue);
     }
-
+    
     /**
      * Removes all extensionFieldValues from this user
      */
-    public void removeAllExtensionFieldValues() {
-        extensionFieldValues.clear();
+    public void removeAllExtensionFieldValues(String urn) {
+        ImmutableSet<ExtensionFieldValueEntity> fields = ImmutableSet.copyOf(extensionFieldValues);
+        for (ExtensionFieldValueEntity extensionFieldValue : fields) {
+            if(extensionFieldValue.getExtensionField().getExtension().getUrn().equals(urn)) {
+                extensionFieldValues.remove(extensionFieldValue);
+            }
+        }
     }
 
     /**

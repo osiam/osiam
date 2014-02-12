@@ -23,87 +23,64 @@
 
 package org.osiam.resources.provisioning.update
 
-import org.osiam.resources.converter.EmailConverter
-import org.osiam.resources.converter.ExtensionConverter;
-import org.osiam.resources.scim.Email
+import org.osiam.resources.converter.ExtensionConverter
 import org.osiam.resources.scim.Extension
-import org.osiam.resources.scim.ExtensionFieldType;
-import org.osiam.resources.scim.MultiValuedAttribute
-import org.osiam.storage.entities.ExtensionFieldValueEntity
-import org.osiam.storage.dao.ExtensionDao;
-import org.osiam.storage.entities.ExtensionEntity;
+import org.osiam.resources.scim.ExtensionFieldType
+import org.osiam.storage.dao.ExtensionDao
+import org.osiam.storage.entities.ExtensionEntity
 import org.osiam.storage.entities.ExtensionFieldEntity
 import org.osiam.storage.entities.ExtensionFieldValueEntity
 import org.osiam.storage.entities.UserEntity
-import org.osiam.storage.helper.NumberPadder;
+import org.osiam.storage.helper.NumberPadder
 
+import spock.lang.Ignore;
 import spock.lang.Specification
 
 
 class ExtensionUpdaterSpec extends Specification {
 
-    static IRRELEVANT = 'irrelevant'
-    static IRRELEVANT_02 = 'irrelevant02'
-
     UserEntity userEntity = Mock()
     ExtensionDao extensionDao = Mock()
     NumberPadder numberPadder = Mock()
-    ExtensionEntity extensionEntity = Mock()
     ExtensionConverter extensionConverter = Mock()
     ExtensionUpdater extensionUpdater = new ExtensionUpdater(extensionDao : extensionDao, numberPadder: numberPadder)
     
-    static String FIELD = 'foo'
-    static String VALUE = 'bar'
-
-    static String FIELD_INJECTED = 'injected'
-    static ExtensionFieldType DEFAULT_FIELD_TYPE = ExtensionFieldType.STRING
-    static String URN = 'irrelevant'
+    static String FIELD = 'field'
+    static String VALUE = 'value'
+    static String URN = 'extension'
     
-    def extension
-    
-//    def 'adding a new extension with field is possible'(){
-//        given:
-//        extensionWithValue()
-//        ExtensionFieldEntity extensionFieldEntity = new ExtensionFieldEntity(name: FIELD, type: ExtensionFieldType.STRING)
-//        ExtensionFieldValueEntity extensionFieldValueEntity = new ExtensionFieldValueEntity(value : IRRELEVANT)
-//        extensionFieldValueEntity.extensionField = extensionFieldEntity
-//        ExtensionEntity extensionEntity = new ExtensionEntity()
-//        extensionEntity.fields = [extensionFieldEntity] as Set
-//
-//        when:
-//        extensionUpdater.update(['irrelevant': extension] as Map, userEntity, [] as Set)
-//
-//        then:
-//        1 * extensionConverter.fromScim(extension) >> extensionEntity
-//        1 * userEntity.addExtensionFieldValue(extensionFieldValueEntity)
-//    }
+    @Ignore('Not yet implemented')
+    def 'call update triggers extensionDao and updateExtension'(){
+        given:
+        Extension extension = extensionWithValue()
+        ExtensionEntity extensionEntity = createExtensionEntity()
 
-    def 'removing all extensions is possible'() {
         when:
-        extensionUpdater.update(null, userEntity, ['extensions'] as Set)
+        extensionUpdater.update([(URN): extension] as Map, userEntity, [] as Set)
 
         then:
-        1 * userEntity.removeAllExtensionFieldValues();
-        userEntity.getExtensionFieldValues() >> ([
-            new ExtensionFieldValueEntity(value : IRRELEVANT),
-            new ExtensionFieldValueEntity(value : IRRELEVANT_02)] as Set)
+        //1 * extensionUpdater.updateExtension([(URN): extension] as Map, userEntity)
+        //1 * userEntity.addExtensionFieldValue()
+        1 * extensionDao.getExtensionByUrn(URN) >> extensionEntity
     }
 
-//    def 'removing an extension is possible'(){
-//        given:
-//        Extension email01 = new Extension.Field()
-//        ExtensionFieldValueEntity extensionEntity01 = new ExtensionFieldValueEntity(value : IRRELEVANT)
-//
-//        when:
-//        extensionUpdater.update([email01] as List, userEntity, [] as Set)
-//
-//        then:
-//        1 * extensionConverter.fromScim(email01) >> extensionEntity01
-//        1 * userEntity.removeEmail(extensionEntity01)
-//    }
+    def 'removing all extensions is possible'() {
+        
+    }
 
+    def createExtensionEntity() {
+        ExtensionFieldEntity extensionFieldEntity = new ExtensionFieldEntity(name: FIELD, type: ExtensionFieldType.STRING)
+        ExtensionFieldValueEntity extensionFieldValueEntity = new ExtensionFieldValueEntity(value : VALUE)
+        extensionFieldValueEntity.extensionField = extensionFieldEntity
+        ExtensionEntity extensionEntity = new ExtensionEntity()
+        extensionEntity.fields = [extensionFieldEntity] as Set
+        extensionEntity.urn = URN;
+        return extensionEntity
+    }
+    
     private extensionWithValue() {
-        extension = new Extension(URN)
+        Extension extension = new Extension(URN)
         extension.addOrUpdateField(FIELD, VALUE)
+        return extension
     }
 }

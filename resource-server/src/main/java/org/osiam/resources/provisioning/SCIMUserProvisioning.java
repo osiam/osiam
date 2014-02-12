@@ -25,7 +25,6 @@ package org.osiam.resources.provisioning;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,18 +38,11 @@ import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.resources.provisioning.update.UserUpdater;
 import org.osiam.resources.scim.Constants;
-import org.osiam.resources.scim.Extension;
-import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.resources.scim.User;
-import org.osiam.storage.dao.ExtensionDao;
 import org.osiam.storage.dao.SearchResult;
 import org.osiam.storage.dao.UserDao;
-import org.osiam.storage.entities.ExtensionEntity;
-import org.osiam.storage.entities.ExtensionFieldEntity;
-import org.osiam.storage.entities.ExtensionFieldValueEntity;
 import org.osiam.storage.entities.UserEntity;
-import org.osiam.storage.helper.NumberPadder;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -66,13 +58,7 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
     private UserDao userDao;
 
     @Inject
-    private ExtensionDao extensionDao;
-
-    @Inject
     private PasswordEncoder passwordEncoder;
-
-    @Inject
-    private NumberPadder numberPadder;
 
     @Inject
     private UserUpdater userUpdater;
