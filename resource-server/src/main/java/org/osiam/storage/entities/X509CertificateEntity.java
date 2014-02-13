@@ -25,6 +25,7 @@ package org.osiam.storage.entities;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
 import org.osiam.resources.scim.X509Certificate;
@@ -33,7 +34,12 @@ import org.osiam.resources.scim.X509Certificate;
  * X509 Certificates Entity
  */
 @Entity
-@Table(name = "scim_certificate")
+@Table(name = "scim_certificate",
+        indexes = {
+                @Index(columnList = "value"),
+                @Index(columnList = "type"),
+                @Index(columnList = "value, type"),
+        })
 public class X509CertificateEntity extends BaseMultiValuedAttributeEntityWithValue {
 
     /**

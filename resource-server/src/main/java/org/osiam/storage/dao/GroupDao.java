@@ -28,12 +28,8 @@ import javax.inject.Inject;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.GroupEntity_;
-import org.osiam.storage.entities.ResourceEntity;
-import org.osiam.storage.entities.ResourceEntity_;
 import org.osiam.storage.query.GroupFilterParser;
 import org.springframework.stereotype.Repository;
-
-import com.google.common.base.Strings;
 
 @Repository
 public class GroupDao implements GenericDao<GroupEntity> {

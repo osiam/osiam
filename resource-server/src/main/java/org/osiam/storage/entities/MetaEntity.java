@@ -29,13 +29,18 @@ import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 
 @Entity
-@Table(name = "scim_meta")
+@Table(name = "scim_meta",
+        indexes = {
+                @Index(columnList = "created"),
+                @Index(columnList = "lastModified"),
+        })
 public class MetaEntity {
 
     @Id

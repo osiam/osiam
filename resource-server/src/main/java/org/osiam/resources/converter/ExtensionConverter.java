@@ -23,6 +23,8 @@
 
 package org.osiam.resources.converter;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -54,7 +56,7 @@ public class ExtensionConverter implements Converter<Set<Extension>, Set<Extensi
     public Set<ExtensionFieldValueEntity> fromScim(Set<Extension> extensions) {
         Set<ExtensionFieldValueEntity> result = new HashSet<>();
 
-        for (Extension extension : extensions) {
+        for (Extension extension : checkNotNull(extensions)) {
             String urn = extension.getUrn();
             ExtensionEntity extensionEntity = extensionDao.getExtensionByUrn(urn);
 
@@ -91,13 +93,9 @@ public class ExtensionConverter implements Converter<Set<Extension>, Set<Extensi
 
     @Override
     public Set<Extension> toScim(Set<ExtensionFieldValueEntity> entity) {
-        if (entity == null) {
-            return null;
-        }
-
         Map<String, Extension> extensionMap = new HashMap<>();
 
-        for (ExtensionFieldValueEntity fieldValueEntity : entity) {
+        for (ExtensionFieldValueEntity fieldValueEntity : checkNotNull(entity)) {
             String urn = fieldValueEntity.getExtensionField().getExtension().getUrn();
             Extension extension;
 

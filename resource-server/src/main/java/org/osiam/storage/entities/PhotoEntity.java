@@ -28,6 +28,7 @@ import java.net.URISyntaxException;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
 import org.osiam.resources.exceptions.OsiamException;
@@ -37,7 +38,12 @@ import org.osiam.resources.scim.Photo;
  * Photos Entity
  */
 @Entity
-@Table(name = "scim_photo")
+@Table(name = "scim_photo",
+        indexes = {
+                @Index(columnList = "value"),
+                @Index(columnList = "type"),
+                @Index(columnList = "value, type"),
+        })
 public class PhotoEntity extends BaseMultiValuedAttributeEntityWithValue {
 
     /**

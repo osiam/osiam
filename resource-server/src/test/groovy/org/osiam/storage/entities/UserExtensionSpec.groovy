@@ -31,7 +31,7 @@ class UserExtensionSpec extends Specification {
 
     def "If extensions are null empty set should be returned"() {
         when:
-        def emptySet = userEntity.getUserExtensions()
+        def emptySet = userEntity.getExtensionFieldValues()
 
         then:
         emptySet != null
