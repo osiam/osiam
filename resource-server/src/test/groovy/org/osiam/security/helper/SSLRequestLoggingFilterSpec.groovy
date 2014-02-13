@@ -32,7 +32,6 @@ import org.apache.log4j.Logger
 
 import spock.lang.Specification
 
-
 class SSLRequestLoggingFilterSpec extends Specification {
 
     def logger = Mock(Logger)

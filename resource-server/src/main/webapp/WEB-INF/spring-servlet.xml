@@ -33,7 +33,6 @@
         http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-
     <!-- needed to get oauth2 secured resources -->
     <import resource="resource-server.xml"/>
     <!-- JPA -->

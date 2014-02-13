@@ -25,7 +25,6 @@ package org.osiam.storage.entities
 
 import spock.lang.Specification
 
-
 class GroupEntitySpec extends Specification {
 
     GroupEntity groupEntity = new GroupEntity()

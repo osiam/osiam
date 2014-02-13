@@ -25,7 +25,6 @@ package org.osiam.storage.entities
 
 import spock.lang.Specification
 
-
 class GroupMembershipSpec extends Specification {
 
     UserEntity user

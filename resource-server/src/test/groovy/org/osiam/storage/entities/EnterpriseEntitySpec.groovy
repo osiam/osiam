@@ -27,13 +27,6 @@ import org.osiam.storage.entities.EnterpriseEntity
 import org.osiam.storage.entities.ManagerEntity
 import spock.lang.Specification
 
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 15.03.13
- * Time: 16:27
- * To change this template use File | Settings | File Templates.
- */
 class EnterpriseEntitySpec extends Specification {
 
     EnterpriseEntity enterpriseEntity = new EnterpriseEntity()

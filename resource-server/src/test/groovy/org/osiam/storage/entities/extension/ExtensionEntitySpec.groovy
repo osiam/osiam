@@ -71,5 +71,4 @@ class ExtensionEntitySpec extends Specification {
         thrown(IllegalArgumentException)
     }
 
-
 }

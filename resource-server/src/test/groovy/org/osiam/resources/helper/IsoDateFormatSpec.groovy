@@ -35,7 +35,6 @@ import org.osiam.resources.scim.User
 
 import spock.lang.Specification
 
-
 class IsoDateFormatSpec extends Specification{
 
     def provisioning = Mock(SCIMUserProvisioning)

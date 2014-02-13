@@ -39,7 +39,6 @@ import org.springframework.security.web.FilterInvocation;
  * <p/>
  * The only purpose of this class is to enhance attributes with a SCOPE_HTTP-Method in vote when SCOPE_DYNAMIC is set.
  *
- * @author phil
  */
 public class DynamicHTTPMethodScopeEnhancer implements AccessDecisionVoter<Object> {
 
@@ -49,7 +48,6 @@ public class DynamicHTTPMethodScopeEnhancer implements AccessDecisionVoter<Objec
     public DynamicHTTPMethodScopeEnhancer(final AccessDecisionVoter<Object> basedOnVoter) {
         this.basedOnVoter = basedOnVoter;
     }
-
 
     @Override
     public boolean supports(final ConfigAttribute attribute) {
@@ -80,4 +78,3 @@ public class DynamicHTTPMethodScopeEnhancer implements AccessDecisionVoter<Objec
         dynamicConfigs.add(new SecurityConfig("SCOPE_" + f.getRequest().getMethod().toUpperCase(Locale.ENGLISH)));
     }
 }
-

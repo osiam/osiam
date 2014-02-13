@@ -38,7 +38,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * <p/>
  * http://tools.ietf.org/html/draft-ietf-scim-api-00
  *
- *
  */
 @Controller
 @RequestMapping(value = "/")
@@ -60,6 +59,5 @@ public class RootController {
                 "that requires this search implementation please file a bug report with our bugtracker " +
                 "(see https://github.com/osiam/osiam/blob/master/README.md for details on the bug tracker).");
     }
-
 
 }

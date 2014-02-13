@@ -36,7 +36,6 @@ import org.antlr.v4.runtime.misc.Nullable;
 
 /**
  * Handles parsing errors.
- * @author Jochen Todea
  */
 public class OsiamAntlrErrorListener implements ANTLRErrorListener {
 

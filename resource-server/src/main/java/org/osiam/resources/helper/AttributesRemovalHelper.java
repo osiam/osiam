@@ -39,7 +39,6 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 public class AttributesRemovalHelper {
 
-
     public <T extends Resource> SCIMSearchResult<T> removeSpecifiedAttributes(SCIMSearchResult<T> resultList, Map<String, Object> parameterMap) {
         return getJsonResponseWithAdditionalFields(resultList, parameterMap);
     }

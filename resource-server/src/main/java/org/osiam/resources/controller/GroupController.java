@@ -65,7 +65,6 @@ public class GroupController {
 
     private AttributesRemovalHelper attributesRemovalHelper = new AttributesRemovalHelper();
 
-
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody

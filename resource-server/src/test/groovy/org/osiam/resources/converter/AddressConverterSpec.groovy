@@ -44,7 +44,6 @@ class AddressConverterSpec extends Specification {
                 country: 'Germany')
         addressEntity.setPrimary(true)
 
-
         scimAddress = new Address.Builder()
                 .setFormatted('example')
                 .setStreetAddress('Fake Street 123')

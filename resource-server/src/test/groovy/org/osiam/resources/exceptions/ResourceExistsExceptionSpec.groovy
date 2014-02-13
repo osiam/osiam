@@ -25,7 +25,6 @@ package org.osiam.resources.exceptions
 
 import spock.lang.Specification
 
-
 class ResourceExistsExceptionSpec extends Specification {
 
     def "should contain given message"() {

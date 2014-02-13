@@ -34,13 +34,6 @@ import org.springframework.web.bind.annotation.ResponseStatus
 
 import spock.lang.Specification
 
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 27.05.13
- * Time: 11:09
- * To change this template use File | Settings | File Templates.
- */
 class ClientManagementControllerSpec extends Specification {
 
     def clientDao = Mock(ClientDao)

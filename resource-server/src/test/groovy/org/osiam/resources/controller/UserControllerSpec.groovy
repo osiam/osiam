@@ -138,8 +138,6 @@ class UserControllerSpec extends Specification {
         1 * scimUserProvisioning.delete("id")
     }
 
-
-
     def "should contain a method to PUT a user"() {
         given:
         Method method = UserController.class.getDeclaredMethod("replace", String, HttpServletRequest, HttpServletResponse)
