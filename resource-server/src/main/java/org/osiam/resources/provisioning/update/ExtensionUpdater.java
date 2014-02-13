@@ -42,6 +42,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * The ExtensionUpdater provides the functionality to update the {@link ExtensionFieldValueEntity} of a UserEntity
@@ -92,7 +93,8 @@ class ExtensionUpdater {
     }
 
     private void removeExtensionFieldValue(UserEntity userEntity, String urn, String fieldName) {
-        for (ExtensionFieldValueEntity extensionFieldValue : userEntity.getExtensionFieldValues()) {
+        ImmutableSet<ExtensionFieldValueEntity> extensionEntities = ImmutableSet.copyOf(userEntity.getExtensionFieldValues());
+        for (ExtensionFieldValueEntity extensionFieldValue : extensionEntities) {
             ExtensionFieldEntity extensionField = extensionFieldValue.getExtensionField();
             if (extensionField.getExtension().getUrn().equalsIgnoreCase(urn)
                     && extensionField.getName().equalsIgnoreCase(fieldName)) {
