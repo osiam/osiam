@@ -40,9 +40,6 @@ class FBClientCredentialsTokenEndpointFilterTest extends Specification {
     def authentication = Mock(Authentication)
     FilterChain chain = Mock(FilterChain)
 
-
-
-
     def "should set the url to /fb/oauth/access_token"() {
         when:
         def underTest = new FBClientCredentialsTokenEndpointFilter()
@@ -78,7 +75,6 @@ class FBClientCredentialsTokenEndpointFilterTest extends Specification {
         underTest.successHandler
 
     }
-
 
     def "should return null when client_id is null"() {
         when:

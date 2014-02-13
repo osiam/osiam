@@ -37,13 +37,6 @@ import spock.lang.Specification
 
 import java.lang.reflect.Method
 
-/**
- * Created with IntelliJ IDEA.
- * User: jochen
- * Date: 14.10.13
- * Time: 11:33
- * To change this template use File | Settings | File Templates.
- */
 class TokenControllerTest extends Specification {
 
     def defaultTokenServicesMock = Mock(DefaultTokenServices)

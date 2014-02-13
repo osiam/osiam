@@ -23,7 +23,6 @@
 
 package org.osiam.security.authentication;
 
-
 public class AuthenticationError {
 
     private String error;

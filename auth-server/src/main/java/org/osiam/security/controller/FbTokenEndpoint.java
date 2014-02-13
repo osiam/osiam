@@ -66,7 +66,6 @@ public class FbTokenEndpoint {
                               @RequestParam(value = "grant_type", defaultValue = "authorization_code")
                               String grantType, @RequestParam Map<String, String> parameters) {
 
-
         tokenEndpoint.setAuthorizationRequestManager(authorizationRequestManager);
         tokenEndpoint.setClientDetailsService(clientDetailsService);
         tokenEndpoint.setProviderExceptionHandler(providerExceptionHandler);

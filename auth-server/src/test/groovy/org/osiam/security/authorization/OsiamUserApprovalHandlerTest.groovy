@@ -29,13 +29,6 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.provider.AuthorizationRequest
 import spock.lang.Specification
 
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 09.07.13
- * Time: 08:52
- * To change this template use File | Settings | File Templates.
- */
 class OsiamUserApprovalHandlerTest extends Specification {
 
     def clientDetailsLoadingBean = Mock(ClientDetailsLoadingBean)

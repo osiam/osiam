@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <!--
   ~ Copyright (C) 2013 tarent AG
   ~
@@ -188,7 +189,6 @@
             <artifactId>spring-jdbc</artifactId>
         </dependency>
 
-
         <!-- AOP dependency -->
         <dependency>
             <groupId>cglib</groupId>
@@ -251,7 +251,6 @@
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
         </dependency>
-
 
         <dependency>
             <groupId>org.springframework</groupId>
