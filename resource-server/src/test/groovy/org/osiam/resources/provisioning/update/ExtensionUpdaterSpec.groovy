@@ -24,6 +24,7 @@
 package org.osiam.resources.provisioning.update
 
 import org.osiam.resources.converter.ExtensionConverter
+import org.osiam.resources.exceptions.NoSuchElementException
 import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.ExtensionFieldType
 import org.osiam.storage.dao.ExtensionDao
@@ -31,56 +32,119 @@ import org.osiam.storage.entities.ExtensionEntity
 import org.osiam.storage.entities.ExtensionFieldEntity
 import org.osiam.storage.entities.ExtensionFieldValueEntity
 import org.osiam.storage.entities.UserEntity
-import org.osiam.storage.helper.NumberPadder
 
-import spock.lang.Ignore;
 import spock.lang.Specification
 
 
 class ExtensionUpdaterSpec extends Specification {
 
-    UserEntity userEntity = Mock()
-    ExtensionDao extensionDao = Mock()
-    NumberPadder numberPadder = Mock()
-    ExtensionConverter extensionConverter = Mock()
-    ExtensionUpdater extensionUpdater = new ExtensionUpdater(extensionDao : extensionDao, numberPadder: numberPadder)
-    
     static String FIELD = 'field'
     static String VALUE = 'value'
     static String URN = 'extension'
-    
-    @Ignore('Not yet implemented')
-    def 'call update triggers extensionDao and updateExtension'(){
+
+    static IRRELEVANT = 'irrelevant'
+    static IRRELEVANT_02 = 'irrelevant02'
+
+    UserEntity userEntity = Mock()
+    ExtensionEntity extensionEntity = Mock()
+    ExtensionConverter extensionConverter = Mock()
+    ExtensionDao extensionDao = Mock()
+    ExtensionUpdater extensionUpdater = new ExtensionUpdater(extensionDao : extensionDao)
+
+    def 'removing an extension is possible'(){
+        when:
+        extensionUpdater.update(null, userEntity, [URN] as Set)
+
+        then:
+        1 * extensionDao.getExtensionByUrn(URN, true) >> createExtensionEntity()
+        1 * userEntity.removeAllExtensionFieldValues(URN)
+    }
+
+    def 'removing an extension field is possible'(){
+        when:
+        extensionUpdater.update(null, userEntity, [URN + "." + FIELD] as Set)
+
+        then:
+        1 * extensionDao.getExtensionByUrn(URN, true) >> createExtensionEntity()
+        1 * userEntity.getExtensionFieldValues() >> ([getExtensionValueEntity()] as Set)
+        1 * userEntity.removeExtensionFieldValue(_)
+    }
+
+    def 'updating a not registered extension raises an exception'(){
+        given:
+        Extension extension = extensionWithValue()
+
+        when:
+        extensionUpdater.update([(URN) : extension] as Map, userEntity, [] as Set)
+
+        then:
+        1 * extensionDao.getExtensionByUrn(URN) >> null
+        thrown(NoSuchElementException)
+    }
+
+    def 'updating a not registered extension field raises an exception'(){
+        given:
+        
+        Extension extension = new Extension(URN)
+        extension.addOrUpdateField(IRRELEVANT, VALUE)
+        ExtensionEntity extensionEntity = createExtensionEntity()
+
+        when:
+        extensionUpdater.update([(URN) : extension] as Map, userEntity, [] as Set)
+
+        then:
+        1 * extensionDao.getExtensionByUrn(URN) >> extensionEntity
+        thrown(NoSuchElementException)
+    }
+
+    def 'updating an exisitng extension field is possible'(){
         given:
         Extension extension = extensionWithValue()
         ExtensionEntity extensionEntity = createExtensionEntity()
 
         when:
-        extensionUpdater.update([(URN): extension] as Map, userEntity, [] as Set)
+        extensionUpdater.update([(URN) : extension] as Map, userEntity, [] as Set)
 
         then:
-        //1 * extensionUpdater.updateExtension([(URN): extension] as Map, userEntity)
-        //1 * userEntity.addExtensionFieldValue()
         1 * extensionDao.getExtensionByUrn(URN) >> extensionEntity
+        1 * userEntity.getExtensionFieldValues() >> ([getExtensionValueEntity()] as Set)
+        1 * userEntity.addOrUpdateExtensionValue(_)
     }
+    
+    def 'updating an non exisitng extension field is possible'(){
+        given:
+        Extension extension = extensionWithValue()
+        ExtensionEntity extensionEntity = createExtensionEntity()
 
-    def 'removing all extensions is possible'() {
-        
+        when:
+        extensionUpdater.update([(URN) : extension] as Map, userEntity, [] as Set)
+
+        then:
+        1 * extensionDao.getExtensionByUrn(URN) >> extensionEntity
+        1 * userEntity.getExtensionFieldValues() >> ([] as Set)
+        1 * userEntity.addOrUpdateExtensionValue(_)
     }
 
     def createExtensionEntity() {
         ExtensionFieldEntity extensionFieldEntity = new ExtensionFieldEntity(name: FIELD, type: ExtensionFieldType.STRING)
-        ExtensionFieldValueEntity extensionFieldValueEntity = new ExtensionFieldValueEntity(value : VALUE)
+        ExtensionFieldValueEntity extensionFieldValueEntity = getExtensionValueEntity()
         extensionFieldValueEntity.extensionField = extensionFieldEntity
         ExtensionEntity extensionEntity = new ExtensionEntity()
         extensionEntity.fields = [extensionFieldEntity] as Set
-        extensionEntity.urn = URN;
+        extensionEntity.urn = URN
         return extensionEntity
     }
-    
+
     private extensionWithValue() {
         Extension extension = new Extension(URN)
         extension.addOrUpdateField(FIELD, VALUE)
         return extension
+    }
+
+    private getExtensionValueEntity(){
+        ExtensionEntity extensionEntity = new ExtensionEntity()
+        extensionEntity.urn = URN
+        ExtensionFieldEntity extensionField = new ExtensionFieldEntity(extension : extensionEntity, name: FIELD, type: ExtensionFieldType.STRING)
+        new ExtensionFieldValueEntity(extensionField : extensionField, value : VALUE)
     }
 }

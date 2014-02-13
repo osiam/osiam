@@ -29,6 +29,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.osiam.resources.exceptions.NoSuchElementException;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.storage.dao.ExtensionDao;
@@ -40,6 +41,7 @@ import org.osiam.storage.helper.NumberPadder;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 
 /**
  * The ExtensionUpdater provides the functionality to update the {@link ExtensionFieldValueEntity} of a UserEntity
@@ -54,16 +56,16 @@ class ExtensionUpdater {
     private NumberPadder numberPadder;
 
     /**
-     * updates (adds new, delete, updates) the {@link ExtensionEntity}'s of the given {@link UserEntity} based on the
-     * given List of Email's
+     * updates (remove, updates) the {@link ExtensionEntity}'s of the given {@link UserEntity} based on the given List
+     * of Email's
      * 
      * @param extensions
-     *            map of {@link Extension} to be deleted, updated or added
+     *        map of {@link Extension} to be removed or updated
      * @param userEntity
-     *            user who needs to be updated
+     *        user who needs to be updated
      * @param attributes
-     *            all {@link Extension}'s field values of the user will be delete if this Set contains an existing urn
-     *            and field name
+     *        all {@link Extension}'s field values of the user will be removed if this Set contains an existing urn and
+     *        field name
      */
     void update(Map<String, Extension> extensions, UserEntity userEntity, Set<String> attributes) {
 
@@ -71,16 +73,14 @@ class ExtensionUpdater {
 
             Optional<String> urn = getUrn(attribute);
 
-            if (!urn.isPresent()) {
-                continue;
-            }
+            if (urn.isPresent()) {
+                Optional<String> fieldName = getFieldName(attribute);
 
-            Optional<String> fieldName = getFieldName(attribute);
-
-            if (!fieldName.isPresent()) {
-                userEntity.removeAllExtensionFieldValues(urn.get());
-            } else {
-                removeExtensionFieldValue(userEntity, urn.get(), fieldName.get());
+                if (fieldName.isPresent()) {
+                    removeExtensionFieldValue(userEntity, urn.get(), fieldName.get());
+                } else {
+                    userEntity.removeAllExtensionFieldValues(urn.get());
+                }
             }
         }
 
@@ -92,32 +92,27 @@ class ExtensionUpdater {
     }
 
     private void removeExtensionFieldValue(UserEntity userEntity, String urn, String fieldName) {
-
         for (ExtensionFieldValueEntity extensionFieldValue : userEntity.getExtensionFieldValues()) {
-
-            if (!extensionFieldValue.getExtensionField().getName().equalsIgnoreCase(fieldName)) {
-                continue;
+            ExtensionFieldEntity extensionField = extensionFieldValue.getExtensionField();
+            if (extensionField.getExtension().getUrn().equalsIgnoreCase(urn)
+                    && extensionField.getName().equalsIgnoreCase(fieldName)) {
+                userEntity.removeExtensionFieldValue(extensionFieldValue);
             }
-
-            if (!extensionFieldValue.getExtensionField().getExtension().getUrn().equalsIgnoreCase(urn)) {
-                continue;
-            }
-
-            userEntity.removeExtensionFieldValue(extensionFieldValue);
         }
     }
 
-    private void updateExtensionField(Entry<String, Extension> extensionEntry, UserEntity userEntity) {
+    private void updateExtensionFieldOld(Entry<String, Extension> extensionEntry, UserEntity userEntity) {
 
         String urn = extensionEntry.getKey();
-        Extension updatedExtension = extensionEntry.getValue();
+        Extension updatedScimExtension = extensionEntry.getValue();
         ExtensionEntity extensionEntity = extensionDao.getExtensionByUrn(urn);
 
         if (extensionEntity != null) {
-            for (ExtensionFieldEntity extensionField : extensionEntity.getFields()) {
-                String fieldName = extensionField.getName();
-                ExtensionFieldValueEntity extensionFieldValue = findExtensionFieldValue(extensionField, userEntity);
-                boolean isFieldPresent = updatedExtension.isFieldPresent(fieldName);
+            for (ExtensionFieldEntity extensionEntitiyField : extensionEntity.getFields()) {
+                String fieldName = extensionEntitiyField.getName();
+                ExtensionFieldValueEntity extensionFieldValue = findExtensionFieldValue(extensionEntitiyField,
+                        userEntity);
+                boolean isFieldPresent = updatedScimExtension.isFieldPresent(fieldName);
                 if (extensionFieldValue == null && !isFieldPresent) {
                     continue;
                 } else if (extensionFieldValue == null && isFieldPresent) {
@@ -126,14 +121,46 @@ class ExtensionUpdater {
                     continue;
                 }
 
-                String newValue = getNewExtensionValue(extensionField, updatedExtension, fieldName);
+                String newValue = getNewExtensionValue(extensionEntitiyField, updatedScimExtension, fieldName);
                 if (newValue == null) {
                     continue;
                 }
 
                 extensionFieldValue.setValue(newValue);
-                extensionFieldValue.setExtensionField(extensionField);
+                extensionFieldValue.setExtensionField(extensionEntitiyField);
                 userEntity.addOrUpdateExtensionValue(extensionFieldValue);
+            }
+        }
+    }
+
+    private void updateExtensionField(Entry<String, Extension> extensionEntry, UserEntity userEntity) {
+        String urn = extensionEntry.getKey();
+        Extension updatedScimExtension = extensionEntry.getValue();
+        ExtensionEntity extensionEntity = extensionDao.getExtensionByUrn(urn);
+
+        if (extensionEntity == null) {
+            throw new NoSuchElementException("Could not find the extension \"" + urn
+                    + "\" for update. Please first register your extension.");
+        } else {
+            for (String fieldName : updatedScimExtension.getAllFields().keySet()) {
+                ExtensionFieldEntity extensionEntitiyField = null;
+                try {
+                    extensionEntitiyField = extensionEntity.getFieldForName(fieldName, true);
+                } catch (NoSuchElementException e) {
+                    throw new NoSuchElementException("Could not update the extension \"" + urn + "\".", e);
+                }
+                ExtensionFieldValueEntity extensionFieldValue = findExtensionFieldValue(extensionEntitiyField,
+                        userEntity);
+                
+                if (extensionFieldValue == null) {
+                    extensionFieldValue = new ExtensionFieldValueEntity();
+                }
+                String newValue = getNewExtensionValue(extensionEntitiyField, updatedScimExtension, fieldName);
+                if (!Strings.isNullOrEmpty(newValue)) {
+                    extensionFieldValue.setValue(newValue);
+                    extensionFieldValue.setExtensionField(extensionEntitiyField);
+                    userEntity.addOrUpdateExtensionValue(extensionFieldValue);
+                }
             }
         }
     }
@@ -178,7 +205,7 @@ class ExtensionUpdater {
     private Optional<String> getFieldName(String attribute) {
         int lastIndexOf = attribute.lastIndexOf('.');
         if (lastIndexOf != -1) {
-            return Optional.of(attribute.substring(lastIndexOf));
+            return Optional.of(attribute.substring(lastIndexOf + 1));
         } else {
             return Optional.absent();
         }

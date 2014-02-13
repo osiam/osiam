@@ -36,6 +36,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
+import org.osiam.resources.exceptions.NoSuchElementException;
 
 /**
  * Defines a SCIM-Extension.
@@ -95,7 +96,7 @@ public class ExtensionEntity {
             }
         }
 
-        throw new IllegalArgumentException("Field " + fieldName + " not available in extension with URN " + urn);
+        throw new NoSuchElementException("Field " + fieldName + " not available in extension with URN " + urn);
     }
 
     public ExtensionFieldEntity getFieldForName(String fieldName) {

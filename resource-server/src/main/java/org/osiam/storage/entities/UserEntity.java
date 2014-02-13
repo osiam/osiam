@@ -374,6 +374,13 @@ public class UserEntity extends ResourceEntity {
     /**
      * Removes all extensionFieldValues from this user
      */
+    public void removeAllExtensionFieldValues() {
+        extensionFieldValues.clear();
+    }
+    
+    /**
+     * Removes all extensionFieldValues from this user
+     */
     public void removeAllExtensionFieldValues(String urn) {
         ImmutableSet<ExtensionFieldValueEntity> fields = ImmutableSet.copyOf(extensionFieldValues);
         for (ExtensionFieldValueEntity extensionFieldValue : fields) {
@@ -383,6 +390,27 @@ public class UserEntity extends ResourceEntity {
         }
     }
 
+    /**
+     * Adds or updates an extension field value for this User. When updating, the old value of the extension field is
+     * removed from this user and the new one will be added.
+     * 
+     * @param extensionValue
+     *            The extension field value to add or update
+     */
+    public void addOrUpdateExtensionValue(ExtensionFieldValueEntity extensionValue) {
+        if (extensionValue == null) {
+            throw new IllegalArgumentException("extensionValue must not be null");
+        }
+        
+        if (extensionFieldValues.contains(extensionValue)) {
+            extensionFieldValues.remove(extensionValue);
+        }
+        
+        extensionFieldValues.add(extensionValue);
+    }
+    
+    
+    
     /**
      * @return the phone numbers entity
      */
@@ -621,24 +649,6 @@ public class UserEntity extends ResourceEntity {
         x509Certificates.clear();
     }
 
-    /**
-     * Adds or updates an extension field value for this User. When updating, the old value of the extension field is
-     * removed from this user and the new one will be added.
-     * 
-     * @param extensionValue
-     *            The extension field value to add or update
-     */
-    public void addOrUpdateExtensionValue(ExtensionFieldValueEntity extensionValue) {
-        if (extensionValue == null) {
-            throw new IllegalArgumentException("extensionValue must not be null");
-        }
-
-        if (extensionFieldValues.contains(extensionValue)) {
-            extensionFieldValues.remove(extensionValue);
-        }
-
-        extensionFieldValues.add(extensionValue);
-    }
 
     @Override
     public String toString() {
