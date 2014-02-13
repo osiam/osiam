@@ -31,7 +31,6 @@ import org.osiam.resources.scim.User
 
 import spock.lang.Specification
 
-
 class AttributesRemovalHelperSpec extends Specification {
 
     def attributesRemovalHelperTest = new AttributesRemovalHelper()

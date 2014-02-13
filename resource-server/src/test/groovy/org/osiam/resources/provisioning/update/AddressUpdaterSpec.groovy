@@ -31,7 +31,6 @@ import org.osiam.storage.entities.UserEntity
 
 import spock.lang.Specification
 
-
 class AddressUpdaterSpec extends Specification {
 
     static IRRELEVANT = 'irrelevant'

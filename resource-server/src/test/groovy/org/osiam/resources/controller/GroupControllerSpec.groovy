@@ -52,7 +52,6 @@ class GroupControllerSpec extends Specification {
     def httpServletResponse = Mock(HttpServletResponse)
     Group group = new Group.Builder("group1").setId(UUID.randomUUID().toString()).build()
 
-
     def "should contain a method to POST a group"() {
         given:
         Method method = GroupController.class.getDeclaredMethod("create", HttpServletRequest, HttpServletResponse)

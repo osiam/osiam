@@ -54,7 +54,6 @@ public class ClientManagementController {
 
     private ObjectMapper mapper = new ObjectMapper();
 
-
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
     public ClientEntity getClient(@PathVariable final String id) {

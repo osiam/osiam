@@ -36,9 +36,6 @@ import org.apache.log4j.Logger;
 
 /**
  * Filter to check if TLS is enabled.
- * User: jtodea
- * Date: 25.06.13
- * Time: 15:33
  */
 public class SSLRequestLoggingFilter implements Filter {
 

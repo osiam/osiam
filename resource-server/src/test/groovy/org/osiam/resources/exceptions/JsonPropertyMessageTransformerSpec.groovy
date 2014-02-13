@@ -25,7 +25,6 @@ package org.osiam.resources.exceptions
 
 import spock.lang.Specification
 
-
 class JsonPropertyMessageTransformerSpec extends Specification {
 
     def jsonPropertyMessageTransformer = new JsonPropertyMessageTransformer()

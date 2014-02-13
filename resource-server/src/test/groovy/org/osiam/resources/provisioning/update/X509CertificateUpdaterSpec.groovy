@@ -31,7 +31,6 @@ import org.osiam.storage.entities.X509CertificateEntity
 
 import spock.lang.Specification
 
-
 class X509CertificateUpdaterSpec extends Specification {
 
     static IRRELEVANT = 'irrelevant'

@@ -25,7 +25,6 @@ package org.osiam.storage.entities
 
 import spock.lang.Specification
 
-
 class ManagerEntitySpec extends Specification {
 
     ManagerEntity managerEntity = new ManagerEntity()

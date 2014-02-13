@@ -31,13 +31,6 @@ import org.springframework.web.bind.annotation.ResponseBody
 
 import spock.lang.Specification
 
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 07.05.13
- * Time: 09:48
- * To change this template use File | Settings | File Templates.
- */
 class RootControllerSpec extends Specification{
 
     def underTest = new RootController()

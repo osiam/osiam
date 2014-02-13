@@ -42,7 +42,6 @@ class ClientDaoSpec extends Specification {
         given:
         def queryMock = Mock(Query)
 
-
         when:
         def result = clientDao.getClient("f47ac10b-58cc-4372-a567-0e02b2c3d479")
 

@@ -78,5 +78,4 @@ public class MeasureDurationTimeOfMethods {
     public void excludeDynamicHTTPMethodScopeEnhancer() {
     }
 
-
 }

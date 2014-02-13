@@ -25,7 +25,6 @@ package org.osiam.resources.exceptions
 
 import spock.lang.Specification
 
-
 class ClientManagementErrorMessageTransformerSpec extends Specification {
 
     def clientManagementErrorMessageTransformer = new ClientManagementErrorMessageTransformer()

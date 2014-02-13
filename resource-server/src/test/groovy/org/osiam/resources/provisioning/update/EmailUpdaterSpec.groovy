@@ -31,7 +31,6 @@ import org.osiam.storage.entities.UserEntity
 
 import spock.lang.Specification
 
-
 class EmailUpdaterSpec extends Specification {
 
     static IRRELEVANT = 'irrelevant'

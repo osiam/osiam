@@ -30,7 +30,6 @@ import org.osiam.storage.dao.ResourceDao
 import spock.lang.Ignore
 import spock.lang.Specification
 
-
 class RequestParamHelperSpec extends Specification {
 
     def servletRequestMock = Mock(HttpServletRequest)
