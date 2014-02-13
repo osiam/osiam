@@ -25,6 +25,7 @@ package org.osiam.resources.provisioning.update
 
 import org.osiam.resources.converter.ExtensionConverter
 import org.osiam.resources.exceptions.NoSuchElementException
+import org.osiam.resources.exceptions.OsiamException
 import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.ExtensionFieldType
 import org.osiam.storage.dao.ExtensionDao
@@ -78,8 +79,8 @@ class ExtensionUpdaterSpec extends Specification {
         extensionUpdater.update([(URN) : extension] as Map, userEntity, [] as Set)
 
         then:
-        1 * extensionDao.getExtensionByUrn(URN) >> null
-        thrown(NoSuchElementException)
+        1 * extensionDao.getExtensionByUrn(URN) >> { throw new OsiamException() }
+        thrown(OsiamException)
     }
 
     def 'updating a not registered extension field raises an exception'(){
