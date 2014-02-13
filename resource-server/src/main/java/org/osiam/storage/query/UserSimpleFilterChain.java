@@ -64,10 +64,9 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
         // It's not a known user field, so try to build a extension filter
         if (userFilterField == null) {
             extensionFilterField = getExtensionFilterField(field.toLowerCase(Locale.ENGLISH));
-        }
-        
-        if(extensionFilterField == null) {
-            throw new IllegalArgumentException("Filtering not possible: '" + field + "' not available");
+            if(extensionFilterField == null) {
+                throw new IllegalArgumentException("Filtering not possible: '" + field + "' not available");
+            }
         }
     }
 
