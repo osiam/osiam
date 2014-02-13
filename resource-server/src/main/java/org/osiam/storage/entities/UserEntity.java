@@ -23,7 +23,6 @@
 
 package org.osiam.storage.entities;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -369,13 +368,6 @@ public class UserEntity extends ResourceEntity {
      */
     public void removeExtensionFieldValue(ExtensionFieldValueEntity extensionFieldValue) {
         extensionFieldValues.remove(extensionFieldValue);
-    }
-    
-    /**
-     * Removes all extensionFieldValues from this user
-     */
-    public void removeAllExtensionFieldValues() {
-        extensionFieldValues.clear();
     }
     
     /**
