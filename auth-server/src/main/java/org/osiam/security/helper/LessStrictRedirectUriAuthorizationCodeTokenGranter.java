@@ -52,7 +52,6 @@ import org.springframework.security.oauth2.provider.token.AuthorizationServerTok
  */
 public class LessStrictRedirectUriAuthorizationCodeTokenGranter extends AbstractTokenGranter {
 
-
     private static final String GRANT_TYPE = "authorization_code";
 
     /*Do not add a bean definition to spring xml. It will cause the problem, that two instances are used to serve

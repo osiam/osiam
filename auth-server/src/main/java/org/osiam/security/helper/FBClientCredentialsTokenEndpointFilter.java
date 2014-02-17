@@ -53,7 +53,6 @@ public class FBClientCredentialsTokenEndpointFilter extends AbstractAuthenticati
 
     private AuthenticationEntryPoint authenticationEntryPoint = new OAuth2AuthenticationEntryPoint();
 
-
     protected FBClientCredentialsTokenEndpointFilter() {
         super("/fb/oauth/access_token");
     }

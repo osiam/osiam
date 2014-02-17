@@ -34,7 +34,6 @@ import org.springframework.security.oauth2.provider.ClientDetailsService;
 import javax.inject.Named;
 import java.io.IOException;
 
-
 /**
  * This class is used by clientAuthenticationManager in Spring to authenticate a client when trading an auth_code to an
  * access_token.

@@ -67,7 +67,6 @@
         <property name="authenticationManager" ref="clientAuthenticationManager"/>
     </bean>
 
-
     <bean id="clientCredentialsTokenEndpointFilter"
           class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
         <property name="authenticationManager" ref="clientAuthenticationManager"/>

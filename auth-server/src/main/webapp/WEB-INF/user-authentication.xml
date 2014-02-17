@@ -26,7 +26,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
 
-
     <!-- OAuth2 User Login/Grant Access interface provides a login form for the user to login and grant access of resources
         to a client -->
     <http access-denied-page="/login.jsp?authorization_error=true" disable-url-rewriting="true"
@@ -39,7 +38,6 @@
         <!-- this needs to be accessible anonymously -->
         <anonymous enabled="true"/>
     </http>
-
 
     <authentication-manager alias="authenticationManager" xmlns="http://www.springframework.org/schema/security">
         <authentication-provider user-service-ref="userDetailsService">
@@ -54,10 +52,8 @@
         <property name="iterations" value="1000"/>
     </bean>
 
-
     <bean id="saltSource" class="org.springframework.security.authentication.dao.ReflectionSaltSource">
         <property name="userPropertyToUse" value="id"/>
     </bean>
-
 
 </beans>

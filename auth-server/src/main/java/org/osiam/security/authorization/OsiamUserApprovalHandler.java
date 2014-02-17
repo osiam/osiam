@@ -47,7 +47,6 @@ public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
     @Inject
     private ClientDetailsLoadingBean clientDetailsLoadingBean;
 
-
     /**
      * Is called if OsiamUserApprovalHandler.isApproved() returns false and AccessConfirmation is done by the user.
      * Than it will save the approve date to be able to check it as long as user accepts approval.
