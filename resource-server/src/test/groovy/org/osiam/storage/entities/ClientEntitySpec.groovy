@@ -86,7 +86,6 @@ class ClientEntitySpec extends Specification {
         under_test.getExpiry() == date
     }
 
-
     def "should not throw null pointer exception if expiry is null"() {
         given:
         under_test.setExpiry(null)

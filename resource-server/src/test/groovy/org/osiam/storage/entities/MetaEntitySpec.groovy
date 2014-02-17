@@ -25,7 +25,6 @@ package org.osiam.storage.entities
 
 import spock.lang.Specification
 
-
 class MetaEntitySpec extends Specification {
 
     MetaEntity metaEntity = new MetaEntity()

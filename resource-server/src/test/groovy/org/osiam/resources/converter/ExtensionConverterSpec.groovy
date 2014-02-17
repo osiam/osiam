@@ -111,16 +111,10 @@ class ExtensionConverterSpec extends Specification {
         extensions.size() == 0
     }
 
-    def 'passing null extensionEntity returns null'() {
-        expect:
-        converter.toScim(null) == null
-    }
-
     private def createExtension(def urn) {
         def fixtureData = fixtures[urn]
         def fields = fixtureData.collect { new ExtensionFieldEntity(name: it.fieldname, type : it.type) }
-        def extension = new ExtensionEntity(urn: urn, fields: fields as Set)
-        extension
+        new ExtensionEntity(urn: urn, fields: fields as Set)
     }
 
     def addNameValuePairToExtensionEntity(ExtensionEntity extensionEntity, String name, String value) {

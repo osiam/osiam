@@ -94,7 +94,6 @@ public class ServiceProviderConfigsController {
             }
         }
 
-
         @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
         public static class BulkSupported extends Supported {
             public final Integer maxOperations; // NOSONAR - Needed public due to json serializing

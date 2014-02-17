@@ -26,13 +26,6 @@ package org.osiam.resources.exceptions;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Created with IntelliJ IDEA.
- * User: jtodea
- * Date: 28.06.13
- * Time: 16:58
- * To change this template use File | Settings | File Templates.
- */
 public class JsonMappingMessageTransformer implements ErrorMessageTransformer {
 
     //Can not deserialize instance of java.util.ArrayList out of VALUE_STRING token

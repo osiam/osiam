@@ -33,7 +33,6 @@ import org.osiam.storage.parser.LogicalOperatorRulesParser;
 
 /**
  * Implements the generated visitor class to do the mapping to criteria api.
- * @author Jochen Todea
  */
 public class EvalVisitor<T extends ResourceEntity> extends LogicalOperatorRulesBaseVisitor<Predicate> {
 

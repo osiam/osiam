@@ -36,11 +36,9 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import org.osiam.resources.scim.MultiValuedAttribute;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -48,7 +46,7 @@ import com.google.common.collect.ImmutableSet;
 @Table(name = "scim_id")
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class ResourceEntity {
-
+    
     @Column(unique = true, nullable = false)
     private String id;
 
@@ -60,7 +58,7 @@ public abstract class ResourceEntity {
     @Column(unique = true)
     private String externalId;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     private MetaEntity meta = new MetaEntity(GregorianCalendar.getInstance());
 
     @ManyToMany(mappedBy = "members")

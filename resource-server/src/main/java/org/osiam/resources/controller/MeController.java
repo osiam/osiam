@@ -98,8 +98,6 @@ public class MeController {
         } else {
             throw new IllegalArgumentException("User was not authenticated with OSIAM.");
         }
-
-
     }
 
     private String getAccessToken(HttpServletRequest request) {

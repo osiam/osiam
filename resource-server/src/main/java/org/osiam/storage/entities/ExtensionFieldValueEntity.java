@@ -27,6 +27,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
@@ -38,7 +39,11 @@ import org.hibernate.annotations.Type;
  * Defines a value of a field of a scim-extension. It's user-dependent!
  */
 @Entity
-@Table(name = "scim_extension_field_value")
+@Table(name = "scim_extension_field_value",
+    indexes = {
+        @Index(columnList = UserEntity.JOIN_COLUMN_NAME + ", extension_field_internal_id"),
+    }
+)
 public class ExtensionFieldValueEntity {
 
     @Id
@@ -51,9 +56,13 @@ public class ExtensionFieldValueEntity {
     private ExtensionFieldEntity extensionField;
 
     @Lob
-    @Type(type="org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.StringClobType")
     @Column(nullable = false)
     private String value;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = UserEntity.JOIN_COLUMN_NAME, nullable = false, insertable = false, updatable = false)
+    private UserEntity user;
 
     public long getInternalId() {
         return internalId;
@@ -118,5 +127,3 @@ public class ExtensionFieldValueEntity {
     }
 
 }
-
-

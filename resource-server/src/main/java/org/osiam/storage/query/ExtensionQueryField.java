@@ -63,14 +63,17 @@ public class ExtensionQueryField {
 
         final SetJoin<UserEntity, ExtensionFieldValueEntity> join = createOrGetJoin(
                 generateAlias(urn + "." + field.getName()), root, UserEntity_.extensionFieldValues);
-
+        
         Predicate filterPredicate = constraint.createPredicateForExtensionField(
                 join.get(ExtensionFieldValueEntity_.value), // NOSONAR - XEntity_.X will be filled by JPA provider
                 value, field, cb);
-        Predicate joinOnPredicate = cb.equal(join.get(ExtensionFieldValueEntity_.extensionField)
-                .get(ExtensionFieldEntity_.internalId) // NOSONAR - XEntity_.X will be filled by JPA provider
-                , field.getInternalId());
-        return cb.and(filterPredicate, joinOnPredicate);
+        
+        Predicate valueBelongsToField = cb.equal(join.get(ExtensionFieldValueEntity_.extensionField)
+                .get(ExtensionFieldEntity_.internalId), field.getInternalId());
+        
+        join.on(valueBelongsToField);
+
+        return filterPredicate;
     }
 
     private String generateAlias(String value) {
@@ -83,21 +86,22 @@ public class ExtensionQueryField {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> SetJoin<UserEntity, T> createOrGetJoin(String alias, Root<UserEntity> root,
-            SetAttribute<UserEntity, T> attribute) {
+    protected SetJoin<UserEntity, ExtensionFieldValueEntity> createOrGetJoin(String alias, Root<UserEntity> root,
+            SetAttribute<UserEntity, ExtensionFieldValueEntity> attribute) {
 
         for (Join<UserEntity, ?> currentJoin : root.getJoins()) {
-            if(currentJoin.getAlias() == null) {
+            if (currentJoin.getAlias() == null) {
                 // if alias is null, it is not an alias for an extension join, so we ignore it
                 continue;
             }
-            
+
             if (currentJoin.getAlias().equals(alias)) {
-                return (SetJoin<UserEntity, T>) currentJoin;
+                return (SetJoin<UserEntity, ExtensionFieldValueEntity>) currentJoin;
             }
         }
 
-        final SetJoin<UserEntity, T> join = root.join(attribute, JoinType.LEFT);
+        final SetJoin<UserEntity, ExtensionFieldValueEntity> join = root.join(attribute, JoinType.LEFT);
+
         join.alias(alias);
 
         return join;

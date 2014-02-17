@@ -67,7 +67,6 @@ public class EqualsValidatorTest {
                 .verify();
     }
 
-
     @Test
     public void groupEntity_honors_equals_contract() {
         EqualsVerifier.forClass(GroupEntity.class)
@@ -75,7 +74,6 @@ public class EqualsValidatorTest {
                 .usingGetClass()
                 .verify();
     }
-
 
     @Test
     public void imEntity_honors_equals_contract() {

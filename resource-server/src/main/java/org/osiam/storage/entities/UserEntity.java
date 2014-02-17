@@ -35,6 +35,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
 
 import com.google.common.collect.ImmutableSet;
@@ -46,7 +47,7 @@ import com.google.common.collect.ImmutableSet;
 @Table(name = "scim_user")
 public class UserEntity extends ResourceEntity {
 
-    private static final String JOIN_COLUMN_NAME = "user_internal_id";
+    public static final String JOIN_COLUMN_NAME = "user_internal_id";
 
     @Column(nullable = false, unique = true)
     private String userName;
@@ -57,7 +58,7 @@ public class UserEntity extends ResourceEntity {
     private String nickName;
 
     @Lob
-    @Type(type="org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.StringClobType")
     private String profileUrl;
 
     private String title;
@@ -77,40 +78,49 @@ public class UserEntity extends ResourceEntity {
 
     private String displayName;
 
+    @BatchSize(size = 100)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable = false)
     private Set<EmailEntity> emails = new HashSet<>();
 
+    @BatchSize(size = 100)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable = false)
     private Set<PhoneNumberEntity> phoneNumbers = new HashSet<>();
 
+    @BatchSize(size = 100)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable = false)
     private Set<ImEntity> ims = new HashSet<>();
 
+    @BatchSize(size = 100)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable = false)
     private Set<PhotoEntity> photos = new HashSet<>();
 
+    @BatchSize(size = 100)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable = false)
     private Set<AddressEntity> addresses = new HashSet<>();
 
+    @BatchSize(size = 100)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable = false)
     private Set<EntitlementEntity> entitlements = new HashSet<>();
 
+    @BatchSize(size = 100)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable = false)
     private Set<RoleEntity> roles = new HashSet<>();
 
+    @BatchSize(size = 100)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable = false)
     private Set<X509CertificateEntity> x509Certificates = new HashSet<>();
 
+    @BatchSize(size = 100)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = JOIN_COLUMN_NAME, nullable=false)
+    @JoinColumn(name = JOIN_COLUMN_NAME, nullable = false)
     private Set<ExtensionFieldValueEntity> extensionFieldValues = new HashSet<>();
 
     public UserEntity() {
@@ -290,7 +300,7 @@ public class UserEntity extends ResourceEntity {
 
     /**
      * Returns an immutable view of the list of emails
-     *
+     * 
      * @return the emails entity
      */
     public Set<EmailEntity> getEmails() {
@@ -299,7 +309,7 @@ public class UserEntity extends ResourceEntity {
 
     /**
      * Adds a new email to this user
-     *
+     * 
      * @param email
      *            the email to add
      */
@@ -309,7 +319,7 @@ public class UserEntity extends ResourceEntity {
 
     /**
      * Removes the given email from this user
-     *
+     * 
      * @param email
      *            the email to remove
      */
@@ -320,28 +330,79 @@ public class UserEntity extends ResourceEntity {
     /**
      * Removes all email's from this user
      */
-    public void removeAllEmails(){
+    public void removeAllEmails() {
         emails.clear();
     }
 
     /**
      * @return the extensions data of the user
      */
-    public Set<ExtensionFieldValueEntity> getUserExtensions() {
-        if (extensionFieldValues == null) {
-            extensionFieldValues = new HashSet<>();
-        }
+    public Set<ExtensionFieldValueEntity> getExtensionFieldValues() {
         return extensionFieldValues;
     }
 
     /**
-     * @param userExtensions
+     * @param extensionFieldValues
      *            the extension data of the user
      */
-    public void setUserExtensions(Set<ExtensionFieldValueEntity> userExtensions) {
-        this.extensionFieldValues = userExtensions;
+    @Deprecated
+    public void setExtensionFieldValues(Set<ExtensionFieldValueEntity> extensionFieldValues) {
+        this.extensionFieldValues = extensionFieldValues;
+    }
+    
+    /**
+     * Adds a new extensionFieldValue to this user
+     * 
+     * @param extensionFieldValue
+     *            the extensionFieldValue to add
+     */
+    public void addExtensionFieldValue(ExtensionFieldValueEntity extensionFieldValue) {
+        extensionFieldValues.add(extensionFieldValue);
+    }
+    
+    /**
+     * Removes the given extensionFieldValue from this user
+     * 
+     * @param extensionFieldValue
+     *            the extensionFieldValue to remove
+     */
+    public void removeExtensionFieldValue(ExtensionFieldValueEntity extensionFieldValue) {
+        extensionFieldValues.remove(extensionFieldValue);
+    }
+    
+    /**
+     * Removes all extensionFieldValues from this user
+     */
+    public void removeAllExtensionFieldValues(String urn) {
+        ImmutableSet<ExtensionFieldValueEntity> fields = ImmutableSet.copyOf(extensionFieldValues);
+        for (ExtensionFieldValueEntity extensionFieldValue : fields) {
+            if(extensionFieldValue.getExtensionField().getExtension().getUrn().equals(urn)) {
+                extensionFieldValues.remove(extensionFieldValue);
+            }
+        }
     }
 
+    /**
+     * Adds or updates an extension field value for this User. When updating, the old value of the extension field is
+     * removed from this user and the new one will be added.
+     * 
+     * @param extensionValue
+     *            The extension field value to add or update
+     */
+    public void addOrUpdateExtensionValue(ExtensionFieldValueEntity extensionValue) {
+        if (extensionValue == null) {
+            throw new IllegalArgumentException("extensionValue must not be null");
+        }
+        
+        if (extensionFieldValues.contains(extensionValue)) {
+            extensionFieldValues.remove(extensionValue);
+        }
+        
+        extensionFieldValues.add(extensionValue);
+    }
+    
+    
+    
     /**
      * @return the phone numbers entity
      */
@@ -351,7 +412,7 @@ public class UserEntity extends ResourceEntity {
 
     /**
      * Adds a new phoneNumber to this user
-     *
+     * 
      * @param phoneNumber
      *            the phoneNumnber to add
      */
@@ -361,7 +422,7 @@ public class UserEntity extends ResourceEntity {
 
     /**
      * Removes the given phoneNumber from this user
-     *
+     * 
      * @param phoneNumber
      *            the phoneNumber to remove
      */
@@ -372,7 +433,7 @@ public class UserEntity extends ResourceEntity {
     /**
      * Removes all phoneNumber's from this user
      */
-    public void removeAllPhoneNumbers(){
+    public void removeAllPhoneNumbers() {
         phoneNumbers.clear();
     }
 
@@ -385,7 +446,7 @@ public class UserEntity extends ResourceEntity {
 
     /**
      * Adds a new im to this user
-     *
+     * 
      * @param im
      *            the im to add
      */
@@ -395,7 +456,7 @@ public class UserEntity extends ResourceEntity {
 
     /**
      * Removes the given im from this user
-     *
+     * 
      * @param im
      *            the im to remove
      */
@@ -406,7 +467,7 @@ public class UserEntity extends ResourceEntity {
     /**
      * Removes all im's from this user
      */
-    public void removeAllIms(){
+    public void removeAllIms() {
         ims.clear();
     }
 
@@ -419,7 +480,7 @@ public class UserEntity extends ResourceEntity {
 
     /**
      * Adds a new photo to this user
-     *
+     * 
      * @param photo
      *            the photo to add
      */
@@ -429,7 +490,7 @@ public class UserEntity extends ResourceEntity {
 
     /**
      * Removes the given photo from this user
-     *
+     * 
      * @param photo
      *            the photo to remove
      */
@@ -440,7 +501,7 @@ public class UserEntity extends ResourceEntity {
     /**
      * Removes all photo's from this user
      */
-    public void removeAllPhotos(){
+    public void removeAllPhotos() {
         photos.clear();
     }
 
@@ -453,7 +514,7 @@ public class UserEntity extends ResourceEntity {
 
     /**
      * Adds a new address to this user
-     *
+     * 
      * @param address
      *            the address to add
      */
@@ -463,7 +524,7 @@ public class UserEntity extends ResourceEntity {
 
     /**
      * Removes the given address from this user
-     *
+     * 
      * @param address
      *            the address to remove
      */
@@ -474,7 +535,7 @@ public class UserEntity extends ResourceEntity {
     /**
      * Removes all addresses from this user
      */
-    public void removeAllAddresses(){
+    public void removeAllAddresses() {
         addresses.clear();
     }
 
@@ -487,7 +548,7 @@ public class UserEntity extends ResourceEntity {
 
     /**
      * Adds a new entitlement to this user
-     *
+     * 
      * @param entitlement
      *            the entitlement to add
      */
@@ -497,7 +558,7 @@ public class UserEntity extends ResourceEntity {
 
     /**
      * Removes the given entitlement from this user
-     *
+     * 
      * @param entitlement
      *            the entitlement to remove
      */
@@ -508,7 +569,7 @@ public class UserEntity extends ResourceEntity {
     /**
      * Removes all entitlement's from this user
      */
-    public void removeAllEntitlements(){
+    public void removeAllEntitlements() {
         entitlements.clear();
     }
 
@@ -521,7 +582,7 @@ public class UserEntity extends ResourceEntity {
 
     /**
      * Adds a new role to this user
-     *
+     * 
      * @param role
      *            the role to add
      */
@@ -531,7 +592,7 @@ public class UserEntity extends ResourceEntity {
 
     /**
      * Removes the given role from this user
-     *
+     * 
      * @param role
      *            the role to remove
      */
@@ -542,7 +603,7 @@ public class UserEntity extends ResourceEntity {
     /**
      * Removes all role's from this user
      */
-    public void removeAllRoles(){
+    public void removeAllRoles() {
         roles.clear();
     }
 
@@ -555,7 +616,7 @@ public class UserEntity extends ResourceEntity {
 
     /**
      * Adds a new x509Certificate to this user
-     *
+     * 
      * @param x509Certificate
      *            the x509Certificate to add
      */
@@ -565,7 +626,7 @@ public class UserEntity extends ResourceEntity {
 
     /**
      * Removes the given x509Certificate from this user
-     *
+     * 
      * @param x509Certificate
      *            the x509Certificate to remove
      */
@@ -576,28 +637,10 @@ public class UserEntity extends ResourceEntity {
     /**
      * Removes all x509Certificate's from this user
      */
-    public void removeAllX509Certificates(){
+    public void removeAllX509Certificates() {
         x509Certificates.clear();
     }
 
-    /**
-     * Adds or updates an extension field value for this User. When updating, the old value of the extension field is
-     * removed from this user and the new one will be added.
-     *
-     * @param extensionValue
-     *            The extension field value to add or update
-     */
-    public void addOrUpdateExtensionValue(ExtensionFieldValueEntity extensionValue) {
-        if (extensionValue == null) {
-            throw new IllegalArgumentException("extensionValue must not be null");
-        }
-
-        if (extensionFieldValues.contains(extensionValue)) {
-            extensionFieldValues.remove(extensionValue);
-        }
-
-        extensionFieldValues.add(extensionValue);
-    }
 
     @Override
     public String toString() {

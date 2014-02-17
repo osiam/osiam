@@ -23,6 +23,8 @@
 
 package org.osiam.storage.entities.extension
 
+import org.hibernate.dialect.function.NoArgSQLFunction
+import org.osiam.resources.exceptions.NoSuchElementException
 import org.osiam.storage.entities.ExtensionEntity
 import org.osiam.storage.entities.ExtensionFieldEntity
 
@@ -68,8 +70,7 @@ class ExtensionEntitySpec extends Specification {
         extension.getFieldForName(fieldName)
 
         then:
-        thrown(IllegalArgumentException)
+        thrown(NoSuchElementException)
     }
-
 
 }

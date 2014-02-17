@@ -31,7 +31,6 @@ import org.osiam.storage.entities.UserEntity
 
 import spock.lang.Specification
 
-
 class PhoneNumbersUpdaterSpec extends Specification {
 
     static IRRELEVANT = 'irrelevant'

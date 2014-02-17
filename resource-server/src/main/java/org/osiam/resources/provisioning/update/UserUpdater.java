@@ -79,6 +79,9 @@ public class UserUpdater {
 
     @Inject
     private PasswordEncoder passwordEncoder;
+    
+    @Inject
+    private ExtensionUpdater extensionUpdater;
 
     /**
      * updates the {@link UserEntity} based on the given {@link User}
@@ -117,6 +120,7 @@ public class UserUpdater {
         entitlementUpdater.update(user.getEntitlements(), userEntity, attributes);
         roleUpdater.update(user.getRoles(), userEntity, attributes);
         x509CertificateUpdater.update(user.getX509Certificates(), userEntity, attributes);
+        extensionUpdater.update(user.getAllExtensions(), userEntity, attributes);
     }
 
     private void updateUserName(User user, UserEntity userEntity, Set<String> attributes) {

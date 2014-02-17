@@ -32,6 +32,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -41,7 +42,10 @@ import org.osiam.resources.scim.ExtensionFieldType;
  * Defines a field in a scim-extension.
  */
 @Entity
-@Table(name = "scim_extension_field")
+@Table(name = "scim_extension_field",
+        indexes = {
+                @Index(unique = true, columnList = "extension_internal_id, name")
+        })
 public class ExtensionFieldEntity { // NOSONAR - will be constructed by jackson
 
     @Id
@@ -55,7 +59,7 @@ public class ExtensionFieldEntity { // NOSONAR - will be constructed by jackson
      * <p>
      * The type of this extension field.
      * </p>
-     *
+     * 
      * <p>
      * Custom type mapping is provided by {@link org.osiam.storage.entities.jpa_converters.ExtensionFieldTypeConverter}.
      * </p>

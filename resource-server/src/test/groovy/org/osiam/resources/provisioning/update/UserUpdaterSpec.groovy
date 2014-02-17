@@ -28,8 +28,10 @@ import org.osiam.resources.exceptions.ResourceExistsException
 import org.osiam.resources.scim.Group
 import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.User
+import org.osiam.storage.dao.ExtensionDao
 import org.osiam.storage.dao.UserDao
 import org.osiam.storage.entities.UserEntity
+import org.osiam.storage.helper.NumberPadder
 import org.springframework.security.authentication.encoding.PasswordEncoder
 
 import spock.lang.Specification
@@ -50,6 +52,7 @@ class UserUpdaterSpec extends Specification {
     AddressUpdater addressUpdater = Mock()
     UserDao userDao = Mock()
     PasswordEncoder passwordEncoder = Mock()
+    ExtensionUpdater extensionUpdater = Mock()
 
     ResourceUpdater resourceUpdater = Mock()
     UserUpdater userUpdater = new UserUpdater(resourceUpdater: resourceUpdater,
@@ -63,7 +66,8 @@ class UserUpdaterSpec extends Specification {
             x509CertificateUpdater: x509CertificateUpdater,
             addressUpdater: addressUpdater,
             userDao: userDao,
-            passwordEncoder: passwordEncoder)
+            passwordEncoder: passwordEncoder,
+            extensionUpdater : extensionUpdater)
 
     User user
     UserEntity userEntity = Mock()
@@ -219,6 +223,17 @@ class UserUpdaterSpec extends Specification {
 
         then:
         1 * addressUpdater.update([] as List, userEntity, new HashSet())
+    }
+    
+    def 'updating a user triggers extension updater'() {
+        given:
+        user = new User.Builder().build()
+
+        when:
+        userUpdater.update(user, userEntity)
+
+        then:
+        1 * extensionUpdater.update([:], userEntity, new HashSet())
     }
 
     def 'removing the displayName attribute is possible'() {

@@ -37,13 +37,6 @@ import spock.lang.Specification
 
 import com.fasterxml.jackson.databind.ObjectMapper
 
-/**
- * Created with IntelliJ IDEA.
- * User: jochen
- * Date: 14.10.13
- * Time: 14:43
- * To change this template use File | Settings | File Templates.
- */
 class AccessTokenValidationServiceSpec extends Specification {
 
     static final String ACCESS_TOKEN = "accessToken"

@@ -40,7 +40,6 @@ class ShowComplexAttributeFilterSpec extends Specification {
     def underTest = new UserController(scimUserProvisioning: provisioning, requestParamHelper: new RequestParamHelper())
     def servletRequestMock = Mock(HttpServletRequest)
 
-
     def "should be able to just show a field of an complex type"() {
         given:
         def actualDate = GregorianCalendar.getInstance().getTime()

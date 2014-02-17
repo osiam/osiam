@@ -21,19 +21,20 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.resources.exceptions
+package org.osiam.resources.exceptions;
 
-import spock.lang.Specification
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-class JsonMappingMessageTransformerSpec extends Specification {
+@ResponseStatus(value = HttpStatus.NOT_FOUND)
+public class NoSuchElementException extends OsiamException {
+    private static final long serialVersionUID = -690283630029161964L;
 
-    def jsonMappingMessageTransformer = new JsonMappingMessageTransformer()
+    public NoSuchElementException(String s) {
+        super(s);
+    }
 
-    def "should return null if message to transform is null"() {
-        when:
-        def result = jsonMappingMessageTransformer.transform(null)
-
-        then:
-        result == null
+    public NoSuchElementException(String s, Throwable cause) {
+        super(s, cause);
     }
 }

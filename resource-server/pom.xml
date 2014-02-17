@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" ?>
 <!--
   ~ Copyright (C) 2013 tarent AG
   ~
@@ -28,7 +29,7 @@
     <parent>
         <groupId>org.osiam</groupId>
         <artifactId>osiam-server-parent</artifactId>
-        <version>0.16</version>
+        <version>0.17</version>
     </parent>
 
     <artifactId>osiam-resource-server</artifactId>
@@ -226,7 +227,6 @@
             <artifactId>spring-jdbc</artifactId>
         </dependency>
 
-
         <!-- Spring -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -240,7 +240,6 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
         </dependency>
-
 
         <!-- AOP dependency -->
         <dependency>
@@ -318,7 +317,6 @@
             <artifactId>javax.inject</artifactId>
         </dependency>
 
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
@@ -369,7 +367,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>15.0</version>
+            <version>16.0.1</version>
         </dependency>
 
     </dependencies>

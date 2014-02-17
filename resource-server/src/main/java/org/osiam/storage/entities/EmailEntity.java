@@ -25,6 +25,7 @@ package org.osiam.storage.entities;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
 import org.osiam.resources.scim.Email;
@@ -33,7 +34,13 @@ import org.osiam.resources.scim.Email;
  * Email Entity
  */
 @Entity
-@Table(name = "scim_email")
+@Table(name = "scim_email",
+    indexes = {
+        @Index(columnList = "value"),
+        @Index(columnList = "type"),
+        @Index(columnList = "value, type"),
+    }
+)
 public class EmailEntity extends BaseMultiValuedAttributeEntityWithValue {
 
     /**

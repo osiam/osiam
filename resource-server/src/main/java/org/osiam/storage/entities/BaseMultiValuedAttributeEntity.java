@@ -58,5 +58,4 @@ public abstract class BaseMultiValuedAttributeEntity {
         this.primary = primary;
     }
 
-
 }

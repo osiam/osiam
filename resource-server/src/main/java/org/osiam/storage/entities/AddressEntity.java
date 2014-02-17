@@ -25,6 +25,7 @@ package org.osiam.storage.entities;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 
@@ -35,20 +36,24 @@ import org.osiam.resources.scim.Address;
  * Address Entity
  */
 @Entity
-@Table(name = "scim_address")
+@Table(name = "scim_address",
+        indexes = {
+                @Index(columnList = "type"),
+                @Index(columnList = "country, region, locality, postalCode, streetAddress"),
+        })
 public class AddressEntity extends BaseMultiValuedAttributeEntity {
 
     /**
      * <p>
      * The type of this Address.
      * </p>
-     *
+     * 
      * <p>
      * Custom type mapping is provided by {@link org.osiam.storage.entities.jpa_converters.AddressTypeConverter}.
      * </p>
      */
     @Basic
-    private Address.Type type;  // @Basic is needed for JPA meta model generator
+    private Address.Type type; // @Basic is needed for JPA meta model generator
 
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
