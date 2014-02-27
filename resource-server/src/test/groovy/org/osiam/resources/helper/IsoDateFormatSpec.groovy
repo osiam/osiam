@@ -44,7 +44,7 @@ class IsoDateFormatSpec extends Specification{
     def "should return the date fields in iso format"() {
         given:
         def actualDate = GregorianCalendar.getInstance().getTime()
-        def dateTimeFormatter = ISODateTimeFormat.dateTime();
+        def dateTimeFormatter = ISODateTimeFormat.dateTime()
         def date = new DateTime(actualDate)
         def created = dateTimeFormatter.print(date)
 
@@ -58,7 +58,7 @@ class IsoDateFormatSpec extends Specification{
         2 * servletRequestMock.getParameter("attributes") >> "meta.created"
         1 * provisioning.search(_, _, _, _, _) >> scimSearchResult
 
-        result.getResources() == [[meta:[created:created]]] as List
+        result.getResources() == [[meta:[created:created], schemas:['urn:scim:schemas:core:2.0:User']]] as List
         result.getItemsPerPage() == 100
         result.getStartIndex() == 0
         result.getTotalResults() == 23
