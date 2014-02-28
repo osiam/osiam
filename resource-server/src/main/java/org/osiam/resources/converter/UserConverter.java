@@ -133,7 +133,7 @@ public class UserConverter implements Converter<User, UserEntity> {
         for (X509CertificateEntity x509CertificateEntity : x509Certificates) {
             userEntity.addX509Certificate(x509CertificateEntity);
         }
-        Set<ExtensionFieldValueEntity> fieldValues = extensionConverter.fromScim(new HashSet<>(user.getAllExtensions()
+        Set<ExtensionFieldValueEntity> fieldValues = extensionConverter.fromScim(new HashSet<>(user.getExtensions()
                 .values()));
         for (ExtensionFieldValueEntity fieldValue : fieldValues) {
             userEntity.addOrUpdateExtensionValue(fieldValue);
