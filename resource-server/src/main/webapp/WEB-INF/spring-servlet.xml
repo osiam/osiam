@@ -37,6 +37,8 @@
     <import resource="resource-server.xml"/>
     <!-- JPA -->
     <import resource="jpa-configuration.xml"/>
+    <!-- Metrics -->
+    <import resource="metrics-configuration.xml"/>
 
     <!-- general access denied handler -->
     <bean id="oauthAccessDeniedHandler"
