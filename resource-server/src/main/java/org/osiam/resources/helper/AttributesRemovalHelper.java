@@ -24,6 +24,8 @@
 package org.osiam.resources.helper;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.osiam.resources.scim.Resource;
@@ -76,11 +78,18 @@ public class AttributesRemovalHelper {
         if (fieldsToReturn.length != 0) {
             mapper.addMixInAnnotations(
                     Object.class, PropertyFilterMixIn.class);
-
+            
+            HashSet<String> givenFields = new HashSet<String>();
+            givenFields.add("schemas");
+            for (String string : fieldsToReturn) {
+                givenFields.add(string);
+            }
+            String[] finalFieldsToReturn = givenFields.toArray(new String[givenFields.size()]);
+            
             FilterProvider filters = new SimpleFilterProvider()
                     .addFilter("filter properties by name",
                             SimpleBeanPropertyFilter.filterOutAllExcept(
-                                    fieldsToReturn));
+                                    finalFieldsToReturn));
             return mapper.writer(filters);
         }
         return mapper.writer();

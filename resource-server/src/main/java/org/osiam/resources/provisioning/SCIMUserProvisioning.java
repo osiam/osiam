@@ -103,6 +103,8 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
 
     @Override
     public User replace(String id, User user) {
+        UserEntity existingEntity = userDao.getById(id);
+        
         if (userDao.isUserNameAlreadyTaken(user.getUserName(), id)) {
             throw new ResourceExistsException("Can't replace the user with the id \"" + id
                     + "\". The username \"" + user.getUserName() + "\" is already taken.");
@@ -111,7 +113,6 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
             throw new ResourceExistsException("Can't replace the user with the id \"" + id
                     + "\". The externalId \"" + user.getExternalId() + "\" is already taken.");
         }
-        UserEntity existingEntity = userDao.getById(id);
 
         UserEntity userEntity = userConverter.fromScim(user);
 
@@ -152,6 +153,8 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
 
     @Override
     public User update(String id, User user) {
+        UserEntity userEntity = userDao.getById(id);
+
         if (userDao.isUserNameAlreadyTaken(user.getUserName(), id)) {
             throw new ResourceExistsException("Can't update the user with the id \"" + id
                     + "\". The username \"" + user.getUserName() + "\" is already taken.");
@@ -160,7 +163,6 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
             throw new ResourceExistsException("Can't update the user with the id \"" + id
                     + "\". The externalId \"" + user.getExternalId() + "\" is already taken.");
         }
-        UserEntity userEntity = userDao.getById(id);
 
         userUpdater.update(user, userEntity);
 

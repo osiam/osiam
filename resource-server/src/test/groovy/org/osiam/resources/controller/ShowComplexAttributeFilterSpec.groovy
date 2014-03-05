@@ -43,12 +43,12 @@ class ShowComplexAttributeFilterSpec extends Specification {
     def "should be able to just show a field of an complex type"() {
         given:
         def actualDate = GregorianCalendar.getInstance().getTime()
-        def dateTimeFormatter = ISODateTimeFormat.dateTime();
+        def dateTimeFormatter = ISODateTimeFormat.dateTime()
         def date = new DateTime(actualDate)
         def created = dateTimeFormatter.print(date)
 
         def user = new User.Builder("username").setMeta(new Meta.Builder(actualDate, null).build()).build()
-        def scimSearchResult = new SCIMSearchResult([user] as List, 23, 100, 0, ["urn:scim:schemas:core:1.0"] as Set)
+        def scimSearchResult = new SCIMSearchResult([user] as List, 23, 100, 0, ["urn:scim:schemas:core:2.0:User"] as Set)
         when:
         def result = underTest.searchWithPost(servletRequestMock)
 
@@ -56,10 +56,10 @@ class ShowComplexAttributeFilterSpec extends Specification {
         2 * servletRequestMock.getParameter("attributes") >> "meta.created"
         1 * provisioning.search(_, _, _, _, _) >> scimSearchResult
 
-        result.getResources() == [[meta: [created: created]]] as List
+        result.getResources() == [[meta:[created:created], schemas:['urn:scim:schemas:core:2.0:User']]] as List
         result.getItemsPerPage() == 100
         result.getStartIndex() == 0
         result.getTotalResults() == 23
-        result.getSchemas() == ["urn:scim:schemas:core:1.0"] as Set
+        result.getSchemas() == ["urn:scim:schemas:core:2.0:User"] as Set
     }
 }

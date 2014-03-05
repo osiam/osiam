@@ -108,7 +108,7 @@ class ExtensionUpdater {
         Extension updatedScimExtension = extensionEntry.getValue();
         ExtensionEntity extensionEntity = extensionDao.getExtensionByUrn(urn);
 
-        for (String fieldName : updatedScimExtension.getAllFields().keySet()) {
+        for (String fieldName : updatedScimExtension.getFields().keySet()) {
             ExtensionFieldEntity extensionEntitiyField = null;
             try {
                 extensionEntitiyField = extensionEntity.getFieldForName(fieldName, true);
