@@ -33,9 +33,6 @@
     <!-- Registry should be defined in only one context XML file -->
     <metrics:metric-registry id="metrics" />
 
-    <!-- annotation-driven must be included in all context files -->
-    <metrics:annotation-driven metric-registry="metrics" />
-
     <!-- require the metrics-jvm dependency -->
     <metrics:register metric-registry="metrics">
         <bean metrics:name="jvm.memory" class="com.codahale.metrics.jvm.MemoryUsageGaugeSet" />
