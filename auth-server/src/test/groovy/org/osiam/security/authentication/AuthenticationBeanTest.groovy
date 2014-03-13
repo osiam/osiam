@@ -48,7 +48,7 @@ class AuthenticationBeanTest extends Specification {
         def result = authenticationBean.loadUserByUsername("UserName")
 
         then:
-        1 * httpClientHelperMock.executeHttpPost("http://localhost:8080/osiam-resource-server/authentication/user", "UserName", null, null) >> response
+        1 * httpClientHelperMock.executeHttpPost("http://localhost:8080/osiam-resource-server/authentication/user", "UserName") >> response
         1 * jacksonMapperMock.readValue(response.body, UserSpring.class) >> userSpringMock
         result instanceof UserSpring
     }

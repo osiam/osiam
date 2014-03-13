@@ -64,7 +64,7 @@ public class AuthenticationBean implements UserDetailsService {
         final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort
                 + "/osiam-resource-server/authentication/user";
 
-        final HttpClientRequestResult result = httpClientHelper.executeHttpPost(serverUri, username, null, null);
+        final HttpClientRequestResult result = httpClientHelper.executeHttpPost(serverUri, username);
 
         final UserSpring userSpring;
         try {

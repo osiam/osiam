@@ -46,7 +46,7 @@ class ClientDetailsLoadingBeanTest extends Specification {
         def result = clientDetailsLoadingBean.loadClientByClientId("ClientId")
 
         then:
-        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-resource-server/authentication/client/ClientId", null, null) >> requestResult
+        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-resource-server/authentication/client/ClientId") >> requestResult
         1 * jacksonMapperMock.readValue(requestResult.body, ClientSpring.class) >> clientSpringMock
         result instanceof ClientSpring
     }
@@ -60,7 +60,7 @@ class ClientDetailsLoadingBeanTest extends Specification {
         clientDetailsLoadingBean.loadClientByClientId("ClientId")
 
         then:
-        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-resource-server/authentication/client/ClientId", null, null) >> requestResult
+        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-resource-server/authentication/client/ClientId") >> requestResult
         1 * jacksonMapperMock.readValue(requestResult.body, ClientSpring.class) >> { throw new IOException() }
         thrown(RuntimeException)
     }
@@ -75,6 +75,6 @@ class ClientDetailsLoadingBeanTest extends Specification {
 
         then:
         1 * clientSpringMock.getExpiry() >> oldClientExpiryDate
-        1 * httpClientHelperMock.executeHttpPut("http://localhost:8080/osiam-resource-server/authentication/client/ClientId", "expiry", oldClientExpiryDate.toString(), null, null)
+        1 * httpClientHelperMock.executeHttpPut("http://localhost:8080/osiam-resource-server/authentication/client/ClientId", "expiry", oldClientExpiryDate.toString())
     }
 }

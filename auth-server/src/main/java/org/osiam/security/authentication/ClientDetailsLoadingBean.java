@@ -60,7 +60,7 @@ public class ClientDetailsLoadingBean implements ClientDetailsService {
     public ClientDetails loadClientByClientId(final String clientId) {
         final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort + "/osiam-resource-server/authentication/client/";
 
-        final HttpClientRequestResult response = httpClientHelper.executeHttpGet(serverUri + clientId, null, null);
+        final HttpClientRequestResult response = httpClientHelper.executeHttpGet(serverUri + clientId);
         ClientSpring clientSpring;
         try {
             clientSpring = mapper.readValue(response.getBody(), ClientSpring.class);
@@ -73,6 +73,6 @@ public class ClientDetailsLoadingBean implements ClientDetailsService {
 
     public void updateClient(ClientSpring client, String clientId) {
         final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort + "/osiam-resource-server/authentication/client/";
-        httpClientHelper.executeHttpPut(serverUri + clientId, "expiry", client.getExpiry().toString(), null, null);
+        httpClientHelper.executeHttpPut(serverUri + clientId, "expiry", client.getExpiry().toString());
     }
 }
