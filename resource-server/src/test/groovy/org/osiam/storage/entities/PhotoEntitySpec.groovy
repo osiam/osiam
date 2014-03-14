@@ -23,7 +23,7 @@
 
 package org.osiam.storage.entities
 
-import org.osiam.resources.exceptions.OsiamException;
+import org.osiam.resources.exceptions.OsiamException
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.storage.entities.PhotoEntity
 import org.osiam.storage.entities.UserEntity
@@ -34,14 +34,6 @@ class PhotoEntitySpec extends Specification {
 
     PhotoEntity photoEntity = new PhotoEntity()
     def userEntity = Mock(UserEntity)
-
-    def "should throw exception if the value is not a valid URL"() {
-        when:
-        photoEntity.setValue(" ")
-
-        then:
-        thrown(OsiamException)
-    }
 
     def "value should contain a valid file suffix"() {
         when:

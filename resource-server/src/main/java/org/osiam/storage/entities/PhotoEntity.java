@@ -23,15 +23,11 @@
 
 package org.osiam.storage.entities;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
 
-import org.osiam.resources.exceptions.OsiamException;
 import org.osiam.resources.scim.Photo;
 
 /**
@@ -60,16 +56,7 @@ public class PhotoEntity extends BaseMultiValuedAttributeEntityWithValue {
 
     @Override
     public void setValue(String value) {
-        ensureGivenValueIsAnUri(value);
         super.setValue(value);
-    }
-
-    private void ensureGivenValueIsAnUri(String value) {
-        try {
-            new URI(value);
-        } catch (URISyntaxException e) {
-            throw new OsiamException("The given value MUST be a URI pointing to a photo.", e);
-        }
     }
 
     public Photo.Type getType() {

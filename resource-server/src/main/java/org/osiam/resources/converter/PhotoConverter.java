@@ -23,6 +23,10 @@
 
 package org.osiam.resources.converter;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import org.osiam.resources.exceptions.OsiamException;
 import org.osiam.resources.scim.Photo;
 import org.osiam.storage.entities.PhotoEntity;
 import org.springframework.stereotype.Service;
@@ -33,7 +37,7 @@ public class PhotoConverter implements Converter<Photo, PhotoEntity> {
     @Override
     public PhotoEntity fromScim(Photo scim) {
         PhotoEntity photoEntity = new PhotoEntity();
-        photoEntity.setValue(String.valueOf(scim.getValue()));
+        photoEntity.setValue(scim.getValueAsURI().toString());
         photoEntity.setType(scim.getType());
         photoEntity.setPrimary(scim.isPrimary());
         
@@ -42,11 +46,18 @@ public class PhotoConverter implements Converter<Photo, PhotoEntity> {
 
     @Override
     public Photo toScim(PhotoEntity entity) {
-        return new Photo.Builder()
-                .setType(entity.getType())
-                .setValue(entity.getValue())
-                .setPrimary(entity.isPrimary())
-                .build();
+        Photo scimPhoto;
+        
+        try {
+            scimPhoto =  new Photo.Builder()
+                    .setType(entity.getType())
+                    .setValue(new URI(entity.getValue()))
+                    .setPrimary(entity.isPrimary())
+                    .build();
+        } catch (URISyntaxException e) {
+            throw new OsiamException(e.getMessage());
+        }
+        return scimPhoto;
     }
 
 }
