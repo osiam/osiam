@@ -82,7 +82,7 @@ public class AttributesRemovalHelper {
             HashSet<String> givenFields = new HashSet<String>();
             givenFields.add("schemas");
             for (String string : fieldsToReturn) {
-                givenFields.add(string);
+                givenFields.add(string.trim());
             }
             String[] finalFieldsToReturn = givenFields.toArray(new String[givenFields.size()]);
             
