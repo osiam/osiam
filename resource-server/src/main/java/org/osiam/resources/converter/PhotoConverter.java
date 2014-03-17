@@ -55,7 +55,7 @@ public class PhotoConverter implements Converter<Photo, PhotoEntity> {
                     .setPrimary(entity.isPrimary())
                     .build();
         } catch (URISyntaxException e) {
-            throw new OsiamException(e.getMessage());
+            throw new OsiamException(e.getMessage(), e);
         }
         return scimPhoto;
     }

@@ -81,12 +81,12 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
     @Override
     public User create(User user) {
         if (userDao.isUserNameAlreadyTaken(user.getUserName())) {
-            throw new ResourceExistsException("Can't create a user. The username \"" +
-                    user.getUserName() + "\" is already taken.");
+            throw new ResourceExistsException(String.format(
+                    "Can't create a user. The username \"%s\" is already taken.", user.getUserName()));
         }
         if (userDao.isExternalIdAlreadyTaken(user.getExternalId())) {
-            throw new ResourceExistsException("Can't create a user. The externalId \"" +
-                    user.getExternalId() + "\" is already taken.");
+            throw new ResourceExistsException(String.format(
+                    "Can't create a user. The externalId \"%s\" is already taken.", user.getExternalId()));
         }
         UserEntity userEntity = userConverter.fromScim(user);
         userEntity.setId(UUID.randomUUID());
@@ -104,14 +104,16 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
     @Override
     public User replace(String id, User user) {
         UserEntity existingEntity = userDao.getById(id);
-        
+
         if (userDao.isUserNameAlreadyTaken(user.getUserName(), id)) {
-            throw new ResourceExistsException("Can't replace the user with the id \"" + id
-                    + "\". The username \"" + user.getUserName() + "\" is already taken.");
+            throw new ResourceExistsException(String.format(
+                    "Can't replace the user with the id \"%s\". The username \"%s\" is already taken.", id,
+                    user.getUserName()));
         }
         if (userDao.isExternalIdAlreadyTaken(user.getExternalId(), id)) {
-            throw new ResourceExistsException("Can't replace the user with the id \"" + id
-                    + "\". The externalId \"" + user.getExternalId() + "\" is already taken.");
+            throw new ResourceExistsException(String.format(
+                    "Can't replace the user with the id \"%s\". The externalId \"%s\" is already taken.", id,
+                    user.getExternalId()));
         }
 
         UserEntity userEntity = userConverter.fromScim(user);
@@ -156,12 +158,14 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
         UserEntity userEntity = userDao.getById(id);
 
         if (userDao.isUserNameAlreadyTaken(user.getUserName(), id)) {
-            throw new ResourceExistsException("Can't update the user with the id \"" + id
-                    + "\". The username \"" + user.getUserName() + "\" is already taken.");
+            throw new ResourceExistsException(String.format(
+                    "Can't update the user with the id \"%s\". The username \"%s\" is already taken.", id,
+                    user.getUserName()));
         }
         if (userDao.isExternalIdAlreadyTaken(user.getExternalId(), id)) {
-            throw new ResourceExistsException("Can't update the user with the id \"" + id
-                    + "\". The externalId \"" + user.getExternalId() + "\" is already taken.");
+            throw new ResourceExistsException(String.format(
+                    "Can't update the user with the id \"%s\". The externalId \"%s\" is already taken.", id,
+                    user.getExternalId()));
         }
 
         userUpdater.update(user, userEntity);

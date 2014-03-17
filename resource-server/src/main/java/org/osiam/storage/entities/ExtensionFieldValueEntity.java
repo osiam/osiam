@@ -62,7 +62,7 @@ public class ExtensionFieldValueEntity {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = UserEntity.JOIN_COLUMN_NAME, nullable = false, insertable = false, updatable = false)
-    private UserEntity user;
+    private UserEntity user;  // NOSONAR: set by Hibernate and used by building Query
 
     public long getInternalId() {
         return internalId;

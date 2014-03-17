@@ -73,7 +73,7 @@ public class UserConverter implements Converter<User, UserEntity> {
     private MetaConverter metaConverter;
 
     @Override
-    public UserEntity fromScim(User user) {
+    public UserEntity fromScim(User user) { // NOSONAR:  Cyclomatic Complexity can be over 10 
         if (user == null) {
             return null;
         }

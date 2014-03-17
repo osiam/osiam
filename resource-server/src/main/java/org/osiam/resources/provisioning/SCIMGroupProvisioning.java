@@ -63,12 +63,12 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
     @Override
     public Group create(Group group) {
         if (groupDao.isDisplayNameAlreadyTaken(group.getDisplayName())) {
-            throw new ResourceExistsException("Can't create a group. The displayname \"" +
-                    group.getDisplayName() + "\" is already taken.");
+            throw new ResourceExistsException(String.format(
+                    "Can't create a group. The displayname \"%s\" is already taken.", group.getDisplayName()));
         }
         if (groupDao.isExternalIdAlreadyTaken(group.getExternalId())) {
-            throw new ResourceExistsException("Can't create a group. The externalId \"" +
-                    group.getExternalId() + "\" is already taken.");
+            throw new ResourceExistsException(String.format(
+                    "Can't create a group. The externalId \"%s\" is already taken.", group.getExternalId()));
         }
         GroupEntity groupEntity = groupConverter.fromScim(group);
         groupEntity.setId(UUID.randomUUID());
@@ -81,12 +81,12 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
     @Override
     public Group replace(String id, Group group) {
         if (groupDao.isDisplayNameAlreadyTaken(group.getDisplayName(), id)) {
-            throw new ResourceExistsException("Can't replace the group with the id \"" + id
-                    + "\". The displayname \"" + group.getDisplayName() + "\" is already taken.");
+            throw new ResourceExistsException(String.format("Can't replace the group with the id \"" + id
+                    + "\". The displayname \"%s\" is already taken.", group.getDisplayName()));
         }
         if (groupDao.isExternalIdAlreadyTaken(group.getExternalId(), id)) {
-            throw new ResourceExistsException("Can't replace the group with the id \"" + id
-                    + "\". The externalId \"" + group.getExternalId() + "\" is already taken.");
+            throw new ResourceExistsException(String.format("Can't replace the group with the id \"" + id
+                    + "\". The externalId \"%s\" is already taken.", group.getExternalId()));
         }
         GroupEntity existingEntity = groupDao.getById(id);
 
@@ -133,12 +133,12 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
     @Override
     public Group update(String id, Group group) {
         if (groupDao.isDisplayNameAlreadyTaken(group.getDisplayName(), id)) {
-            throw new ResourceExistsException("Can't update the group with the id \"" + id
-                    + "\". The displayname \"" + group.getDisplayName() + "\" is already taken.");
+            throw new ResourceExistsException(String.format("Can't update the group with the id \"" + id
+                    + "\". The displayname \"%s\" is already taken.", group.getDisplayName()));
         }
         if (groupDao.isExternalIdAlreadyTaken(group.getExternalId(), id)) {
-            throw new ResourceExistsException("Can't update the group with the id \"" + id
-                    + "\". The externalId \"" + group.getExternalId() + "\" is already taken.");
+            throw new ResourceExistsException(String.format("Can't update the group with the id \"" + id
+                    + "\". The externalId \"%s\" is already taken.", group.getExternalId()));
         }
         GroupEntity groupEntity = groupDao.getById(id);
 
