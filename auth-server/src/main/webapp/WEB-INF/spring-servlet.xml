@@ -85,12 +85,12 @@
     <!-- the token storage managing all access tokens -->
     <bean id="tokenStore" class="org.springframework.security.oauth2.provider.token.InMemoryTokenStore"/>
 
-    <!-- view resolver to find JSP's -->
+    <!-- view resolver to find JSP's
     <bean id="viewResolver" class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
         <property name="viewResolvers">
             <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
                 <property name="prefix" value="/WEB-INF/jsp/"/>
-                <property name="suffix" value=".jsp"/>
+                <property name="suffix" value=".html"/>
             </bean>
         </property>
         <property name="defaultViews">
@@ -98,6 +98,33 @@
                 <property name="extractValueFromSingleKeyModel" value="true"/>
             </bean>
         </property>
+    </bean>  -->
+    
+    <bean id="webTemplateResolver" class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
+        <property name="prefix" value="/WEB-INF/templates/" />
+        <property name="suffix" value=".html"/>
+        <property name="templateMode" value="HTML5" />
+        <property name="characterEncoding" value="UTF-8" />
+        <property name="order" value="2" />
+        <!-- Template cache is true by default. Set to false if you want -->
+        <!-- templates to be automatically updated when modified. -->
+        <property name="cacheable" value="true" />
+    </bean>
+    
+    <!-- THYMELEAF: Template Engine (Spring3-specific version) -->
+    <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+        <property name="templateResolvers">
+          <set>
+            <ref bean="webTemplateResolver" />
+          </set>
+        </property>
+    </bean>
+    
+    <!-- THYMELEAF: View Resolver - implementation of Spring's ViewResolver interface -->
+    <!-- (we would not need this if our app was not web) -->
+    <bean id="viewResolver" class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+        <property name="templateEngine" ref="templateEngine" />
+        <property name="characterEncoding" value="UTF-8" />
     </bean>
 
     <!-- general access denied handler -->
