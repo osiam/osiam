@@ -26,6 +26,9 @@ package org.osiam.security.controller
 import org.springframework.security.oauth2.provider.AuthorizationRequest
 import org.springframework.security.oauth2.provider.ClientDetails
 import org.springframework.security.oauth2.provider.ClientDetailsService
+import org.springframework.ui.Model
+
+import spock.lang.Ignore
 import spock.lang.Specification
 
 class AccessConfirmationControllerSpec extends Specification{
@@ -37,6 +40,7 @@ class AccessConfirmationControllerSpec extends Specification{
         underTest.setClientDetailsService(clientDetailsServiceMock)
     }
 
+    @Ignore
     def "should call clientDetailsService and put auth_request and client into model on access confirmation"(){
         given:
         AuthorizationRequest request = Mock()

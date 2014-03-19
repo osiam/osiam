@@ -23,16 +23,18 @@
 
 package org.osiam.security.controller;
 
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.inject.Inject;
-import java.util.Map;
 
 /**
  * Controller for retrieving the model for and displaying the confirmation page for access to a protected resource.
@@ -45,12 +47,14 @@ public class AccessConfirmationController {
     private ClientDetailsService clientDetailsService;
 
     @RequestMapping("/oauth/confirm_access")
-    public ModelAndView getAccessConfirmation(Map<String, Object> model) {
-        AuthorizationRequest clientAuth = (AuthorizationRequest) model.remove("authorizationRequest");
+    public String getAccessConfirmation(Model model, HttpServletRequest request) {
+        Map<String, Object> modelMap = model.asMap();
+        AuthorizationRequest clientAuth = (AuthorizationRequest) modelMap.remove("authorizationRequest");
         ClientDetails client = clientDetailsService.loadClientByClientId(clientAuth.getClientId()); // NOSONAR - clientDetailsService is initialized via setter injection
-        model.put("auth_request", clientAuth);
-        model.put("client", client);
-        return new ModelAndView("access_confirmation", model);
+        model.addAttribute("auth_request", clientAuth);
+        model.addAttribute("client", client);
+        model.addAttribute("hasUserRole", request.isUserInRole("ROLE_USER"));
+        return "access_confirmation";
     }
 
     @RequestMapping("/oauth/error")

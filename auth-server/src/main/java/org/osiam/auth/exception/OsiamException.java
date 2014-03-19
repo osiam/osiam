@@ -21,59 +21,22 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/* CSS Document */
+package org.osiam.auth.exception;
 
-body {
-  color: white;
-  font-family: 'Trebuchet MS', Helvetica, sans-serif;
-  font-size: 12px;
-  margin: 0 auto;
-  width: 736px;
-}
+public class OsiamException extends RuntimeException {
 
-#content {
-  background: #3d3d3d;
-  width: 676px;
-  margin-top: 20px;
-  padding: 0 30px 25px 30px;
-}
+    private static final long serialVersionUID = -292158452140136468L;
 
-h1 {
-  height: 36px;
-  width: 721px;
-  margin: 0 0 1em 0;
-  padding-top: 80px;
-  padding-left: 15px;
-  font-size: 1.8em;
-  font-variant: small-caps;
-}
+    public OsiamException() {
+        super();
+    }
 
-h2 {
-  font-size: 1.2em;
-  margin-left: -10px;
-  padding-top: 20px;
-  font-weight: bold;
-  letter-spacing: .3px;
-}
+    public OsiamException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-.error h2 {
-  color: red;
-  font-size: 1.2em;
-  padding-top: 20px;
-  font-weight: bold;
-  letter-spacing: .3px;
-}
+    public OsiamException(String message) {
+        super(message);
+    }
 
-.error p {
-  color: red;
-}
-
-p {
-  letter-spacing: .2px;
-}
-
-label {
-  text-indent: 20px;
-  letter-spacing: .2px;
-  padding: 5px 5px 5px 5px;
 }

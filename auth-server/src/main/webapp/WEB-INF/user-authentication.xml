@@ -28,13 +28,15 @@
 
     <!-- OAuth2 User Login/Grant Access interface provides a login form for the user to login and grant access of resources
         to a client -->
-    <http access-denied-page="/login.html?authorization_error=true" disable-url-rewriting="true"
+    <http access-denied-page="/login-error" disable-url-rewriting="true"
           xmlns="http://www.springframework.org/schema/security">
         <!-- generally all resources below /oauth are accessed as role "USER" this does not affect more specialized configurations -->
         <intercept-url pattern="/oauth/**" access="ROLE_USER"/>
         <!-- shows a login form to the user -->
-        <form-login authentication-failure-url="/login.html?authentication_error=true" login-page="/login.html"
-                    login-processing-url="/login.do"/>
+        <form-login authentication-failure-url="/login-error" 
+                    default-target-url="/login-success"
+                    login-page="/loginform"
+                    login-processing-url="/login"/>
         <!-- this needs to be accessible anonymously -->
         <anonymous enabled="true"/>
     </http>
