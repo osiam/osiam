@@ -25,11 +25,16 @@ package org.osiam.resources.helper;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.osiam.resources.scim.Constants;
 import org.osiam.resources.scim.Resource;
 import org.osiam.resources.scim.SCIMSearchResult;
+import org.osiam.resources.scim.User;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,12 +46,14 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 public class AttributesRemovalHelper {
 
-    public <T extends Resource> SCIMSearchResult<T> removeSpecifiedAttributes(SCIMSearchResult<T> resultList, Map<String, Object> parameterMap) {
+    public <T extends Resource> SCIMSearchResult<T> removeSpecifiedAttributes(SCIMSearchResult<T> resultList,
+            Map<String, Object> parameterMap) {
         return getJsonResponseWithAdditionalFields(resultList, parameterMap);
     }
 
-    @SuppressWarnings("unchecked")
-    private <T extends Resource> SCIMSearchResult<T> getJsonResponseWithAdditionalFields(SCIMSearchResult<T> scimSearchResult, Map<String, Object> parameterMap) {
+    // @SuppressWarnings("unchecked")
+    private <T extends Resource> SCIMSearchResult<T> getJsonResponseWithAdditionalFields(
+            SCIMSearchResult<T> scimSearchResult, Map<String, Object> parameterMap) {
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -54,7 +61,9 @@ public class AttributesRemovalHelper {
         ObjectWriter writer = getObjectWriter(mapper, fieldsToReturn);
 
         try {
-            String resourcesString = writer.writeValueAsString(scimSearchResult.getResources());
+            List<T> resourceList = scimSearchResult.getResources();
+            resourceList = filterSchemas(resourceList, fieldsToReturn);
+            String resourcesString = writer.writeValueAsString(resourceList);
             JsonNode resourcesNode = mapper.readTree(resourcesString);
 
             String schemasString = writer.writeValueAsString(scimSearchResult.getSchemas());
@@ -73,19 +82,58 @@ public class AttributesRemovalHelper {
         }
     }
 
+    private <T extends Resource> List<T> filterSchemas(List<T> resourceList, String[] fieldsToReturn) {
+     
+        List<User> userList = new ArrayList<User>();
+        for (Resource resource : resourceList) {
+            if(!(resource instanceof User)){
+                return resourceList;
+            }
+            userList.add((User)resource);
+        }
+        userList = filterUserSchemas(userList, fieldsToReturn);
+        List<T> modifiedResourceList = new ArrayList<T>();
+        for (User user : userList) {
+            modifiedResourceList.add(user);
+        }
+        return modifiedResourceList;
+    }
+    
+    private List<User> filterUserSchemas(List<User> resourceList, String[] fieldsToReturn) {
+
+        if (resourceList.size() == 0 || !(resourceList.get(0) instanceof User)) {
+            return resourceList;
+        }
+        List<User> modifiedResourceList = new ArrayList<User>();
+        Set<String> newSchema = new HashSet<String>();
+        List<String> returnFields = Arrays.asList(fieldsToReturn);
+        for (User resource : resourceList) {
+            User user = resource;
+            for (String schema : user.getSchemas()) {
+                if (schema.equals(Constants.USER_CORE_SCHEMA)
+                        || returnFields.contains(schema)) {
+                    newSchema.add(schema);
+                }
+            }
+            User modifiedUser = new User.Builder(user).setSchemas(newSchema).build();
+            modifiedResourceList.add(modifiedUser);
+        }
+        return modifiedResourceList;
+    }
+
     private ObjectWriter getObjectWriter(ObjectMapper mapper, String[] fieldsToReturn) {
 
         if (fieldsToReturn.length != 0) {
             mapper.addMixInAnnotations(
                     Object.class, PropertyFilterMixIn.class);
-            
+
             HashSet<String> givenFields = new HashSet<String>();
             givenFields.add("schemas");
             for (String string : fieldsToReturn) {
                 givenFields.add(string.trim());
             }
             String[] finalFieldsToReturn = givenFields.toArray(new String[givenFields.size()]);
-            
+
             FilterProvider filters = new SimpleFilterProvider()
                     .addFilter("filter properties by name",
                             SimpleBeanPropertyFilter.filterOutAllExcept(
