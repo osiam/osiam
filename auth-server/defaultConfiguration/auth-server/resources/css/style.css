@@ -4,12 +4,26 @@ body {
   background-color: #eee;
 }
 
+.info-container {
+	width: 330px;
+	padding: 0px 15px;
+	margin: 0 auto;
+}
 .form-signin {
   max-width: 330px;
   padding: 15px;
   margin: 0 auto;
 }
-.form-signin .form-signin-heading,
+.form-signin-heading{
+  text-align: left;
+  padding: 3px;
+  border-bottom: 1px solid gray; 
+}
+.alert{
+	-moz-border-radius: 4px;-webkit-border-radius: 4px;border-radius: 4px;
+	margin-bottom: 0px;
+	text-align: center;
+}
 .form-signin .checkbox {
   margin-bottom: 10px;
 }
@@ -38,3 +52,19 @@ body {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+#confirm-container{
+	width: 450px;
+	margin: 0 auto;
+}
+#confirmation-form,
+#denial-form{
+	padding: 5px;
+	float: left;
+	margin: 10px;
+}
+
+#confirmation-form button,
+#denial-form button {
+	padding: 5px;
+}
+

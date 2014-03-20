@@ -27,20 +27,22 @@ import org.osiam.resources.ClientSpring
 import org.osiam.security.authentication.ClientDetailsLoadingBean
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.provider.AuthorizationRequest
+
+import spock.lang.Ignore
 import spock.lang.Specification
 
 class OsiamUserApprovalHandlerTest extends Specification {
 
-    def clientDetailsLoadingBean = Mock(ClientDetailsLoadingBean)
-    def osiamUserApprovalHandler = new OsiamUserApprovalHandler(clientDetailsLoadingBean: clientDetailsLoadingBean)
-    def authorizationRequestMock = Mock(AuthorizationRequest)
-    def authenticationMock = Mock(Authentication)
+    ClientDetailsLoadingBean clientDetailsLoadingBean = Mock()
+    OsiamUserApprovalHandler osiamUserApprovalHandler = new OsiamUserApprovalHandler(clientDetailsLoadingBean: clientDetailsLoadingBean)
+    AuthorizationRequest authorizationRequestMock = Mock()
+    Authentication authenticationMock = Mock()
 
-    def "should only add approval date if it is the correct state and user approved successfully"() {
+    def 'should only add approval date if it is the correct state and user approved successfully'() {
         given:
-        def clientMock = Mock(ClientSpring)
+        ClientSpring clientMock = Mock()
         authorizationRequestMock.getClientId() >> 'example-client'
-        clientDetailsLoadingBean.loadClientByClientId("example-client") >> clientMock
+        clientDetailsLoadingBean.loadClientByClientId('example-client') >> clientMock
         def approvalParams = ['user_oauth_approval':'true']
         authorizationRequestMock.getApprovalParameters() >> approvalParams
         clientMock.getValidityInSeconds() >> 1337
@@ -54,7 +56,7 @@ class OsiamUserApprovalHandlerTest extends Specification {
         true
     }
 
-    def "should not add approval date if approval param map is empty and not containing key user_oauth_approval"() {
+    def 'should not add approval date if approval param map is empty and not containing key user_oauth_approval'() {
         given:
         def approvalParams = [:]
         authorizationRequestMock.getApprovalParameters() >> approvalParams
@@ -67,7 +69,7 @@ class OsiamUserApprovalHandlerTest extends Specification {
         true
     }
 
-    def "should not add approval date if user denies approval"() {
+    def 'should not add approval date if user denies approval'() {
         given:
         def approvalParams = ['user_oauth_approval':'false']
         authorizationRequestMock.getApprovalParameters() >> approvalParams
@@ -80,11 +82,12 @@ class OsiamUserApprovalHandlerTest extends Specification {
         true
     }
 
-    def "should return true if implicit is configured as true to not ask user for approval"() {
+    def 'should return true if implicit is configured as true to not ask user for approval'() {
         given:
-        def clientMock = Mock(ClientSpring)
+        ClientSpring clientMock = Mock()
         authorizationRequestMock.getClientId() >> 'example-client'
         clientDetailsLoadingBean.loadClientByClientId('example-client') >> clientMock
+        authenticationMock.isAuthenticated() >> true
         clientMock.isImplicit() >> true
 
         when:
@@ -94,11 +97,12 @@ class OsiamUserApprovalHandlerTest extends Specification {
         result
     }
 
-    def "should return true if expiry date is valid and user approved client already and must not approve it again"() {
+    def 'should return true if expiry date is valid and user approved client already and must not approve it again'() {
         given:
-        def clientMock = Mock(ClientSpring)
+        ClientSpring clientMock = Mock()
         authorizationRequestMock.getClientId() >> 'example-client'
         clientDetailsLoadingBean.loadClientByClientId('example-client') >> clientMock
+        authenticationMock.isAuthenticated() >> true
         clientMock.getExpiry() >> new Date(System.currentTimeMillis() + (1337 * 1000))
 
         when:
@@ -108,9 +112,9 @@ class OsiamUserApprovalHandlerTest extends Specification {
         result
     }
 
-    def "should return false if implicit is not configured and user never approved the client before"() {
+    def 'should return false if implicit is not configured and user never approved the client before'() {
         given:
-        def clientMock = Mock(ClientSpring)
+        ClientSpring clientMock = Mock()
         authorizationRequestMock.getClientId() >> 'example-client'
         clientDetailsLoadingBean.loadClientByClientId('example-client') >> clientMock
         clientMock.isImplicit() >> false
@@ -123,9 +127,9 @@ class OsiamUserApprovalHandlerTest extends Specification {
         !result
     }
 
-    def "should return false if implicit is not configured and user approval date is expired"() {
+    def 'should return false if implicit is not configured and user approval date is expired'() {
         given:
-        def clientMock = Mock(ClientSpring)
+        ClientSpring clientMock = Mock()
         authorizationRequestMock.getClientId() >> 'example-client'
         clientDetailsLoadingBean.loadClientByClientId('example-client') >> clientMock
         clientMock.isImplicit() >> false

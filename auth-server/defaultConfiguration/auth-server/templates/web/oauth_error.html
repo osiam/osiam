@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	
+	<title th:text="#{oauth.error.title}">Error</title>
+	
+	<link rel="stylesheet" type="text/css" href="../../resources/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" type="text/css" href="../../resources/css/style.css" th:href="@{/css/style.css}"/>
+</head>
+
+<body>
+
+	<div class="container">
+		<div class="info-container">
+			<p class="alert alert-danger" th:text="${errorMessage} and ${!#strings.isEmpty(errorMessage)} ? ${errorMessage} : #{oauth.error.message}">
+				There is an internal problem with the client authorization. Please contact your client.
+			</p>
+		</div>
+    </div>
+
+</body>
+
+</html>

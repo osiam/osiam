@@ -82,9 +82,10 @@ public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
     public boolean isApproved(AuthorizationRequest authorizationRequest, Authentication userAuthentication) {
         //check if implicit is configured in client or if user already confirmed approval once and validity time is not over
         ClientSpring client = getClientDetails(authorizationRequest);
-        if (client.isImplicit()) {
+        if (userAuthentication.isAuthenticated() && client.isImplicit()) {
             return true;
-        } else if (client.getExpiry() != null && client.getExpiry().compareTo(new Date(System.currentTimeMillis())) >= 0) {
+        } else if (userAuthentication.isAuthenticated() 
+                && client.getExpiry() != null && client.getExpiry().compareTo(new Date()) >= 0) {
             return true;
         }
         return false;

@@ -32,11 +32,13 @@
           xmlns="http://www.springframework.org/schema/security">
         <!-- generally all resources below /oauth are accessed as role "USER" this does not affect more specialized configurations -->
         <intercept-url pattern="/oauth/**" access="ROLE_USER"/>
-        <!-- shows a login form to the user -->
-        <form-login authentication-failure-url="/login-error" 
-                    default-target-url="/login-success"
-                    login-page="/loginform"
-                    login-processing-url="/login"/>
+        <!-- shows a login form to the user;
+             default-target-url only called when e.g.
+             no client specified -->
+        <form-login authentication-failure-url="/login/error" 
+                    default-target-url="/oauth/error"
+                    login-page="/login"
+                    login-processing-url="/login/check" />
         <!-- this needs to be accessible anonymously -->
         <anonymous enabled="true"/>
     </http>

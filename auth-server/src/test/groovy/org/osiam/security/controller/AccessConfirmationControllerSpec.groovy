@@ -23,12 +23,14 @@
 
 package org.osiam.security.controller
 
+import javax.servlet.http.HttpServletRequest
+
 import org.springframework.security.oauth2.provider.AuthorizationRequest
 import org.springframework.security.oauth2.provider.ClientDetails
 import org.springframework.security.oauth2.provider.ClientDetailsService
 import org.springframework.ui.Model
+import org.springframework.web.servlet.ModelAndView
 
-import spock.lang.Ignore
 import spock.lang.Specification
 
 class AccessConfirmationControllerSpec extends Specification{
@@ -40,32 +42,32 @@ class AccessConfirmationControllerSpec extends Specification{
         underTest.setClientDetailsService(clientDetailsServiceMock)
     }
 
-    @Ignore
-    def "should call clientDetailsService and put auth_request and client into model on access confirmation"(){
+    def 'should call clientDetailsService and put auth_request and client into model on access confirmation'(){
         given:
-        AuthorizationRequest request = Mock()
+        HttpServletRequest httpRequest = Mock()
+        AuthorizationRequest authRequest = Mock()
         ClientDetails client = Mock()
-        request.clientId >> "huch"
-        def model = ['authorizationRequest': request]
+        def model = ['authorizationRequest': authRequest]
+        authRequest.clientId >> 'huch'
+        httpRequest.isUserInRole('ROLE_USER') >> true
 
         when:
-        def result = underTest.getAccessConfirmation(model)
+        def result = underTest.getAccessConfirmation(model, httpRequest)
 
         then:
-        1 * clientDetailsServiceMock.loadClientByClientId("huch") >> client
-        result.model.get("auth_request") == request
-        result.model.get("client") == client
+        1 * clientDetailsServiceMock.loadClientByClientId('huch') >> client
+        result.model.get('auth_request') == authRequest
+        result.model.get('client') == client
+        result.model.get('hasUserRole') == true
+        result.viewName == 'access_confirmation'
     }
 
-    def "should set error message on handleError"(){
-        given:
-        def model = ['authorizationRequest': null]
-
+    def 'should set error message on handleError'(){
         when:
-        String result = underTest.handleError(model)
+        String result = underTest.handleError()
 
         then:
-        result == "oauth_error"
-        model.get("message") == "There was a problem with the OAuth2 protocol"
+        result == 'oauth_error'
     }
+
 }

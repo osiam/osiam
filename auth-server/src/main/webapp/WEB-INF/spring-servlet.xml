@@ -82,7 +82,7 @@
     <bean id="tokenStore" class="org.springframework.security.oauth2.provider.token.InMemoryTokenStore" />
 
     <bean id="webTemplateResolver" class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
-        <property name="prefix" value="/WEB-INF/classes/templates/web/" />
+        <property name="prefix" value="/WEB-INF/classes/auth-server/templates/web/" />
         <property name="suffix" value=".html" />
         <property name="templateMode" value="HTML5" />
         <property name="characterEncoding" value="UTF-8" />
@@ -110,10 +110,12 @@
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
         <property name="basenames">
             <list>
-                <value>locale/login</value>
+                <value>auth-server/locale/login</value>
             </list>
         </property>
     </bean>
+
+    <mvc:resources mapping="/css/**" location="classpath:/auth-server/resources/css/" />
 
     <!-- general access denied handler -->
     <bean id="oauthAccessDeniedHandler" class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler" />
