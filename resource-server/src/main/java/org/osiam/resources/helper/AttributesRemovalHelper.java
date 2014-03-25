@@ -50,20 +50,27 @@ public class AttributesRemovalHelper {
             Map<String, Object> parameterMap) {
         return getJsonResponseWithAdditionalFields(resultList, parameterMap);
     }
+    
+    public SCIMSearchResult<User> removeSpecifiedUserAttributes(SCIMSearchResult<User> resultList,
+            Map<String, Object> parameterMap) {
+        return getUserJsonResponseWithAdditionalFields(resultList, parameterMap);
+    }
 
-    // @SuppressWarnings("unchecked")
-    private <T extends Resource> SCIMSearchResult<T> getJsonResponseWithAdditionalFields(
-            SCIMSearchResult<T> scimSearchResult, Map<String, Object> parameterMap) {
+    private SCIMSearchResult<User> getUserJsonResponseWithAdditionalFields(
+            SCIMSearchResult<User> scimSearchResult, Map<String, Object> parameterMap) {
 
         ObjectMapper mapper = new ObjectMapper();
 
         String[] fieldsToReturn = (String[]) parameterMap.get("attributes");
+        if(fieldsToReturn.length == 0){
+            return scimSearchResult;
+        }
         ObjectWriter writer = getObjectWriter(mapper, fieldsToReturn);
 
         try {
-            List<T> resourceList = scimSearchResult.getResources();
-            resourceList = filterSchemas(resourceList, fieldsToReturn);
-            String resourcesString = writer.writeValueAsString(resourceList);
+            List<User> users = scimSearchResult.getResources();
+            users = filterUserSchemas(users, fieldsToReturn);
+            String resourcesString = writer.writeValueAsString(users);
             JsonNode resourcesNode = mapper.readTree(resourcesString);
 
             String schemasString = writer.writeValueAsString(scimSearchResult.getSchemas());
@@ -81,27 +88,38 @@ public class AttributesRemovalHelper {
             throw new IllegalArgumentException(e);
         }
     }
-
-    private <T extends Resource> List<T> filterSchemas(List<T> resourceList, String[] fieldsToReturn) {
-     
-        List<User> userList = new ArrayList<User>();
-        for (Resource resource : resourceList) {
-            if(!(resource instanceof User)){
-                return resourceList;
-            }
-            userList.add((User)resource);
-        }
-        userList = filterUserSchemas(userList, fieldsToReturn);
-        List<T> modifiedResourceList = new ArrayList<T>();
-        for (User user : userList) {
-            modifiedResourceList.add(user);
-        }
-        return modifiedResourceList;
-    }
     
+    private <T extends Resource> SCIMSearchResult<T> getJsonResponseWithAdditionalFields(
+            SCIMSearchResult<T> scimSearchResult, Map<String, Object> parameterMap) {
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        String[] fieldsToReturn = (String[]) parameterMap.get("attributes");
+        ObjectWriter writer = getObjectWriter(mapper, fieldsToReturn);
+
+        try {
+            String resourcesString = writer.writeValueAsString(scimSearchResult.getResources());
+            JsonNode resourcesNode = mapper.readTree(resourcesString);
+
+            String schemasString = writer.writeValueAsString(scimSearchResult.getSchemas());
+            JsonNode schemasNode = mapper.readTree(schemasString);
+
+            ObjectNode rootNode = mapper.createObjectNode();
+            rootNode.put("totalResults", scimSearchResult.getTotalResults());
+            rootNode.put("itemsPerPage", scimSearchResult.getItemsPerPage());
+            rootNode.put("startIndex", scimSearchResult.getStartIndex());
+            rootNode.put("schemas", schemasNode);
+            rootNode.put("Resources", resourcesNode);
+
+            return mapper.readValue(rootNode.toString(), SCIMSearchResult.class);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+   
     private List<User> filterUserSchemas(List<User> resourceList, String[] fieldsToReturn) {
 
-        if (resourceList.size() == 0 || !(resourceList.get(0) instanceof User)) {
+        if (resourceList.size() == 0) {
             return resourceList;
         }
         List<User> modifiedResourceList = new ArrayList<User>();
