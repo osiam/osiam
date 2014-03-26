@@ -77,7 +77,7 @@ class SCIMGroupProvisioningBeanSpec extends Specification {
         MemberRef member = new MemberRef.Builder()
                 .setValue(memberId)
                 .build()
-        group = new Group.Builder(group)
+        group = new Group.Builder()
                 .setMembers([member] as Set)
                 .build()
 
@@ -123,7 +123,7 @@ class SCIMGroupProvisioningBeanSpec extends Specification {
         MemberRef member = new MemberRef.Builder()
                 .setValue(memberId)
                 .build()
-        group = new Group.Builder(group)
+        group = new Group.Builder()
                 .setMembers([member] as Set)
                 .build()
 
@@ -139,7 +139,7 @@ class SCIMGroupProvisioningBeanSpec extends Specification {
         MemberRef member = new MemberRef.Builder()
                 .setValue(memberId)
                 .build()
-        group = new Group.Builder(group)
+        group = new Group.Builder()
                 .setMembers([member] as Set)
                 .build()
 
