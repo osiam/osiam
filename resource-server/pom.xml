@@ -359,7 +359,7 @@
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4</artifactId>
-            <version>4.2</version>
+            <version>4.2.1</version>
         </dependency>
         
         <!-- Codahale Metrics -->
