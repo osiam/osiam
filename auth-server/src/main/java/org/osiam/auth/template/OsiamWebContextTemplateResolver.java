@@ -21,26 +21,28 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.auth.exception;
+package org.osiam.auth.template;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.thymeleaf.exceptions.ConfigurationException;
+import org.thymeleaf.resourceresolver.IResourceResolver;
+import org.thymeleaf.templateresolver.TemplateResolver;
 
-import javax.servlet.http.HttpServletRequest;
+/**
+ * Osiam web context template resolver for thymeleaf template engine
+ * 
+ */
+public class OsiamWebContextTemplateResolver extends TemplateResolver {
 
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
-
-@ControllerAdvice
-public class OsiamExceptionHandler extends SimpleMappingExceptionResolver {
-
-    private static final Logger LOGGER = Logger.getLogger(OsiamExceptionHandler.class.getName());
-
-    @ExceptionHandler(value = { Exception.class })
-    protected ModelAndView handleConflict(HttpServletRequest request, Exception e) {
-        LOGGER.log(Level.WARNING, "An exception occurred", e);
-        return new ModelAndView("oauth_error");
+    public OsiamWebContextTemplateResolver() {
+        super();
+        super.setResourceResolver(new OsiamWebContextResourceResolver());
+    }
+    
+    @Override
+    public void setResourceResolver(final IResourceResolver resourceResolver) {
+        throw new ConfigurationException(
+                "Cannot set a resource resolver on " + this.getClass().getName() + ". If " +
+                "you want to set your own resource resolver, use " + TemplateResolver.class.getName() + 
+                "instead");
     }
 }

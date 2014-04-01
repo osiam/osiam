@@ -81,8 +81,8 @@
     <!-- the token storage managing all access tokens -->
     <bean id="tokenStore" class="org.springframework.security.oauth2.provider.token.InMemoryTokenStore" />
 
-    <bean id="webTemplateResolver" class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
-        <property name="prefix" value="/WEB-INF/classes/auth-server/templates/web/" />
+    <bean id="webTemplateResolver" class="org.osiam.auth.template.OsiamWebContextTemplateResolver">
+        <property name="prefix" value="auth-server/templates/web/" />
         <property name="suffix" value=".html" />
         <property name="templateMode" value="HTML5" />
         <property name="characterEncoding" value="UTF-8" />
@@ -93,11 +93,6 @@
         <property name="templateResolvers">
             <set>
                 <ref bean="webTemplateResolver" />
-            </set>
-        </property>
-        <property name="additionalDialects">
-            <set>
-                <bean class="org.thymeleaf.extras.springsecurity3.dialect.SpringSecurityDialect" />
             </set>
         </property>
     </bean>
