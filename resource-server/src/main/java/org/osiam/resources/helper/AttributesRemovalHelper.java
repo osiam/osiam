@@ -50,7 +50,7 @@ public class AttributesRemovalHelper {
             Map<String, Object> parameterMap) {
         return getJsonResponseWithAdditionalFields(resultList, parameterMap);
     }
-    
+
     public SCIMSearchResult<User> removeSpecifiedUserAttributes(SCIMSearchResult<User> resultList,
             Map<String, Object> parameterMap) {
         return getUserJsonResponseWithAdditionalFields(resultList, parameterMap);
@@ -62,9 +62,14 @@ public class AttributesRemovalHelper {
         ObjectMapper mapper = new ObjectMapper();
 
         String[] fieldsToReturn = (String[]) parameterMap.get("attributes");
-        if(fieldsToReturn.length == 0){
+        if (fieldsToReturn.length == 0) {
             return scimSearchResult;
         }
+
+        for (int i = 0; i < fieldsToReturn.length; i++) {
+            fieldsToReturn[i] = fieldsToReturn[i].trim();
+        }
+
         ObjectWriter writer = getObjectWriter(mapper, fieldsToReturn);
 
         try {
@@ -88,7 +93,7 @@ public class AttributesRemovalHelper {
             throw new IllegalArgumentException(e);
         }
     }
-    
+
     private <T extends Resource> SCIMSearchResult<T> getJsonResponseWithAdditionalFields(
             SCIMSearchResult<T> scimSearchResult, Map<String, Object> parameterMap) {
 
@@ -116,7 +121,7 @@ public class AttributesRemovalHelper {
             throw new IllegalArgumentException(e);
         }
     }
-   
+
     private List<User> filterUserSchemas(List<User> resourceList, String[] fieldsToReturn) {
 
         if (resourceList.size() == 0) {
@@ -147,8 +152,8 @@ public class AttributesRemovalHelper {
 
             HashSet<String> givenFields = new HashSet<String>();
             givenFields.add("schemas");
-            for (String string : fieldsToReturn) {
-                givenFields.add(string.trim());
+            for (String field : fieldsToReturn) {
+                givenFields.add(field);
             }
             String[] finalFieldsToReturn = givenFields.toArray(new String[givenFields.size()]);
 
