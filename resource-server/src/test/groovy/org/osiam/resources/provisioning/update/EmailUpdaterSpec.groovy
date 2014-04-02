@@ -33,8 +33,8 @@ import spock.lang.Specification
 
 class EmailUpdaterSpec extends Specification {
 
-    static IRRELEVANT = 'irrelevant'
-    static IRRELEVANT_02 = 'irrelevant02'
+    static IRRELEVANT = 'irrelevant@tarent.de'
+    static IRRELEVANT_02 = 'irrelevant02@tarent.de'
 
     UserEntity userEntity = Mock()
     EmailEntity emailEntity = Mock()

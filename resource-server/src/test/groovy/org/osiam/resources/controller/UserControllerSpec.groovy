@@ -277,7 +277,7 @@ class UserControllerSpec extends Specification {
         mapping.value() == []
         mapping.method() == [RequestMethod.GET]
         body
-        1 * attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResultMock, map)
+        1 * attributesRemovalHelper.removeSpecifiedUserAttributes(scimSearchResultMock, map)
     }
 
     def "should be able to search a user on /User/.search URI with POST method"() {
@@ -307,6 +307,6 @@ class UserControllerSpec extends Specification {
         mapping.value() == ["/.search"]
         mapping.method() == [RequestMethod.POST]
         body
-        1 * attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResultMock, map)
+        1 * attributesRemovalHelper.removeSpecifiedUserAttributes(scimSearchResultMock, map)
     }
 }

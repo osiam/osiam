@@ -29,7 +29,7 @@
     <parent>
         <groupId>org.osiam</groupId>
         <artifactId>osiam-server-parent</artifactId>
-        <version>0.19</version>
+        <version>0.20</version>
     </parent>
 
     <artifactId>osiam-resource-server</artifactId>
@@ -359,7 +359,7 @@
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4</artifactId>
-            <version>4.2</version>
+            <version>4.2.1</version>
         </dependency>
         
         <!-- Codahale Metrics -->

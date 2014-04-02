@@ -66,7 +66,9 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
     @Override
     public User getById(String id) {
         try {
-            return removePassword(userConverter.toScim(userDao.getById(id)));
+            UserEntity userEntity = userDao.getById(id);
+            User user = userConverter.toScim(userEntity);
+            return getUserWithoutPassword(user);
         } catch (NoResultException nre) {
             LOGGER.log(Level.INFO, nre.getMessage(), nre);
 
@@ -96,7 +98,7 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
 
         userDao.create(userEntity);
 
-        User result = removePassword(userConverter.toScim(userEntity));
+        User result = getUserWithoutPassword(userConverter.toScim(userEntity));
 
         return result;
     }
@@ -133,7 +135,7 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
 
         userEntity = userDao.update(userEntity);
 
-        User result = removePassword(userConverter.toScim(userEntity));
+        User result = getUserWithoutPassword(userConverter.toScim(userEntity));
 
         return result;
     }
@@ -147,7 +149,7 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
 
         for (UserEntity userEntity : result.results) {
             User scimResultUser = userConverter.toScim(userEntity);
-            users.add(removePassword(scimResultUser));
+            users.add(getUserWithoutPassword(scimResultUser));
         }
 
         return new SCIMSearchResult<>(users, result.totalResults, count, startIndex, Constants.USER_CORE_SCHEMA);
@@ -172,7 +174,7 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
 
         userEntity.touch();
 
-        User result = removePassword(userConverter.toScim(userEntity));
+        User result = getUserWithoutPassword(userConverter.toScim(userEntity));
 
         return result;
     }
@@ -186,7 +188,7 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
         }
     }
 
-    private User removePassword(User user) {
+    private User getUserWithoutPassword(User user) {
         return new User.Builder(user).setPassword(null).build();
     }
 

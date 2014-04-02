@@ -126,7 +126,7 @@ public class  UserController {
         SCIMSearchResult<User> scimSearchResult = scimUserProvisioning.search((String)parameterMap.get("filter"), (String)parameterMap.get("sortBy"), (String)parameterMap.get("sortOrder"),
                 (int)parameterMap.get("count"), (int)parameterMap.get("startIndex"));
 
-        return attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResult, parameterMap);
+        return attributesRemovalHelper.removeSpecifiedUserAttributes(scimSearchResult, parameterMap);
     }
 
     @RequestMapping(value = "/.search", method = RequestMethod.POST)
@@ -136,7 +136,7 @@ public class  UserController {
         SCIMSearchResult<User> scimSearchResult = scimUserProvisioning.search((String) parameterMap.get("filter"), (String) parameterMap.get("sortBy"), (String) parameterMap.get("sortOrder"),
                 (int) parameterMap.get("count"), (int) parameterMap.get("startIndex"));
 
-        return attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResult, parameterMap);
+        return attributesRemovalHelper.removeSpecifiedUserAttributes(scimSearchResult, parameterMap);
     }
 
     private User setLocationUriAndCreateUserForOutput(HttpServletRequest request, HttpServletResponse response,
