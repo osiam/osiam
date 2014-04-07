@@ -1,3 +1,25 @@
+<!--
+  ~ Copyright (C) 2013 tarent AG
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining
+  ~ a copy of this software and associated documentation files (the
+  ~ "Software"), to deal in the Software without restriction, including
+  ~ without limitation the rights to use, copy, modify, merge, publish,
+  ~ distribute, sublicense, and/or sell copies of the Software, and to
+  ~ permit persons to whom the Software is furnished to do so, subject to
+  ~ the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be
+  ~ included in all copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  ~ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  ~ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+  ~ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+  ~ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+  ~ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+  ~ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -22,12 +44,22 @@
 	            Wrong username or password
 	        </div>
         </div>
-		<form th:action="@{/login/check}" class="form-signin" method="post" role="form">
+        
+		<form th:action="@{/login}" class="form-signin" method="post" role="form">
+			<select name="loginModus" class="form-control">
+<!--             	<option th:each="loginModus : ${loginModi}" -->
+<!--                 	    th:value="${#strings.toLowerCase(loginModus)}" -->
+<!--                   	    th:text="#{${'login.modus.' + #strings.toLowerCase(loginModus)}}">Modus</option> -->
+                <option th:value="normal"
+                  	    th:text="#{login.modus.normal}"
+                  	    th:selected="selected">Normaler Login</option>
+          	    <option th:value="ldap"
+                  	    th:text="#{login.modus.ldap}">Login mit LDAP</option>
+        	</select>
 			<input id="j_username" name="j_username" type="text"
-				class="form-control" th:placeholder="#{login.username}" />
-			<input
-				id="j_password" name="j_password" type="password"
-				class="form-control" th:placeholder="#{login.password}" />
+				   class="form-control" th:placeholder="#{login.username}" />
+			<input id="j_password" name="j_password" type="password"
+				   class="form-control" th:placeholder="#{login.password}" />
 			<button class="btn btn-lg btn-primary btn-block" type="submit"
 				th:text="#{login.signin}">Sign in</button>
 		</form>

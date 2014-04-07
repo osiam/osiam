@@ -52,12 +52,12 @@ public class AccessConfirmationController {
 
         AuthorizationRequest clientAuth = (AuthorizationRequest) model.remove("authorizationRequest");
         if (clientAuth == null) {
-            return new ModelAndView("redirect:/client-error");
+            return new ModelAndView("redirect:/oauth/error");
         }
         ClientDetails client = clientDetailsService.loadClientByClientId(clientAuth.getClientId()); // NOSONAR
         // Sonar message: clientDetailsService is initialized via setter injection
         if (client == null) {
-            return new ModelAndView("redirect:/client-error");
+            return new ModelAndView("redirect:/oauth/error");
         }
         model.put("auth_request", clientAuth);
         model.put("client", client);

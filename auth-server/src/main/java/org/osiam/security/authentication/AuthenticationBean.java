@@ -34,6 +34,7 @@ import org.osiam.resources.UserSpring;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.oauth2.provider.ClientDetails;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -52,6 +53,9 @@ public class AuthenticationBean implements UserDetailsService {
     private String httpScheme;
     @Inject
     private HttpClientHelper httpClientHelper;
+    
+    @Inject
+    ClientDetailsLoadingBean clientDetailsLoadingBean;
 
     private ObjectMapper mapper; // NOSONAR : need to mock the dependency therefor the final identifier was removed
 
@@ -74,5 +78,24 @@ public class AuthenticationBean implements UserDetailsService {
         }
 
         return userSpring;
+    }
+    
+    public UserSpring createNewUser(String username, String clientId) {
+        final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort
+                + "/osiam-resource-server/Users";
+        
+        ClientDetails client = clientDetailsLoadingBean.loadClientByClientId(clientId);
+
+        UserSpring userSpring = new UserSpring();
+        userSpring.setUsername(username);
+        final HttpClientRequestResult result = httpClientHelper.executeHttpPost(serverUri, username);
+
+        try {
+            userSpring = mapper.readValue(result.getBody(), UserSpring.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e); // NOSONAR : Need only wrapping to a runtime exception
+        }
+
+        return userSpring; 
     }
 }
