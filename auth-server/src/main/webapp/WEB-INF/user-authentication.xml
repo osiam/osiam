@@ -29,32 +29,54 @@
 
 	<!-- OAuth2 User Login/Grant Access interface provides a login form for 
 		the user to login and grant access of resources to a client -->
-	<http access-denied-page="/login/error" disable-url-rewriting="true"
-		xmlns="http://www.springframework.org/schema/security">
+	<security:http access-denied-page="/login/error"
+				   disable-url-rewriting="true"
+				   auto-config="false"
+				   entry-point-ref="loginUrlAuthenticationEntryPoint"
+				   use-expressions="true">
 		<!-- generally all resources below /oauth are accessed as role "USER" this 
 			does not affect more specialized configurations -->
-		<intercept-url pattern="/oauth/**" access="ROLE_USER" />
-		<!-- shows a login form to the user; default-target-url only called when 
-			e.g. no client specified -->
-		<form-login authentication-failure-url="/login/error"
-					default-target-url="/oauth/error" login-page="/login"
-					login-processing-url="/login/check"
-					authentication-success-handler-ref="authenticationSuccessHandler" />
+		<security:intercept-url pattern="/oauth/**" access="isAuthenticated()" />
+					
 		<!-- this needs to be accessible anonymously -->
-		<anonymous enabled="true" />
-	</http>
+		<security:anonymous enabled="true" />
+		
+		<security:custom-filter position="FORM_LOGIN_FILTER" ref="loginDecisionFilter"/>
+	</security:http>
+	
+	<bean id="loginUrlAuthenticationEntryPoint"
+          class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+        <property name="loginFormUrl" value="/login"/>
+    </bean>
+	
+	<bean id="loginDecisionFilter" class="org.osiam.security.helper.LoginDecisionFilter">
+        <property name="authenticationManager" ref="authenticationManager"/>
+        <property name="authenticationFailureHandler" ref="failureHandler"/>
+        <property name="authenticationSuccessHandler" ref="successHandler"/>
+    </bean>
+    
+    <bean id="successHandler"
+		class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
+        <property name="alwaysUseDefaultTargetUrl" value="false"/>
+    </bean>
+		
+	<bean id="failureHandler"
+          class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+        <property name="defaultFailureUrl" value="/login/error"/>
+    </bean>
 
-	<authentication-manager alias="authenticationManager"
-		xmlns="http://www.springframework.org/schema/security">
-		<authentication-provider user-service-ref="userDetailsService">
-			<password-encoder ref="passwordEncoder">
-				<salt-source ref="saltSource" />
-			</password-encoder>
-		</authentication-provider>
-		<authentication-provider ref="ldapAuthProvider" />
-	</authentication-manager>
+	<security:authentication-manager alias="authenticationManager">
+		<security:authentication-provider ref="internalAuthenticationProvider"/>
+		<security:authentication-provider ref="ldapAuthProvider" />
+	</security:authentication-manager>
 
-	<!-- Standard authentication -->
+	<!-- Internal authentication -->    
+    <bean id="internalAuthenticationProvider" class="org.osiam.auth.providers.InternalAuthenticationProvider">
+		<property name="userDetailsService" ref="userDetailsService"/>
+	  	<property name="passwordEncoder" ref="passwordEncoder"/>
+	  	<property name="saltSource" ref="saltSource"/>
+	</bean>
+	
 	<bean id="passwordEncoder"
 		class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
 		<constructor-arg value="512" />
@@ -66,14 +88,10 @@
 		<property name="userPropertyToUse" value="id" />
 	</bean>
 
-	<bean id="authenticationSuccessHandler"
-		class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler" />
-
 	<!-- LDAP authentication -->
-	<security:ldap-server id="contextSource" ldif="classpath:test-server.ldif"  />
+	<security:ldap-server id="contextSource" ldif="classpath:test-ldap-server.ldif" />
 
-	<bean id="ldapAuthProvider"
-		class="org.springframework.security.ldap.authentication.LdapAuthenticationProvider">
+	<bean id="ldapAuthProvider" class="org.osiam.auth.providers.OsiamLdapAuthenticationProvider">
 		<constructor-arg>
 			<bean
 				class="org.springframework.security.ldap.authentication.BindAuthenticator">
@@ -89,8 +107,8 @@
 			<bean
 				class="org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator">
 				<constructor-arg ref="contextSource" />
-				<constructor-arg value="ou=groups" />
-				<property name="groupRoleAttribute" value="ou" />
+				<constructor-arg value="" />
+				<property name="defaultRole" value="USER" />
 			</bean>
 		</constructor-arg>
 	</bean>

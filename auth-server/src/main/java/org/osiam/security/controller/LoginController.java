@@ -41,7 +41,7 @@ public class LoginController {
     HttpServletRequest request;
     
     @Inject
-    SavedRequestAwareAuthenticationSuccessHandler authenticationSuccessHandler;
+    SavedRequestAwareAuthenticationSuccessHandler successHandler;
 
     @RequestMapping
     public String login(Model model) {

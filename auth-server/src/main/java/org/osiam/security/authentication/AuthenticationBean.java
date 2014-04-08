@@ -34,7 +34,6 @@ import org.osiam.resources.UserSpring;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.oauth2.provider.ClientDetails;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -84,7 +83,7 @@ public class AuthenticationBean implements UserDetailsService {
         final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort
                 + "/osiam-resource-server/Users";
         
-        ClientDetails client = clientDetailsLoadingBean.loadClientByClientId(clientId);
+        //ClientDetails client = clientDetailsLoadingBean.loadClientByClientId(clientId);
 
         UserSpring userSpring = new UserSpring();
         userSpring.setUsername(username);
