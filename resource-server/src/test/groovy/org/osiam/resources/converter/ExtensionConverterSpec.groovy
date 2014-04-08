@@ -151,14 +151,14 @@ class ExtensionConverterSpec extends Specification {
         Set<Extension> scimExtensionSet = new HashSet<>()
 
         for (urn in urns) {
-            Extension extension = new Extension(urn)
+            Extension.Builder extension = new Extension.Builder(urn)
             def fixture = fixtures.get(urn)
 
             for (field in fixture) {
-                extension.addOrUpdateField(field.get('fieldname'), field.get('value'))
+                extension.setField(field.get('fieldname'), field.get('value'))
             }
 
-            scimExtensionSet.add(extension)
+            scimExtensionSet.add(extension.build())
         }
 
         return scimExtensionSet

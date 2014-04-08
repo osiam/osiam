@@ -93,17 +93,17 @@ public class ExtensionConverter implements Converter<Set<Extension>, Set<Extensi
 
     @Override
     public Set<Extension> toScim(Set<ExtensionFieldValueEntity> entity) {
-        Map<String, Extension> extensionMap = new HashMap<>();
+        Map<String, Extension.Builder> extensionMap = new HashMap<>();
 
         for (ExtensionFieldValueEntity fieldValueEntity : checkNotNull(entity)) {
             String urn = fieldValueEntity.getExtensionField().getExtension().getUrn();
-            Extension extension;
+            Extension.Builder extensionBuilder;
 
             if (extensionMap.containsKey(urn)) {
-                extension = extensionMap.get(urn);
+                extensionBuilder = extensionMap.get(urn);
             } else {
-                extension = new Extension(urn);
-                extensionMap.put(urn, extension);
+                extensionBuilder = new Extension.Builder(urn);
+                extensionMap.put(urn, extensionBuilder);
             }
 
             ExtensionFieldType<?> type = fieldValueEntity.getExtensionField().getType();
@@ -118,13 +118,18 @@ public class ExtensionConverter implements Converter<Set<Extension>, Set<Extensi
             }
 
             String name = fieldValueEntity.getExtensionField().getName();
-            addField(extension, type, name, value);
+            addField(extensionBuilder, type, name, value);
         }
 
-        return new HashSet<>(extensionMap.values());
+        HashSet<Extension> extensions = new HashSet<>();
+        for (Extension.Builder builder : extensionMap.values()) {
+            extensions.add(builder.build());
+        }
+        
+        return extensions;
     }
 
-    private <T> void addField(Extension extension, ExtensionFieldType<T> type, String fieldName, String stringValue) {
-        extension.addOrUpdateField(fieldName, type.fromString(stringValue), type);
+    private <T> void addField(Extension.Builder extension, ExtensionFieldType<T> type, String fieldName, String stringValue) {
+        extension.setField(fieldName, type.fromString(stringValue), type);
     }
 }
