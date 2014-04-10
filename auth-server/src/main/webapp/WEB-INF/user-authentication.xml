@@ -32,11 +32,10 @@
 	<security:http access-denied-page="/login/error"
 				   disable-url-rewriting="true"
 				   auto-config="false"
-				   entry-point-ref="loginUrlAuthenticationEntryPoint"
-				   use-expressions="true">
+				   entry-point-ref="loginUrlAuthenticationEntryPoint">
 		<!-- generally all resources below /oauth are accessed as role "USER" this 
 			does not affect more specialized configurations -->
-		<security:intercept-url pattern="/oauth/**" access="isAuthenticated()" />
+		<security:intercept-url pattern="/oauth/**" access="ROLE_USER" />
 					
 		<!-- this needs to be accessible anonymously -->
 		<security:anonymous enabled="true" />
@@ -67,11 +66,10 @@
 
 	<security:authentication-manager alias="authenticationManager">
 		<security:authentication-provider ref="internalAuthenticationProvider"/>
-		<security:authentication-provider ref="ldapAuthProvider" />
 	</security:authentication-manager>
 
-	<!-- Internal authentication -->    
-    <bean id="internalAuthenticationProvider" class="org.osiam.auth.providers.InternalAuthenticationProvider">
+	<!-- Internal authentication -->
+    <bean id="internalAuthenticationProvider" class="org.osiam.auth.login.providers.InternalAuthenticationProvider">
 		<property name="userDetailsService" ref="userDetailsService"/>
 	  	<property name="passwordEncoder" ref="passwordEncoder"/>
 	  	<property name="saltSource" ref="saltSource"/>
@@ -89,27 +87,6 @@
 	</bean>
 
 	<!-- LDAP authentication -->
-	<security:ldap-server id="contextSource" ldif="classpath:test-ldap-server.ldif" />
-
-	<bean id="ldapAuthProvider" class="org.osiam.auth.providers.OsiamLdapAuthenticationProvider">
-		<constructor-arg>
-			<bean
-				class="org.springframework.security.ldap.authentication.BindAuthenticator">
-				<constructor-arg ref="contextSource" />
-				<property name="userDnPatterns">
-					<list>
-						<value>uid={0},ou=people</value>
-					</list>
-				</property>
-			</bean>
-		</constructor-arg>
-		<constructor-arg>
-			<bean
-				class="org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator">
-				<constructor-arg ref="contextSource" />
-				<constructor-arg value="" />
-				<property name="defaultRole" value="USER" />
-			</bean>
-		</constructor-arg>
-	</bean>
+	<security:ldap-server id="contextSource"
+						  url="${org.osiam.ldap.server.url}" />
 </beans>

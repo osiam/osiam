@@ -7,13 +7,13 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.osiam.auth.login.providers.OsiamLdapAuthenticationProvider;
 import org.osiam.resources.UserSpring;
 import org.osiam.security.authentication.AuthenticationBean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
@@ -28,8 +28,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/login")
 public class LoginController {
 
-    @Inject
-    LdapAuthenticationProvider ldapAuthProvider;
+    //@Inject
+    //OsiamLdapAuthenticationProvider ldapAuthProvider;
     
     @Inject
     AuthenticationBean userDetailsService;
@@ -76,7 +76,7 @@ public class LoginController {
             else if(loginModus.equals("ldap")) {
                 targetURL = getTargetURL(request, response);
                 Authentication authRequest = new UsernamePasswordAuthenticationToken(j_username, j_password);
-                authentication = ldapAuthProvider.authenticate(authRequest);
+                //authentication = ldapAuthProvider.authenticate(authRequest);
                 userDetailsService.createNewUser(j_username, getClientId(request, response));
             }
             SecurityContextHolder.getContext().setAuthentication(authentication);

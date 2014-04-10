@@ -1,6 +1,6 @@
-package org.osiam.auth.providers;
+package org.osiam.auth.login.providers;
 
-import org.osiam.auth.login.LdapAuthenticationToken;
+import org.osiam.auth.login.authentications.OsiamLdapAuthentication;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
@@ -24,7 +24,7 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return (LdapAuthenticationToken.class.isAssignableFrom(authentication));
+        return (OsiamLdapAuthentication.class.isAssignableFrom(authentication));
     }
 
 }

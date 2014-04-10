@@ -81,7 +81,7 @@
     <!-- the token storage managing all access tokens -->
     <bean id="tokenStore" class="org.springframework.security.oauth2.provider.token.InMemoryTokenStore" />
 
-    <bean id="webTemplateResolver" class="org.osiam.auth.template.OsiamWebContextTemplateResolver">
+    <bean id="webTemplateResolver" class="org.osiam.auth.template.resolvers.OsiamWebContextTemplateResolver">
         <property name="prefix" value="auth-server/templates/web/" />
         <property name="suffix" value=".html" />
         <property name="templateMode" value="HTML5" />

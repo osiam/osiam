@@ -1,4 +1,4 @@
-package org.osiam.auth.template;
+package org.osiam.auth.template.resolvers;
 
 import java.io.InputStream;
 
