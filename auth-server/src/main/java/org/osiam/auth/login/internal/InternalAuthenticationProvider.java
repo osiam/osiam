@@ -1,6 +1,5 @@
-package org.osiam.auth.login.providers;
+package org.osiam.auth.login.internal;
 
-import org.osiam.auth.login.authentications.InternalAuthentication;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;

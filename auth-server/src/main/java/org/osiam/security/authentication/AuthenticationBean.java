@@ -28,9 +28,12 @@ import java.io.IOException;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.osiam.client.connector.OsiamConnector;
+import org.osiam.client.oauth.GrantType;
 import org.osiam.helper.HttpClientHelper;
 import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.resources.UserSpring;
+import org.osiam.resources.scim.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -46,16 +49,28 @@ public class AuthenticationBean implements UserDetailsService {
 
     @Value("${osiam.server.port}")
     private int serverPort;
+
     @Value("${osiam.server.host}")
     private String serverHost;
+
     @Value("${osiam.server.http.scheme}")
     private String httpScheme;
+
+    @Value("${org.osiam.auth.client.id}")
+    private String clientId;
+
+    @Value("${org.osiam.auth.client.secret}")
+    private String clientSecret;
+
+    @Value("${org.osiam.auth.client.scope}")
+    private String clientScope;
+
+    @Value("${org.osiam.auth.client.redirect.uri}")
+    private String redirectUri;
+    
     @Inject
     private HttpClientHelper httpClientHelper;
     
-    @Inject
-    ClientDetailsLoadingBean clientDetailsLoadingBean;
-
     private ObjectMapper mapper; // NOSONAR : need to mock the dependency therefor the final identifier was removed
 
     public AuthenticationBean() {
@@ -79,22 +94,33 @@ public class AuthenticationBean implements UserDetailsService {
         return userSpring;
     }
     
-    public UserSpring createNewUser(String username, String clientId) {
-        final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort
-                + "/osiam-resource-server/Users";
-        
-        //ClientDetails client = clientDetailsLoadingBean.loadClientByClientId(clientId);
+    public void createNewUser(User user) {
+        OsiamConnector osiamConnector = createOsiamConnector();
+        osiamConnector.createUser(user, osiamConnector.retrieveAccessToken());
+    }
+    
+    private OsiamConnector createOsiamConnector() {
+        OsiamConnector.Builder oConBuilder = new OsiamConnector.Builder().
+                setAuthServiceEndpoint(buildServerBaseUri("osiam-auth-server")).
+                setResourceEndpoint(buildServerBaseUri("osiam-resource-server")).
+                setGrantType(GrantType.CLIENT_CREDENTIALS).
+                setClientId(clientId).
+                setClientSecret(clientSecret).
+                setScope(clientScope);
+        return oConBuilder.build();
+    }
+    
+    private String buildServerBaseUri(String endpoint) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder
+                .append(httpScheme)
+                .append("://")
+                .append(serverHost)
+                .append(":")
+                .append(serverPort)
+                .append("/")
+                .append(endpoint);
 
-        UserSpring userSpring = new UserSpring();
-        userSpring.setUsername(username);
-        final HttpClientRequestResult result = httpClientHelper.executeHttpPost(serverUri, username);
-
-        try {
-            userSpring = mapper.readValue(result.getBody(), UserSpring.class);
-        } catch (IOException e) {
-            throw new RuntimeException(e); // NOSONAR : Need only wrapping to a runtime exception
-        }
-
-        return userSpring; 
+        return stringBuilder.toString();
     }
 }

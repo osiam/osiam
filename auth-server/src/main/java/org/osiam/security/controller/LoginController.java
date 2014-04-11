@@ -7,7 +7,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.osiam.auth.login.providers.OsiamLdapAuthenticationProvider;
+import org.osiam.auth.login.ldap.OsiamLdapAuthenticationProvider;
 import org.osiam.resources.UserSpring;
 import org.osiam.security.authentication.AuthenticationBean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -77,7 +77,7 @@ public class LoginController {
                 targetURL = getTargetURL(request, response);
                 Authentication authRequest = new UsernamePasswordAuthenticationToken(j_username, j_password);
                 //authentication = ldapAuthProvider.authenticate(authRequest);
-                userDetailsService.createNewUser(j_username, getClientId(request, response));
+                //userDetailsService.createNewUser(j_username, getClientId(request, response));
             }
             SecurityContextHolder.getContext().setAuthentication(authentication);
             //authenticationSuccessHandler.onAuthenticationSuccess(request, response, authentication);

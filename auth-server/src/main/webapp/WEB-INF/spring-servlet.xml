@@ -54,7 +54,7 @@
                     <constructor-arg ref="tokenServices" />
                     <constructor-arg ref="clientDetails" />
                 </bean>
-                <bean class="org.springframework.security.oauth2.provider.password.ResourceOwnerPasswordTokenGranter">
+                <bean class="org.osiam.auth.login.oauth.OsiamGranter">
                     <constructor-arg ref="authenticationManager" />
                     <constructor-arg ref="tokenServices" />
                     <constructor-arg ref="clientDetails" />

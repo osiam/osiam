@@ -1,4 +1,4 @@
-package org.osiam.auth.login.providers;
+package org.osiam.auth.login.ldap;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -9,9 +9,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
 
-public class DatabaseAuthoritiesPopulator extends DefaultLdapAuthoritiesPopulator{
+public class OsiamLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPopulator{
 
-    public DatabaseAuthoritiesPopulator(ContextSource contextSource, String groupSearchBase) {
+    public OsiamLdapAuthoritiesPopulator(ContextSource contextSource, String groupSearchBase) {
         super(contextSource, groupSearchBase);
     }
     

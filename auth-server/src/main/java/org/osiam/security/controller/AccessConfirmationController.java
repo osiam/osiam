@@ -45,6 +45,7 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/oauth")
 public class AccessConfirmationController {
     
+    @Inject
     private ClientDetailsService clientDetailsService;
 
     @RequestMapping("/confirm_access")
@@ -72,8 +73,4 @@ public class AccessConfirmationController {
         return "oauth_error";
     }
 
-    @Inject
-    public void setClientDetailsService(ClientDetailsService clientDetailsService) {
-        this.clientDetailsService = clientDetailsService;
-    }
 }

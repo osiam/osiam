@@ -3,14 +3,16 @@ package org.osiam.security.helper;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.osiam.auth.login.authentications.InternalAuthentication;
-import org.osiam.auth.login.authentications.OsiamLdapAuthentication;
+import org.osiam.auth.login.internal.InternalAuthentication;
+import org.osiam.auth.login.ldap.OsiamLdapAuthentication;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.util.Assert;
+
+import com.google.common.base.Strings;
 
 public class LoginDecisionFilter extends AbstractAuthenticationProcessingFilter {
 
@@ -46,15 +48,14 @@ public class LoginDecisionFilter extends AbstractAuthenticationProcessingFilter 
         
         String loginModus = request.getParameter("loginModus");
 
-        if (loginModus.equals("internal")) {
+        if (Strings.isNullOrEmpty(loginModus) || loginModus.equals("internal")) {
             authRequest = new InternalAuthentication(username, password);
-            // Allow subclasses to set the "details" property
-            setDetails(request, authRequest);
         }
         else if (loginModus.equals("ldap")) {
             authRequest = new OsiamLdapAuthentication(username, password);
         }
         
+        setDetails(request, authRequest);
         return this.getAuthenticationManager().authenticate(authRequest);
     }
     

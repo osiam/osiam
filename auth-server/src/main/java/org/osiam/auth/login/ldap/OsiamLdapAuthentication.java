@@ -1,4 +1,4 @@
-package org.osiam.auth.login.authentications;
+package org.osiam.auth.login.ldap;
 
 import java.util.Collection;
 

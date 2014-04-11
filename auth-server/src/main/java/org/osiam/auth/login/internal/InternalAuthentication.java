@@ -1,4 +1,4 @@
-package org.osiam.auth.login.authentications;
+package org.osiam.auth.login.internal;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 

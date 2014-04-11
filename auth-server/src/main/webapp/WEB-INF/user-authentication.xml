@@ -69,7 +69,7 @@
 	</security:authentication-manager>
 
 	<!-- Internal authentication -->
-    <bean id="internalAuthenticationProvider" class="org.osiam.auth.login.providers.InternalAuthenticationProvider">
+    <bean id="internalAuthenticationProvider" class="org.osiam.auth.login.internal.InternalAuthenticationProvider">
 		<property name="userDetailsService" ref="userDetailsService"/>
 	  	<property name="passwordEncoder" ref="passwordEncoder"/>
 	  	<property name="saltSource" ref="saltSource"/>
@@ -86,7 +86,4 @@
 		<property name="userPropertyToUse" value="id" />
 	</bean>
 
-	<!-- LDAP authentication -->
-	<security:ldap-server id="contextSource"
-						  url="${org.osiam.ldap.server.url}" />
 </beans>

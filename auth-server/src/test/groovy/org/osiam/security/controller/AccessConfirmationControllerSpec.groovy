@@ -35,12 +35,8 @@ import spock.lang.Specification
 
 class AccessConfirmationControllerSpec extends Specification{
 
-    AccessConfirmationController underTest = new AccessConfirmationController()
     ClientDetailsService clientDetailsServiceMock = Mock()
-
-    def setup(){
-        underTest.setClientDetailsService(clientDetailsServiceMock)
-    }
+    AccessConfirmationController underTest = new AccessConfirmationController(clientDetailsService: clientDetailsServiceMock)
 
     def 'should call clientDetailsService and put auth_request and client into model on access confirmation'(){
         given:
