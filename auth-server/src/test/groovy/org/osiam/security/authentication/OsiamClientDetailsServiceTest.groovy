@@ -29,14 +29,14 @@ import org.osiam.helper.HttpClientRequestResult
 import org.osiam.resources.ClientSpring
 import spock.lang.Specification
 
-class ClientDetailsLoadingBeanTest extends Specification {
+class OsiamClientDetailsServiceTest extends Specification {
 
     def jacksonMapperMock = Mock(ObjectMapper)
     def httpClientHelperMock = Mock(HttpClientHelper)
-    def clientDetailsLoadingBean = new ClientDetailsLoadingBean(mapper: jacksonMapperMock, httpClientHelper: httpClientHelperMock,
+    def clientDetailsLoadingBean = new OsiamClientDetailsService(mapper: jacksonMapperMock, httpClientHelper: httpClientHelperMock,
             httpScheme: "http", serverHost: "localhost", serverPort: 8080)
 
-    def "ClientDetailsLoadingBean should implement springs ClientDetailsService and therefore returning a client found by client ID as ClientSpring representation"() {
+    def "OsiamClientDetailsService should implement springs ClientDetailsService and therefore returning a client found by client ID as ClientSpring representation"() {
         given:
         def resultingClient = "the resulting client as JSON string"
         def clientSpringMock = Mock(ClientSpring)

@@ -67,6 +67,12 @@ body {
 #confirm-container {
 	width: 450px;
 	margin: 0 auto;
+	text-align: center;
+}
+
+#confirm-container h2 {
+	min-width: 200px;
+	border-bottom: 1px solid #808080;
 }
 
 #confirmation-form,#denial-form {
@@ -77,4 +83,11 @@ body {
 
 #confirmation-form button,#denial-form button {
 	padding: 5px;
+	min-width: 150px;
+}
+
+#form-container {
+	width: 360px;
+	text-align: center;
+	margin: 0 auto;
 }

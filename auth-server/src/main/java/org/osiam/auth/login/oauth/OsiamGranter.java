@@ -19,13 +19,13 @@ import org.springframework.security.oauth2.provider.token.AuthorizationServerTok
 public class OsiamGranter extends ResourceOwnerPasswordTokenGranter {
 
     private final AuthenticationManager authenticationManager;
-    
+
     public OsiamGranter(AuthenticationManager authenticationManager, AuthorizationServerTokenServices tokenServices,
             ClientDetailsService clientDetailsService) {
         super(authenticationManager, tokenServices, clientDetailsService);
         this.authenticationManager = authenticationManager;
     }
-    
+
     @Override
     protected OAuth2Authentication getOAuth2Authentication(AuthorizationRequest clientToken) {
 
@@ -36,12 +36,10 @@ public class OsiamGranter extends ResourceOwnerPasswordTokenGranter {
         Authentication userAuth = new InternalAuthentication(username, password);
         try {
             userAuth = authenticationManager.authenticate(userAuth);
-        }
-        catch (AccountStatusException ase) {
-            //covers expired, locked, disabled cases (mentioned in section 5.2, draft 31)
+        } catch (AccountStatusException ase) {
+            // covers expired, locked, disabled cases (mentioned in section 5.2, draft 31)
             throw new InvalidGrantException(ase.getMessage());
-        }
-        catch (BadCredentialsException e) {
+        } catch (BadCredentialsException e) {
             // If the username/password are wrong the spec says we should send 400/bad grant
             throw new InvalidGrantException(e.getMessage());
         }
@@ -54,5 +52,4 @@ public class OsiamGranter extends ResourceOwnerPasswordTokenGranter {
 
         return new OAuth2Authentication(request, userAuth);
     }
-
 }

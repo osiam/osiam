@@ -60,7 +60,7 @@
     </bean>
 		
 	<bean id="failureHandler"
-          class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+          class="org.osiam.auth.login.OsiamCachingAuthenticationFailureHandler">
         <property name="defaultFailureUrl" value="/login/error"/>
     </bean>
 

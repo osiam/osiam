@@ -1,22 +1,21 @@
 package org.osiam.auth.login.ldap;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import org.osiam.resources.scim.Email;
+import org.osiam.resources.scim.Email.Type;
 import org.osiam.resources.scim.Name;
+import org.osiam.resources.scim.UpdateUser;
 import org.osiam.resources.scim.User;
-import org.osiam.security.authentication.AuthenticationBean;
+import org.osiam.security.authentication.OsiamUserDetailsService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.security.ldap.authentication.LdapAuthenticator;
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
@@ -27,9 +26,11 @@ import com.google.common.base.Strings;
 
 public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider {
 
+    private final String LDAP_PROVIDER = "ldap";
+
     @Inject
-    private AuthenticationBean userDetailsService;
-    
+    private OsiamUserDetailsService userDetailsService;
+
     @Value("${org.osiam.ldap.sync.user.data:true}")
     private boolean syncUserData;
 
@@ -67,66 +68,84 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
 
         DirContextOperations userData = doAuthentication(userToken);
 
-        UserDetails user = userDetailsContextMapper.mapUserFromContext(userData, authentication.getName(),
+        OsiamLdapUserDetailsImpl ldapUser = (OsiamLdapUserDetailsImpl) userDetailsContextMapper.mapUserFromContext(
+                userData, authentication.getName(),
                 loadUserAuthorities(userData, authentication.getName(), (String) authentication.getCredentials()));
 
-        createOrUpdateUser(userData);
-        
-        return createSuccessfulAuthentication(userToken, user);
-    }
+        User scimUser = createOrUpdateUser(userData);
+        ldapUser.setId(scimUser.getId());
 
-    @Override
-    protected Collection<? extends GrantedAuthority> loadUserAuthorities(DirContextOperations userData,
-            String username, String password) {
-        return getAuthoritiesPopulator().getGrantedAuthorities(userData, username);
+        return createSuccessfulAuthentication(userToken, ldapUser);
     }
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return (OsiamLdapAuthentication.class.isAssignableFrom(authentication));
+        return OsiamLdapAuthentication.class.isAssignableFrom(authentication);
     }
-    
-    private void createOrUpdateUser(DirContextOperations userData) {
+
+    private User createOrUpdateUser(DirContextOperations userData) {
         String userName = userData.getStringAttribute("uid");
-        
-        UserDetails user = userDetailsService.loadUserByUsername(userName);
-        if((syncUserData && user != null) || user == null) {
-            
-            String displayName = userData.getStringAttribute("displayName");
-            String givenName = userData.getStringAttribute("givenName");
-            String familyName = userData.getStringAttribute("sn");
-            String email = userData.getStringAttribute("mail");
-            
-            boolean foundName = false;
-            Name.Builder nameBuilder = new Name.Builder();
-    
+
+        User user = userDetailsService.getUserByUsername(userName);
+
+        boolean userExists = user != null;
+
+        String displayName = userData.getStringAttribute("displayName");
+        String email = userData.getStringAttribute("mail");
+
+        if (!userExists) {
             User.Builder builder = new User.Builder(userName);
-            
-            if (!Strings.isNullOrEmpty(displayName)) {
-                builder.setDisplayName(displayName);
-            }
-            if (!Strings.isNullOrEmpty(givenName)) {
-                nameBuilder.setGivenName(givenName);
-                foundName = true;
-            }
-            if (!Strings.isNullOrEmpty(familyName)) {
-                nameBuilder.setFamilyName(familyName);
-                foundName = true;
-            }
+
+            builder.setDisplayName(displayName);
+            builder.setName(createName(userData));
+            builder.setActive(true);
+
             if (!Strings.isNullOrEmpty(email)) {
-                Email.Builder emailBuilder = new Email.Builder().setValue(email);
+                Email.Builder emailBuilder = new Email.Builder().setValue(email).setType(new Type(LDAP_PROVIDER));
                 List<Email> emails = new ArrayList<Email>();
                 emails.add(emailBuilder.build());
                 builder.setEmails(emails);
             }
+
+            user = userDetailsService.createUser(builder.build());
             
-            if(foundName) {
-                builder.setName(nameBuilder.build());
-            }
+        } else if (syncUserData && userExists) {
+            UpdateUser.Builder updateUserBuilder = new UpdateUser.Builder()
+                    .updateName(createName(userData))
+                    .updateDisplayName(displayName);
             
-            builder.setActive(true);
-    
-            userDetailsService.createNewUser(builder.build());
+            updateEmail(updateUserBuilder, user.getEmails(), email);
+
+            user = userDetailsService.updateUser(user.getId(), updateUserBuilder.build());
         }
+
+        return user;
+    }
+
+    private void updateEmail(UpdateUser.Builder updateBuilder, List<Email> emails, String emailValue) {
+        for (Email email : emails) {
+            if (email.getType().toString().equals(LDAP_PROVIDER)) {
+                if (!email.getValue().equals(emailValue)) {
+                    Email newEmail = new Email.Builder().setValue(emailValue).setType(new Type(LDAP_PROVIDER)).build();
+                    updateBuilder.updateEmail(email, newEmail);
+                    break;
+                }
+            }
+        }
+    }
+
+    private Name createName(DirContextOperations userData) {
+        String givenName = userData.getStringAttribute("givenName");
+        String familyName = userData.getStringAttribute("sn");
+        Name name = null;
+
+        if (!Strings.isNullOrEmpty(givenName) || !Strings.isNullOrEmpty(familyName)) {
+            name = new Name.Builder()
+                    .setGivenName(givenName)
+                    .setFamilyName(familyName)
+                    .build();
+        }
+
+        return name;
     }
 }

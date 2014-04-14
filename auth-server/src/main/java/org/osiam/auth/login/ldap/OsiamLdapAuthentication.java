@@ -1,9 +1,6 @@
 package org.osiam.auth.login.ldap;
 
-import java.util.Collection;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 
 public class OsiamLdapAuthentication extends UsernamePasswordAuthenticationToken {
 
@@ -11,10 +8,5 @@ public class OsiamLdapAuthentication extends UsernamePasswordAuthenticationToken
 
     public OsiamLdapAuthentication(Object principal, Object credentials) {
         super(principal, credentials);
-    }
-
-    public OsiamLdapAuthentication(Object principal, Object credentials,
-            Collection<? extends GrantedAuthority> authorities) {
-        super(principal, credentials, authorities);
     }
 }

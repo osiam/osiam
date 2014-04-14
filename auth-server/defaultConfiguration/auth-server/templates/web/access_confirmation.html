@@ -22,42 +22,39 @@
   -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-  	<meta charset="utf-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	
-  	<title th:text="#{confirmation.title}">Confirmation</title>
-  	
-  	<link rel="stylesheet" type="text/css" href="../../resources/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}"/>
-    <link rel="stylesheet" type="text/css" href="../../resources/css/style.css" th:href="@{/css/style.css}"/>
-</head>
 
-<body>
+	<head>
+	  	<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		
+	  	<title th:text="#{confirmation.title}">Confirmation</title>
+	  	
+	  	<link rel="stylesheet" type="text/css" href="../../resources/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}"/>
+	    <link rel="stylesheet" type="text/css" href="../../resources/css/style.css" th:href="@{/css/style.css}"/>
+	</head>
 
-<div class="container">
-	        
-    <div id="confirm-container" th:if="${hasUserRole}">
-      <h2 th:text="#{confirmation.headline}">Please Confirm</h2>
-
-      <p th:text="#{confirmation.request.description(${client.clientId})}">
-	   		You hereby authorize to access your protected resources.
-      </p>
-
-      <form id="confirmation-form" name="confirmationForm" th:action="@{/oauth/authorize}" method="post">
-        <input name="user_oauth_approval" value="true" type="hidden" />
-        <button class="btn btn-lg btn-primary btn-block" type="submit"
-				th:text="#{confirmation.button.authorize}">Authorize</button>
-      </form>
-      
-      <form id="denial-form" name="denialForm" th:action="@{/oauth/authorize}" method="post">
-        <input name="user_oauth_approval" value="false" type="hidden" />
-        <button class="btn btn-lg btn-primary btn-block" type="submit"
-				th:text="#{confirmation.button.deny}">Deny</button>
-      </form>
-      
-    </div>
-</div>
-
-</body>
+	<body>
+		<div class="container">
+			<div id="confirm-container" th:if="${hasUserRole}">
+		    	<h2 th:text="#{confirmation.headline}">Please Confirm</h2>
+		      	<p th:text="#{confirmation.request.description(${client.clientId})}">
+			   		You hereby authorize to access your protected resources.
+		      	</p>
+				<div id="form-container">
+					<form id="confirmation-form" name="confirmationForm" th:action="@{/oauth/authorize}" method="post">
+			        	<input name="user_oauth_approval" value="true" type="hidden" />
+			        	<button class="btn btn-lg btn-primary btn-block" type="submit"
+								th:text="#{confirmation.button.authorize}">Authorize</button>
+					</form>
+			    	<form id="denial-form" name="denialForm" th:action="@{/oauth/authorize}" method="post">
+			        	<input name="user_oauth_approval" value="false" type="hidden" />
+			        	<button class="btn btn-lg btn-primary btn-block" type="submit"
+								th:text="#{confirmation.button.deny}">Deny</button>
+			      	</form>
+				</div>
+		      
+		    </div>
+		</div>
+	</body>
 </html>

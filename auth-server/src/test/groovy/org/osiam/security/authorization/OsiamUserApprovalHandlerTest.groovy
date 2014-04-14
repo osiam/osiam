@@ -24,7 +24,7 @@
 package org.osiam.security.authorization
 
 import org.osiam.resources.ClientSpring
-import org.osiam.security.authentication.ClientDetailsLoadingBean
+import org.osiam.security.authentication.OsiamClientDetailsService
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.provider.AuthorizationRequest
 
@@ -33,8 +33,8 @@ import spock.lang.Specification
 
 class OsiamUserApprovalHandlerTest extends Specification {
 
-    ClientDetailsLoadingBean clientDetailsLoadingBean = Mock()
-    OsiamUserApprovalHandler osiamUserApprovalHandler = new OsiamUserApprovalHandler(clientDetailsLoadingBean: clientDetailsLoadingBean)
+    OsiamClientDetailsService osiamClientDetailsService = Mock()
+    OsiamUserApprovalHandler osiamUserApprovalHandler = new OsiamUserApprovalHandler(osiamClientDetailsService: osiamClientDetailsService)
     AuthorizationRequest authorizationRequestMock = Mock()
     Authentication authenticationMock = Mock()
 
@@ -42,7 +42,7 @@ class OsiamUserApprovalHandlerTest extends Specification {
         given:
         ClientSpring clientMock = Mock()
         authorizationRequestMock.getClientId() >> 'example-client'
-        clientDetailsLoadingBean.loadClientByClientId('example-client') >> clientMock
+        osiamClientDetailsService.loadClientByClientId('example-client') >> clientMock
         def approvalParams = ['user_oauth_approval':'true']
         authorizationRequestMock.getApprovalParameters() >> approvalParams
         clientMock.getValidityInSeconds() >> 1337
@@ -52,7 +52,7 @@ class OsiamUserApprovalHandlerTest extends Specification {
 
         then:
         clientMock.getExpiry() <= new Date(System.currentTimeMillis() + (1337 * 1000))
-        1 * clientDetailsLoadingBean.updateClient(clientMock, 'example-client')
+        1 * osiamClientDetailsService.updateClient(clientMock, 'example-client')
         true
     }
 
@@ -65,7 +65,7 @@ class OsiamUserApprovalHandlerTest extends Specification {
         osiamUserApprovalHandler.updateBeforeApproval(authorizationRequestMock, authenticationMock)
 
         then:
-        0 * clientDetailsLoadingBean.updateClient(_, _)
+        0 * osiamClientDetailsService.updateClient(_, _)
         true
     }
 
@@ -78,7 +78,7 @@ class OsiamUserApprovalHandlerTest extends Specification {
         osiamUserApprovalHandler.updateBeforeApproval(authorizationRequestMock, authenticationMock)
 
         then:
-        0 * 0 * clientDetailsLoadingBean.updateClient(_, _)
+        0 * 0 * osiamClientDetailsService.updateClient(_, _)
         true
     }
 
@@ -86,7 +86,7 @@ class OsiamUserApprovalHandlerTest extends Specification {
         given:
         ClientSpring clientMock = Mock()
         authorizationRequestMock.getClientId() >> 'example-client'
-        clientDetailsLoadingBean.loadClientByClientId('example-client') >> clientMock
+        osiamClientDetailsService.loadClientByClientId('example-client') >> clientMock
         authenticationMock.isAuthenticated() >> true
         clientMock.isImplicit() >> true
 
@@ -101,7 +101,7 @@ class OsiamUserApprovalHandlerTest extends Specification {
         given:
         ClientSpring clientMock = Mock()
         authorizationRequestMock.getClientId() >> 'example-client'
-        clientDetailsLoadingBean.loadClientByClientId('example-client') >> clientMock
+        osiamClientDetailsService.loadClientByClientId('example-client') >> clientMock
         authenticationMock.isAuthenticated() >> true
         clientMock.getExpiry() >> new Date(System.currentTimeMillis() + (1337 * 1000))
 
@@ -116,7 +116,7 @@ class OsiamUserApprovalHandlerTest extends Specification {
         given:
         ClientSpring clientMock = Mock()
         authorizationRequestMock.getClientId() >> 'example-client'
-        clientDetailsLoadingBean.loadClientByClientId('example-client') >> clientMock
+        osiamClientDetailsService.loadClientByClientId('example-client') >> clientMock
         clientMock.isImplicit() >> false
         clientMock.getExpiry() >> null
 
@@ -131,7 +131,7 @@ class OsiamUserApprovalHandlerTest extends Specification {
         given:
         ClientSpring clientMock = Mock()
         authorizationRequestMock.getClientId() >> 'example-client'
-        clientDetailsLoadingBean.loadClientByClientId('example-client') >> clientMock
+        osiamClientDetailsService.loadClientByClientId('example-client') >> clientMock
         clientMock.isImplicit() >> false
         clientMock.getExpiry() >> new Date(System.currentTimeMillis() - 100000)
 

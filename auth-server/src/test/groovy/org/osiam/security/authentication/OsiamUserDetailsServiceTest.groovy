@@ -31,21 +31,21 @@ import spock.lang.Specification
 
 import com.fasterxml.jackson.databind.ObjectMapper
 
-class AuthenticationBeanTest extends Specification {
+class OsiamUserDetailsServiceTest extends Specification {
 
     ObjectMapper jacksonMapperMock = Mock()
     HttpClientHelper httpClientHelperMock = Mock()
-    AuthenticationBean authenticationBean = new AuthenticationBean(mapper: jacksonMapperMock, httpClientHelper: httpClientHelperMock,
+    OsiamUserDetailsService osiamUserDetailsService = new OsiamUserDetailsService(mapper: jacksonMapperMock, httpClientHelper: httpClientHelperMock,
             httpScheme: "http", serverHost: "localhost", serverPort: 8080)
 
-    def "AuthenticationBean should implement springs UserDetailsService and therefore returning a user found by user name as UserSpring representation"() {
+    def "OsiamUserDetailsService should implement springs UserDetailsService and therefore returning a user found by user name as UserSpring representation"() {
         given:
         def userSpringMock = Mock(UserSpring)
         def resultingUser = "the resulting user as JSON string"
         def response = new HttpClientRequestResult(resultingUser, 200)
 
         when:
-        def result = authenticationBean.loadUserByUsername("UserName")
+        def result = osiamUserDetailsService.loadUserByUsername("UserName")
 
         then:
         1 * httpClientHelperMock.executeHttpPost("http://localhost:8080/osiam-resource-server/authentication/user", "UserName") >> response

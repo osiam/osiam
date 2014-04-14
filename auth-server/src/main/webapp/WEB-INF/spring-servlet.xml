@@ -35,7 +35,7 @@
     <import resource="user-authentication.xml" />
 
     <!-- configures the OAuth2 authorization server -->
-    <oauth:authorization-server client-details-service-ref="clientDetails"
+    <oauth:authorization-server client-details-service-ref="clientDetailsService"
         token-services-ref="tokenServices" token-granter-ref="customCompositeTokenGranter" user-approval-handler-ref="userApprovalHandler">
         <oauth:authorization-code />
         <oauth:refresh-token />
@@ -44,7 +44,7 @@
     </oauth:authorization-server>
 
     <bean id="authorizationRequestManager" class="org.springframework.security.oauth2.provider.DefaultAuthorizationRequestManager">
-        <constructor-arg ref="clientDetails" />
+        <constructor-arg ref="clientDetailsService" />
     </bean>
 
     <bean id="customCompositeTokenGranter" class="org.springframework.security.oauth2.provider.CompositeTokenGranter">
@@ -52,20 +52,20 @@
             <util:list>
                 <bean class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenGranter">
                     <constructor-arg ref="tokenServices" />
-                    <constructor-arg ref="clientDetails" />
+                    <constructor-arg ref="clientDetailsService" />
                 </bean>
                 <bean class="org.osiam.auth.login.oauth.OsiamGranter">
                     <constructor-arg ref="authenticationManager" />
                     <constructor-arg ref="tokenServices" />
-                    <constructor-arg ref="clientDetails" />
+                    <constructor-arg ref="clientDetailsService" />
                 </bean>
                 <bean class="org.springframework.security.oauth2.provider.refresh.RefreshTokenGranter">
                     <constructor-arg ref="tokenServices" />
-                    <constructor-arg ref="clientDetails" />
+                    <constructor-arg ref="clientDetailsService" />
                 </bean>
                 <bean class="org.osiam.security.helper.LessStrictRedirectUriAuthorizationCodeTokenGranter">
                     <constructor-arg ref="tokenServices" />
-                    <constructor-arg ref="clientDetails" />
+                    <constructor-arg ref="clientDetailsService" />
                 </bean>
             </util:list>
         </constructor-arg>
@@ -75,7 +75,7 @@
     <bean id="tokenServices" class="org.springframework.security.oauth2.provider.token.DefaultTokenServices">
         <property name="tokenStore" ref="tokenStore" />
         <property name="supportRefreshToken" value="true" />
-        <property name="clientDetailsService" ref="clientDetails" />
+        <property name="clientDetailsService" ref="clientDetailsService" />
     </bean>
 
     <!-- the token storage managing all access tokens -->

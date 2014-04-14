@@ -63,8 +63,8 @@ public class FbTokenEndpoint {
     @RequestMapping(value = "/fb/oauth/access_token")
     @ResponseBody
     public String accessToken(Principal principal,
-                              @RequestParam(value = "grant_type", defaultValue = "authorization_code")
-                              String grantType, @RequestParam Map<String, String> parameters) {
+            @RequestParam(value = "grant_type", defaultValue = "authorization_code") String grantType,
+            @RequestParam Map<String, String> parameters) {
 
         tokenEndpoint.setAuthorizationRequestManager(authorizationRequestManager);
         tokenEndpoint.setClientDetailsService(clientDetailsService);

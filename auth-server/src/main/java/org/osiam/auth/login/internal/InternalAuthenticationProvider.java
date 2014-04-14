@@ -13,6 +13,6 @@ public class InternalAuthenticationProvider extends DaoAuthenticationProvider {
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return (InternalAuthentication.class.isAssignableFrom(authentication));
+        return InternalAuthentication.class.isAssignableFrom(authentication);
     }
 }

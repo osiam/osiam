@@ -26,17 +26,20 @@ package org.osiam.security.authentication;
 import java.io.IOException;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.osiam.client.connector.OsiamConnector;
 import org.osiam.client.oauth.GrantType;
+import org.osiam.client.query.StringQueryBuilder;
 import org.osiam.helper.HttpClientHelper;
 import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.resources.UserSpring;
+import org.osiam.resources.scim.SCIMSearchResult;
+import org.osiam.resources.scim.UpdateUser;
 import org.osiam.resources.scim.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -44,8 +47,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Mainly used for demonstration, it is used to validate the user login, before he grants or denies the client access to
  * a resource.
  */
-@Named("userDetailsService")
-public class AuthenticationBean implements UserDetailsService {
+@Service("userDetailsService")
+public class OsiamUserDetailsService implements UserDetailsService {
 
     @Value("${osiam.server.port}")
     private int serverPort;
@@ -67,13 +70,13 @@ public class AuthenticationBean implements UserDetailsService {
 
     @Value("${org.osiam.auth.client.redirect.uri}")
     private String redirectUri;
-    
+
     @Inject
     private HttpClientHelper httpClientHelper;
-    
+
     private ObjectMapper mapper; // NOSONAR : need to mock the dependency therefor the final identifier was removed
 
-    public AuthenticationBean() {
+    public OsiamUserDetailsService() {
         mapper = new ObjectMapper();
     }
 
@@ -93,12 +96,28 @@ public class AuthenticationBean implements UserDetailsService {
 
         return userSpring;
     }
-    
-    public void createNewUser(User user) {
+
+    public User getUserByUsername(final String userName) {
         OsiamConnector osiamConnector = createOsiamConnector();
-        osiamConnector.createUser(user, osiamConnector.retrieveAccessToken());
+        String queryString = new StringQueryBuilder().setFilter("userName eq \"" + userName + "\"").build();
+        SCIMSearchResult<User> result = osiamConnector.searchUsers(queryString, osiamConnector.retrieveAccessToken());
+        if (result.getTotalResults() != 1) {
+            return null;
+        } else {
+            return result.getResources().get(0);
+        }
     }
-    
+
+    public User createUser(User user) {
+        OsiamConnector osiamConnector = createOsiamConnector();
+        return osiamConnector.createUser(user, osiamConnector.retrieveAccessToken());
+    }
+
+    public User updateUser(String userId, UpdateUser user) {
+        OsiamConnector osiamConnector = createOsiamConnector();
+        return osiamConnector.updateUser(userId, user, osiamConnector.retrieveAccessToken());
+    }
+
     private OsiamConnector createOsiamConnector() {
         OsiamConnector.Builder oConBuilder = new OsiamConnector.Builder().
                 setAuthServiceEndpoint(buildServerBaseUri("osiam-auth-server")).
@@ -109,7 +128,7 @@ public class AuthenticationBean implements UserDetailsService {
                 setScope(clientScope);
         return oConBuilder.build();
     }
-    
+
     private String buildServerBaseUri(String endpoint) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder

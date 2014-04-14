@@ -120,4 +120,3 @@ public class FBClientCredentialsTokenEndpointFilter extends AbstractAuthenticati
         return super.requiresAuthentication(request, response);
     }
 }
-

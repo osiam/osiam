@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import org.osiam.auth.login.ldap.OsiamLdapAuthenticationProvider;
 import org.osiam.auth.login.ldap.OsiamLdapAuthoritiesPopulator;
+import org.osiam.auth.login.ldap.OsiamLdapUserContextMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,12 +32,11 @@ public class LdapConfiguration {
 
     @Inject
     private ProviderManager authenticationManager;
-    
+
     @Bean
     public DefaultSpringSecurityContextSource createLdapContextSource() {
         if (isLdapConfigured) {
-            DefaultSpringSecurityContextSource contextSource = new DefaultSpringSecurityContextSource(url);
-            return contextSource;
+            return new DefaultSpringSecurityContextSource(url);
         }
         return null;
     }
@@ -55,7 +55,7 @@ public class LdapConfiguration {
 
             OsiamLdapAuthenticationProvider provider = new OsiamLdapAuthenticationProvider(bindAuthenticator,
                     rolePopulator);
-            //provider.setUserDetailsContextMapper(new OsiamLdapUserContextMapper());
+            provider.setUserDetailsContextMapper(new OsiamLdapUserContextMapper());
 
             authenticationManager.getProviders().add(provider);
 

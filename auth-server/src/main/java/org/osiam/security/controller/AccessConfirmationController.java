@@ -44,7 +44,7 @@ import org.springframework.web.servlet.ModelAndView;
 @SessionAttributes("authorizationRequest")
 @RequestMapping("/oauth")
 public class AccessConfirmationController {
-    
+
     @Inject
     private ClientDetailsService clientDetailsService;
 

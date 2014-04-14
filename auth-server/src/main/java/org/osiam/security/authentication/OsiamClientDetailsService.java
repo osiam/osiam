@@ -23,23 +23,24 @@
 
 package org.osiam.security.authentication;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+
 import org.osiam.helper.HttpClientHelper;
 import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.resources.ClientSpring;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
+import org.springframework.stereotype.Service;
 
-import javax.inject.Named;
-import java.io.IOException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class is used by clientAuthenticationManager in Spring to authenticate a client when trading an auth_code to an
  * access_token.
  */
-@Named("clientDetails")
-public class ClientDetailsLoadingBean implements ClientDetailsService {
+@Service("clientDetailsService")
+public class OsiamClientDetailsService implements ClientDetailsService {
 
     @Value("${osiam.server.port}")
     private int serverPort;
@@ -48,31 +49,34 @@ public class ClientDetailsLoadingBean implements ClientDetailsService {
     @Value("${osiam.server.http.scheme}")
     private String httpScheme;
 
-    private ObjectMapper mapper; //NOSONAR : need to mock the dependency therefor the final identifier was removed
-    private HttpClientHelper httpClientHelper; //NOSONAR : need to mock the dependency therefor the final identifier was removed
+    private ObjectMapper mapper; // NOSONAR : need to mock the dependency therefor the final identifier was removed
+    private HttpClientHelper httpClientHelper; // NOSONAR : need to mock the dependency therefor the final identifier
+                                               // was removed
 
-    public ClientDetailsLoadingBean() {
+    public OsiamClientDetailsService() {
         mapper = new ObjectMapper();
         httpClientHelper = new HttpClientHelper();
     }
 
     @Override
     public ClientDetails loadClientByClientId(final String clientId) {
-        final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort + "/osiam-resource-server/authentication/client/";
+        final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort
+                + "/osiam-resource-server/authentication/client/";
 
         final HttpClientRequestResult response = httpClientHelper.executeHttpGet(serverUri + clientId);
         ClientSpring clientSpring;
         try {
             clientSpring = mapper.readValue(response.getBody(), ClientSpring.class);
         } catch (IOException e) {
-            throw new RuntimeException(e); //NOSONAR : Need only wrapping to a runtime exception
+            throw new RuntimeException(e); // NOSONAR : Need only wrapping to a runtime exception
         }
 
         return clientSpring;
     }
 
     public void updateClient(ClientSpring client, String clientId) {
-        final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort + "/osiam-resource-server/authentication/client/";
+        final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort
+                + "/osiam-resource-server/authentication/client/";
         httpClientHelper.executeHttpPut(serverUri + clientId, "expiry", client.getExpiry().toString());
     }
 }
