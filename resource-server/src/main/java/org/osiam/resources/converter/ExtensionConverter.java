@@ -129,7 +129,7 @@ public class ExtensionConverter implements Converter<Set<Extension>, Set<Extensi
         return extensions;
     }
 
-    private <T> void addField(Extension.Builder extension, ExtensionFieldType<T> type, String fieldName, String stringValue) {
-        extension.setField(fieldName, type.fromString(stringValue), type);
+    private <T> void addField(Extension.Builder extensionBuilder, ExtensionFieldType<T> type, String fieldName, String stringValue) {
+        extensionBuilder.setField(fieldName, type.fromString(stringValue), type);
     }
 }
