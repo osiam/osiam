@@ -124,7 +124,7 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
 
     private void updateEmail(UpdateUser.Builder updateBuilder, List<Email> emails, String emailValue) {
         for (Email email : emails) {
-            if (email.getType().toString().equals(LDAP_PROVIDER)) {
+            if (email.getType() != null && email.getType().toString().equals(LDAP_PROVIDER)) {
                 if (!email.getValue().equals(emailValue)) {
                     Email newEmail = new Email.Builder().setValue(emailValue).setType(new Type(LDAP_PROVIDER)).build();
                     updateBuilder.updateEmail(email, newEmail);
