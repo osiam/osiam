@@ -15,19 +15,19 @@ import org.springframework.security.ldap.authentication.BindAuthenticator;
 @Configuration
 public class LdapConfiguration {
 
-    @Value("${org.osiam.ldap.enabled:false}")
+    @Value("${org.osiam.auth.ldap.enabled:false}")
     private boolean isLdapConfigured;
 
-    @Value("${org.osiam.ldap.server.url}")
+    @Value("${org.osiam.auth.ldap.server.url}")
     private String url;
 
-    @Value("${org.osiam.ldap.server.groupsearchbase:}")
+    @Value("${org.osiam.auth.ldap.server.groupsearchbase:}")
     private String groupSearchBase;
 
-    @Value("#{'${org.osiam.ldap.dn.patterns}'.split(';')}")
+    @Value("#{'${org.osiam.auth.ldap.dn.patterns}'.split(';')}")
     private String[] dnPatterns;
 
-    @Value("${org.osiam.ldap.dn.attributes:}")
+    @Value("${org.osiam.auth.ldap.dn.attributes:}")
     private String[] attributes;
 
     @Inject
