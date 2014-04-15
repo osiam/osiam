@@ -65,11 +65,7 @@ public class OsiamUserDetailsService implements UserDetailsService {
     @Value("${org.osiam.auth.client.secret}")
     private String clientSecret;
 
-    @Value("${org.osiam.auth.client.scope}")
-    private String clientScope;
-
-    @Value("${org.osiam.auth.client.redirect.uri}")
-    private String redirectUri;
+    private final String clientScope = "GET POST PATCH";
 
     @Inject
     private HttpClientHelper httpClientHelper;
