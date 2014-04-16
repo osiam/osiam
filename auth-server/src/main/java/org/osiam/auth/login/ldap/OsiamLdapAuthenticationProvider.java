@@ -35,7 +35,7 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
 
     @Value("${org.osiam.auth.ldap.sync.user.data:true}")
     private boolean syncUserData;
-
+    
     public OsiamLdapAuthenticationProvider(LdapAuthenticator authenticator,
             LdapAuthoritiesPopulator authoritiesPopulator) {
         super(authenticator, authoritiesPopulator);
@@ -128,15 +128,13 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
     }
 
     private void updateEmail(UpdateUser.Builder updateBuilder, List<Email> emails, String emailValue) {
+        Email newEmail = new Email.Builder().setValue(emailValue).setType(new Type(LDAP_PROVIDER)).build();
         for (Email email : emails) {
             if (email.getType() != null && email.getType().toString().equals(LDAP_PROVIDER)) {
-                if (!email.getValue().equals(emailValue)) {
-                    Email newEmail = new Email.Builder().setValue(emailValue).setType(new Type(LDAP_PROVIDER)).build();
-                    updateBuilder.updateEmail(email, newEmail);
-                    break;
-                }
+                updateBuilder.deleteEmail(email);
             }
         }
+        updateBuilder.addEmail(newEmail);
     }
 
     private Name createName(DirContextOperations userData) {

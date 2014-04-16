@@ -29,7 +29,7 @@ import org.osiam.helper.HttpClientRequestResult
 import org.osiam.resources.ClientSpring
 import spock.lang.Specification
 
-class OsiamClientDetailsServiceTest extends Specification {
+class OsiamClientDetailsServiceSpec extends Specification {
 
     def jacksonMapperMock = Mock(ObjectMapper)
     def httpClientHelperMock = Mock(HttpClientHelper)

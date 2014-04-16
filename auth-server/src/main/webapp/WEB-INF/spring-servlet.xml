@@ -54,7 +54,7 @@
                     <constructor-arg ref="tokenServices" />
                     <constructor-arg ref="clientDetailsService" />
                 </bean>
-                <bean class="org.osiam.auth.login.oauth.OsiamGranter">
+                <bean class="org.osiam.auth.login.oauth.OsiamResourceOwnerPasswordTokenGranter">
                     <constructor-arg ref="authenticationManager" />
                     <constructor-arg ref="tokenServices" />
                     <constructor-arg ref="clientDetailsService" />

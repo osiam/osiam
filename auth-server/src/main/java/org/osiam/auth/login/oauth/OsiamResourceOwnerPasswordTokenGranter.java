@@ -1,5 +1,6 @@
 package org.osiam.auth.login.oauth;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -8,6 +9,7 @@ import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
@@ -16,11 +18,11 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.password.ResourceOwnerPasswordTokenGranter;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 
-public class OsiamGranter extends ResourceOwnerPasswordTokenGranter {
+public class OsiamResourceOwnerPasswordTokenGranter extends ResourceOwnerPasswordTokenGranter {
 
     private final AuthenticationManager authenticationManager;
 
-    public OsiamGranter(AuthenticationManager authenticationManager, AuthorizationServerTokenServices tokenServices,
+    public OsiamResourceOwnerPasswordTokenGranter(AuthenticationManager authenticationManager, AuthorizationServerTokenServices tokenServices,
             ClientDetailsService clientDetailsService) {
         super(authenticationManager, tokenServices, clientDetailsService);
         this.authenticationManager = authenticationManager;
@@ -33,7 +35,7 @@ public class OsiamGranter extends ResourceOwnerPasswordTokenGranter {
         String username = parameters.get("username");
         String password = parameters.get("password");
 
-        Authentication userAuth = new InternalAuthentication(username, password);
+        Authentication userAuth = new InternalAuthentication(username, password, new ArrayList<GrantedAuthority>());
         try {
             userAuth = authenticationManager.authenticate(userAuth);
         } catch (AccountStatusException ase) {

@@ -31,7 +31,7 @@ import org.springframework.security.oauth2.provider.AuthorizationRequest
 import spock.lang.Ignore
 import spock.lang.Specification
 
-class OsiamUserApprovalHandlerTest extends Specification {
+class OsiamUserApprovalHandlerSpec extends Specification {
 
     OsiamClientDetailsService osiamClientDetailsService = Mock()
     OsiamUserApprovalHandler osiamUserApprovalHandler = new OsiamUserApprovalHandler(osiamClientDetailsService: osiamClientDetailsService)

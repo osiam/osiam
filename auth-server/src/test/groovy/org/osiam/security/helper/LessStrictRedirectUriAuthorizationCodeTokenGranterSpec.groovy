@@ -34,7 +34,7 @@ import org.springframework.security.oauth2.provider.code.AuthorizationRequestHol
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices
 import spock.lang.Specification
 
-class LessStrictRedirectUriAuthorizationCodeTokenGranterTest extends Specification {
+class LessStrictRedirectUriAuthorizationCodeTokenGranterSpec extends Specification {
     def tokenService = Mock(AuthorizationServerTokenServices)
     def clientDetailsService = Mock(ClientDetailsService)
     def authzCodeServices = Mock(AuthorizationCodeServices)

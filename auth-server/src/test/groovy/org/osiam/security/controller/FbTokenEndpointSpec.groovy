@@ -28,7 +28,7 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken
 import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint
 import spock.lang.Specification
 
-class FbTokenEndpointTest extends Specification {
+class FbTokenEndpointSpec extends Specification {
     TokenEndpoint tokenEndpoint = Mock(TokenEndpoint)
     ResponseEntity tokenEndpointResult = Mock(ResponseEntity)
     def underTest = new FbTokenEndpoint(tokenEndpoint: tokenEndpoint)

@@ -31,7 +31,7 @@ import spock.lang.Specification
 
 import com.fasterxml.jackson.databind.ObjectMapper
 
-class OsiamUserDetailsServiceTest extends Specification {
+class OsiamUserDetailsServiceSpec extends Specification {
 
     ObjectMapper jacksonMapperMock = Mock()
     HttpClientHelper httpClientHelperMock = Mock()

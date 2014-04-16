@@ -31,7 +31,7 @@ import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class FBClientCredentialsTokenEndpointFilterTest extends Specification {
+class FBClientCredentialsTokenEndpointFilterSpec extends Specification {
     def authNmanager = Mock(AuthenticationManager)
 
     def underTest = new FBClientCredentialsTokenEndpointFilter(authenticationManager: authNmanager)

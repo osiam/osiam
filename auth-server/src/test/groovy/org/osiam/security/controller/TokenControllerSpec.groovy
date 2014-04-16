@@ -37,7 +37,7 @@ import spock.lang.Specification
 
 import java.lang.reflect.Method
 
-class TokenControllerTest extends Specification {
+class TokenControllerSpec extends Specification {
 
     def defaultTokenServicesMock = Mock(DefaultTokenServices)
     def tokenController = new TokenController(tokenServices: defaultTokenServicesMock)

@@ -1,5 +1,7 @@
 package org.osiam.security.helper;
 
+import java.util.ArrayList;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -9,6 +11,7 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.util.Assert;
 
@@ -52,7 +55,7 @@ public class LoginDecisionFilter extends AbstractAuthenticationProcessingFilter 
         if (!Strings.isNullOrEmpty(provider) && provider.equals("ldap")) {
             authRequest = new OsiamLdapAuthentication(username, password);
         } else {
-            authRequest = new InternalAuthentication(username, password);
+            authRequest = new InternalAuthentication(username, password, new ArrayList<GrantedAuthority>());
         }
 
         setDetails(request, authRequest);
