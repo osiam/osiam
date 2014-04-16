@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 import org.osiam.resources.scim.Email;
 import org.osiam.resources.scim.Email.Type;
+import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.Name;
 import org.osiam.resources.scim.UpdateUser;
 import org.osiam.resources.scim.User;
@@ -27,6 +28,7 @@ import com.google.common.base.Strings;
 public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider {
 
     private final String LDAP_PROVIDER = "ldap";
+    private final String AUTH_EXTENSION = "urn:scim:schemas:osiam:2.0:authentication:server";
 
     @Inject
     private OsiamUserDetailsService userDetailsService;
@@ -94,11 +96,14 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
         String email = userData.getStringAttribute("mail");
 
         if (!userExists) {
-            User.Builder builder = new User.Builder(userName);
+            Extension extension = new Extension(AUTH_EXTENSION);
+            extension.addOrUpdateField("origin", LDAP_PROVIDER);
 
-            builder.setDisplayName(displayName);
-            builder.setName(createName(userData));
-            builder.setActive(true);
+            User.Builder builder = new User.Builder(userName)
+                    .setDisplayName(displayName)
+                    .setName(createName(userData))
+                    .addExtension(extension)
+                    .setActive(true);
 
             if (!Strings.isNullOrEmpty(email)) {
                 Email.Builder emailBuilder = new Email.Builder().setValue(email).setType(new Type(LDAP_PROVIDER));
@@ -108,12 +113,12 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
             }
 
             user = userDetailsService.createUser(builder.build());
-            
+
         } else if (syncUserData && userExists) {
             UpdateUser.Builder updateUserBuilder = new UpdateUser.Builder()
                     .updateName(createName(userData))
                     .updateDisplayName(displayName);
-            
+
             updateEmail(updateUserBuilder, user.getEmails(), email);
 
             user = userDetailsService.updateUser(user.getId(), updateUserBuilder.build());
