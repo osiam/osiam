@@ -22,6 +22,7 @@ public class LoginController {
     public String loginError(Model model) {
         model.addAttribute("loginError", true);
         model.addAttribute("isLdapConfigured", isLdapConfigured);
+        model.addAttribute("errorKey", "login.error");
         return "login";
     }
 }

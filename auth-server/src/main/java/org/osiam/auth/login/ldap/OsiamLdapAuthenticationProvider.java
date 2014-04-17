@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.osiam.auth.exception.LdapAuthenticationProcessException;
 import org.osiam.resources.scim.Email;
 import org.osiam.resources.scim.Email.Type;
 import org.osiam.resources.scim.Extension;
@@ -35,7 +36,7 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
 
     @Value("${org.osiam.auth.ldap.sync.user.data:true}")
     private boolean syncUserData;
-    
+
     public OsiamLdapAuthenticationProvider(LdapAuthenticator authenticator,
             LdapAuthoritiesPopulator authoritiesPopulator) {
         super(authenticator, authoritiesPopulator);
@@ -85,15 +86,23 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
         return OsiamLdapAuthentication.class.isAssignableFrom(authentication);
     }
 
-    private User createOrUpdateUser(DirContextOperations userData) {
-        String userName = userData.getStringAttribute("uid");
+    private User createOrUpdateUser(DirContextOperations ldapUserData) {
+        String userName = ldapUserData.getStringAttribute("uid");
 
         User user = userDetailsService.getUserByUsername(userName);
 
         boolean userExists = user != null;
 
-        String displayName = userData.getStringAttribute("displayName");
-        String email = userData.getStringAttribute("mail");
+        String displayName = ldapUserData.getStringAttribute("displayName");
+        String email = ldapUserData.getStringAttribute("mail");
+
+        if (userExists && (!user.isExtensionPresent(AUTH_EXTENSION)
+                || !user.getExtension(AUTH_EXTENSION).isFieldPresent("origin")
+                || !user.getExtension(AUTH_EXTENSION).getFieldAsString("origin").equals(LDAP_PROVIDER))) {
+            
+            throw new LdapAuthenticationProcessException("Can't create the '" + LDAP_PROVIDER + "' user with the username '"
+                    + userName + "'. An internal user with the same username exists.");
+        }
 
         if (!userExists) {
             Extension extension = new Extension(AUTH_EXTENSION);
@@ -101,7 +110,7 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
 
             User.Builder builder = new User.Builder(userName)
                     .setDisplayName(displayName)
-                    .setName(createName(userData))
+                    .setName(createName(ldapUserData))
                     .addExtension(extension)
                     .setActive(true);
 
@@ -116,7 +125,7 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
 
         } else if (syncUserData && userExists) {
             UpdateUser.Builder updateUserBuilder = new UpdateUser.Builder()
-                    .updateName(createName(userData))
+                    .updateName(createName(ldapUserData))
                     .updateDisplayName(displayName);
 
             updateEmail(updateUserBuilder, user.getEmails(), email);

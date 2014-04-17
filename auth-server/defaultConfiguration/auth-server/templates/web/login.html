@@ -40,8 +40,13 @@
 			<h2 class="form-signin-heading" th:text="#{login.headline}">
 			 	Please sign in
 		    </h2>
-			<div th:if="${loginError}" th:class="'alert alert-danger'" class="alert alert-danger" th:text="#{login.error}">
+			<div th:if="${loginError} and !${#httpSession.getAttribute('ERROR_KEY')}"
+				 th:class="'alert alert-danger'" class="alert alert-danger" th:text="#{${errorKey}}">
 	            Wrong username or password
+	        </div>
+	        <div th:if="${#httpSession.getAttribute('ERROR_KEY')}"
+				 th:class="'alert alert-danger'" class="alert alert-danger" th:text="#{${#httpSession.getAttribute('ERROR_KEY')}}">
+	            Login with ldap not possible
 	        </div>
         </div>
         

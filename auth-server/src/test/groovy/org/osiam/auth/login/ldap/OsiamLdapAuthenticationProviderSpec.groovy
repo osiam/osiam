@@ -7,7 +7,7 @@ import org.springframework.security.ldap.authentication.LdapAuthenticator;
 
 import spock.lang.Specification
 
-class OsiamLdapProviderSpec extends Specification {
+class OsiamLdapAuthenticationProviderSpec extends Specification {
 
     def 'the internal provider only supports OsiamLdapAuthentication class'() {
         given:
