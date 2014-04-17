@@ -1,6 +1,10 @@
 package org.osiam.auth.configuration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.inject.Inject;
+import javax.naming.ConfigurationException;
 
 import org.osiam.auth.login.ldap.OsiamLdapAuthenticationProvider;
 import org.osiam.auth.login.ldap.OsiamLdapAuthoritiesPopulator;
@@ -28,8 +32,10 @@ public class LdapConfiguration {
     @Value("#{'${org.osiam.auth.ldap.dn.patterns}'.split(';')}")
     private String[] dnPatterns;
 
-    @Value("${org.osiam.auth.ldap.dn.attributes:}")
     private String[] attributes;
+
+    @Value("${org.osiam.auth.ldap.mapping:}")
+    private String[] attributeMapping;
 
     @Inject
     private ProviderManager authenticationManager;
@@ -41,11 +47,30 @@ public class LdapConfiguration {
         }
         return null;
     }
-    
+
     @Bean
     public OsiamLdapUserSynchronizer createSynchroniser() {
         if (isLdapConfigured) {
-            return new OsiamLdapUserSynchronizer();
+            Map<String, String> scimLdapAttributes = new HashMap<String, String>();
+            for (String keyValuePair : attributeMapping) {
+                if (!keyValuePair.contains(":")) {
+                    new ConfigurationException("The ldap attibute mapping value '" + keyValuePair
+                            + "' could not be parsed. It doesn't contain a ':'");
+                }
+                String[] keyValue = keyValuePair.split(":");
+                if(keyValue.length != 2){
+                    new ConfigurationException("The ldap attibute mapping value '" + keyValuePair
+                            + "' could not be parsed. It contains more than one ':'");
+                }
+                scimLdapAttributes.put(keyValue[0].trim(), keyValue[1].trim());
+            }
+
+            if(!scimLdapAttributes.containsKey("userName")){
+                scimLdapAttributes.put("userName", "uid");
+            }
+            attributes = scimLdapAttributes.values().toArray(new String[scimLdapAttributes.size()]);
+            
+            return new OsiamLdapUserSynchronizer(scimLdapAttributes);
         }
         return null;
     }

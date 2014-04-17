@@ -2,6 +2,7 @@ package org.osiam.auth.login.ldap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -22,12 +23,18 @@ public class OsiamLdapUserSynchronizer {
 
     private final String LDAP_PROVIDER = "ldap";
     private final String AUTH_EXTENSION = "urn:scim:schemas:osiam:2.0:authentication:server";
-
+    
     @Inject
     private OsiamUserDetailsService userDetailsService;
 
     @Value("${org.osiam.auth.ldap.sync.user.data:true}")
     private boolean syncUserData;
+    
+    private Map<String, String> scimLdapAttributes;
+    
+    public OsiamLdapUserSynchronizer(Map<String, String> scimLdapAttributes) {
+        this.scimLdapAttributes = scimLdapAttributes;
+    }
 
     public OsiamLdapUserDetailsImpl synchroniseLdapData(DirContextOperations ldapUserData, OsiamLdapUserDetailsImpl ldapUser) {
         String userName = ldapUserData.getStringAttribute("uid");
