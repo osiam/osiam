@@ -16,7 +16,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
     private final Log logger = LogFactory.getLog(LdapUserDetailsMapper.class);
     private String passwordAttributeName = "userPassword";
     private String[] roleAttributes = null;
-
+    
     @Override
     public OsiamLdapUserDetailsImpl mapUserFromContext(DirContextOperations ctx, String username,
             Collection<? extends GrantedAuthority> authorities) {
@@ -69,9 +69,10 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
             essence.setGraceLoginsRemaining(ppolicy.getGraceLoginsRemaining());
         }
 
-        OsiamLdapUserDetailsImpl osiamUser = new OsiamLdapUserDetailsImpl(
+        OsiamLdapUserDetailsImpl ldapUser = new OsiamLdapUserDetailsImpl(
                 (LdapUserDetailsImpl) essence.createUserDetails());
-
-        return osiamUser;
+        
+        return ldapUser;
     }
+    
 }

@@ -5,6 +5,7 @@ import javax.inject.Inject;
 import org.osiam.auth.login.ldap.OsiamLdapAuthenticationProvider;
 import org.osiam.auth.login.ldap.OsiamLdapAuthoritiesPopulator;
 import org.osiam.auth.login.ldap.OsiamLdapUserContextMapper;
+import org.osiam.auth.login.ldap.OsiamLdapUserSynchronizer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,6 +38,14 @@ public class LdapConfiguration {
     public DefaultSpringSecurityContextSource createLdapContextSource() {
         if (isLdapConfigured) {
             return new DefaultSpringSecurityContextSource(url);
+        }
+        return null;
+    }
+    
+    @Bean
+    public OsiamLdapUserSynchronizer createSynchroniser() {
+        if (isLdapConfigured) {
+            return new OsiamLdapUserSynchronizer();
         }
         return null;
     }
