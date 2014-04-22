@@ -127,6 +127,13 @@ class OsiamLdapUserContextMapperSpec extends Specification {
     }
     
     def 'All user data from ldap will be mapped to scim user'() {
+        given:
+        String userNameValue = 'userNameValue'
+        DirContextOperations userData = new DirContextAdapter()
+
+        scimLdapAttributes.put('userName', 'uid')
+        userData.setAttributeValue('uid', userNameValue)
+
         when:
         User user = osiamLdapUserContextMapper.mapUser(userData)
 
@@ -179,6 +186,7 @@ class OsiamLdapUserContextMapperSpec extends Specification {
         X509Certificate x509Certificates = user.getX509Certificates().iterator().next()
         x509Certificates.getValue() == x509CertificateValue
         x509Certificates.getType().toString() == type
+        user.getUserName() == userNameValue
     }
 
     def 'All user data from ldap will be mapped to scim update user'() {
