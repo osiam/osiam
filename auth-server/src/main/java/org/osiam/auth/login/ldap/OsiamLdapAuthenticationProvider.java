@@ -1,12 +1,16 @@
 package org.osiam.auth.login.ldap;
 
+import java.util.Map;
+
 import javax.inject.Inject;
 
 import org.osiam.auth.configuration.LdapConfiguration;
 import org.osiam.auth.exception.LdapAuthenticationProcessException;
+import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.UpdateUser;
 import org.osiam.resources.scim.User;
 import org.osiam.security.authentication.OsiamUserDetailsService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -22,15 +26,19 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
     @Inject
     private OsiamUserDetailsService userDetailsService;
 
-    @Inject
-    private LdapConfiguration ldapConfiguration;
+    @Value("${org.osiam.auth.ldap.sync-user-data:true}")
+    private boolean syncUserData;
 
-    @Inject
     private OsiamLdapUserContextMapper osiamLdapUserContextMapper;
 
+    private Map<String, String> scimLdapAttributes;
+
     public OsiamLdapAuthenticationProvider(LdapAuthenticator authenticator,
-            LdapAuthoritiesPopulator authoritiesPopulator) {
+            LdapAuthoritiesPopulator authoritiesPopulator, OsiamLdapUserContextMapper osiamLdapUserContextMapper,
+            Map<String, String> scimLdapAttributes) {
         super(authenticator, authoritiesPopulator);
+        this.osiamLdapUserContextMapper = osiamLdapUserContextMapper;
+        this.scimLdapAttributes = scimLdapAttributes;
     }
 
     @Override
@@ -71,20 +79,15 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
         return createSuccessfulAuthentication(userToken, ldapUser);
     }
 
-    public OsiamLdapUserDetailsImpl synchronizeLdapData(DirContextOperations ldapUserData,
+    private OsiamLdapUserDetailsImpl synchronizeLdapData(DirContextOperations ldapUserData,
             OsiamLdapUserDetailsImpl ldapUser) {
-        String userName = ldapUserData.getStringAttribute(ldapConfiguration.getScimLdapAttributes().get("userName"));
+        String userName = ldapUserData.getStringAttribute(scimLdapAttributes.get("userName"));
 
         User user = userDetailsService.getUserByUsername(userName);
 
         boolean userExists = user != null;
 
-        if (userExists
-                && (!user.isExtensionPresent(LdapConfiguration.AUTH_EXTENSION)
-                        || !user.getExtension(LdapConfiguration.AUTH_EXTENSION).isFieldPresent("origin")
-                        || !user.getExtension(LdapConfiguration.AUTH_EXTENSION).getFieldAsString("origin")
-                        .equals(LdapConfiguration.LDAP_PROVIDER))) {
-
+        if (userExists && !hasAuthServerExtension(user)) {
             throw new LdapAuthenticationProcessException("Can't create the '"
                     + LdapConfiguration.LDAP_PROVIDER
                     + "' user with the username '"
@@ -94,13 +97,22 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
         if (!userExists) {
             user = osiamLdapUserContextMapper.mapUser(ldapUserData);
             user = userDetailsService.createUser(user);
-        } else if (ldapConfiguration.isSyncUserData() && userExists) {
+        } else if (syncUserData && userExists) {
             UpdateUser updateUser = osiamLdapUserContextMapper.mapUpdateUser(user, ldapUserData);
             user = userDetailsService.updateUser(user.getId(), updateUser);
         }
 
         ldapUser.setId(user.getId());
         return ldapUser;
+    }
+
+    private boolean hasAuthServerExtension(User user) {
+        if (!user.isExtensionPresent(LdapConfiguration.AUTH_EXTENSION)) {
+            return false;
+        }
+        Extension authExtension = user.getExtension(LdapConfiguration.AUTH_EXTENSION);
+        return authExtension.isFieldPresent("origin")
+                && authExtension.getFieldAsString("origin").equals(LdapConfiguration.LDAP_PROVIDER);
     }
 
     @Override

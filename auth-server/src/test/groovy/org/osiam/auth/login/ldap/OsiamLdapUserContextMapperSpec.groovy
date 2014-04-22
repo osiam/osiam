@@ -1,6 +1,5 @@
 package org.osiam.auth.login.ldap
 
-import org.osiam.auth.configuration.LdapConfiguration
 import org.osiam.resources.scim.Email
 import org.osiam.resources.scim.Entitlement
 import org.osiam.resources.scim.Im
@@ -17,9 +16,9 @@ import spock.lang.Specification
 
 class OsiamLdapUserContextMapperSpec extends Specification {
 
-    LdapConfiguration ldapConfiguration = Mock()
+    DirContextOperations userData = new DirContextAdapter()
     Map<String, String> scimLdapAttributes = new HashMap<String, String>()
-    OsiamLdapUserContextMapper osiamLdapUserContextMapper = new OsiamLdapUserContextMapper(ldapConfiguration: ldapConfiguration)
+    OsiamLdapUserContextMapper osiamLdapUserContextMapper
 
     String type = 'ldap'
     String userNameValue = 'userNameValue'
@@ -50,8 +49,6 @@ class OsiamLdapUserContextMapperSpec extends Specification {
     String roleValue = 'roleValue'
     String x509CertificateValue = 'x509CertificateValue'
 
-    DirContextOperations userData = new DirContextAdapter()
-    
     def setup() {
         scimLdapAttributes.put('userName', 'uid')
         userData.setAttributeValue('uid', userNameValue)
@@ -128,21 +125,28 @@ class OsiamLdapUserContextMapperSpec extends Specification {
     
     def 'All user data from ldap will be mapped to scim user'() {
         given:
-        String userNameValue = 'userNameValue'
-        DirContextOperations userData = new DirContextAdapter()
-
-        scimLdapAttributes.put('userName', 'uid')
-        userData.setAttributeValue('uid', userNameValue)
+        osiamLdapUserContextMapper = new OsiamLdapUserContextMapper(scimLdapAttributes)
 
         when:
         User user = osiamLdapUserContextMapper.mapUser(userData)
 
         then:
-        ldapConfiguration.getScimLdapAttributes() >> scimLdapAttributes
         conformUserData(user)
     }
     
-    def conformUserData(User user){
+    def 'All user data from ldap will be mapped to scim update user'() {
+        given:
+        User user = new User.Builder().build()
+        osiamLdapUserContextMapper = new OsiamLdapUserContextMapper(scimLdapAttributes)
+
+        when:
+        user = osiamLdapUserContextMapper.mapUpdateUser(user, userData).scimConformUpdateUser
+
+        then:
+        conformUserData(user)
+    }
+    
+    def conformUserData(User user) {
         user.getUserName() == userNameValue
         user.getName().getFormatted() == nameFormattedValue
         user.getName().getFamilyName() == nameFamilyNameValue
@@ -186,22 +190,5 @@ class OsiamLdapUserContextMapperSpec extends Specification {
         X509Certificate x509Certificates = user.getX509Certificates().iterator().next()
         x509Certificates.getValue() == x509CertificateValue
         x509Certificates.getType().toString() == type
-        user.getUserName() == userNameValue
-    }
-
-    def 'All user data from ldap will be mapped to scim update user'() {
-        given:
-        scimLdapAttributes.put('displayName', 'displayName')
-        User user = new User.Builder('userName').setDisplayName('displayName').build()
-
-        DirContextOperations userData = new DirContextAdapter()
-        userData.setAttributeValue('displayName', 'displayNameValue')
-
-        when:
-        UpdateUser updateUser = osiamLdapUserContextMapper.mapUpdateUser(user, userData)
-
-        then:
-        ldapConfiguration.getScimLdapAttributes() >> scimLdapAttributes
-        updateUser.user.displayName == 'displayNameValue'
     }
 }

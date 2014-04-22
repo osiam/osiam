@@ -5,13 +5,13 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import javax.inject.Inject;
-import javax.naming.ConfigurationException;
+import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osiam.auth.configuration.LdapConfiguration;
+import org.osiam.auth.exception.LdapConfigurationException;
 import org.osiam.resources.scim.Address;
 import org.osiam.resources.scim.Email;
 import org.osiam.resources.scim.Entitlement;
@@ -30,18 +30,20 @@ import org.springframework.security.ldap.ppolicy.PasswordPolicyControl;
 import org.springframework.security.ldap.ppolicy.PasswordPolicyResponseControl;
 import org.springframework.security.ldap.userdetails.LdapUserDetailsImpl;
 import org.springframework.security.ldap.userdetails.LdapUserDetailsMapper;
-import org.springframework.stereotype.Component;
 
-@Component
+import com.google.common.base.Strings;
+
 public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
 
     private final Log logger = LogFactory.getLog(LdapUserDetailsMapper.class);
     private String passwordAttributeName = "userPassword";
     private String[] roleAttributes = null;
-    
-    @Inject
-    private LdapConfiguration ldapConfiguration;
-    
+    private Map<String, String> scimLdapAttributes;
+
+    public OsiamLdapUserContextMapper(Map<String, String> scimLdapAttributes) {
+        this.scimLdapAttributes = scimLdapAttributes;
+    }
+
     @Override
     public OsiamLdapUserDetailsImpl mapUserFromContext(DirContextOperations ctx, String username,
             Collection<? extends GrantedAuthority> authorities) {
@@ -96,25 +98,32 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
 
         OsiamLdapUserDetailsImpl ldapUser = new OsiamLdapUserDetailsImpl(
                 (LdapUserDetailsImpl) essence.createUserDetails());
-        
+
         return ldapUser;
     }
-    
+
     public User mapUser(DirContextOperations ldapUserData) {
 
         Extension extension = new Extension(LdapConfiguration.AUTH_EXTENSION);
         extension.addOrUpdateField("origin", LdapConfiguration.LDAP_PROVIDER);
 
-        String userName = ldapUserData.getStringAttribute(ldapConfiguration.getScimLdapAttributes().get("userName"));
+        String userName = ldapUserData.getStringAttribute(scimLdapAttributes.get("userName"));
         User.Builder builder = new User.Builder(userName)
                 .addExtension(extension)
-                .setActive(true);
+                .setActive(true)
+                .setPassword(UUID.randomUUID().toString() + UUID.randomUUID().toString());
 
-        for (String scimAttribute : ldapConfiguration.getScimLdapAttributes().keySet()) {
-            String ldapAttribute = ldapConfiguration.getScimLdapAttributes().get(scimAttribute);
+        for (String scimAttribute : scimLdapAttributes.keySet()) {
+            String ldapAttribute = scimLdapAttributes.get(scimAttribute);
             String ldapValue = ldapUserData.getStringAttribute(ldapAttribute);
 
+            if (Strings.isNullOrEmpty(ldapValue)) {
+                continue;
+            }
+
             switch (scimAttribute) {
+            case "userName":
+                break;
             case "displayName":
                 builder.setDisplayName(ldapValue);
                 break;
@@ -164,7 +173,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
                     photos.add(photoBuilder.build());
                     builder.setPhotos(photos);
                 } catch (URISyntaxException e) {
-                    new ConfigurationException("Could not map the ldap attibute '"
+                    throw new LdapConfigurationException("Could not map the ldap attibute '"
                             + ldapAttribute + "' with the value '" + ldapValue
                             + "' into an scim photo because the value could not be conferted into an URI.");
                 }
@@ -200,7 +209,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
                 break;
             default:
                 if (!scimAttribute.startsWith("address.") && !scimAttribute.startsWith("name.")) {
-                    new ConfigurationException("The ldap attibute mapping value '" + scimAttribute
+                    throw new LdapConfigurationException("The ldap attibute mapping value '" + scimAttribute
                             + "' could not be reconized as scim attribute.");
                 }
                 break;
@@ -212,15 +221,21 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
 
         return builder.build();
     }
-    
+
     public UpdateUser mapUpdateUser(User user, DirContextOperations ldapUserData) {
 
         UpdateUser.Builder updateBuilder = new UpdateUser.Builder();
 
-        for (String scimAttribute : ldapConfiguration.getScimLdapAttributes().keySet()) {
-            String ldapValue = ldapUserData.getStringAttribute(ldapConfiguration.getScimLdapAttributes().get(scimAttribute));
+        for (String scimAttribute : scimLdapAttributes.keySet()) {
+            String ldapValue = ldapUserData.getStringAttribute(scimLdapAttributes.get(scimAttribute));
+
+            if (ldapValue == null) {
+                ldapValue = "";
+            }
 
             switch (scimAttribute) {
+            case "userName":
+                break;
             case "displayName":
                 updateBuilder.updateDisplayName(ldapValue);
                 break;
@@ -271,7 +286,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
                 break;
             default:
                 if (!scimAttribute.startsWith("address.") && !scimAttribute.startsWith("name.")) {
-                    new ConfigurationException("The ldap attibute mapping value '" + scimAttribute
+                    throw new LdapConfigurationException("The ldap attibute mapping value '" + scimAttribute
                             + "' could not be reconized as scim attribute.");
                 }
             }
@@ -282,7 +297,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
 
         return updateBuilder.build();
     }
-    
+
     private void updateName(UpdateUser.Builder updateBuilder, DirContextOperations ldapUserData) {
         updateBuilder.updateName(getName(ldapUserData));
     }
@@ -302,7 +317,8 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
     }
 
     private void updateEmail(UpdateUser.Builder updateBuilder, List<Email> emails, String emailValue) {
-        Email newEmail = new Email.Builder().setValue(emailValue).setType(new Email.Type(LdapConfiguration.LDAP_PROVIDER)).build();
+        Email newEmail = new Email.Builder().setValue(emailValue)
+                .setType(new Email.Type(LdapConfiguration.LDAP_PROVIDER)).build();
         for (Email email : emails) {
             if (email.getType() != null && email.getType().toString().equals(LdapConfiguration.LDAP_PROVIDER)) {
                 updateBuilder.deleteEmail(email);
@@ -315,7 +331,8 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
         Entitlement newEntitlement = new Entitlement.Builder().setValue(value)
                 .setType(new Entitlement.Type(LdapConfiguration.LDAP_PROVIDER)).build();
         for (Entitlement entitlement : entitlements) {
-            if (entitlement.getType() != null && entitlement.getType().toString().equals(LdapConfiguration.LDAP_PROVIDER)) {
+            if (entitlement.getType() != null
+                    && entitlement.getType().toString().equals(LdapConfiguration.LDAP_PROVIDER)) {
                 updateBuilder.deleteEntitlement(entitlement);
             }
         }
@@ -336,7 +353,8 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
         PhoneNumber newPhoneNumber = new PhoneNumber.Builder().setValue(value)
                 .setType(new PhoneNumber.Type(LdapConfiguration.LDAP_PROVIDER)).build();
         for (PhoneNumber phoneNumber : phoneNumbers) {
-            if (phoneNumber.getType() != null && phoneNumber.getType().toString().equals(LdapConfiguration.LDAP_PROVIDER)) {
+            if (phoneNumber.getType() != null
+                    && phoneNumber.getType().toString().equals(LdapConfiguration.LDAP_PROVIDER)) {
                 updateBuilder.deletePhoneNumber(phoneNumber);
             }
         }
@@ -345,23 +363,28 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
 
     private void updatePhoto(UpdateUser.Builder updateBuilder, List<Photo> photos, String value, String scimAttribute) {
         try {
-            Photo newPhoto = new Photo.Builder().setValue(new URI(value)).setType(new Photo.Type(LdapConfiguration.LDAP_PROVIDER))
-                    .build();
             for (Photo photo : photos) {
                 if (photo.getType() != null && photo.getType().toString().equals(LdapConfiguration.LDAP_PROVIDER)) {
                     updateBuilder.deletePhoto(photo);
                 }
             }
-            updateBuilder.addPhoto(newPhoto);
+            if (value.length() > 0) {
+                Photo newPhoto = new Photo.Builder()
+                        .setValue(new URI(value))
+                        .setType(new Photo.Type(LdapConfiguration.LDAP_PROVIDER))
+                        .build();
+                updateBuilder.addPhoto(newPhoto);
+            }
         } catch (URISyntaxException e) {
-            new ConfigurationException("Could not map the ldap attibute '"
-                    + ldapConfiguration.getScimLdapAttributes().get(scimAttribute) + "' with the value '" + value
-                    + "' into an scim photo because the value could not be conferted into an URI.");
+            throw new LdapConfigurationException("Could not map the ldap attibute '"
+                    + scimLdapAttributes.get(scimAttribute) + "' with the value '" + value
+                    + "' into an scim photo because the value could not be converted into an URI.");
         }
     }
 
     private void updateRole(UpdateUser.Builder updateBuilder, List<Role> roles, String value) {
-        Role newRole = new Role.Builder().setValue(value).setType(new Role.Type(LdapConfiguration.LDAP_PROVIDER)).build();
+        Role newRole = new Role.Builder().setValue(value).setType(new Role.Type(LdapConfiguration.LDAP_PROVIDER))
+                .build();
         for (Role role : roles) {
             if (role.getType() != null && role.getType().toString().equals(LdapConfiguration.LDAP_PROVIDER)) {
                 updateBuilder.deleteRole(role);
@@ -375,20 +398,21 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
         X509Certificate newX509Certificate = new X509Certificate.Builder().setValue(value)
                 .setType(new X509Certificate.Type(LdapConfiguration.LDAP_PROVIDER)).build();
         for (X509Certificate x509Certificate : x509Certificates) {
-            if (x509Certificate.getType() != null && x509Certificate.getType().toString().equals(LdapConfiguration.LDAP_PROVIDER)) {
+            if (x509Certificate.getType() != null
+                    && x509Certificate.getType().toString().equals(LdapConfiguration.LDAP_PROVIDER)) {
                 updateBuilder.deleteX509Certificate(x509Certificate);
             }
         }
         updateBuilder.addX509Certificate(newX509Certificate);
     }
-    
+
     private List<Address> getAddresses(DirContextOperations ldapUserData) {
         List<Address> addresses = new ArrayList<Address>();
         Address.Builder builder = new Address.Builder();
         boolean addressFound = false;
 
-        for (String scimAttribute : ldapConfiguration.getScimLdapAttributes().keySet()) {
-            String ldapValue = ldapUserData.getStringAttribute(ldapConfiguration.getScimLdapAttributes().get(scimAttribute));
+        for (String scimAttribute : scimLdapAttributes.keySet()) {
+            String ldapValue = ldapUserData.getStringAttribute(scimLdapAttributes.get(scimAttribute));
             if (!scimAttribute.startsWith("address.")) {
                 continue;
             }
@@ -413,9 +437,8 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
                 builder.setStreetAddress(ldapValue);
                 break;
             default:
-                new ConfigurationException("The ldap attibute mapping value '" + scimAttribute
+                throw new LdapConfigurationException("The ldap attibute mapping value '" + scimAttribute
                         + "' could not be reconized as scim attribute.");
-                break;
             }
         }
 
@@ -425,14 +448,14 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
         }
         return addresses;
     }
-    
+
     private Name getName(DirContextOperations ldapUserData) {
         Name name = null;
         Name.Builder builder = new Name.Builder();
         boolean nameFound = false;
 
-        for (String scimAttribute : ldapConfiguration.getScimLdapAttributes().keySet()) {
-            String ldapValue = ldapUserData.getStringAttribute(ldapConfiguration.getScimLdapAttributes().get(scimAttribute));
+        for (String scimAttribute : scimLdapAttributes.keySet()) {
+            String ldapValue = ldapUserData.getStringAttribute(scimLdapAttributes.get(scimAttribute));
             if (!scimAttribute.startsWith("name.")) {
                 continue;
             }
@@ -457,9 +480,8 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
                 builder.setMiddleName(ldapValue);
                 break;
             default:
-                new ConfigurationException("The ldap attibute mapping value '" + scimAttribute
+                throw new LdapConfigurationException("The ldap attibute mapping value '" + scimAttribute
                         + "' could not be reconized as scim attribute.");
-                break;
             }
         }
 
@@ -468,5 +490,5 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
         }
         return name;
     }
-    
+
 }
