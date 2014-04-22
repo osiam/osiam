@@ -51,7 +51,7 @@
     <aop:aspectj-autoproxy proxy-target-class="true"/>
     <bean id="profiling" class="org.osiam.resources.helper.MeasureDurationTimeOfMethods"/>
 
-    <context:property-placeholder location="classpath:osiam.properties"/>
+    <context:property-placeholder location="classpath:resource-server.properties"/>
 
     <context:component-scan base-package="org.osiam"/>
     <context:annotation-config/>
