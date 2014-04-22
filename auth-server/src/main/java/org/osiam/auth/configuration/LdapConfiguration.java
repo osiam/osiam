@@ -8,8 +8,6 @@ import javax.naming.ConfigurationException;
 
 import org.osiam.auth.login.ldap.OsiamLdapAuthenticationProvider;
 import org.osiam.auth.login.ldap.OsiamLdapAuthoritiesPopulator;
-import org.osiam.auth.login.ldap.OsiamLdapUserContextMapper;
-import org.osiam.auth.login.ldap.OsiamLdapUserSynchronizer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +17,9 @@ import org.springframework.security.ldap.authentication.BindAuthenticator;
 
 @Configuration
 public class LdapConfiguration {
+    
+    public static final String LDAP_PROVIDER = "ldap";
+    public static final String AUTH_EXTENSION = "urn:scim:schemas:osiam:2.0:authentication:server";
 
     @Value("${org.osiam.auth.ldap.enabled:false}")
     private boolean isLdapConfigured;
@@ -36,6 +37,11 @@ public class LdapConfiguration {
 
     @Value("${org.osiam.auth.ldap.mapping:}")
     private String[] attributeMapping;
+    
+    @Value("${org.osiam.auth.ldap.sync.user.data:true}")
+    private boolean syncUserData;
+    
+    private Map<String, String> scimLdapAttributes = new HashMap<String, String>();
 
     @Inject
     private ProviderManager authenticationManager;
@@ -48,10 +54,8 @@ public class LdapConfiguration {
         return null;
     }
 
-    @Bean
-    public OsiamLdapUserSynchronizer createSynchroniser() {
+    private void createLdapToScimAttributeMapping() {
         if (isLdapConfigured) {
-            Map<String, String> scimLdapAttributes = new HashMap<String, String>();
             for (String keyValuePair : attributeMapping) {
                 if (!keyValuePair.contains(":")) {
                     new ConfigurationException("The ldap attibute mapping value '" + keyValuePair
@@ -69,16 +73,15 @@ public class LdapConfiguration {
                 scimLdapAttributes.put("userName", "uid");
             }
             attributes = scimLdapAttributes.values().toArray(new String[scimLdapAttributes.size()]);
-            
-            return new OsiamLdapUserSynchronizer(scimLdapAttributes);
         }
-        return null;
     }
 
     @Bean
     public OsiamLdapAuthenticationProvider createLdapAuthProvider() {
         if (isLdapConfigured) {
 
+            createLdapToScimAttributeMapping();
+            
             DefaultSpringSecurityContextSource contextSource = createLdapContextSource();
             OsiamLdapAuthoritiesPopulator rolePopulator = new OsiamLdapAuthoritiesPopulator(contextSource,
                     groupSearchBase);
@@ -89,12 +92,19 @@ public class LdapConfiguration {
 
             OsiamLdapAuthenticationProvider provider = new OsiamLdapAuthenticationProvider(bindAuthenticator,
                     rolePopulator);
-            provider.setUserDetailsContextMapper(new OsiamLdapUserContextMapper());
 
             authenticationManager.getProviders().add(provider);
 
             return provider;
         }
         return null;
+    }
+
+    public boolean isSyncUserData() {
+        return syncUserData;
+    }
+    
+    public Map<String, String> getScimLdapAttributes(){
+        return scimLdapAttributes;
     }
 }

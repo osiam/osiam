@@ -15,7 +15,7 @@ class LdapConfigurationSpec extends Specification {
     
     def 'when ldap is not enabled, the contextSource is null'() {
         given:
-        ldapConfiguration.isLdapConfigured = false;
+        ldapConfiguration.isLdapConfigured = false
         
         when:
         DefaultSpringSecurityContextSource contextSource = ldapConfiguration.createLdapContextSource()
@@ -26,7 +26,7 @@ class LdapConfigurationSpec extends Specification {
     
     def 'when ldap is enabled, the contextSource is not null and has the given url'() {
         given:
-        ldapConfiguration.isLdapConfigured = true;
+        ldapConfiguration.isLdapConfigured = true
         ldapConfiguration.url = 'ldaps://localhost:8080/ou=example,ou=users'
         
         when:
@@ -39,7 +39,7 @@ class LdapConfigurationSpec extends Specification {
     
     def 'when ldap is not enabled, the ldap provider is null'() {
         given:
-        ldapConfiguration.isLdapConfigured = false;
+        ldapConfiguration.isLdapConfigured = false
         
         when:
         OsiamLdapAuthenticationProvider provider = ldapConfiguration.createLdapAuthProvider()
@@ -52,10 +52,12 @@ class LdapConfigurationSpec extends Specification {
         given:
         ldapConfiguration.authenticationManager = new ProviderManager()
         ldapConfiguration.authenticationManager.providers = new ArrayList<AuthenticationProvider>()
-        ldapConfiguration.isLdapConfigured = true;
+        ldapConfiguration.isLdapConfigured = true
         ldapConfiguration.url = 'ldaps://localhost:8080/ou=example,ou=users'
         ldapConfiguration.dnPatterns = ['cn={0},ou=people']
         ldapConfiguration.attributes = ['mail']
+        ldapConfiguration.attributeMapping = []
+        ldapConfiguration.scimLdapAttributes = [:]
         
         when:
         OsiamLdapAuthenticationProvider provider = ldapConfiguration.createLdapAuthProvider()
@@ -63,6 +65,5 @@ class LdapConfigurationSpec extends Specification {
         then:
         provider != null
         provider.authoritiesPopulator instanceof OsiamLdapAuthoritiesPopulator
-        provider.userDetailsContextMapper instanceof OsiamLdapUserContextMapper
     }
 }
