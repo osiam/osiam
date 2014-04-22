@@ -121,7 +121,7 @@
 
     <mvc:default-servlet-handler />
 
-    <context:property-placeholder location="classpath:osiam.properties" />
+    <context:property-placeholder location="classpath:auth-server.properties" />
 
     <context:component-scan base-package="org.osiam" />
     <context:annotation-config />
