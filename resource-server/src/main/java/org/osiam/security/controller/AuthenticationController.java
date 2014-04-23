@@ -52,9 +52,6 @@ public class AuthenticationController {
     @Inject
     private UserDao userDao;
 
-    /*@Inject
-    private ClientDao clientDao;*/
-
     @RequestMapping(value = "/user",
             method = RequestMethod.POST,
             produces = { MediaType.APPLICATION_JSON_VALUE })
@@ -82,41 +79,4 @@ public class AuthenticationController {
         return springUser;
     }
 
-    /*@RequestMapping(value = "/client/{id}", method = RequestMethod.GET)
-    @ResponseBody
-    public ClientSpring getClient(@PathVariable final String id) {
-
-        ClientEntity dbClient = clientDao.getClient(id);
-        return getClientSpring(dbClient);
-    }*/
-
-    /*private ClientSpring getClientSpring(ClientEntity dbClient) {
-        ClientSpring springClient = new ClientSpring();
-        springClient.setId(dbClient.getId());
-        springClient.setClientSecret(dbClient.getClientSecret());
-        springClient.setScope(dbClient.getScope());
-        springClient.setGrants(dbClient.getGrants());
-        springClient.setRedirectUri(dbClient.getRedirectUri());
-        springClient.setAccessTokenValiditySeconds(dbClient.getAccessTokenValiditySeconds());
-        springClient.setRefreshTokenValiditySeconds(dbClient.getRefreshTokenValiditySeconds());
-        springClient.setImplicit(dbClient.isImplicit());
-        springClient.setExpiry(dbClient.getExpiry());
-        springClient.setValidityInSeconds(dbClient.getValidityInSeconds());
-        return springClient;
-    }*/
-
-    /*@RequestMapping(value = "/client/{id}", method = RequestMethod.PUT)
-    @ResponseStatus(HttpStatus.OK)
-    public void updateClientExpiry(@PathVariable final String id, @RequestBody String body) throws IOException,
-            ParseException {
-
-        final SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
-
-        String theDate = body.split("=")[1];
-        String expiry = URLDecoder.decode(theDate, "UTF-8");
-
-        ClientEntity dbClient = clientDao.getClient(id);
-        dbClient.setExpiry(sdf.parse(expiry));
-        clientDao.update(dbClient, id);
-    }*/
 }
