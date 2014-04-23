@@ -140,7 +140,7 @@
                     <dependency>
                         <groupId>org.hibernate</groupId>
                         <artifactId>hibernate-jpamodelgen</artifactId>
-                        <version>4.3.4.Final</version>
+                        <version>4.3.5.Final</version>
                     </dependency>
                 </dependencies>
             </plugin>
