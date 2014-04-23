@@ -36,6 +36,7 @@ import org.osiam.resources.UserSpring;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.resources.scim.UpdateUser;
 import org.osiam.resources.scim.User;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -48,21 +49,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * a resource.
  */
 @Service("userDetailsService")
-public class OsiamUserDetailsService implements UserDetailsService {
+public class OsiamUserDetailsService implements UserDetailsService, InitializingBean {
 
-    @Value("${osiam.server.port}")
-    private int serverPort;
+    @Value("${org.osiam.resource-server.home}")
+    private String resourceServerHome;
 
-    @Value("${osiam.server.host}")
-    private String serverHost;
+    @Value("${org.osiam.auth-server.home}")
+    private String authServerHome;
 
-    @Value("${osiam.server.http.scheme}")
-    private String httpScheme;
-
-    @Value("${org.osiam.auth.client.id}")
+    @Value("${org.osiam.auth-server.client.id}")
     private String clientId;
 
-    @Value("${org.osiam.auth.client.secret}")
+    @Value("${org.osiam.auth-server.client.secret}")
     private String clientSecret;
 
     private final String clientScope = "GET POST PATCH";
@@ -72,15 +70,14 @@ public class OsiamUserDetailsService implements UserDetailsService {
 
     private ObjectMapper mapper; // NOSONAR : need to mock the dependency therefor the final identifier was removed
 
+    private String serverUri;
+
     public OsiamUserDetailsService() {
         mapper = new ObjectMapper();
     }
 
     @Override
     public UserDetails loadUserByUsername(final String username) {
-        final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort
-                + "/osiam-resource-server/authentication/user";
-
         final HttpClientRequestResult result = httpClientHelper.executeHttpPost(serverUri, username);
 
         final UserSpring userSpring;
@@ -116,8 +113,8 @@ public class OsiamUserDetailsService implements UserDetailsService {
 
     private OsiamConnector createOsiamConnector() {
         OsiamConnector.Builder oConBuilder = new OsiamConnector.Builder().
-                setAuthServerEndpoint(buildServerBaseUri("osiam-auth-server")).
-                setResourceServerEndpoint(buildServerBaseUri("osiam-resource-server")).
+                setAuthServerEndpoint(authServerHome).
+                setResourceServerEndpoint(resourceServerHome).
                 setGrantType(GrantType.CLIENT_CREDENTIALS).
                 setClientId(clientId).
                 setClientSecret(clientSecret).
@@ -125,17 +122,8 @@ public class OsiamUserDetailsService implements UserDetailsService {
         return oConBuilder.build();
     }
 
-    private String buildServerBaseUri(String endpoint) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder
-                .append(httpScheme)
-                .append("://")
-                .append(serverHost)
-                .append(":")
-                .append(serverPort)
-                .append("/")
-                .append(endpoint);
-
-        return stringBuilder.toString();
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        serverUri = resourceServerHome + "/authentication/user";
     }
 }

@@ -107,7 +107,7 @@
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
         <property name="basenames">
             <list>
-                <value>auth-server/locale/login</value>
+                <value>auth-server/l10n/login</value>
             </list>
         </property>
     </bean>

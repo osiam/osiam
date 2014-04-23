@@ -26,7 +26,7 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
     @Inject
     private OsiamUserDetailsService userDetailsService;
 
-    @Value("${org.osiam.auth.ldap.sync-user-data:true}")
+    @Value("${org.osiam.auth-server.ldap.sync-user-data:true}")
     private boolean syncUserData;
 
     private OsiamLdapUserContextMapper osiamLdapUserContextMapper;

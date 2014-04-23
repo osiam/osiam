@@ -33,8 +33,7 @@ class OsiamClientDetailsServiceSpec extends Specification {
 
     def jacksonMapperMock = Mock(ObjectMapper)
     def httpClientHelperMock = Mock(HttpClientHelper)
-    def clientDetailsLoadingBean = new OsiamClientDetailsService(mapper: jacksonMapperMock, httpClientHelper: httpClientHelperMock,
-            httpScheme: "http", serverHost: "localhost", serverPort: 8080)
+    def clientDetailsLoadingBean = new OsiamClientDetailsService(mapper: jacksonMapperMock, httpClientHelper: httpClientHelperMock, serverUri: 'http://localhost:8080/osiam-resource-server/authentication/client/')
 
     def "OsiamClientDetailsService should implement springs ClientDetailsService and therefore returning a client found by client ID as ClientSpring representation"() {
         given:

@@ -28,6 +28,7 @@ import java.io.IOException;
 import org.osiam.helper.HttpClientHelper;
 import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.resources.ClientSpring;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
@@ -40,18 +41,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * access_token.
  */
 @Service("clientDetailsService")
-public class OsiamClientDetailsService implements ClientDetailsService {
+public class OsiamClientDetailsService implements ClientDetailsService, InitializingBean {
 
-    @Value("${osiam.server.port}")
-    private int serverPort;
-    @Value("${osiam.server.host}")
-    private String serverHost;
-    @Value("${osiam.server.http.scheme}")
-    private String httpScheme;
+    @Value("${org.osiam.resource-server.home}")
+    private String resourceServerHome;
 
     private ObjectMapper mapper; // NOSONAR : need to mock the dependency therefor the final identifier was removed
     private HttpClientHelper httpClientHelper; // NOSONAR : need to mock the dependency therefor the final identifier
                                                // was removed
+    private String serverUri;
 
     public OsiamClientDetailsService() {
         mapper = new ObjectMapper();
@@ -60,9 +58,6 @@ public class OsiamClientDetailsService implements ClientDetailsService {
 
     @Override
     public ClientDetails loadClientByClientId(final String clientId) {
-        final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort
-                + "/osiam-resource-server/authentication/client/";
-
         final HttpClientRequestResult response = httpClientHelper.executeHttpGet(serverUri + clientId);
         ClientSpring clientSpring;
         try {
@@ -75,8 +70,11 @@ public class OsiamClientDetailsService implements ClientDetailsService {
     }
 
     public void updateClient(ClientSpring client, String clientId) {
-        final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort
-                + "/osiam-resource-server/authentication/client/";
         httpClientHelper.executeHttpPut(serverUri + clientId, "expiry", client.getExpiry().toString());
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        serverUri = resourceServerHome + "/authentication/client/";
     }
 }

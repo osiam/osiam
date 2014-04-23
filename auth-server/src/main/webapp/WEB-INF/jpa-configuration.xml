@@ -30,7 +30,7 @@
 
     <!-- Load database properties reference -->
     <bean id="dbProperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="location" value="classpath:osiam.properties"/>
+        <property name="location" value="classpath:auth-server.properties"/>
     </bean>
 
     <bean id="myEmf"
@@ -41,17 +41,17 @@
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
                 <property name="showSql" value="false"/>
                 <property name="generateDdl" value="false"/>
-                <property name="databasePlatform" value="${db.dialect}"/>
+                <property name="databasePlatform" value="${org.osiam.auth-server.db.dialect}"/>
             </bean>
         </property>
     </bean>
 
     <bean id="dataSource"
           class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="${db.driver}"/>
-        <property name="url" value="${db.url}"/>
-        <property name="username" value="${db.username}"/>
-        <property name="password" value="${db.password}"/>
+        <property name="driverClassName" value="${org.osiam.auth-server.db.driver}"/>
+        <property name="url" value="${org.osiam.auth-server.db.url}"/>
+        <property name="username" value="${org.osiam.auth-server.db.username}"/>
+        <property name="password" value="${org.osiam.auth-server.db.password}"/>
     </bean>
 
     <bean id="txManager" class="org.springframework.orm.jpa.JpaTransactionManager">

@@ -27,21 +27,21 @@ public class LdapConfiguration implements InitializingBean {
     public static final String LDAP_PROVIDER = "ldap";
     public static final String AUTH_EXTENSION = "urn:org.osiam:scim:extensions:auth-server";
 
-    @Value("${org.osiam.auth.ldap.enabled:false}")
+    @Value("${org.osiam.auth-server.ldap.enabled:false}")
     private boolean isLdapConfigured;
 
-    @Value("${org.osiam.auth.ldap.server.url}")
+    @Value("${org.osiam.auth-server.ldap.server.url}")
     private String url;
 
-    @Value("${org.osiam.auth.ldap.server.groupsearchbase:}")
+    @Value("${org.osiam.auth-server.ldap.server.groupsearchbase:}")
     private String groupSearchBase;
 
-    @Value("#{'${org.osiam.auth.ldap.dn.patterns}'.split(';')}")
+    @Value("#{'${org.osiam.auth-server.ldap.dn.patterns}'.split(';')}")
     private String[] dnPatterns;
 
     private String[] attributes;
 
-    @Value("${org.osiam.auth.ldap.mapping:}")
+    @Value("${org.osiam.auth-server.ldap.mapping:}")
     private String[] attributeMapping;
 
     private Map<String, String> scimLdapAttributes;

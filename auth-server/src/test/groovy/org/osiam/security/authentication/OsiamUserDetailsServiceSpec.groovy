@@ -35,22 +35,26 @@ class OsiamUserDetailsServiceSpec extends Specification {
 
     ObjectMapper jacksonMapperMock = Mock()
     HttpClientHelper httpClientHelperMock = Mock()
-    OsiamUserDetailsService osiamUserDetailsService = new OsiamUserDetailsService(mapper: jacksonMapperMock, httpClientHelper: httpClientHelperMock,
-            httpScheme: "http", serverHost: "localhost", serverPort: 8080)
+    OsiamUserDetailsService osiamUserDetailsService = new OsiamUserDetailsService()
+    
+    def setup() {
+        osiamUserDetailsService.mapper = jacksonMapperMock
+        osiamUserDetailsService.httpClientHelper = httpClientHelperMock
+        osiamUserDetailsService.serverUri = 'http://localhost:8080/osiam-resource-server/authentication/user'
+    }
 
-    def "OsiamUserDetailsService should implement springs UserDetailsService and therefore returning a user found by user name as UserSpring representation"() {
+    def 'OsiamUserDetailsService should implement springs UserDetailsService and therefore returning a user found by user name as UserSpring representation'() {
         given:
         def userSpringMock = Mock(UserSpring)
-        def resultingUser = "the resulting user as JSON string"
+        def resultingUser = 'the resulting user as JSON string'
         def response = new HttpClientRequestResult(resultingUser, 200)
 
         when:
-        def result = osiamUserDetailsService.loadUserByUsername("UserName")
+        def result = osiamUserDetailsService.loadUserByUsername('UserName')
 
         then:
-        1 * httpClientHelperMock.executeHttpPost("http://localhost:8080/osiam-resource-server/authentication/user", "UserName") >> response
+        1 * httpClientHelperMock.executeHttpPost('http://localhost:8080/osiam-resource-server/authentication/user', 'UserName') >> response
         1 * jacksonMapperMock.readValue(response.body, UserSpring.class) >> userSpringMock
-        result instanceof UserSpring
     }
 
 }
