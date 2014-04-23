@@ -36,17 +36,19 @@
     <packaging>war</packaging>
 
     <name>OSIAM Auth Server</name>
-    
+
     <properties>
-    	<org.osiam.connector4java.version>0.15-SNAPSHOT</org.osiam.connector4java.version>
+        <org.osiam.connector4java.version>0.15-SNAPSHOT</org.osiam.connector4java.version>
     </properties>
 
     <build>
         <plugins>
             <!-- Configure the compiler plugin for Groovy -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgument>-proc:none</compilerArgument>
+                </configuration>
             </plugin>
 
             <plugin>
@@ -110,6 +112,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -118,15 +121,42 @@
                     <warName>osiam-auth-server</warName>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.bsc.maven</groupId>
+                <artifactId>maven-processor-plugin</artifactId>
+                <version>2.2.4</version>
+                <executions>
+                    <execution>
+                        <id>process</id>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <processors>
+                                <processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
+                            </processors>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.hibernate</groupId>
+                        <artifactId>hibernate-jpamodelgen</artifactId>
+                        <version>4.3.5.Final</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
     </build>
 
     <dependencies>
-    	<dependency>
-			<groupId>org.osiam</groupId>
-			<artifactId>connector4java</artifactId>
-			<version>${org.osiam.connector4java.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>org.osiam</groupId>
+            <artifactId>connector4java</artifactId>
+            <version>${org.osiam.connector4java.version}</version>
+        </dependency>
     
         <!-- Groovy SDK LICENSE: Apache 2.0 according to http://grepcode.com/snapshot/repo1.maven.org/maven2/org.codehaus.groovy/groovy-all/2.0.4 -->
         <dependency>
@@ -175,6 +205,11 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+        </dependency>
+
         <!-- Spring -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -187,11 +222,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
         </dependency>
 
         <!-- AOP dependency -->
@@ -242,7 +272,7 @@
             <artifactId>spring-security-ldap</artifactId>
             <version>${org.springframework.security-version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.apache.directory.server</groupId>
             <artifactId>apacheds-server-jndi</artifactId>
@@ -256,15 +286,31 @@
         </dependency>
 
         <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.5.6</version>
         </dependency>
 
         <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
         </dependency>
+
         <!-- @Inject -->
         <dependency>
             <groupId>javax.inject</groupId>
