@@ -116,8 +116,8 @@ public class OsiamUserDetailsService implements UserDetailsService {
 
     private OsiamConnector createOsiamConnector() {
         OsiamConnector.Builder oConBuilder = new OsiamConnector.Builder().
-                setAuthServiceEndpoint(buildServerBaseUri("osiam-auth-server")).
-                setResourceEndpoint(buildServerBaseUri("osiam-resource-server")).
+                setAuthServerEndpoint(buildServerBaseUri("osiam-auth-server")).
+                setResourceServerEndpoint(buildServerBaseUri("osiam-resource-server")).
                 setGrantType(GrantType.CLIENT_CREDENTIALS).
                 setClientId(clientId).
                 setClientSecret(clientSecret).
