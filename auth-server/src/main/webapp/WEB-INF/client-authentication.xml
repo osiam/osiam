@@ -80,7 +80,7 @@
     <!-- service holding client data -->
     <bean id="clientDetailsUserService"
           class="org.springframework.security.oauth2.provider.client.ClientDetailsUserDetailsService">
-        <constructor-arg ref="clientDetailsService"/>
+        <constructor-arg ref="osiamClientDetailsService"/>
     </bean>
 
     <!-- the OAuth2 authentication entry point -->

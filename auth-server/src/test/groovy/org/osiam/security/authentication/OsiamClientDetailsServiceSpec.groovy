@@ -23,57 +23,68 @@
 
 package org.osiam.security.authentication
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import org.osiam.helper.HttpClientHelper
-import org.osiam.helper.HttpClientRequestResult
-import org.osiam.resources.ClientSpring
+import org.osiam.auth.oauth_client.ClientDao
+import org.osiam.auth.oauth_client.ClientEntity
+import org.osiam.client.oauth.Scope
+
 import spock.lang.Specification
 
 class OsiamClientDetailsServiceSpec extends Specification {
 
-    def jacksonMapperMock = Mock(ObjectMapper)
-    def httpClientHelperMock = Mock(HttpClientHelper)
-    def clientDetailsLoadingBean = new OsiamClientDetailsService(mapper: jacksonMapperMock, httpClientHelper: httpClientHelperMock, serverUri: 'http://localhost:8080/osiam-resource-server/authentication/client/')
+    ClientDao clientDao = Mock()
+    OsiamClientDetailsService osiamClientDetailsService = new OsiamClientDetailsService(clientDao: clientDao)
+    def clientId = 'client-id'
 
-    def "OsiamClientDetailsService should implement springs ClientDetailsService and therefore returning a client found by client ID as ClientSpring representation"() {
+    def 'loading client details returns a correct converted OsiamClientDetails instance'() {
         given:
-        def resultingClient = "the resulting client as JSON string"
-        def clientSpringMock = Mock(ClientSpring)
-        def requestResult = new HttpClientRequestResult(resultingClient, 200)
+        ClientEntity clientEntity = createFullClientEntity(clientId)
 
         when:
-        def result = clientDetailsLoadingBean.loadClientByClientId("ClientId")
+        OsiamClientDetails result = osiamClientDetailsService.loadClientByClientId(clientId)
 
         then:
-        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-resource-server/authentication/client/ClientId") >> requestResult
-        1 * jacksonMapperMock.readValue(requestResult.body, ClientSpring.class) >> clientSpringMock
-        result instanceof ClientSpring
+        1 * clientDao.getClient(clientId) >> clientEntity
+        isEqual(result, clientEntity)
     }
 
-    def "If jackson throws an IOException it should be mapped to an RuntimeException"() {
+    def 'updating the client expiry actually calls setExpiry on entity'() {
         given:
-        def resultingClient = "the resulting client as JSON string"
-        def requestResult = new HttpClientRequestResult(resultingClient, 200)
+        ClientEntity clientEntity = Mock()
+        def newExpiry = new Date()
 
         when:
-        clientDetailsLoadingBean.loadClientByClientId("ClientId")
+        osiamClientDetailsService.updateClientExpiry(clientId, newExpiry)
 
         then:
-        1 * httpClientHelperMock.executeHttpGet("http://localhost:8080/osiam-resource-server/authentication/client/ClientId") >> requestResult
-        1 * jacksonMapperMock.readValue(requestResult.body, ClientSpring.class) >> { throw new IOException() }
-        thrown(RuntimeException)
+        1 * clientDao.getClient(clientId) >> clientEntity
+        1 * clientEntity.setExpiry(newExpiry)
     }
 
-    def "An update of the client to set the expiry date should be possible"() {
-        given:
-        def clientSpringMock = Mock(ClientSpring)
-        def oldClientExpiryDate = new Date()
+    void isEqual(OsiamClientDetails result, ClientEntity clientEntity) {
+        assert result.getId() == clientEntity.getId()
+        assert result.getClientSecret() == clientEntity.getClientSecret()
+        assert result.getScope() == clientEntity.getScope()
+        assert result.getGrants() == clientEntity.getGrants()
+        assert result.getRedirectUri() == clientEntity.getRedirectUri()
+        assert result.getAccessTokenValiditySeconds() == clientEntity.getAccessTokenValiditySeconds()
+        assert result.getRefreshTokenValiditySeconds() == clientEntity.getRefreshTokenValiditySeconds()
+        assert result.isImplicit() == clientEntity.isImplicit()
+        assert result.getExpiry() == clientEntity.getExpiry()
+        assert result.getValidityInSeconds() == clientEntity.getValidityInSeconds()
+    }
 
-        when:
-        clientDetailsLoadingBean.updateClient(clientSpringMock, "ClientId")
-
-        then:
-        1 * clientSpringMock.getExpiry() >> oldClientExpiryDate
-        1 * httpClientHelperMock.executeHttpPut("http://localhost:8080/osiam-resource-server/authentication/client/ClientId", "expiry", oldClientExpiryDate.toString())
+    ClientEntity createFullClientEntity(clientId){
+        ClientEntity result = new ClientEntity()
+        result.setId(clientId)
+        result.setClientSecret('secret')
+        result.setScope([Scope.ALL] as Set)
+        result.setGrants(['grant'] as Set)
+        result.setRedirectUri('redirect-uri')
+        result.setAccessTokenValiditySeconds(10000)
+        result.setRefreshTokenValiditySeconds(100000)
+        result.setImplicit(false)
+        result.setExpiry(new Date())
+        result.setValidityInSeconds(1000)
+        return result
     }
 }

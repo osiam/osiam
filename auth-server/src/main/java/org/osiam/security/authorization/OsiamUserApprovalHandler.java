@@ -23,15 +23,16 @@
 
 package org.osiam.security.authorization;
 
-import org.osiam.resources.ClientSpring;
+import java.util.Date;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.osiam.security.authentication.OsiamClientDetails;
 import org.osiam.security.authentication.OsiamClientDetailsService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.approval.DefaultUserApprovalHandler;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.util.Date;
 
 /**
  * Osiam user approval handler extends the default user approval handler from spring. It will add an implicit approval
@@ -51,7 +52,7 @@ public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
      * Is called if OsiamUserApprovalHandler.isApproved() returns false and AccessConfirmation is done by the user. Than
      * it will save the approve date to be able to check it as long as user accepts approval. So the user is not
      * bothered every time to approve the client.
-     * 
+     *
      * @param authorizationRequest
      *            spring authorizationRequest
      * @param userAuthentication
@@ -59,25 +60,25 @@ public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
      * @return the authorizationRequest
      */
     @Override
-    public AuthorizationRequest updateBeforeApproval(AuthorizationRequest authorizationRequest,
-            Authentication userAuthentication) {
+    public AuthorizationRequest updateBeforeApproval(final AuthorizationRequest authorizationRequest,
+            final Authentication userAuthentication) {
         // check if "user_oauth_approval" is in the authorizationRequests approvalParameters and the (size != 0)
         // -> true for accessConfirmation -> save actual date
-        if (authorizationRequest.getApprovalParameters().size() != 0
-                && authorizationRequest.getApprovalParameters().containsKey("user_oauth_approval")
+        if (authorizationRequest.getApprovalParameters().containsKey("user_oauth_approval")
                 && authorizationRequest.getApprovalParameters().get("user_oauth_approval").equals("true")) {
-            ClientSpring client = getClientDetails(authorizationRequest);
-            Date date = new Date(System.currentTimeMillis() + (client.getValidityInSeconds() * MILLISECONDS));
+
+            final OsiamClientDetails client = getClientDetails(authorizationRequest);
+            final Date date = new Date(System.currentTimeMillis() + client.getValidityInSeconds() * MILLISECONDS);
             client.setExpiry(date);
 
-            osiamClientDetailsService.updateClient(client, authorizationRequest.getClientId());
+            osiamClientDetailsService.updateClientExpiry(authorizationRequest.getClientId(), client.getExpiry());
         }
         return super.updateBeforeApproval(authorizationRequest, userAuthentication);
     }
 
     /**
      * Checks if the client is configured to not ask the user for approval or if the date to ask again expires.
-     * 
+     *
      * @param authorizationRequest
      *            spring authorizationRequest
      * @param userAuthentication
@@ -85,10 +86,10 @@ public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
      * @return whether user approved the client or not
      */
     @Override
-    public boolean isApproved(AuthorizationRequest authorizationRequest, Authentication userAuthentication) {
+    public boolean isApproved(final AuthorizationRequest authorizationRequest, final Authentication userAuthentication) {
         // check if implicit is configured in client or if user already confirmed approval once and validity time is not
         // over
-        ClientSpring client = getClientDetails(authorizationRequest);
+        final OsiamClientDetails client = getClientDetails(authorizationRequest);
         if (userAuthentication.isAuthenticated() && client.isImplicit()) {
             return true;
         } else if (userAuthentication.isAuthenticated()
@@ -98,8 +99,8 @@ public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
         return false;
     }
 
-    private ClientSpring getClientDetails(AuthorizationRequest authorizationRequest) {
-        return (ClientSpring) osiamClientDetailsService.loadClientByClientId(authorizationRequest.getClientId());
+    private OsiamClientDetails getClientDetails(final AuthorizationRequest authorizationRequest) {
+        return osiamClientDetailsService.loadClientByClientId(authorizationRequest.getClientId());
     }
 
 }
