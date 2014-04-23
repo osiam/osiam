@@ -48,18 +48,12 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
     @Inject
     private HttpClientHelper httpClient;
 
-    @Value("${osiam.server.port}")
-    private int serverPort;
-    @Value("${osiam.server.host}")
-    private String serverHost;
-    @Value("${osiam.server.http.scheme}")
-    private String httpScheme;
+    @Value("${org.osiam.auth-server.home}")
+    private String authServerHome;
 
     @Override
     public OAuth2Authentication loadAuthentication(String accessToken) {
-        final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort + "/osiam-auth-server";
-
-        HttpClientRequestResult result = httpClient.executeHttpGet(serverUri + "/token/validate/" + accessToken);
+        HttpClientRequestResult result = httpClient.executeHttpGet(authServerHome + "/token/validate/" + accessToken);
 
         if (result.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
             throw new InvalidTokenException("invalid_token");
@@ -77,9 +71,7 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
 
     @Override
     public OAuth2AccessToken readAccessToken(String accessToken) {
-        final String serverUri = httpScheme + "://" + serverHost + ":" + serverPort + "/osiam-auth-server";
-
-        HttpClientRequestResult result = httpClient.executeHttpGet(serverUri + "/token/" + accessToken);
+        HttpClientRequestResult result = httpClient.executeHttpGet(authServerHome + "/token/" + accessToken);
 
         if (result.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
             throw new InvalidTokenException("invalid_token");

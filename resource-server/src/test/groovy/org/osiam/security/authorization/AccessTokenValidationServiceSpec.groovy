@@ -43,8 +43,7 @@ class AccessTokenValidationServiceSpec extends Specification {
 
     def jacksonMapperMock = Mock(ObjectMapperWithExtensionConfig)
     def httpClientHelperMock = Mock(HttpClientHelper)
-    def accessTokenValidationService = new AccessTokenValidationService(mapper: jacksonMapperMock, httpClient: httpClientHelperMock,
-    httpScheme: "http", serverHost: "localhost", serverPort: 8080)
+    def accessTokenValidationService = new AccessTokenValidationService(mapper: jacksonMapperMock, httpClient: httpClientHelperMock, authServerHome: 'http://localhost:8080/osiam-auth-server')
 
     def "Inherit from springs ResourceServerTokenServices and override the method to load the Authentication depending on the given accessToken as String"() {
         given:

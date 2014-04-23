@@ -30,7 +30,7 @@
 
     <!-- Load database properties reference -->
     <bean id="dbProperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="location" value="classpath:osiam.properties"/>
+        <property name="location" value="classpath:resource-server.properties"/>
     </bean>
 
     <bean id="myEmf"
@@ -41,17 +41,17 @@
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
                 <property name="showSql" value="false"/>
                 <property name="generateDdl" value="false"/>
-                <property name="databasePlatform" value="${org.osiam.resource.db.dialect}"/>
+                <property name="databasePlatform" value="${org.osiam.resource-server.db.dialect}"/>
             </bean>
         </property>
     </bean>
 
     <bean id="dataSource"
           class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="${org.osiam.resource.db.driver}"/>
-        <property name="url" value="${org.osiam.resource.db.url}"/>
-        <property name="username" value="${org.osiam.resource.db.username}"/>
-        <property name="password" value="${org.osiam.resource.db.password}"/>
+        <property name="driverClassName" value="${org.osiam.resource-server.db.driver}"/>
+        <property name="url" value="${org.osiam.resource-server.db.url}"/>
+        <property name="username" value="${org.osiam.resource-server.db.username}"/>
+        <property name="password" value="${org.osiam.resource-server.db.password}"/>
     </bean>
 
     <bean id="txManager" class="org.springframework.orm.jpa.JpaTransactionManager">

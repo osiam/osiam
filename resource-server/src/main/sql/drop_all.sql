@@ -1,7 +1,3 @@
-drop table if exists database_scheme_version cascade;
-drop table if exists osiam_client_scopes cascade;
-drop table if exists osiam_client_grants cascade;
-drop table if exists osiam_client cascade;
 drop table if exists scim_group_scim_id cascade;
 drop table if exists scim_extension_field_value cascade;
 drop table if exists scim_im cascade;
