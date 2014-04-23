@@ -63,7 +63,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
         essence.setUsername(username);
 
         // Map the roles
-        for (int i = 0; (roleAttributes != null) && (i < roleAttributes.length); i++) {
+        for (int i = 0; roleAttributes != null && i < roleAttributes.length; i++) {
             String[] rolesForAttribute = ctx.getStringAttributes(roleAttributes[i]);
 
             if (rolesForAttribute == null) {
@@ -104,8 +104,9 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
 
     public User mapUser(DirContextOperations ldapUserData) {
 
-        Extension extension = new Extension(LdapConfiguration.AUTH_EXTENSION);
-        extension.addOrUpdateField("origin", LdapConfiguration.LDAP_PROVIDER);
+        Extension extension = new Extension.Builder(LdapConfiguration.AUTH_EXTENSION)
+                .setField("origin", LdapConfiguration.LDAP_PROVIDER)
+                .build();
 
         String userName = ldapUserData.getStringAttribute(scimLdapAttributes.get("userName"));
         User.Builder builder = new User.Builder(userName)
