@@ -343,10 +343,10 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
         Im newIm = new Im.Builder().setValue(value).setType(new Im.Type(LdapConfiguration.LDAP_PROVIDER)).build();
         for (Im im : ims) {
             if (im.getType() != null && im.getType().toString().equals(LdapConfiguration.LDAP_PROVIDER)) {
-                updateBuilder.deleteIms(im);
+                updateBuilder.deleteIm(im);
             }
         }
-        updateBuilder.addIms(newIm);
+        updateBuilder.addIm(newIm);
     }
 
     private void updatePhoneNumber(UpdateUser.Builder updateBuilder, List<PhoneNumber> phoneNumbers, String value) {
