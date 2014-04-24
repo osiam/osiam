@@ -31,7 +31,6 @@ import javax.persistence.Query;
 
 import org.osiam.auth.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class ClientDao {

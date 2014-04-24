@@ -23,6 +23,11 @@
 
 package org.osiam.security.controller;
 
+import java.util.Collection;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+
 import org.osiam.resources.RoleSpring;
 import org.osiam.security.AuthenticationSpring;
 import org.osiam.security.AuthorizationRequestSpring;
@@ -36,11 +41,12 @@ import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * This Controller is used to handle OAuth2 access tokens with Spring Security.
