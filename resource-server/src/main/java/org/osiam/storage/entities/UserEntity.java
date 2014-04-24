@@ -641,7 +641,6 @@ public class UserEntity extends ResourceEntity {
         x509Certificates.clear();
     }
 
-
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
