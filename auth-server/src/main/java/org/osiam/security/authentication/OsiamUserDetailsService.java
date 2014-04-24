@@ -63,7 +63,7 @@ public class OsiamUserDetailsService implements UserDetailsService, Initializing
     @Value("${org.osiam.auth-server.client.secret}")
     private String clientSecret;
 
-    private final static String CLIENT_SCOPE = "GET POST PATCH";
+    private static final String CLIENT_SCOPE = "GET POST PATCH";
 
     @Inject
     private HttpClientHelper httpClientHelper;

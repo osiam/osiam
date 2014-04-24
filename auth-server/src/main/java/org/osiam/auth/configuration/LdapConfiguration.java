@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.naming.ConfigurationException;
 
 import org.osiam.auth.exception.LdapConfigurationException;
 import org.osiam.auth.login.ldap.OsiamLdapAuthenticationProvider;
@@ -130,7 +129,7 @@ public class LdapConfiguration implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws LdapConfigurationException {
+    public void afterPropertiesSet() {
         createLdapToScimAttributeMapping();
         DirContextOperations ldapUserData = new DirContextAdapter();
         for (String scimAttribute : scimLdapAttributes.keySet()) {
