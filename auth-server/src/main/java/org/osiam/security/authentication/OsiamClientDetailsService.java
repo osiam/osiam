@@ -34,8 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * This class is used by clientAuthenticationManager in Spring to authenticate a client when trading an auth_code to an
- * access_token.
+ * OSIAM {@link ClientDetailsService} implementation.
  */
 @Service("osiamClientDetailsService")
 public class OsiamClientDetailsService implements ClientDetailsService {
