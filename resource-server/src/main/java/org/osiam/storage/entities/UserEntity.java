@@ -78,7 +78,7 @@ public class UserEntity extends ResourceEntity {
 
     private String displayName;
 
-    private final static int BATCH_SIZE = 100;
+    private static final int BATCH_SIZE = 100;
     @BatchSize(size = BATCH_SIZE)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = JOIN_COLUMN_NAME, nullable = false)

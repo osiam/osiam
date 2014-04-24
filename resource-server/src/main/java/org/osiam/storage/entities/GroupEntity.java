@@ -42,7 +42,7 @@ import com.google.common.collect.ImmutableSet;
 @Table(name = "scim_group")
 public class GroupEntity extends ResourceEntity {
     
-    private final static int BATCH_SIZE = 100;
+    private static final int BATCH_SIZE = 100;
     @ManyToMany
     @BatchSize(size = BATCH_SIZE)
     private Set<ResourceEntity> members = new HashSet<>();
