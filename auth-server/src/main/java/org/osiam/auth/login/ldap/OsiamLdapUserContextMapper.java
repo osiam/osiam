@@ -60,7 +60,6 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
 
     private final Log logger = LogFactory.getLog(LdapUserDetailsMapper.class);
     private String passwordAttributeName = "userPassword";
-    private String[] roleAttributes = null;
     private Map<String, String> scimLdapAttributes;
 
     public OsiamLdapUserContextMapper(Map<String, String> scimLdapAttributes) {
@@ -84,24 +83,6 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
         }
 
         essence.setUsername(username);
-
-        // Map the roles
-        for (int i = 0; roleAttributes != null && i < roleAttributes.length; i++) {
-            String[] rolesForAttribute = ctx.getStringAttributes(roleAttributes[i]);
-
-            if (rolesForAttribute == null) {
-                logger.debug("Couldn't read role attribute '" + roleAttributes[i] + "' for user " + dn);
-                continue;
-            }
-
-            for (String role : rolesForAttribute) {
-                GrantedAuthority authority = createAuthority(role);
-
-                if (authority != null) {
-                    essence.addAuthority(authority);
-                }
-            }
-        }
 
         // Add the supplied authorities
 
@@ -199,7 +180,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
                 } catch (URISyntaxException e) {
                     throw new LdapConfigurationException("Could not map the ldap attibute '"
                             + ldapAttribute + "' with the value '" + ldapValue
-                            + "' into an scim photo because the value could not be conferted into an URI.");
+                            + "' into an scim photo because the value could not be conferted into an URI.", e);
                 }
                 break;
             case "preferredLanguage":
@@ -233,8 +214,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
                 break;
             default:
                 if (!scimAttribute.startsWith("address.") && !scimAttribute.startsWith("name.")) {
-                    throw new LdapConfigurationException("The ldap attibute mapping value '" + scimAttribute
-                            + "' could not be reconized as scim attribute.");
+                    throw createAttributeNotRecnoizedException(scimAttribute);
                 }
                 break;
             }
@@ -310,8 +290,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
                 break;
             default:
                 if (!scimAttribute.startsWith("address.") && !scimAttribute.startsWith("name.")) {
-                    throw new LdapConfigurationException("The ldap attibute mapping value '" + scimAttribute
-                            + "' could not be reconized as scim attribute.");
+                    throw createAttributeNotRecnoizedException(scimAttribute);
                 }
             }
         }
@@ -320,6 +299,11 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
         updateName(updateBuilder, ldapUserData);
 
         return updateBuilder.build();
+    }
+    
+    private LdapConfigurationException createAttributeNotRecnoizedException(String scimAttribute){
+        return new LdapConfigurationException("The ldap attibute mapping value '" + scimAttribute
+                + "' could not be reconized as scim attribute.");
     }
 
     private void updateName(UpdateUser.Builder updateBuilder, DirContextOperations ldapUserData) {
@@ -402,7 +386,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
         } catch (URISyntaxException e) {
             throw new LdapConfigurationException("Could not map the ldap attibute '"
                     + scimLdapAttributes.get(scimAttribute) + "' with the value '" + value
-                    + "' into an scim photo because the value could not be converted into an URI.");
+                    + "' into an scim photo because the value could not be converted into an URI.", e);
         }
     }
 
@@ -461,8 +445,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
                 builder.setStreetAddress(ldapValue);
                 break;
             default:
-                throw new LdapConfigurationException("The ldap attibute mapping value '" + scimAttribute
-                        + "' could not be reconized as scim attribute.");
+                throw createAttributeNotRecnoizedException(scimAttribute);
             }
         }
 
@@ -504,8 +487,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
                 builder.setMiddleName(ldapValue);
                 break;
             default:
-                throw new LdapConfigurationException("The ldap attibute mapping value '" + scimAttribute
-                        + "' could not be reconized as scim attribute.");
+                throw createAttributeNotRecnoizedException(scimAttribute);
             }
         }
 

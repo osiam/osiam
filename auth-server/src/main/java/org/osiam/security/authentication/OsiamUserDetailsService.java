@@ -63,7 +63,7 @@ public class OsiamUserDetailsService implements UserDetailsService, Initializing
     @Value("${org.osiam.auth-server.client.secret}")
     private String clientSecret;
 
-    private final String clientScope = "GET POST PATCH";
+    private final static String CLIENT_SCOPE = "GET POST PATCH";
 
     @Inject
     private HttpClientHelper httpClientHelper;
@@ -118,12 +118,12 @@ public class OsiamUserDetailsService implements UserDetailsService, Initializing
                 setGrantType(GrantType.CLIENT_CREDENTIALS).
                 setClientId(clientId).
                 setClientSecret(clientSecret).
-                setScope(clientScope);
+                setScope(CLIENT_SCOPE);
         return oConBuilder.build();
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         serverUri = resourceServerHome + "/authentication/user";
     }
 }

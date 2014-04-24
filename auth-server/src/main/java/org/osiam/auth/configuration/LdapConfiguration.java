@@ -85,12 +85,12 @@ public class LdapConfiguration implements InitializingBean {
             scimLdapAttributes = new HashMap<String, String>();
             for (String keyValuePair : attributeMapping) {
                 if (!keyValuePair.contains(":")) {
-                    new ConfigurationException("The ldap attibute mapping value '" + keyValuePair
+                    throw new LdapConfigurationException("The ldap attibute mapping value '" + keyValuePair
                             + "' could not be parsed. It doesn't contain a ':'");
                 }
                 String[] keyValue = keyValuePair.split(":");
                 if (keyValue.length != 2) {
-                    new ConfigurationException("The ldap attibute mapping value '" + keyValuePair
+                    throw new LdapConfigurationException("The ldap attibute mapping value '" + keyValuePair
                             + "' could not be parsed. It contains more than one ':'");
                 }
                 scimLdapAttributes.put(keyValue[0].trim(), keyValue[1].trim());
@@ -130,11 +130,11 @@ public class LdapConfiguration implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() throws LdapConfigurationException {
         createLdapToScimAttributeMapping();
         DirContextOperations ldapUserData = new DirContextAdapter();
         for (String scimAttribute : scimLdapAttributes.keySet()) {
-            if (scimAttribute.toLowerCase().equals("password")) {
+            if (scimAttribute.equalsIgnoreCase("password")) {
                 throw new LdapConfigurationException(
                         "The password can not be mapped to the SCIM user. Please delete the password mapping from the configuration!");
             }

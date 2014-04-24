@@ -37,7 +37,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.security.ldap.authentication.LdapAuthenticator;
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
@@ -65,7 +64,7 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
     }
 
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    public Authentication authenticate(Authentication authentication) {
         Assert.isInstanceOf(OsiamLdapAuthentication.class, authentication,
                 messages.getMessage("LdapAuthenticationProvider.onlySupports",
                         "Only OsiamLdapAuthentication is supported"));

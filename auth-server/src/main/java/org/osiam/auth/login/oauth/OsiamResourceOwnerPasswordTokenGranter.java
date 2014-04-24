@@ -63,11 +63,12 @@ public class OsiamResourceOwnerPasswordTokenGranter extends ResourceOwnerPasswor
             userAuth = authenticationManager.authenticate(userAuth);
         } catch (AccountStatusException ase) {
             // covers expired, locked, disabled cases (mentioned in section 5.2, draft 31)
-            throw new InvalidGrantException(ase.getMessage());
+            throw new InvalidGrantException(ase.getMessage(), ase);
         } catch (BadCredentialsException e) {
             // If the username/password are wrong the spec says we should send 400/bad grant
-            throw new InvalidGrantException(e.getMessage());
+            throw new InvalidGrantException(e.getMessage(), e);
         }
+        
         if (userAuth == null || !userAuth.isAuthenticated()) {
             throw new InvalidGrantException("Could not authenticate user: " + username);
         }

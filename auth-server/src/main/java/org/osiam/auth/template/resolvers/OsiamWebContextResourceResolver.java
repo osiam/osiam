@@ -45,10 +45,12 @@ public class OsiamWebContextResourceResolver implements IResourceResolver {
         super();
     }
 
+    @Override
     public String getName() {
         return NAME;
     }
 
+    @Override
     public InputStream getResourceAsStream(final TemplateProcessingParameters templateProcessingParameters,
             final String resourceName) {
 
@@ -64,6 +66,6 @@ public class OsiamWebContextResourceResolver implements IResourceResolver {
         }
 
         return ClassLoaderUtils.getClassLoader(OsiamWebContextResourceResolver.class).getResourceAsStream(
-                resourceName.toString());
+                resourceName);
     }
 }
