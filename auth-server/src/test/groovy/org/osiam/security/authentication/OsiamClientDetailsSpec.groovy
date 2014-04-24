@@ -27,7 +27,6 @@ import org.joda.time.MutableDateTime
 
 import spock.lang.Specification
 
-
 class OsiamClientDetailsSpec extends Specification {
 
     OsiamClientDetails osiamClientDetails = new OsiamClientDetails()
