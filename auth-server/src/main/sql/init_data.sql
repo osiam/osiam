@@ -1,10 +1,4 @@
 --
--- Inserting schema version
---
-
-INSERT INTO database_scheme_version VALUES (0.05);
-
---
 -- Auth Server Client
 --
 INSERT INTO osiam_client (internal_id, accesstokenvalidityseconds, client_secret, expiry, 

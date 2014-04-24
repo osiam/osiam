@@ -14,17 +14,6 @@ SET client_min_messages = warning;
 SET default_with_oids = false;
 
 --
--- TOC entry 161 (class 1259 OID 34620)
--- Dependencies: 5
--- Name: database_scheme_version; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE database_scheme_version (
-    version double precision NOT NULL
-);
-
-
---
 -- TOC entry 184 (class 1259 OID 34929)
 -- Dependencies: 5
 -- Name: hibernate_sequence; Type: SEQUENCE; Schema: public; Owner: -
