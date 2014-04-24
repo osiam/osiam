@@ -78,47 +78,48 @@ public class UserEntity extends ResourceEntity {
 
     private String displayName;
 
-    @BatchSize(size = 100)
+    private final static int BATCH_SIZE = 100;
+    @BatchSize(size = BATCH_SIZE)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = JOIN_COLUMN_NAME, nullable = false)
     private Set<EmailEntity> emails = new HashSet<>();
 
-    @BatchSize(size = 100)
+    @BatchSize(size = BATCH_SIZE)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = JOIN_COLUMN_NAME, nullable = false)
     private Set<PhoneNumberEntity> phoneNumbers = new HashSet<>();
 
-    @BatchSize(size = 100)
+    @BatchSize(size = BATCH_SIZE)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = JOIN_COLUMN_NAME, nullable = false)
     private Set<ImEntity> ims = new HashSet<>();
 
-    @BatchSize(size = 100)
+    @BatchSize(size = BATCH_SIZE)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = JOIN_COLUMN_NAME, nullable = false)
     private Set<PhotoEntity> photos = new HashSet<>();
 
-    @BatchSize(size = 100)
+    @BatchSize(size = BATCH_SIZE)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = JOIN_COLUMN_NAME, nullable = false)
     private Set<AddressEntity> addresses = new HashSet<>();
 
-    @BatchSize(size = 100)
+    @BatchSize(size = BATCH_SIZE)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = JOIN_COLUMN_NAME, nullable = false)
     private Set<EntitlementEntity> entitlements = new HashSet<>();
 
-    @BatchSize(size = 100)
+    @BatchSize(size = BATCH_SIZE)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = JOIN_COLUMN_NAME, nullable = false)
     private Set<RoleEntity> roles = new HashSet<>();
 
-    @BatchSize(size = 100)
+    @BatchSize(size = BATCH_SIZE)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = JOIN_COLUMN_NAME, nullable = false)
     private Set<X509CertificateEntity> x509Certificates = new HashSet<>();
 
-    @BatchSize(size = 100)
+    @BatchSize(size = BATCH_SIZE)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = JOIN_COLUMN_NAME, nullable = false)
     private Set<ExtensionFieldValueEntity> extensionFieldValues = new HashSet<>();

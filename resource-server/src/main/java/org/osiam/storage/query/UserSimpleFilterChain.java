@@ -23,7 +23,6 @@
 
 package org.osiam.storage.query;
 
-import java.io.ObjectInputStream.GetField;
 import java.util.Locale;
 
 import javax.persistence.criteria.CriteriaBuilder;

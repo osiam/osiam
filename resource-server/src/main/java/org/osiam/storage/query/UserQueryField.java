@@ -448,7 +448,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
                 phoneNumberType = new PhoneNumber.Type(value);
             }
             SetJoin<UserEntity, PhoneNumberEntity> join = root.join(UserEntity_.phoneNumbers, JoinType.LEFT);
-            return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(PhoneNumberEntity_.type), // NOSONAR -
+            return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(PhoneNumberEntity_.type), // NOSONAR
+                                                                                                                 // -
                     // XEntity_.X will be filled by JPA provider
                     phoneNumberType, cb);
         }
@@ -462,7 +463,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, PhoneNumberEntity> join = root.join(UserEntity_.phoneNumbers, JoinType.LEFT);
-            return constraint.createPredicateForBooleanField(join.get(PhoneNumberEntity_.primary), Boolean.valueOf(value), cb);
+            return constraint.createPredicateForBooleanField(join.get(PhoneNumberEntity_.primary),
+                    Boolean.valueOf(value), cb);
         }
 
         @Override
@@ -511,7 +513,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
             }
 
             SetJoin<UserEntity, ImEntity> join = root.join(UserEntity_.ims, JoinType.LEFT);
-            return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(ImEntity_.type), imType, cb); // NOSONAR -
+            return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(ImEntity_.type), imType, cb); // NOSONAR
+                                                                                                                     // -
             // XEntity_.X will be filled by JPA provider
         }
 
@@ -538,8 +541,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
                 String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, PhotoEntity> join = root.join(UserEntity_.photos, JoinType.LEFT);
             return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
-                    value, cb); // NOSONAR -
-            // XEntity_.X will be filled by JPA provider
+                    value, cb); // NOSONAR - XEntity_.X will be filled by JPA provider
 
         }
 
@@ -574,7 +576,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
             }
 
             SetJoin<UserEntity, PhotoEntity> join = root.join(UserEntity_.photos, JoinType.LEFT);
-            return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(PhotoEntity_.type), photoType, cb); // NOSONAR -
+            return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(PhotoEntity_.type), photoType,
+                    cb); // NOSONAR -
             // XEntity_.X will be filled by JPA provider
         }
 
@@ -587,7 +590,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, PhotoEntity> join = root.join(UserEntity_.photos, JoinType.LEFT);
-            return constraint.createPredicateForBooleanField(join.get(PhotoEntity_.primary), Boolean.valueOf(value), cb);
+            return constraint
+                    .createPredicateForBooleanField(join.get(PhotoEntity_.primary), Boolean.valueOf(value), cb);
         }
 
         @Override
@@ -690,7 +694,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, AddressEntity> join = root.join(UserEntity_.addresses, JoinType.LEFT);
-            return constraint.createPredicateForBooleanField(join.get(AddressEntity_.primary), Boolean.valueOf(value), cb);
+            return constraint.createPredicateForBooleanField(join.get(AddressEntity_.primary), Boolean.valueOf(value),
+                    cb);
         }
 
         @Override
@@ -749,7 +754,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, EntitlementEntity> join = root.join(UserEntity_.entitlements, JoinType.LEFT);
-            return constraint.createPredicateForBooleanField(join.get(EntitlementEntity_.primary), Boolean.valueOf(value), cb);
+            return constraint.createPredicateForBooleanField(join.get(EntitlementEntity_.primary),
+                    Boolean.valueOf(value), cb);
         }
 
         @Override
@@ -829,7 +835,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-        	final SetJoin<UserEntity, GroupEntity> join = root.join(ResourceEntity_.groups, JoinType.LEFT);
+            final SetJoin<UserEntity, GroupEntity> join = root.join(ResourceEntity_.groups, JoinType.LEFT);
             return constraint.createPredicateForStringField(join.get(ResourceEntity_.id), value, cb);
         }
 
@@ -842,7 +848,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-        	final SetJoin<UserEntity, GroupEntity> join = root.join(ResourceEntity_.groups, JoinType.LEFT);
+            final SetJoin<UserEntity, GroupEntity> join = root.join(ResourceEntity_.groups, JoinType.LEFT);
             return constraint.createPredicateForStringField(join.get(ResourceEntity_.id), value, cb);
         }
 
