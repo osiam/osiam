@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/login")
 public class LoginController {
 
-    @Value("${org.osiam.auth.ldap.enabled:false}")
+    @Value("${org.osiam.auth-server.ldap.enabled:false}")
     private boolean isLdapConfigured;
 
     @RequestMapping
