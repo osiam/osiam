@@ -27,15 +27,9 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.osiam.client.connector.OsiamConnector;
-import org.osiam.client.oauth.GrantType;
-import org.osiam.client.query.StringQueryBuilder;
 import org.osiam.helper.HttpClientHelper;
 import org.osiam.helper.HttpClientRequestResult;
 import org.osiam.resources.UserSpring;
-import org.osiam.resources.scim.SCIMSearchResult;
-import org.osiam.resources.scim.UpdateUser;
-import org.osiam.resources.scim.User;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -54,20 +48,9 @@ public class OsiamUserDetailsService implements UserDetailsService, Initializing
     @Value("${org.osiam.resource-server.home}")
     private String resourceServerHome;
 
-    @Value("${org.osiam.auth-server.home}")
-    private String authServerHome;
-
-    @Value("${org.osiam.auth-server.client.id}")
-    private String clientId;
-
-    @Value("${org.osiam.auth-server.client.secret}")
-    private String clientSecret;
-
-    private static final String CLIENT_SCOPE = "GET POST PATCH";
-
     @Inject
     private HttpClientHelper httpClientHelper;
-
+    
     private ObjectMapper mapper; // NOSONAR : need to mock the dependency therefor the final identifier was removed
 
     private String serverUri;
@@ -88,38 +71,6 @@ public class OsiamUserDetailsService implements UserDetailsService, Initializing
         }
 
         return userSpring;
-    }
-
-    public User getUserByUsername(final String userName) {
-        OsiamConnector osiamConnector = createOsiamConnector();
-        String queryString = new StringQueryBuilder().setFilter("userName eq \"" + userName + "\"").build();
-        SCIMSearchResult<User> result = osiamConnector.searchUsers(queryString, osiamConnector.retrieveAccessToken());
-        if (result.getTotalResults() != 1) {
-            return null;
-        } else {
-            return result.getResources().get(0);
-        }
-    }
-
-    public User createUser(User user) {
-        OsiamConnector osiamConnector = createOsiamConnector();
-        return osiamConnector.createUser(user, osiamConnector.retrieveAccessToken());
-    }
-
-    public User updateUser(String userId, UpdateUser user) {
-        OsiamConnector osiamConnector = createOsiamConnector();
-        return osiamConnector.updateUser(userId, user, osiamConnector.retrieveAccessToken());
-    }
-
-    private OsiamConnector createOsiamConnector() {
-        OsiamConnector.Builder oConBuilder = new OsiamConnector.Builder().
-                setAuthServerEndpoint(authServerHome).
-                setResourceServerEndpoint(resourceServerHome).
-                setGrantType(GrantType.CLIENT_CREDENTIALS).
-                setClientId(clientId).
-                setClientSecret(clientSecret).
-                setScope(CLIENT_SCOPE);
-        return oConBuilder.build();
     }
 
     @Override
