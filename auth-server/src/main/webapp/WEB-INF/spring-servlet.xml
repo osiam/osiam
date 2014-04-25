@@ -35,7 +35,7 @@
     <import resource="jpa-configuration.xml" />
     <!-- needed for exchanging the authorization_code to an access_token -->
     <import resource="client-authentication.xml" />
-    <!-- oAuth security config -->
+    <!-- OAuth security config -->
     <import resource="rest-security.xml" />
     <!-- needed for getting an authorization-code -->
     <import resource="user-authentication.xml" />

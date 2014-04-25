@@ -80,7 +80,7 @@
         </constructor-arg>
     </bean>
 
-    <security:authentication-manager xmlns="http://www.springframework.org/schema/security" />
+    <security:authentication-manager />
     
     <!-- filter to validate the delivered access token -->
     <oauth:resource-server id="resourceServerFilter" resource-id="oauth2res" token-services-ref="tokenServices"/>
