@@ -29,7 +29,7 @@ import javax.inject.Inject;
 
 import org.osiam.auth.configuration.LdapConfiguration;
 import org.osiam.auth.exception.LdapAuthenticationProcessException;
-import org.osiam.auth.resource.ResourceConnection;
+import org.osiam.auth.login.ResourceServerConnector;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.UpdateUser;
 import org.osiam.resources.scim.User;
@@ -46,7 +46,7 @@ import org.springframework.util.StringUtils;
 public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider {
 
     @Inject
-    private ResourceConnection resourceConnection;
+    private ResourceServerConnector resourceServerConnector;
 
     @Value("${org.osiam.auth-server.ldap.sync-user-data:true}")
     private boolean syncUserData;
@@ -105,7 +105,7 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
             OsiamLdapUserDetailsImpl ldapUser) {
         String userName = ldapUserData.getStringAttribute(scimLdapAttributes.get("userName"));
 
-        User user = resourceConnection.getUserByUsername(userName);
+        User user = resourceServerConnector.getUserByUsername(userName);
 
         boolean userExists = user != null;
 
@@ -118,10 +118,10 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
 
         if (!userExists) {
             user = osiamLdapUserContextMapper.mapUser(ldapUserData);
-            user = resourceConnection.createUser(user);
+            user = resourceServerConnector.createUser(user);
         } else if (syncUserData && userExists) {
             UpdateUser updateUser = osiamLdapUserContextMapper.mapUpdateUser(user, ldapUserData);
-            user = resourceConnection.updateUser(user.getId(), updateUser);
+            user = resourceServerConnector.updateUser(user.getId(), updateUser);
         }
 
         ldapUser.setId(user.getId());

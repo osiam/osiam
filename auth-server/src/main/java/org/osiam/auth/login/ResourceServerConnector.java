@@ -1,8 +1,9 @@
-package org.osiam.auth.resource;
+package org.osiam.auth.login;
 
 import javax.inject.Inject;
 
-import org.osiam.auth.configuration.AuthServerStartupConfiguration;
+import org.osiam.auth.oauth_client.OsiamAuthServerClientProvider;
+import org.osiam.auth.token.OsiamAccessTokenProvider;
 import org.osiam.client.connector.OsiamConnector;
 import org.osiam.client.oauth.GrantType;
 import org.osiam.client.oauth.Scope;
@@ -14,7 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ResourceConnection {
+public class ResourceServerConnector {
     
     @Value("${org.osiam.resource-server.home}")
     private String resourceServerHome;
@@ -23,12 +24,15 @@ public class ResourceConnection {
     private String authServerHome;
     
     @Inject
-    private AuthServerStartupConfiguration authServerStartupConfiguration;
+    private OsiamAccessTokenProvider osiamAccessTokenProvider;
+    
+    @Inject
+    private OsiamAuthServerClientProvider authServerClientProvider;
 
     public User getUserByUsername(final String userName) {
         OsiamConnector osiamConnector = createOsiamConnector();
         String queryString = new StringQueryBuilder().setFilter("userName eq \"" + userName + "\"").build();
-        SCIMSearchResult<User> result = osiamConnector.searchUsers(queryString, authServerStartupConfiguration.getAccessToken());
+        SCIMSearchResult<User> result = osiamConnector.searchUsers(queryString, osiamAccessTokenProvider.getAccessToken());
         if (result.getTotalResults() != 1) {
             return null;
         } else {
@@ -38,12 +42,12 @@ public class ResourceConnection {
 
     public User createUser(User user) {
         OsiamConnector osiamConnector = createOsiamConnector();
-        return osiamConnector.createUser(user, authServerStartupConfiguration.getAccessToken());
+        return osiamConnector.createUser(user, osiamAccessTokenProvider.getAccessToken());
     }
 
     public User updateUser(String userId, UpdateUser user) {
         OsiamConnector osiamConnector = createOsiamConnector();
-        return osiamConnector.updateUser(userId, user, authServerStartupConfiguration.getAccessToken());
+        return osiamConnector.updateUser(userId, user, osiamAccessTokenProvider.getAccessToken());
     }
 
     private OsiamConnector createOsiamConnector() {
@@ -51,8 +55,8 @@ public class ResourceConnection {
                 setAuthServerEndpoint(authServerHome).
                 setResourceServerEndpoint(resourceServerHome).
                 setGrantType(GrantType.CLIENT_CREDENTIALS).
-                setClientId(AuthServerStartupConfiguration.AUTH_SERVER_CLIENT_ID).
-                setClientSecret(authServerStartupConfiguration.getClientSecret()).
+                setClientId(OsiamAuthServerClientProvider.AUTH_SERVER_CLIENT_ID).
+                setClientSecret(authServerClientProvider.getClientSecret()).
                 setScope(Scope.ALL);
         return oConBuilder.build();
     }
