@@ -130,6 +130,10 @@ public class LdapConfiguration implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
+        if(!isLdapConfigured) {
+            return;
+        }
+        
         createLdapToScimAttributeMapping();
         DirContextOperations ldapUserData = new DirContextAdapter();
         for (String scimAttribute : scimLdapAttributes.keySet()) {
