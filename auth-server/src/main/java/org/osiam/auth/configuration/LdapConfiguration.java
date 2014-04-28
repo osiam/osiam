@@ -52,7 +52,7 @@ public class LdapConfiguration implements InitializingBean {
     @Value("${org.osiam.auth-server.ldap.enabled:false}")
     private boolean isLdapConfigured;
 
-    @Value("${org.osiam.auth-server.ldap.server.url}")
+    @Value("${org.osiam.auth-server.ldap.server.url:}")
     private String url;
 
     @Value("${org.osiam.auth-server.ldap.server.groupsearchbase:}")
