@@ -40,7 +40,7 @@ public class MeasureDurationTimeOfMethods {
     
     private static Logger LOGGER = Logger.getLogger(MeasureDurationTimeOfMethods.class.getName()); //NOSONAR excluded because of testing
     
-    @Value("${org.osiam.resource-server.profiling}")
+    @Value("${org.osiam.resource-server.profiling:false}")
     private boolean enabled;
 
     @Around("excludeDynamicHTTPMethodScopeEnhancer() && includeOrgOsiam()")
