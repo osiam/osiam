@@ -58,7 +58,7 @@ public class LdapConfiguration implements InitializingBean {
     @Value("${org.osiam.auth-server.ldap.server.groupsearchbase:}")
     private String groupSearchBase;
 
-    @Value("#{'${org.osiam.auth-server.ldap.dn.patterns}'.split(';')}")
+    @Value("#{'${org.osiam.auth-server.ldap.dn.patterns:}'.split(';')}")
     private String[] dnPatterns;
 
     private String[] attributes;
