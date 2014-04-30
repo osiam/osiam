@@ -33,6 +33,7 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
@@ -48,7 +49,11 @@ import org.osiam.resources.exceptions.NoSuchElementException;
 public class ExtensionEntity {
 
     @Id
-    @GeneratedValue
+    @SequenceGenerator(name = "sequence_scim_extension",
+            sequenceName = "resource_server_sequence_scim_extension",
+            allocationSize = 1,
+            initialValue = 100)
+    @GeneratedValue(generator = "sequence_scim_extension")
     @Column(name = "internal_id")
     private long internalId;
 

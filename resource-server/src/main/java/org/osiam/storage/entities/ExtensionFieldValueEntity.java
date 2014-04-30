@@ -31,6 +31,7 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
@@ -40,14 +41,17 @@ import org.hibernate.annotations.Type;
  */
 @Entity
 @Table(name = "scim_extension_field_value",
-    indexes = {
-        @Index(columnList = UserEntity.JOIN_COLUMN_NAME + ", extension_field_internal_id"),
-    }
-)
+        indexes = {
+                @Index(columnList = UserEntity.JOIN_COLUMN_NAME + ", extension_field_internal_id"),
+        })
 public class ExtensionFieldValueEntity {
 
     @Id
-    @GeneratedValue
+    @SequenceGenerator(name = "sequence_scim_extension_field_value",
+            sequenceName = "resource_server_sequence_scim_extension_field_value",
+            allocationSize = 1,
+            initialValue = 100)
+    @GeneratedValue(generator = "sequence_scim_extension_field_value")
     @Column(name = "internal_id")
     private long internalId;
 
@@ -62,7 +66,7 @@ public class ExtensionFieldValueEntity {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = UserEntity.JOIN_COLUMN_NAME, nullable = false, insertable = false, updatable = false)
-    private UserEntity user;  // NOSONAR: set by Hibernate and used by building Query
+    private UserEntity user; // NOSONAR: set by Hibernate and used by building Query
 
     public long getInternalId() {
         return internalId;
