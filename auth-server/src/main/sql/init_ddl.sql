@@ -16,11 +16,11 @@ SET default_with_oids = false;
 --
 -- TOC entry 184 (class 1259 OID 34929)
 -- Dependencies: 5
--- Name: hibernate_sequence; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: auth_server_sequence_osiam_client; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE hibernate_sequence
-    START WITH 1
+CREATE SEQUENCE auth_server_sequence_osiam_client
+    START WITH 100
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE

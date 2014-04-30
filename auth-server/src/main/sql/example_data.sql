@@ -1,10 +1,4 @@
 --
--- Updating hibernate sequence start value
---
-SELECT
-  pg_catalog.setval('hibernate_sequence', 5, FALSE);
-
---
 -- Example Client
 --
 INSERT INTO osiam_client (internal_id, accesstokenvalidityseconds, client_secret, expiry, 
