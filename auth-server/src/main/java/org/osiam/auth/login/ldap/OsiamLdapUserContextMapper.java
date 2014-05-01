@@ -88,14 +88,14 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
                         .setType(new Email.Type(LdapConfiguration.LDAP_PROVIDER));
                 List<Email> emails = new ArrayList<Email>();
                 emails.add(emailBuilder.build());
-                builder.setEmails(emails);
+                builder.addEmails(emails);
                 break;
             case "entitlement":
                 Entitlement.Builder entitlementBuilder = new Entitlement.Builder().setValue(ldapValue)
                         .setType(new Entitlement.Type(LdapConfiguration.LDAP_PROVIDER));
                 List<Entitlement> entitlements = new ArrayList<Entitlement>();
                 entitlements.add(entitlementBuilder.build());
-                builder.setEntitlements(entitlements);
+                builder.addEntitlements(entitlements);
                 break;
             case "externalId":
                 builder.setExternalId(ldapValue);
@@ -105,7 +105,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
                         .setType(new Im.Type(LdapConfiguration.LDAP_PROVIDER));
                 List<Im> ims = new ArrayList<Im>();
                 ims.add(imBuilder.build());
-                builder.setIms(ims);
+                builder.addIms(ims);
                 break;
             case "locale":
                 builder.setLocale(ldapValue);
@@ -118,7 +118,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
                         .setType(new PhoneNumber.Type(LdapConfiguration.LDAP_PROVIDER));
                 List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>();
                 phoneNumbers.add(phoneNumberBuilder.build());
-                builder.setPhoneNumbers(phoneNumbers);
+                builder.addPhoneNumbers(phoneNumbers);
                 break;
             case "photo":
                 Photo.Builder photoBuilder;
@@ -127,7 +127,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
                             .setType(new Photo.Type(LdapConfiguration.LDAP_PROVIDER));
                     List<Photo> photos = new ArrayList<Photo>();
                     photos.add(photoBuilder.build());
-                    builder.setPhotos(photos);
+                    builder.addPhotos(photos);
                 } catch (URISyntaxException e) {
                     throw new LdapConfigurationException("Could not map the ldap attibute '"
                             + ldapAttribute + "' with the value '" + ldapValue
@@ -145,7 +145,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
                         .setType(new Role.Type(LdapConfiguration.LDAP_PROVIDER));
                 List<Role> roles = new ArrayList<Role>();
                 roles.add(roleBuilder.build());
-                builder.setRoles(roles);
+                builder.addRoles(roles);
                 break;
             case "timezone":
                 builder.setTimezone(ldapValue);
@@ -161,7 +161,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
                         .setType(new X509Certificate.Type(LdapConfiguration.LDAP_PROVIDER));
                 List<X509Certificate> x509Certificates = new ArrayList<X509Certificate>();
                 x509Certificates.add(x509CertificateBuilder.build());
-                builder.setX509Certificates(x509Certificates);
+                builder.addX509Certificates(x509Certificates);
                 break;
             default:
                 if (!scimAttribute.startsWith("address.") && !scimAttribute.startsWith("name.")) {
@@ -171,7 +171,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
             }
         }
 
-        builder.setAddresses(getAddresses(ldapUserData));
+        builder.addAddresses(getAddresses(ldapUserData));
         builder.setName(getName(ldapUserData));
 
         return builder.build();
