@@ -160,15 +160,15 @@ public class UserConverter implements Converter<User, UserEntity> {
                 .setUserType(entity.getUserType())
                 .setExternalId(entity.getExternalId()).setId(entity.getId().toString())
                 .setMeta(metaConverter.toScim(entity.getMeta()))
-                .setAddresses(convertMultiValueToScim(addressConverter, entity.getAddresses()))
-                .setEmails(convertMultiValueToScim(emailConverter, entity.getEmails()))
-                .setEntitlements(convertMultiValueToScim(entitlementConverter, entity.getEntitlements()))
+                .addAddresses(convertMultiValueToScim(addressConverter, entity.getAddresses()))
+                .addEmails(convertMultiValueToScim(emailConverter, entity.getEmails()))
+                .addEntitlements(convertMultiValueToScim(entitlementConverter, entity.getEntitlements()))
                 .setGroups(entityGroupsToScim(entity.getGroups()))
-                .setIms(convertMultiValueToScim(imConverter, entity.getIms()))
-                .setPhoneNumbers(convertMultiValueToScim(phoneNumberConverter, entity.getPhoneNumbers()))
-                .setPhotos(convertMultiValueToScim(photoConverter, entity.getPhotos()))
-                .setRoles(convertMultiValueToScim(roleConverter, entity.getRoles()))
-                .setX509Certificates(convertMultiValueToScim(x509CertificateConverter, entity.getX509Certificates()));
+                .addIms(convertMultiValueToScim(imConverter, entity.getIms()))
+                .addPhoneNumbers(convertMultiValueToScim(phoneNumberConverter, entity.getPhoneNumbers()))
+                .addPhotos(convertMultiValueToScim(photoConverter, entity.getPhotos()))
+                .addRoles(convertMultiValueToScim(roleConverter, entity.getRoles()))
+                .addX509Certificates(convertMultiValueToScim(x509CertificateConverter, entity.getX509Certificates()));
 
         addExtensions(userBuilder, entity.getExtensionFieldValues());
 

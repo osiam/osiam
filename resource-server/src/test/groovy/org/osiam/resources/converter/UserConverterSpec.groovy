@@ -158,14 +158,14 @@ class UserConverterSpec extends Specification {
         User.Builder userBuilder = new User.Builder(fixtures)
         userBuilder.setId(internalId.toString())
 
-        userBuilder.setX509Certificates([Mock(X509Certificate)] as List<X509Certificate>)
-        userBuilder.setRoles([Mock(Role)] as List<Role>)
-        userBuilder.setEmails([Mock(Email)] as List<Email>)
-        userBuilder.setEntitlements([Mock(Entitlement)] as List<Entitlement>)
-        userBuilder.setPhoneNumbers([Mock(PhoneNumber)] as List<PhoneNumber>)
-        userBuilder.setPhotos([Mock(Photo)] as List<Photo>)
-        userBuilder.setIms([Mock(Im)] as List<Im>)
-        userBuilder.setAddresses([Mock(Address)] as List<Address>)
+        userBuilder.addX509Certificates([Mock(X509Certificate)] as List<X509Certificate>)
+        userBuilder.addRoles([Mock(Role)] as List<Role>)
+        userBuilder.addEmails([Mock(Email)] as List<Email>)
+        userBuilder.addEntitlements([Mock(Entitlement)] as List<Entitlement>)
+        userBuilder.addPhoneNumbers([Mock(PhoneNumber)] as List<PhoneNumber>)
+        userBuilder.addPhotos([Mock(Photo)] as List<Photo>)
+        userBuilder.addIms([Mock(Im)] as List<Im>)
+        userBuilder.addAddresses([Mock(Address)] as List<Address>)
 
         return userBuilder.build()
     }
@@ -187,8 +187,7 @@ class UserConverterSpec extends Specification {
         userEntity.addPhoto(Mock(PhotoEntity))
         userEntity.addRole(Mock(RoleEntity))
         userEntity.addX509Certificate(Mock(X509CertificateEntity))
-        userEntity.setExtensionFieldValues([
-            Mock(ExtensionFieldValueEntity)] as Set<ExtensionFieldValueEntity>)
+        userEntity.addExtensionFieldValue(Mock(ExtensionFieldValueEntity))
         userEntity.setMeta(Mock(MetaEntity))
 
         return userEntity
