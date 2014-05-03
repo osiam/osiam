@@ -38,7 +38,7 @@
     <name>OSIAM Auth Server</name>
 
     <properties>
-        <org.osiam.connector4java.version>0.15-SNAPSHOT</org.osiam.connector4java.version>
+        <org.osiam.connector4java.version>0.15</org.osiam.connector4java.version>
     </properties>
 
     <build>
