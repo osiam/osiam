@@ -4,7 +4,7 @@
 INSERT INTO scim_meta (id, created, lastmodified, location, resourcetype, version)
     VALUES (1, '2011-10-10', '2011-10-10', NULL, 'User', NULL);
 
-INSERT INTO scim_id (internal_id, externalid, id, meta_id)
+INSERT INTO scim_id (internal_id, external_id, id, meta_id)
     VALUES (1, NULL, 'cef9452e-00a9-4cec-a086-d171374ffbef', 1);
 
 INSERT INTO scim_user (active, displayname, locale, nickname, password, preferredlanguage, 
