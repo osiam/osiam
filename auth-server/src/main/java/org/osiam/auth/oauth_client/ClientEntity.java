@@ -40,6 +40,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
@@ -57,7 +58,11 @@ public class ClientEntity {
     private static final int LENGTH = 32;
 
     @Id
-    @GeneratedValue
+    @SequenceGenerator(name = "sequence_osiam_client",
+            sequenceName = "auth_server_sequence_osiam_client",
+            allocationSize = 1,
+            initialValue = 100)
+    @GeneratedValue(generator = "sequence_osiam_client")
     @JsonIgnore
     @Column(name = "internal_id")
     private long internalId;
@@ -74,7 +79,7 @@ public class ClientEntity {
 
     @JsonProperty
     @Lob
-    @Type(type="org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.StringClobType")
     @Column(name = "redirect_uri", unique = true, nullable = false)
     private String redirectUri;
 
