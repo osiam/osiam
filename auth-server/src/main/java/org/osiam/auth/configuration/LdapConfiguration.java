@@ -119,7 +119,7 @@ public class LdapConfiguration implements InitializingBean {
             OsiamLdapUserContextMapper mapper = new OsiamLdapUserContextMapper(scimLdapAttributes);
 
             OsiamLdapAuthenticationProvider provider = new OsiamLdapAuthenticationProvider(bindAuthenticator,
-                    rolePopulator, mapper, scimLdapAttributes);
+                    rolePopulator, mapper);
 
             authenticationManager.getProviders().add(provider);
 

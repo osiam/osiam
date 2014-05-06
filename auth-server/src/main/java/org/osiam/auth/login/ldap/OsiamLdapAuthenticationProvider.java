@@ -23,8 +23,6 @@
 
 package org.osiam.auth.login.ldap;
 
-import java.util.Map;
-
 import javax.inject.Inject;
 
 import org.osiam.auth.configuration.LdapConfiguration;
@@ -40,8 +38,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.security.ldap.authentication.LdapAuthenticator;
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 
 public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider {
 
@@ -53,42 +52,36 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
 
     private OsiamLdapUserContextMapper osiamLdapUserContextMapper;
 
-    private Map<String, String> scimLdapAttributes;
-
     public OsiamLdapAuthenticationProvider(LdapAuthenticator authenticator,
-            LdapAuthoritiesPopulator authoritiesPopulator, OsiamLdapUserContextMapper osiamLdapUserContextMapper,
-            Map<String, String> scimLdapAttributes) {
+            LdapAuthoritiesPopulator authoritiesPopulator, OsiamLdapUserContextMapper osiamLdapUserContextMapper) {
         super(authenticator, authoritiesPopulator);
         this.osiamLdapUserContextMapper = osiamLdapUserContextMapper;
-        this.scimLdapAttributes = scimLdapAttributes;
     }
 
     @Override
     public Authentication authenticate(Authentication authentication) {
-        Assert.isInstanceOf(OsiamLdapAuthentication.class, authentication,
-                messages.getMessage("LdapAuthenticationProvider.onlySupports",
-                        "Only OsiamLdapAuthentication is supported"));
+        Preconditions.checkArgument(authentication instanceof OsiamLdapAuthentication,
+                "OsiamLdapAuthenticationProvider only supports OsiamLdapAuthentication.");
 
         final OsiamLdapAuthentication userToken = (OsiamLdapAuthentication) authentication;
 
         String username = userToken.getName();
         String password = (String) authentication.getCredentials();
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Processing authentication request for user: " + username);
-        }
+        logger.debug("Processing authentication request for user: " + username);
 
-        if (!StringUtils.hasLength(username)) {
+        if (Strings.isNullOrEmpty(username)) {
             throw new BadCredentialsException(messages.getMessage("LdapAuthenticationProvider.emptyUsername",
                     "Empty Username"));
         }
 
-        if (!StringUtils.hasLength(password)) {
+        if (Strings.isNullOrEmpty(password)) {
             throw new BadCredentialsException(messages.getMessage("AbstractLdapAuthenticationProvider.emptyPassword",
                     "Empty Password"));
         }
-
-        Assert.notNull(password, "Null password was supplied in authentication token");
+        
+        User user = resourceServerConnector.getUserByUsername(username);
+        checkIfInternalUserExists(user);
 
         DirContextOperations userData = doAuthentication(userToken);
 
@@ -96,26 +89,34 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
                 authentication.getName(),
                 loadUserAuthorities(userData, authentication.getName(), (String) authentication.getCredentials()));
 
-        ldapUser = synchronizeLdapData(userData, ldapUser);
+        ldapUser = synchronizeLdapData(userData, ldapUser, user);
 
         return createSuccessfulAuthentication(userToken, ldapUser);
     }
 
-    private OsiamLdapUserDetailsImpl synchronizeLdapData(DirContextOperations ldapUserData,
-            OsiamLdapUserDetailsImpl ldapUser) {
-        String userName = ldapUserData.getStringAttribute(scimLdapAttributes.get("userName"));
-
-        User user = resourceServerConnector.getUserByUsername(userName);
-
-        boolean userExists = user != null;
-
-        if (userExists && !hasAuthServerExtension(user)) {
+    private void checkIfInternalUserExists(User user) {
+        if (user != null && !hasAuthServerExtension(user)) {
             throw new LdapAuthenticationProcessException("Can't create the '"
                     + LdapConfiguration.LDAP_PROVIDER
                     + "' user with the username '"
-                    + userName + "'. An internal user with the same username exists.");
+                    + user.getUserName() + "'. An internal user with the same username exists.");
         }
+    }
 
+    private boolean hasAuthServerExtension(User user) {
+        if (!user.isExtensionPresent(LdapConfiguration.AUTH_EXTENSION)) {
+            return false;
+        }
+        Extension authExtension = user.getExtension(LdapConfiguration.AUTH_EXTENSION);
+        return authExtension.isFieldPresent("origin")
+                && authExtension.getFieldAsString("origin").equals(LdapConfiguration.LDAP_PROVIDER);
+    }
+    
+    private OsiamLdapUserDetailsImpl synchronizeLdapData(DirContextOperations ldapUserData,
+            OsiamLdapUserDetailsImpl ldapUser, User user) {
+
+        boolean userExists = user != null;
+        
         if (!userExists) {
             user = osiamLdapUserContextMapper.mapUser(ldapUserData);
             user = resourceServerConnector.createUser(user);
@@ -128,14 +129,6 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
         return ldapUser;
     }
 
-    private boolean hasAuthServerExtension(User user) {
-        if (!user.isExtensionPresent(LdapConfiguration.AUTH_EXTENSION)) {
-            return false;
-        }
-        Extension authExtension = user.getExtension(LdapConfiguration.AUTH_EXTENSION);
-        return authExtension.isFieldPresent("origin")
-                && authExtension.getFieldAsString("origin").equals(LdapConfiguration.LDAP_PROVIDER);
-    }
 
     @Override
     public boolean supports(Class<?> authentication) {

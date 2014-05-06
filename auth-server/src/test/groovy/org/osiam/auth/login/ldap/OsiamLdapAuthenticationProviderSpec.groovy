@@ -40,7 +40,7 @@ class OsiamLdapAuthenticationProviderSpec extends Specification {
         OsiamLdapAuthoritiesPopulator rolePopulator = new OsiamLdapAuthoritiesPopulator(contextSource, "");
         OsiamLdapUserContextMapper mapper = new OsiamLdapUserContextMapper([:])
         LdapAuthenticator authenticator = new BindAuthenticator(contextSource)
-        OsiamLdapAuthenticationProvider provider = new OsiamLdapAuthenticationProvider(authenticator, rolePopulator, mapper, [:])
+        OsiamLdapAuthenticationProvider provider = new OsiamLdapAuthenticationProvider(authenticator, rolePopulator, mapper)
         
         expect:
         provider.supports(OsiamLdapAuthentication)
