@@ -26,13 +26,10 @@ package org.osiam.auth.login.ldap;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.osiam.auth.configuration.LdapConfiguration;
 import org.osiam.auth.exception.LdapConfigurationException;
 import org.osiam.resources.scim.Address;
@@ -48,62 +45,16 @@ import org.osiam.resources.scim.UpdateUser;
 import org.osiam.resources.scim.User;
 import org.osiam.resources.scim.X509Certificate;
 import org.springframework.ldap.core.DirContextOperations;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.ldap.ppolicy.PasswordPolicyControl;
-import org.springframework.security.ldap.ppolicy.PasswordPolicyResponseControl;
-import org.springframework.security.ldap.userdetails.LdapUserDetailsImpl;
 import org.springframework.security.ldap.userdetails.LdapUserDetailsMapper;
 
 import com.google.common.base.Strings;
 
 public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
 
-    private final Log logger = LogFactory.getLog(LdapUserDetailsMapper.class);
-    private String passwordAttributeName = "userPassword";
     private Map<String, String> scimLdapAttributes;
 
     public OsiamLdapUserContextMapper(Map<String, String> scimLdapAttributes) {
         this.scimLdapAttributes = scimLdapAttributes;
-    }
-
-    @Override
-    public OsiamLdapUserDetailsImpl mapUserFromContext(DirContextOperations ctx, String username,
-            Collection<? extends GrantedAuthority> authorities) {
-        String dn = ctx.getNameInNamespace();
-
-        logger.debug("Mapping user details from context with DN: " + dn);
-
-        LdapUserDetailsImpl.Essence essence = new LdapUserDetailsImpl.Essence();
-        essence.setDn(dn);
-
-        Object passwordValue = ctx.getObjectAttribute(passwordAttributeName);
-
-        if (passwordValue != null) {
-            essence.setPassword(mapPassword(passwordValue));
-        }
-
-        essence.setUsername(username);
-
-        // Add the supplied authorities
-
-        for (GrantedAuthority authority : authorities) {
-            essence.addAuthority(authority);
-        }
-
-        // Check for PPolicy data
-
-        PasswordPolicyResponseControl ppolicy = (PasswordPolicyResponseControl) ctx
-                .getObjectAttribute(PasswordPolicyControl.OID);
-
-        if (ppolicy != null) {
-            essence.setTimeBeforeExpiration(ppolicy.getTimeBeforeExpiration());
-            essence.setGraceLoginsRemaining(ppolicy.getGraceLoginsRemaining());
-        }
-
-        OsiamLdapUserDetailsImpl ldapUser = new OsiamLdapUserDetailsImpl(
-                (LdapUserDetailsImpl) essence.createUserDetails());
-
-        return ldapUser;
     }
 
     public User mapUser(DirContextOperations ldapUserData) {

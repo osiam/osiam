@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.security.ldap.authentication.LdapAuthenticator;
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
@@ -68,38 +69,31 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
         String username = userToken.getName();
         String password = (String) authentication.getCredentials();
 
-        logger.debug("Processing authentication request for user: " + username);
-
         if (Strings.isNullOrEmpty(username)) {
-            throw new BadCredentialsException(messages.getMessage("LdapAuthenticationProvider.emptyUsername",
-                    "Empty Username"));
+            throw new BadCredentialsException("OsiamLdapAuthenticationProvider: Empty Username");
         }
 
         if (Strings.isNullOrEmpty(password)) {
-            throw new BadCredentialsException(messages.getMessage("AbstractLdapAuthenticationProvider.emptyPassword",
-                    "Empty Password"));
+            throw new BadCredentialsException("OsiamLdapAuthenticationProvider: Empty Password");
         }
-        
+
         User user = resourceServerConnector.getUserByUsername(username);
         checkIfInternalUserExists(user);
 
         DirContextOperations userData = doAuthentication(userToken);
 
-        OsiamLdapUserDetailsImpl ldapUser = osiamLdapUserContextMapper.mapUserFromContext(userData,
-                authentication.getName(),
+        UserDetails ldapUser = osiamLdapUserContextMapper.mapUserFromContext(userData, authentication.getName(),
                 loadUserAuthorities(userData, authentication.getName(), (String) authentication.getCredentials()));
 
-        ldapUser = synchronizeLdapData(userData, ldapUser, user);
+        synchronizeLdapData(userData, user);
 
         return createSuccessfulAuthentication(userToken, ldapUser);
     }
 
     private void checkIfInternalUserExists(User user) {
         if (user != null && !hasAuthServerExtension(user)) {
-            throw new LdapAuthenticationProcessException("Can't create the '"
-                    + LdapConfiguration.LDAP_PROVIDER
-                    + "' user with the username '"
-                    + user.getUserName() + "'. An internal user with the same username exists.");
+            throw new LdapAuthenticationProcessException("Can't create the ldap user with the username '"
+                    + user.getUserName() + "'. An internal user with the same username already exists.");
         }
     }
 
@@ -111,12 +105,10 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
         return authExtension.isFieldPresent("origin")
                 && authExtension.getFieldAsString("origin").equals(LdapConfiguration.LDAP_PROVIDER);
     }
-    
-    private OsiamLdapUserDetailsImpl synchronizeLdapData(DirContextOperations ldapUserData,
-            OsiamLdapUserDetailsImpl ldapUser, User user) {
 
+    private void synchronizeLdapData(DirContextOperations ldapUserData, User user) {
         boolean userExists = user != null;
-        
+
         if (!userExists) {
             user = osiamLdapUserContextMapper.mapUser(ldapUserData);
             user = resourceServerConnector.createUser(user);
@@ -124,11 +116,7 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
             UpdateUser updateUser = osiamLdapUserContextMapper.mapUpdateUser(user, ldapUserData);
             user = resourceServerConnector.updateUser(user.getId(), updateUser);
         }
-
-        ldapUser.setId(user.getId());
-        return ldapUser;
     }
-
 
     @Override
     public boolean supports(Class<?> authentication) {

@@ -16,23 +16,25 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ResourceServerConnector {
-    
+
     @Value("${org.osiam.resource-server.home}")
     private String resourceServerHome;
 
     @Value("${org.osiam.auth-server.home}")
     private String authServerHome;
-    
+
     @Inject
     private OsiamAccessTokenProvider osiamAccessTokenProvider;
-    
+
     @Inject
     private OsiamAuthServerClientProvider authServerClientProvider;
 
     public User getUserByUsername(final String userName) {
         OsiamConnector osiamConnector = createOsiamConnector();
-        String queryString = new StringQueryBuilder().setFilter("userName eq \"" + userName + "\"").build();
-        SCIMSearchResult<User> result = osiamConnector.searchUsers(queryString, osiamAccessTokenProvider.getAccessToken());
+        String queryString = new StringQueryBuilder().setFilter("userName eq \"" + userName + "\""
+                + " and active eq \"true\"").build();
+        SCIMSearchResult<User> result = osiamConnector.searchUsers(queryString,
+                osiamAccessTokenProvider.getAccessToken());
         if (result.getTotalResults() != 1) {
             return null;
         } else {
@@ -48,6 +50,19 @@ public class ResourceServerConnector {
     public User updateUser(String userId, UpdateUser user) {
         OsiamConnector osiamConnector = createOsiamConnector();
         return osiamConnector.updateUser(userId, user, osiamAccessTokenProvider.getAccessToken());
+    }
+
+    public User searchUserByUserNameAndPassword(String userName, String hashedPassword) {
+        OsiamConnector osiamConnector = createOsiamConnector();
+        String queryString = new StringQueryBuilder().setFilter("userName eq \"" + userName + "\""
+                + " and password eq \"" + hashedPassword + "\"").build();
+        SCIMSearchResult<User> result = osiamConnector.searchUsers(queryString,
+                osiamAccessTokenProvider.getAccessToken());
+        if (result.getTotalResults() != 1) {
+            return null;
+        } else {
+            return result.getResources().get(0);
+        }
     }
 
     private OsiamConnector createOsiamConnector() {

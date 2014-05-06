@@ -23,18 +23,73 @@
 
 package org.osiam.auth.login.internal;
 
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.core.Authentication;
+import java.util.ArrayList;
+import java.util.List;
 
-public class InternalAuthenticationProvider extends DaoAuthenticationProvider {
+import javax.inject.Inject;
+
+import org.osiam.auth.login.ResourceServerConnector;
+import org.osiam.auth.login.ldap.OsiamLdapAuthentication;
+import org.osiam.resources.scim.User;
+import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.SpringSecurityMessageSource;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.util.Assert;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+
+public class InternalAuthenticationProvider implements AuthenticationProvider {
+
+    @Inject
+    private ResourceServerConnector resourceServerConnector;
+
+    @Inject
+    private ShaPasswordEncoder passwordEncoder;
 
     @Override
     public Authentication authenticate(Authentication authentication) {
-        return super.authenticate(authentication);
+        Preconditions.checkArgument(authentication instanceof InternalAuthentication,
+                "InternalAuthenticationProvider only supports InternalAuthentication.");
+
+        String username = authentication.getName();
+        String password = (String) authentication.getCredentials();
+
+        if (Strings.isNullOrEmpty(username)) {
+            throw new BadCredentialsException("InternalAuthenticationProvider: Empty Username");
+        }
+
+        if (Strings.isNullOrEmpty(password)) {
+            throw new BadCredentialsException("InternalAuthenticationProvider: Empty Password");
+        }
+
+        // Determine username
+        User user = resourceServerConnector.getUserByUsername(username);
+
+        if (user == null) {
+            throw new BadCredentialsException("The user with the username '" + username + "' not exists!");
+        }
+
+        String hashedPassword = passwordEncoder.encodePassword(password, user.getId());
+
+        if (resourceServerConnector.searchUserByUserNameAndPassword(username, hashedPassword) == null) {
+            throw new BadCredentialsException("Bad credentials");
+        }
+
+        List<GrantedAuthority> grantedAuths = new ArrayList<>();
+        grantedAuths.add(new SimpleGrantedAuthority("ROLE_USER"));
+
+        return new InternalAuthentication(username, password, grantedAuths);
     }
 
     @Override
     public boolean supports(Class<?> authentication) {
         return InternalAuthentication.class.isAssignableFrom(authentication);
     }
+
 }
