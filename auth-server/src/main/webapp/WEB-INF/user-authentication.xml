@@ -22,42 +22,68 @@
   ~ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   -->
 
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
 
-    <!-- OAuth2 User Login/Grant Access interface provides a login form for the user to login and grant access of resources
-        to a client -->
-    <http access-denied-page="/login-error" disable-url-rewriting="true"
-          xmlns="http://www.springframework.org/schema/security">
-        <!-- generally all resources below /oauth are accessed as role "USER" this does not affect more specialized configurations -->
-        <intercept-url pattern="/oauth/**" access="ROLE_USER"/>
-        <!-- shows a login form to the user;
-             default-target-url only called when e.g.
-             no client specified -->
-        <form-login authentication-failure-url="/login/error" 
-                    default-target-url="/oauth/error"
-                    login-page="/login"
-                    login-processing-url="/login/check" />
-        <!-- this needs to be accessible anonymously -->
-        <anonymous enabled="true"/>
-    </http>
-
-    <authentication-manager alias="authenticationManager" xmlns="http://www.springframework.org/schema/security">
-        <authentication-provider user-service-ref="userDetailsService">
-            <password-encoder ref="passwordEncoder">
-                <salt-source ref="saltSource"/>
-            </password-encoder>
-        </authentication-provider>
-    </authentication-manager>
-
-    <bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
-        <constructor-arg value="512"/>
-        <property name="iterations" value="1000"/>
+	<!-- OAuth2 User Login/Grant Access interface provides a login form for 
+		the user to login and grant access of resources to a client -->
+	<security:http access-denied-page="/login/error"
+				   disable-url-rewriting="true"
+				   auto-config="false"
+				   entry-point-ref="loginUrlAuthenticationEntryPoint">
+		<!-- generally all resources below /oauth are accessed as role "USER" this 
+			does not affect more specialized configurations -->
+		<security:intercept-url pattern="/oauth/**" access="ROLE_USER" />
+					
+		<!-- this needs to be accessible anonymously -->
+		<security:anonymous enabled="true" />
+		
+		<security:custom-filter position="FORM_LOGIN_FILTER" ref="loginDecisionFilter"/>
+	</security:http>
+	
+	<bean id="loginUrlAuthenticationEntryPoint"
+          class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+        <property name="loginFormUrl" value="/login"/>
+    </bean>
+	
+	<bean id="loginDecisionFilter" class="org.osiam.security.helper.LoginDecisionFilter">
+        <property name="authenticationManager" ref="authenticationManager"/>
+        <property name="authenticationFailureHandler" ref="failureHandler"/>
+        <property name="authenticationSuccessHandler" ref="successHandler"/>
+    </bean>
+    
+    <bean id="successHandler"
+		class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
+        <property name="alwaysUseDefaultTargetUrl" value="false"/>
+    </bean>
+		
+	<bean id="failureHandler"
+          class="org.osiam.auth.login.OsiamCachingAuthenticationFailureHandler">
+        <property name="defaultFailureUrl" value="/login/error"/>
     </bean>
 
-    <bean id="saltSource" class="org.springframework.security.authentication.dao.ReflectionSaltSource">
-        <property name="userPropertyToUse" value="id"/>
-    </bean>
+	<security:authentication-manager alias="authenticationManager">
+		<security:authentication-provider ref="internalAuthenticationProvider"/>
+	</security:authentication-manager>
+
+	<!-- Internal authentication -->
+    <bean id="internalAuthenticationProvider" class="org.osiam.auth.login.internal.InternalAuthenticationProvider">
+		<property name="userDetailsService" ref="userDetailsService"/>
+	  	<property name="passwordEncoder" ref="passwordEncoder"/>
+	  	<property name="saltSource" ref="saltSource"/>
+	</bean>
+	
+	<bean id="passwordEncoder"
+		class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
+		<constructor-arg value="512" />
+		<property name="iterations" value="1000" />
+	</bean>
+
+	<bean id="saltSource"
+		class="org.springframework.security.authentication.dao.ReflectionSaltSource">
+		<property name="userPropertyToUse" value="id" />
+	</bean>
 
 </beans>

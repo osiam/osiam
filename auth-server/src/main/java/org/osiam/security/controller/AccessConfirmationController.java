@@ -44,7 +44,8 @@ import org.springframework.web.servlet.ModelAndView;
 @SessionAttributes("authorizationRequest")
 @RequestMapping("/oauth")
 public class AccessConfirmationController {
-    
+
+    @Inject
     private ClientDetailsService clientDetailsService;
 
     @RequestMapping("/confirm_access")
@@ -52,12 +53,12 @@ public class AccessConfirmationController {
 
         AuthorizationRequest clientAuth = (AuthorizationRequest) model.remove("authorizationRequest");
         if (clientAuth == null) {
-            return new ModelAndView("redirect:/client-error");
+            return new ModelAndView("redirect:/oauth/error");
         }
         ClientDetails client = clientDetailsService.loadClientByClientId(clientAuth.getClientId()); // NOSONAR
         // Sonar message: clientDetailsService is initialized via setter injection
         if (client == null) {
-            return new ModelAndView("redirect:/client-error");
+            return new ModelAndView("redirect:/oauth/error");
         }
         model.put("auth_request", clientAuth);
         model.put("client", client);
@@ -72,8 +73,4 @@ public class AccessConfirmationController {
         return "oauth_error";
     }
 
-    @Inject
-    public void setClientDetailsService(ClientDetailsService clientDetailsService) {
-        this.clientDetailsService = clientDetailsService;
-    }
 }

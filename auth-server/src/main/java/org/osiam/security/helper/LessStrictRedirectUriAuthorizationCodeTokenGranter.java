@@ -43,25 +43,27 @@ import org.springframework.security.oauth2.provider.token.AbstractTokenGranter;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 
 /**
- * This class is a fork of  AuthorizationCodeTokenGranter the only difference is that we want to check if the pending
+ * This class is a fork of AuthorizationCodeTokenGranter the only difference is that we want to check if the pending
  * redirect uri startsWith the send redirect uri.
  * <p/>
- * The reason for this is that some connector do build different redirect uris when getting an authorization_code
- * (like Liferay) and send a simpler redirect uri when getting the access_token (because it doesn't matter on
- * exchanging the auth_code with an access_token)
+ * The reason for this is that some connector do build different redirect uris when getting an authorization_code (like
+ * Liferay) and send a simpler redirect uri when getting the access_token (because it doesn't matter on exchanging the
+ * auth_code with an access_token)
  */
 public class LessStrictRedirectUriAuthorizationCodeTokenGranter extends AbstractTokenGranter {
 
     private static final String GRANT_TYPE = "authorization_code";
 
-    /*Do not add a bean definition to spring xml. It will cause the problem, that two instances are used to serve
-    * the "change auth code to access token" request. This will end up with a fault because the code is stored in
-    * one instance and will be read from another where it does not exist.*/
+    /*
+     * Do not add a bean definition to spring xml. It will cause the problem, that two instances are used to serve the
+     * "change auth code to access token" request. This will end up with a fault because the code is stored in one
+     * instance and will be read from another where it does not exist.
+     */
     @Inject
     private AuthorizationCodeServices authorizationCodeServices;
 
     public LessStrictRedirectUriAuthorizationCodeTokenGranter(AuthorizationServerTokenServices tokenServices,
-                        ClientDetailsService clientDetailsService) {
+            ClientDetailsService clientDetailsService) {
         super(tokenServices, clientDetailsService, GRANT_TYPE);
     }
 
@@ -94,7 +96,7 @@ public class LessStrictRedirectUriAuthorizationCodeTokenGranter extends Abstract
     }
 
     private void validateClientId(AuthorizationRequest authorizationRequest,
-                                  AuthorizationRequest pendingAuthorizationRequest) {
+            AuthorizationRequest pendingAuthorizationRequest) {
         String pendingClientId = pendingAuthorizationRequest.getClientId();
         String clientId = authorizationRequest.getClientId();
         if (clientId != null && !clientId.equals(pendingClientId)) {

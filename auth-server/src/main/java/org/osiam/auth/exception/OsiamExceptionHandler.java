@@ -27,11 +27,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @ControllerAdvice
 public class OsiamExceptionHandler extends SimpleMappingExceptionResolver {
@@ -42,5 +48,32 @@ public class OsiamExceptionHandler extends SimpleMappingExceptionResolver {
     protected ModelAndView handleConflict(HttpServletRequest request, Exception e) {
         LOGGER.log(Level.WARNING, "An exception occurred", e);
         return new ModelAndView("oauth_error");
+    }
+    
+    @ExceptionHandler(value = { ResourceNotFoundException.class })
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    protected @ResponseBody JsonErrorResult handleResourceNotFound(HttpServletRequest request, HttpServletResponse response, ResourceNotFoundException e) {
+        LOGGER.log(Level.WARNING, "A ResourceNotFoundException occurred", e);
+        JsonErrorResult error = new JsonErrorResult(HttpStatus.NOT_FOUND.name(), e.getMessage());
+        return error;
+    }
+    
+    @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
+    static class JsonErrorResult {
+        private String error_code; // NOSONAR - needed pattern due to json serializing
+        private String description;
+
+        public JsonErrorResult(String name, String message) {
+            error_code = name;
+            description = message;
+        }
+
+        public String getError_code() { // NOSONAR - needed pattern due to json serializing
+            return error_code;
+        }
+
+        public String getDescription() {
+            return description;
+        }
     }
 }

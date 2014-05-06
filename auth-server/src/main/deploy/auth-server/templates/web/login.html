@@ -1,0 +1,75 @@
+<!--
+  ~ Copyright (C) 2013 tarent AG
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining
+  ~ a copy of this software and associated documentation files (the
+  ~ "Software"), to deal in the Software without restriction, including
+  ~ without limitation the rights to use, copy, modify, merge, publish,
+  ~ distribute, sublicense, and/or sell copies of the Software, and to
+  ~ permit persons to whom the Software is furnished to do so, subject to
+  ~ the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be
+  ~ included in all copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  ~ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  ~ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+  ~ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+  ~ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+  ~ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+  ~ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	
+	<title th:text="#{login.title}">Login</title>
+	
+	<link rel="stylesheet" type="text/css" href="../../resources/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" type="text/css" href="../../resources/css/style.css" th:href="@{/css/style.css}"/>
+</head>
+
+<body>
+
+	<div class="container">
+		<div class="info-container">
+			<h2 class="form-signin-heading" th:text="#{login.headline}">
+			 	Please sign in
+		    </h2>
+			<div th:if="${loginError} and !${#httpSession.getAttribute('ERROR_KEY')}"
+				 th:class="'alert alert-danger'" class="alert alert-danger" th:text="#{${errorKey}}">
+	            Wrong username or password
+	        </div>
+	        <div th:if="${#httpSession.getAttribute('ERROR_KEY')}"
+				 th:class="'alert alert-danger'" class="alert alert-danger" th:text="#{${#httpSession.getAttribute('ERROR_KEY')}}">
+	            Login with ldap not possible
+	        </div>
+        </div>
+        
+		<form th:action="@{/login/check}" class="form-signin" method="post" role="form">
+			<select name="provider"
+					class="form-control"
+					th:if="${isLdapConfigured}">
+                <option th:value="internal"
+                  	    th:text="#{login.modus.internal}"
+                  	    th:selected="${#httpSession.getAttribute('LAST_PROVIDER') == 'internal'}">Internal login</option>
+          	    <option th:value="ldap"
+                  	    th:text="#{login.modus.ldap}"
+                  	    th:selected="${#httpSession.getAttribute('LAST_PROVIDER') == 'ldap'}">Login with LDAP</option>
+        	</select>
+			<input id="username" name="username" type="text"
+				   class="form-control" th:placeholder="#{login.username}"
+				   th:value="${#httpSession.getAttribute('LAST_USERNAME')}"/>
+			<input id="password" name="password" type="password"
+				   class="form-control" th:placeholder="#{login.password}" />
+			<button class="btn btn-lg btn-primary btn-block" type="submit"
+				th:text="#{login.signin}">Sign in</button>
+		</form>
+
+	</div>
+</body>
+</html>
