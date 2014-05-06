@@ -122,11 +122,7 @@ public class  UserController {
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     public SCIMSearchResult<User> searchWithGet(HttpServletRequest request) {
-        Map<String,Object> parameterMap = requestParamHelper.getRequestParameterValues(request);
-        SCIMSearchResult<User> scimSearchResult = scimUserProvisioning.search((String)parameterMap.get("filter"), (String)parameterMap.get("sortBy"), (String)parameterMap.get("sortOrder"),
-                (int)parameterMap.get("count"), (int)parameterMap.get("startIndex"));
-
-        return attributesRemovalHelper.removeSpecifiedUserAttributes(scimSearchResult, parameterMap);
+        return searchWithPost(request);
     }
 
     @RequestMapping(value = "/.search", method = RequestMethod.POST)
@@ -135,7 +131,7 @@ public class  UserController {
         Map<String,Object> parameterMap = requestParamHelper.getRequestParameterValues(request);
         SCIMSearchResult<User> scimSearchResult = scimUserProvisioning.search((String) parameterMap.get("filter"), (String) parameterMap.get("sortBy"), (String) parameterMap.get("sortOrder"),
                 (int) parameterMap.get("count"), (int) parameterMap.get("startIndex"));
-
+        
         return attributesRemovalHelper.removeSpecifiedUserAttributes(scimSearchResult, parameterMap);
     }
 
