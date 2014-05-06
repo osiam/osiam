@@ -90,10 +90,9 @@ public class MeController {
         String accessToken = getAccessToken(request);
         Authentication userAuthentication = accessTokenValidationService.loadAuthentication(accessToken)
                 .getUserAuthentication();
-        Object o = userAuthentication.getPrincipal();
-        if (o instanceof LinkedHashMap) {
-            String principalId = (String) ((LinkedHashMap<?, ?>) o).get("id");
-            UserEntity userEntity = userDao.getById(principalId);
+        Object userName = userAuthentication.getPrincipal();
+        if (userName instanceof String) {
+            UserEntity userEntity = userDao.getByUsername((String) userName);
             return new FacebookInformationConstruct(userEntity);
         } else {
             throw new IllegalArgumentException("User was not authenticated with OSIAM.");

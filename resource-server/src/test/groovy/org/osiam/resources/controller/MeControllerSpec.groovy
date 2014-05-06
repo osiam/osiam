@@ -59,7 +59,7 @@ class MeControllerSpec extends Specification {
 
     def "should return correct facebook representation"() {
         given:
-        def principal = Mock(LinkedHashMap)
+        def principal = "username"
         def userId = "theUserId"
 
         when:
@@ -69,8 +69,7 @@ class MeControllerSpec extends Specification {
         1 * request.getParameter("access_token") >> "access_token"
         1 * accessTokenValidationService.loadAuthentication("access_token") >> authentication
         1 * userAuthentication.getPrincipal() >> principal
-        1 * principal.get("id") >> userId
-        1 * userDao.getById(userId) >> user
+        1 * userDao.getByUsername(principal) >> user
         result.email == "test@test.de"
         result.first_name == user.getName().getGivenName()
         result.last_name == user.getName().getFamilyName()
@@ -91,7 +90,7 @@ class MeControllerSpec extends Specification {
         emails: [
             new EmailEntity(primary: false, value: "test@test.de")
         ], locale: "de_DE", userName: "fpref")
-        def principal = Mock(LinkedHashMap)
+        def principal = "username"
         def userId = "theUserId"
 
         when:
@@ -101,8 +100,7 @@ class MeControllerSpec extends Specification {
         1 * request.getParameter("access_token") >> "access_token"
         1 * accessTokenValidationService.loadAuthentication("access_token") >> authentication
         1 * userAuthentication.getPrincipal() >> principal
-        1 * principal.get("id") >> userId
-        1 * userDao.getById(userId) >> user
+        1 * userDao.getByUsername(principal) >> user
         result.getEmail() == null
     }
 
@@ -118,7 +116,7 @@ class MeControllerSpec extends Specification {
 
     def "should get access_token in bearer format"() {
         given:
-        def principal = Mock(LinkedHashMap)
+        def principal = "username"
         def userId = "theUserId"
 
         when:
@@ -129,12 +127,11 @@ class MeControllerSpec extends Specification {
         1 * request.getHeader("Authorization") >> "Bearer access_token"
         1 * accessTokenValidationService.loadAuthentication("access_token") >> authentication
         1 * userAuthentication.getPrincipal() >> principal
-        1 * principal.get("id") >> userId
-        1 * userDao.getById(userId) >> user
+        1 * userDao.getByUsername(principal) >> user
         result
     }
 
-    def "should throw exception if principal is not an UserEntity"() {
+    def "should throw exception if principal is not a String"() {
         when:
         underTest.getInformation(request)
         then:
@@ -151,7 +148,7 @@ class MeControllerSpec extends Specification {
         MetaEntity meta = new MetaEntity(GregorianCalendar.getInstance())
         def user = new UserEntity(active: true, name: name, id: UUID.randomUUID(), meta: meta, locale: "de_DE",
                 userName: "fpref")
-        def principal = Mock(LinkedHashMap)
+        def principal = "username"
         def userId = "theUserId"
 
         when:
@@ -162,8 +159,7 @@ class MeControllerSpec extends Specification {
         1 * request.getHeader("Authorization") >> "Bearer access_token"
         1 * accessTokenValidationService.loadAuthentication("access_token") >> authentication
         1 * userAuthentication.getPrincipal() >> principal
-        1 * principal.get("id") >> userId
-        1 * userDao.getById(userId) >> user
+        1 * userDao.getByUsername(principal) >> user
         result.getEmail() == null
     }
 
@@ -174,7 +170,7 @@ class MeControllerSpec extends Specification {
         ],
         name: null, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
         locale: "de_DE", userName: "fpref")
-        def principal = Mock(LinkedHashMap)
+        def principal = "username"
         def userId = "theUserId"
 
         when:
@@ -185,8 +181,7 @@ class MeControllerSpec extends Specification {
         1 * request.getHeader("Authorization") >> "Bearer access_token"
         1 * accessTokenValidationService.loadAuthentication("access_token") >> authentication
         1 * userAuthentication.getPrincipal() >> principal
-        1 * principal.get("id") >> userId
-        1 * userDao.getById(userId) >> user
+        1 * userDao.getByUsername(principal) >> user
         result.getName() == null
         result.getFirst_name() == null
         result.getLast_name() == null

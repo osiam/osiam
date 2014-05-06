@@ -67,6 +67,19 @@ import org.osiam.storage.entities.UserEntity_;
 import org.osiam.storage.entities.X509CertificateEntity;
 
 public enum UserQueryField implements QueryField<UserEntity> {
+    
+    PASSWORD("password") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root,
+                FilterConstraint constraint, String value, CriteriaBuilder cb) {
+            return constraint.createPredicateForStringField(root.get(UserEntity_.password), value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            throw handleSortByFieldNotSupported(toString());
+        }
+    },
     EXTERNALID("externalid") {
         @Override
         public Predicate addFilter(Root<UserEntity> root,
@@ -539,15 +552,12 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            SetJoin<UserEntity, PhotoEntity> join = root.join(UserEntity_.photos, JoinType.LEFT);
-            return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
-                    value, cb); // NOSONAR - XEntity_.X will be filled by JPA provider
-
+            return PHOTOS_VALUE.addFilter(root, constraint, value, cb);
         }
 
         @Override
         public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
-            throw handleSortByFieldNotSupported(toString());
+            return PHOTOS_VALUE.createSortByField(root, cb);
         }
     },
     PHOTOS_VALUE("photos.value") {
@@ -557,7 +567,6 @@ public enum UserQueryField implements QueryField<UserEntity> {
             SetJoin<UserEntity, PhotoEntity> join = root.join(UserEntity_.photos, JoinType.LEFT);
             return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
                     value, cb);
-
         }
 
         @Override
