@@ -37,8 +37,10 @@ import org.springframework.beans.factory.annotation.Value;
  *
  */
 public class MeasureDurationTimeOfMethods {
+    
     private static Logger LOGGER = Logger.getLogger(MeasureDurationTimeOfMethods.class.getName()); //NOSONAR excluded because of testing
-    @Value("${osiam.profiling}")
+    
+    @Value("${org.osiam.resource-server.profiling:false}")
     private boolean enabled;
 
     @Around("excludeDynamicHTTPMethodScopeEnhancer() && includeOrgOsiam()")

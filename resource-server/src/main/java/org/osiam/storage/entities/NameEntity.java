@@ -27,6 +27,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
@@ -39,7 +40,11 @@ import org.hibernate.annotations.Type;
 public class NameEntity {
 
     @Id
-    @GeneratedValue
+    @SequenceGenerator(name = "sequence_scim_name",
+            sequenceName = "resource_server_sequence_scim_name",
+            allocationSize = 1,
+            initialValue = 100)
+    @GeneratedValue(generator = "sequence_scim_name")
     private long id;
 
     @Lob

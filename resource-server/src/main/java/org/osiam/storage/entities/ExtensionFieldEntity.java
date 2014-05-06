@@ -34,6 +34,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.osiam.resources.scim.ExtensionFieldType;
@@ -49,7 +50,11 @@ import org.osiam.resources.scim.ExtensionFieldType;
 public class ExtensionFieldEntity { // NOSONAR - will be constructed by jackson
 
     @Id
-    @GeneratedValue
+    @SequenceGenerator(name = "sequence_scim_extension_field",
+            sequenceName = "resource_server_sequence_scim_extension_field",
+            allocationSize = 1,
+            initialValue = 100)
+    @GeneratedValue(generator = "sequence_scim_extension_field")
     @Column(name = "internal_id")
     private long internalId;
 

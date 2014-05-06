@@ -43,9 +43,10 @@ public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Contains all known ErrorMessageTransformer to validate and manipulate error messages
      */
-    private static final ErrorMessageTransformer[] KNOWN_ERROR_MSG_TRANSFORMER =
-            {new TypeErrorMessageTransformer(), new JsonPropertyMessageTransformer(), new JsonMappingMessageTransformer(),
-                    new ClientManagementErrorMessageTransformer()};
+    private static final ErrorMessageTransformer[] KNOWN_ERROR_MSG_TRANSFORMER = {
+            new TypeErrorMessageTransformer(),
+            new JsonPropertyMessageTransformer(),
+            new JsonMappingMessageTransformer() };
 
     @ExceptionHandler(value = {Exception.class})
     protected ResponseEntity<Object> handleConflict(Exception ex, WebRequest request) {
@@ -90,8 +91,8 @@ public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
         private String description;
 
         public JsonErrorResult(String name, String message) {
-            this.error_code = name;
-            this.description = message;
+            error_code = name;
+            description = message;
         }
 
         public String getError_code() { // NOSONAR - needed pattern due to json serializing

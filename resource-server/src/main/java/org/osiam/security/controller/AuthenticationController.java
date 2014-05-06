@@ -23,34 +23,23 @@
 
 package org.osiam.security.controller;
 
-import java.io.IOException;
-import java.net.URLDecoder;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.osiam.resources.ClientSpring;
 import org.osiam.resources.RoleSpring;
 import org.osiam.resources.UserSpring;
-import org.osiam.storage.dao.ClientDao;
 import org.osiam.storage.dao.UserDao;
-import org.osiam.storage.entities.ClientEntity;
 import org.osiam.storage.entities.RoleEntity;
 import org.osiam.storage.entities.UserEntity;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * This Controller is used to manage client and user authentication for spring security OAuth.
@@ -62,9 +51,6 @@ public class AuthenticationController {
 
     @Inject
     private UserDao userDao;
-
-    @Inject
-    private ClientDao clientDao;
 
     @RequestMapping(value = "/user",
             method = RequestMethod.POST,
@@ -93,41 +79,4 @@ public class AuthenticationController {
         return springUser;
     }
 
-    @RequestMapping(value = "/client/{id}", method = RequestMethod.GET)
-    @ResponseBody
-    public ClientSpring getClient(@PathVariable final String id) {
-
-        ClientEntity dbClient = clientDao.getClient(id);
-        return getClientSpring(dbClient);
-    }
-
-    private ClientSpring getClientSpring(ClientEntity dbClient) {
-        ClientSpring springClient = new ClientSpring();
-        springClient.setId(dbClient.getId());
-        springClient.setClientSecret(dbClient.getClientSecret());
-        springClient.setScope(dbClient.getScope());
-        springClient.setGrants(dbClient.getGrants());
-        springClient.setRedirectUri(dbClient.getRedirectUri());
-        springClient.setAccessTokenValiditySeconds(dbClient.getAccessTokenValiditySeconds());
-        springClient.setRefreshTokenValiditySeconds(dbClient.getRefreshTokenValiditySeconds());
-        springClient.setImplicit(dbClient.isImplicit());
-        springClient.setExpiry(dbClient.getExpiry());
-        springClient.setValidityInSeconds(dbClient.getValidityInSeconds());
-        return springClient;
-    }
-
-    @RequestMapping(value = "/client/{id}", method = RequestMethod.PUT)
-    @ResponseStatus(HttpStatus.OK)
-    public void updateClientExpiry(@PathVariable final String id, @RequestBody String body) throws IOException,
-            ParseException {
-
-        final SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
-
-        String theDate = body.split("=")[1];
-        String expiry = URLDecoder.decode(theDate, "UTF-8");
-
-        ClientEntity dbClient = clientDao.getClient(id);
-        dbClient.setExpiry(sdf.parse(expiry));
-        clientDao.update(dbClient, id);
-    }
 }

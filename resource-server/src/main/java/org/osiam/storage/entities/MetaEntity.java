@@ -31,6 +31,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Lob;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
@@ -44,7 +45,11 @@ import org.hibernate.annotations.Type;
 public class MetaEntity {
 
     @Id
-    @GeneratedValue
+    @SequenceGenerator(name = "sequence_scim_meta",
+            sequenceName = "resource_server_sequence_scim_meta",
+            allocationSize = 1,
+            initialValue = 100)
+    @GeneratedValue(generator = "sequence_scim_meta")
     private long id;
 
     private Date created;

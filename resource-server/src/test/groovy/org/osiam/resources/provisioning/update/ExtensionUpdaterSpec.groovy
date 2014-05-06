@@ -86,8 +86,7 @@ class ExtensionUpdaterSpec extends Specification {
     def 'updating a not registered extension field raises an exception'(){
         given:
         
-        Extension extension = new Extension(URN)
-        extension.addOrUpdateField(IRRELEVANT, VALUE)
+        Extension extension = new Extension.Builder(URN).setField(IRRELEVANT, VALUE).build()
         ExtensionEntity extensionEntity = createExtensionEntity()
 
         when:
@@ -137,8 +136,7 @@ class ExtensionUpdaterSpec extends Specification {
     }
 
     private extensionWithValue() {
-        Extension extension = new Extension(URN)
-        extension.addOrUpdateField(FIELD, VALUE)
+        Extension extension = new Extension.Builder(URN).setField(FIELD, VALUE).build()
         return extension
     }
 

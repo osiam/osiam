@@ -37,6 +37,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -46,16 +47,20 @@ import com.google.common.collect.ImmutableSet;
 @Table(name = "scim_id")
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class ResourceEntity {
-    
+
     @Column(unique = true, nullable = false)
     private String id;
 
     @Id
-    @GeneratedValue
+    @SequenceGenerator(name = "sequence_scim_id",
+            sequenceName = "resource_server_sequence_scim_id",
+            allocationSize = 1,
+            initialValue = 100)
+    @GeneratedValue(generator = "sequence_scim_id")
     @Column(name = "internal_id")
     private long internalId;
 
-    @Column(unique = true)
+    @Column(name = "external_id", unique = true)
     private String externalId;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -88,7 +93,8 @@ public abstract class ResourceEntity {
     }
 
     /**
-     * @param externalId the external id
+     * @param externalId
+     *            the external id
      */
     public void setExternalId(String externalId) {
         this.externalId = externalId;

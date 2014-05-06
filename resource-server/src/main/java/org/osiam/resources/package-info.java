@@ -29,8 +29,6 @@
  *
  *  <p>It has also some additional functionalities which are:</p>
  *
- *  <p>- a small client management, to be able to handle more than one client within the OAuth2 flow,</p>
- *
  *  <p>- the functionality to be a fake facebook site, so that facebook-connector could be used with OSIAM.</p>
  *
  *
@@ -38,9 +36,6 @@
  *
  *  <p>/ - org.osiam.resources.controller.RootController - would be a resource independent search but it is currently
  *  disabled.</p>
- *
- *  <p>/Client - org.osiam.resources.controller.ClientManagementController - is a Controller to create, delete and get
- *  clients.</p>
  *
  *  <p>/Group - org.osiam.resources.controller.GroupController - is a Controller to create, replace, modify, get,
  *  delete and search groups.</p>
