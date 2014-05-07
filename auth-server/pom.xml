@@ -37,10 +37,6 @@
 
     <name>OSIAM Auth Server</name>
 
-    <properties>
-        <org.osiam.connector4java.version>0.16-SNAPSHOT</org.osiam.connector4java.version>
-    </properties>
-
     <build>
         <plugins>
             <!-- Configure the compiler plugin for Groovy -->
@@ -141,7 +137,6 @@
         <dependency>
             <groupId>org.osiam</groupId>
             <artifactId>connector4java</artifactId>
-            <version>${org.osiam.connector4java.version}</version>
         </dependency>
     
         <!-- Groovy SDK LICENSE: Apache 2.0 according to http://grepcode.com/snapshot/repo1.maven.org/maven2/org.codehaus.groovy/groovy-all/2.0.4 -->
@@ -328,12 +323,6 @@
             <artifactId>jstl-impl</artifactId>
         </dependency>
 
-        <!-- OSIAM Interaction Model -->
-        <dependency>
-            <groupId>org.osiam</groupId>
-            <artifactId>osiam-interaction-model</artifactId>
-        </dependency>
-        
         <!-- Thymeleaf Template Engine -->
         <dependency>
             <groupId>org.thymeleaf</groupId>

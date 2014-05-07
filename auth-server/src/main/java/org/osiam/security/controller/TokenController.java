@@ -23,18 +23,13 @@
 
 package org.osiam.security.controller;
 
-import java.util.Collection;
-
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
-import org.osiam.resources.RoleSpring;
-import org.osiam.security.AuthenticationSpring;
-import org.osiam.security.AuthorizationRequestSpring;
-import org.osiam.security.OAuth2AuthenticationSpring;
+import org.osiam.client.oauth.AccessToken;
+import org.osiam.client.oauth.Scope;
 import org.osiam.security.authentication.AuthenticationError;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
@@ -58,54 +53,27 @@ public class TokenController {
     @Inject
     private DefaultTokenServices tokenServices;
 
-    @RequestMapping(value = "/validate/{token}", method = RequestMethod.GET)
+    @RequestMapping(value = "/validate/{token}", method = RequestMethod.POST)
     @ResponseBody
-    public OAuth2AuthenticationSpring validateToken(@PathVariable final String token) {
-        OAuth2Authentication oAuth2Authentication = tokenServices.loadAuthentication(token);
-
-        OAuth2AuthenticationSpring oAuth2AuthenticationSpring = new OAuth2AuthenticationSpring();
-        // In case of OAuth2 client credentials grant there is no user authentication
-        if (oAuth2Authentication.getUserAuthentication() != null) {
-            oAuth2AuthenticationSpring
-                    .setAuthenticationSpring(mappingFrom(oAuth2Authentication.getUserAuthentication()));
+    public AccessToken validateToken(@PathVariable final String token) {
+        OAuth2Authentication auth = tokenServices.loadAuthentication(token);
+        OAuth2AccessToken accessToken = tokenServices.getAccessToken(auth);
+        
+        AuthorizationRequest authReq = auth.getAuthorizationRequest();
+        AccessToken.Builder tokenBuilder = new AccessToken.Builder().setClientId(authReq.getClientId())
+                .setToken(token);
+        
+        if(auth.getUserAuthentication() != null) {
+            tokenBuilder.setUserName((String) auth.getPrincipal());
         }
-        oAuth2AuthenticationSpring.setAuthorizationRequestSpring(mappingFrom(oAuth2Authentication
-                .getAuthorizationRequest()));
-
-        return oAuth2AuthenticationSpring;
-    }
-
-    private AuthorizationRequestSpring mappingFrom(AuthorizationRequest authorizationRequest) {
-        AuthorizationRequestSpring authorizationRequestSpring = new AuthorizationRequestSpring();
-        authorizationRequestSpring.setApprovalParameters(authorizationRequest.getApprovalParameters());
-        authorizationRequestSpring.setApproved(authorizationRequest.isApproved());
-        authorizationRequestSpring.setAuthorities(authorizationRequest.getAuthorities());
-        authorizationRequestSpring.setAuthorizationParameters(authorizationRequest.getAuthorizationParameters());
-        authorizationRequestSpring.setClientId(authorizationRequest.getClientId());
-        authorizationRequestSpring.setDenied(authorizationRequest.isDenied());
-        authorizationRequestSpring.setRedirectUri(authorizationRequest.getRedirectUri());
-        authorizationRequestSpring.setResourceIds(authorizationRequest.getResourceIds());
-        authorizationRequestSpring.setResponseTypes(authorizationRequest.getResponseTypes());
-        authorizationRequestSpring.setScope(authorizationRequest.getScope());
-        authorizationRequestSpring.setState(authorizationRequest.getState());
-        return authorizationRequestSpring;
-    }
-
-    private AuthenticationSpring mappingFrom(Authentication userAuthentication) {
-        AuthenticationSpring authenticationSpring = new AuthenticationSpring();
-        authenticationSpring.setPrincipal(userAuthentication.getPrincipal());
-        authenticationSpring.setName(userAuthentication.getName());
-        authenticationSpring.setAuthorities((Collection<? extends RoleSpring>) userAuthentication.getAuthorities());
-        authenticationSpring.setCredentials(userAuthentication.getCredentials());
-        authenticationSpring.setDetails(userAuthentication.getDetails());
-        authenticationSpring.setAuthenticated(userAuthentication.isAuthenticated());
-        return authenticationSpring;
-    }
-
-    @RequestMapping(value = "/{token}", method = RequestMethod.GET)
-    @ResponseBody
-    public OAuth2AccessToken getToken(@PathVariable final String token) {
-        return tokenServices.readAccessToken(token);
+        
+        tokenBuilder.setExpiresAt(accessToken.getExpiration());
+        
+        for (String scopeString : authReq.getScope()) {
+            tokenBuilder.addScope(new Scope(scopeString));
+        }
+        
+        return tokenBuilder.build();
     }
 
     @ExceptionHandler

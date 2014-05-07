@@ -38,7 +38,7 @@ public class OsiamAccessTokenProvider {
         
         OAuth2Authentication oAuth2Authentication = new OAuth2Authentication(authorizationRequest, null);
 
-        accessToken = AccessToken.of(tokenServices.createAccessToken(oAuth2Authentication).getValue());
+        accessToken = new AccessToken.Builder().setToken(tokenServices.createAccessToken(oAuth2Authentication).getValue()).build();
     }
     
     public AccessToken getAccessToken() {

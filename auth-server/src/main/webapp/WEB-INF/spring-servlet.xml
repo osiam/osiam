@@ -42,7 +42,9 @@
 
     <!-- configures the OAuth2 authorization server -->
     <oauth:authorization-server client-details-service-ref="osiamClientDetailsService"
-        token-services-ref="tokenServices" token-granter-ref="customCompositeTokenGranter" user-approval-handler-ref="userApprovalHandler">
+        token-services-ref="tokenServices"
+        token-granter-ref="tokenGranter"
+        user-approval-handler-ref="userApprovalHandler">
         <oauth:authorization-code />
         <oauth:refresh-token />
         <oauth:client-credentials />
@@ -53,7 +55,7 @@
         <constructor-arg ref="osiamClientDetailsService" />
     </bean>
 
-    <bean id="customCompositeTokenGranter" class="org.springframework.security.oauth2.provider.CompositeTokenGranter">
+    <bean id="tokenGranter" class="org.osiam.auth.token.OsiamCompositeTokenGranter">
         <constructor-arg>
             <util:list>
                 <bean class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenGranter">
