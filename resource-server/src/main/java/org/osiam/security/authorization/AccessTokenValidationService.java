@@ -29,10 +29,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.osiam.client.connector.OsiamConnector;
-import org.osiam.client.exception.UnauthorizedException;
 import org.osiam.client.oauth.AccessToken;
 import org.osiam.client.oauth.GrantType;
 import org.osiam.client.oauth.Scope;
+import org.osiam.resources.scim.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -57,46 +57,36 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
 
     @Override
     public OAuth2Authentication loadAuthentication(String token) {
-        OsiamConnector connector = createConnector();
-
-        // TODO: VALIDATE!!!
-        AccessToken accessToken;
-
-        try {
-            accessToken = connector.retrieveAccessToken();
-        } catch (UnauthorizedException e) {
-            throw new InvalidTokenException("invalid_token");
-        }
+        AccessToken accessToken = validateAccessToken(token);
 
         Set<String> scopes = new HashSet<String>();
-
-        for (Scope scope : accessToken.getScopes()) {
-            scopes.add(scope.toString());
+        if (accessToken.getScopes() != null) {
+            for (Scope scope : accessToken.getScopes()) {
+                scopes.add(scope.toString());
+            }
         }
 
         DefaultAuthorizationRequest authrequest = new DefaultAuthorizationRequest(accessToken.getClientId(), scopes);
+        authrequest.setApproved(true);
 
-        List<GrantedAuthority> grantedAuths = new ArrayList<>();
-        grantedAuths.add(new SimpleGrantedAuthority("ROLE_USER"));
+        Authentication auth = null;
 
-        Authentication auth = new UsernamePasswordAuthenticationToken(accessToken.getUserName(), null, grantedAuths);
+        if (!accessToken.isClientOnly()) {
+            List<GrantedAuthority> grantedAuths = new ArrayList<>();
+            grantedAuths.add(new SimpleGrantedAuthority("ROLE_USER"));
+
+            User authUser = new User.Builder(accessToken.getUserName()).setId(accessToken.getUserId()).build();
+
+            auth = new UsernamePasswordAuthenticationToken(authUser, null, grantedAuths);
+        }
 
         return new OAuth2Authentication(authrequest, auth);
     }
 
     @Override
     public OAuth2AccessToken readAccessToken(String token) {
-        OsiamConnector connector = createConnector();
+        AccessToken accessToken = validateAccessToken(token);
 
-        // TODO: VALIDATE!!!
-        AccessToken accessToken;
-
-        try {
-            accessToken = connector.retrieveAccessToken();
-        } catch (UnauthorizedException e) {
-            throw new InvalidTokenException("invalid_token");
-        }
-        
         Set<String> scopes = new HashSet<String>();
         for (Scope scope : accessToken.getScopes()) {
             scopes.add(scope.toString());
@@ -108,6 +98,20 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
         oAuth2AccessToken.setTokenType("BEARER");
 
         return oAuth2AccessToken;
+    }
+
+    private AccessToken validateAccessToken(String token) {
+        OsiamConnector connector = createConnector();
+
+        AccessToken accessToken = null;
+        try {
+            accessToken = connector.validateAccessToken(new AccessToken.Builder(token).build(),
+                    connector.retrieveAccessToken());
+        } catch (Exception e) {
+            throw new InvalidTokenException("Your token is not valid");
+        }
+
+        return accessToken;
     }
 
     public OsiamConnector createConnector() {

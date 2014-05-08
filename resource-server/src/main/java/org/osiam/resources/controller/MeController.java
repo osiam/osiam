@@ -23,7 +23,6 @@
 
 package org.osiam.resources.controller;
 
-import java.util.LinkedHashMap;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -31,12 +30,15 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.osiam.client.exception.ConflictException;
+import org.osiam.resources.scim.User;
 import org.osiam.security.authorization.AccessTokenValidationService;
 import org.osiam.storage.dao.UserDao;
 import org.osiam.storage.entities.EmailEntity;
 import org.osiam.storage.entities.NameEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -88,11 +90,18 @@ public class MeController {
     @ResponseBody
     public FacebookInformationConstruct getInformation(HttpServletRequest request) {
         String accessToken = getAccessToken(request);
-        Authentication userAuthentication = accessTokenValidationService.loadAuthentication(accessToken)
-                .getUserAuthentication();
-        Object userName = userAuthentication.getPrincipal();
-        if (userName instanceof String) {
-            UserEntity userEntity = userDao.getByUsername((String) userName);
+        
+        OAuth2Authentication oAuth = accessTokenValidationService.loadAuthentication(accessToken);
+        if(oAuth.isClientOnly()) {
+            throw new ConflictException("Can't return an user. This access token belongs to a client.");
+        }
+        
+        Authentication userAuthentication = oAuth.getUserAuthentication();
+        
+        Object principal = userAuthentication.getPrincipal();
+        if (principal instanceof User) {
+            User user = (User) principal;
+            UserEntity userEntity = userDao.getById(user.getId());
             return new FacebookInformationConstruct(userEntity);
         } else {
             throw new IllegalArgumentException("User was not authenticated with OSIAM.");
