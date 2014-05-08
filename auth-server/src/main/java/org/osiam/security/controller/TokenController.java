@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.osiam.client.oauth.AccessToken;
 import org.osiam.client.oauth.Scope;
+import org.osiam.resources.scim.User;
 import org.osiam.security.authentication.AuthenticationError;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
@@ -53,18 +54,19 @@ public class TokenController {
     @Inject
     private DefaultTokenServices tokenServices;
 
-    @RequestMapping(value = "/validate/{token}", method = RequestMethod.POST)
+    @RequestMapping(value = "/validation/{token}", method = RequestMethod.POST)
     @ResponseBody
-    public AccessToken validateToken(@PathVariable final String token) {
+    public AccessToken tokenValidation(@PathVariable final String token) {
         OAuth2Authentication auth = tokenServices.loadAuthentication(token);
         OAuth2AccessToken accessToken = tokenServices.getAccessToken(auth);
         
         AuthorizationRequest authReq = auth.getAuthorizationRequest();
-        AccessToken.Builder tokenBuilder = new AccessToken.Builder().setClientId(authReq.getClientId())
-                .setToken(token);
+        AccessToken.Builder tokenBuilder = new AccessToken.Builder(token).setClientId(authReq.getClientId());
         
-        if(auth.getUserAuthentication() != null) {
-            tokenBuilder.setUserName((String) auth.getPrincipal());
+        if(auth.getUserAuthentication() != null && auth.getPrincipal() instanceof User) {
+            User user = (User) auth.getPrincipal();
+            tokenBuilder.setUserName(user.getUserName());
+            tokenBuilder.setUserId(user.getId());
         }
         
         tokenBuilder.setExpiresAt(accessToken.getExpiration());
@@ -77,7 +79,7 @@ public class TokenController {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public AuthenticationError handleClientAuthenticationException(InvalidTokenException ex, HttpServletRequest request) {
         return new AuthenticationError("invalid_token", ex.getMessage());

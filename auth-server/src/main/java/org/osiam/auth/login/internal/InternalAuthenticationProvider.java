@@ -29,17 +29,13 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.osiam.auth.login.ResourceServerConnector;
-import org.osiam.auth.login.ldap.OsiamLdapAuthentication;
 import org.osiam.resources.scim.User;
-import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.SpringSecurityMessageSource;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.util.Assert;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -83,8 +79,10 @@ public class InternalAuthenticationProvider implements AuthenticationProvider {
 
         List<GrantedAuthority> grantedAuths = new ArrayList<>();
         grantedAuths.add(new SimpleGrantedAuthority("ROLE_USER"));
+        
+        User authUser = new User.Builder(username).setId(user.getId()).build();
 
-        return new InternalAuthentication(username, password, grantedAuths);
+        return new InternalAuthentication(authUser, password, grantedAuths);
     }
 
     @Override

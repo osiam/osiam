@@ -34,6 +34,7 @@ import org.osiam.resources.scim.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
@@ -85,11 +86,16 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
         UserDetails ldapUser = osiamLdapUserContextMapper.mapUserFromContext(userData, authentication.getName(),
                 loadUserAuthorities(userData, authentication.getName(), (String) authentication.getCredentials()));
 
-        synchronizeLdapData(userData, user);
+        user = synchronizeLdapData(userData, user);
+        
+        User authUser = new User.Builder(username).setId(user.getId()).build();
 
-        return createSuccessfulAuthentication(userToken, ldapUser);
+        UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(authUser, null, ldapUser.getAuthorities());
+        result.setDetails(authentication.getDetails());
+        
+        return result;
     }
-
+    
     private void checkIfInternalUserExists(User user) {
         if (user != null && !hasAuthServerExtension(user)) {
             throw new LdapAuthenticationProcessException("Can't create the ldap user with the username '"
@@ -106,7 +112,7 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
                 && authExtension.getFieldAsString("origin").equals(LdapConfiguration.LDAP_PROVIDER);
     }
 
-    private void synchronizeLdapData(DirContextOperations ldapUserData, User user) {
+    private User synchronizeLdapData(DirContextOperations ldapUserData, User user) {
         boolean userExists = user != null;
 
         if (!userExists) {
@@ -116,6 +122,7 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
             UpdateUser updateUser = osiamLdapUserContextMapper.mapUpdateUser(user, ldapUserData);
             user = resourceServerConnector.updateUser(user.getId(), updateUser);
         }
+        return user;
     }
 
     @Override
