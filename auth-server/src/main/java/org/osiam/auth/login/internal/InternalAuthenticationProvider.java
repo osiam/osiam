@@ -29,6 +29,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.osiam.auth.login.ResourceServerConnector;
+import org.osiam.resources.scim.Role;
 import org.osiam.resources.scim.User;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -77,12 +78,15 @@ public class InternalAuthenticationProvider implements AuthenticationProvider {
             throw new BadCredentialsException("Bad credentials");
         }
 
-        List<GrantedAuthority> grantedAuths = new ArrayList<>();
-        grantedAuths.add(new SimpleGrantedAuthority("ROLE_USER"));
-        
         User authUser = new User.Builder(username).setId(user.getId()).build();
+        
+        List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
+        
+        for (Role role : user.getRoles()) {
+            grantedAuthorities.add(new SimpleGrantedAuthority(role.getValue()));
+        }
 
-        return new InternalAuthentication(authUser, password, grantedAuths);
+        return new InternalAuthentication(authUser, password, grantedAuthorities);
     }
 
     @Override

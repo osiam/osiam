@@ -23,12 +23,17 @@
 
 package org.osiam.auth.login.ldap;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.osiam.auth.configuration.LdapConfiguration;
 import org.osiam.auth.exception.LdapAuthenticationProcessException;
 import org.osiam.auth.login.ResourceServerConnector;
 import org.osiam.resources.scim.Extension;
+import org.osiam.resources.scim.Role;
 import org.osiam.resources.scim.UpdateUser;
 import org.osiam.resources.scim.User;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +41,8 @@ import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.security.ldap.authentication.LdapAuthenticator;
@@ -89,8 +96,14 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
         user = synchronizeLdapData(userData, user);
         
         User authUser = new User.Builder(username).setId(user.getId()).build();
-
-        UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(authUser, null, ldapUser.getAuthorities());
+        
+        List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
+        
+        for (Role role : user.getRoles()) {
+            grantedAuthorities.add(new SimpleGrantedAuthority(role.getValue()));
+        }
+        
+        UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(authUser, null, grantedAuthorities);
         result.setDetails(authentication.getDetails());
         
         return result;

@@ -36,7 +36,7 @@
 
 	<body>
 		<div class="container">
-			<div id="confirm-container" th:if="${hasUserRole}">
+			<div id="confirm-container">
 		    	<h2 th:text="#{confirmation.headline}">Please Confirm</h2>
 		      	<p th:text="#{confirmation.request.description(${client.clientId})}">
 			   		You hereby authorize to access your protected resources.
@@ -53,7 +53,6 @@
 								th:text="#{confirmation.button.deny}">Deny</button>
 			      	</form>
 				</div>
-		      
 		    </div>
 		</div>
 	</body>

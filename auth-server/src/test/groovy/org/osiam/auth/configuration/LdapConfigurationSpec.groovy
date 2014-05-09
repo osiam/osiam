@@ -24,8 +24,6 @@
 package org.osiam.auth.configuration
 
 import org.osiam.auth.login.ldap.OsiamLdapAuthenticationProvider
-import org.osiam.auth.login.ldap.OsiamLdapAuthoritiesPopulator
-import org.osiam.auth.login.ldap.OsiamLdapUserContextMapper
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.ProviderManager
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource
@@ -87,6 +85,5 @@ class LdapConfigurationSpec extends Specification {
         
         then:
         provider != null
-        provider.authoritiesPopulator instanceof OsiamLdapAuthoritiesPopulator
     }
 }

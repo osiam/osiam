@@ -30,7 +30,6 @@ import javax.inject.Inject;
 
 import org.osiam.auth.exception.LdapConfigurationException;
 import org.osiam.auth.login.ldap.OsiamLdapAuthenticationProvider;
-import org.osiam.auth.login.ldap.OsiamLdapAuthoritiesPopulator;
 import org.osiam.auth.login.ldap.OsiamLdapUserContextMapper;
 import org.osiam.resources.scim.User;
 import org.springframework.beans.factory.InitializingBean;
@@ -42,6 +41,7 @@ import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.security.ldap.authentication.BindAuthenticator;
+import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
 
 @Configuration
 public class LdapConfiguration implements InitializingBean {
@@ -109,17 +109,17 @@ public class LdapConfiguration implements InitializingBean {
             createLdapToScimAttributeMapping();
 
             DefaultSpringSecurityContextSource contextSource = createLdapContextSource();
-            OsiamLdapAuthoritiesPopulator rolePopulator = new OsiamLdapAuthoritiesPopulator(contextSource,
-                    groupSearchBase);
 
             BindAuthenticator bindAuthenticator = new BindAuthenticator(contextSource);
             bindAuthenticator.setUserDnPatterns(dnPatterns);
             bindAuthenticator.setUserAttributes(attributes);
 
             OsiamLdapUserContextMapper mapper = new OsiamLdapUserContextMapper(scimLdapAttributes);
+            DefaultLdapAuthoritiesPopulator authoritiesPopulator = new DefaultLdapAuthoritiesPopulator(contextSource,
+                    groupSearchBase);
 
             OsiamLdapAuthenticationProvider provider = new OsiamLdapAuthenticationProvider(bindAuthenticator,
-                    rolePopulator, mapper);
+                    authoritiesPopulator, mapper);
 
             authenticationManager.getProviders().add(provider);
 
@@ -130,10 +130,10 @@ public class LdapConfiguration implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        if(!isLdapConfigured) {
+        if (!isLdapConfigured) {
             return;
         }
-        
+
         createLdapToScimAttributeMapping();
         DirContextOperations ldapUserData = new DirContextAdapter();
         for (String scimAttribute : scimLdapAttributes.keySet()) {

@@ -40,21 +40,18 @@ class AccessConfirmationControllerSpec extends Specification{
 
     def 'should call clientDetailsService and put auth_request and client into model on access confirmation'(){
         given:
-        HttpServletRequest httpRequest = Mock()
         AuthorizationRequest authRequest = Mock()
         ClientDetails client = Mock()
         def model = ['authorizationRequest': authRequest]
         authRequest.clientId >> 'huch'
-        httpRequest.isUserInRole('ROLE_USER') >> true
 
         when:
-        def result = underTest.getAccessConfirmation(model, httpRequest)
+        def result = underTest.getAccessConfirmation(model)
 
         then:
         1 * clientDetailsServiceMock.loadClientByClientId('huch') >> client
         result.model.get('auth_request') == authRequest
         result.model.get('client') == client
-        result.model.get('hasUserRole') == true
         result.viewName == 'access_confirmation'
     }
 

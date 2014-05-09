@@ -33,9 +33,7 @@
 				   disable-url-rewriting="true"
 				   auto-config="false"
 				   entry-point-ref="loginUrlAuthenticationEntryPoint">
-		<!-- generally all resources below /oauth are accessed as role "USER" this 
-			does not affect more specialized configurations -->
-		<security:intercept-url pattern="/oauth/**" access="ROLE_USER" />
+		<security:intercept-url pattern="/oauth/**" access="IS_AUTHENTICATED_FULLY" />
 					
 		<!-- this needs to be accessible anonymously -->
 		<security:anonymous enabled="true" />

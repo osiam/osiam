@@ -26,7 +26,6 @@ package org.osiam.security.controller;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetails;
@@ -49,7 +48,7 @@ public class AccessConfirmationController {
     private ClientDetailsService clientDetailsService;
 
     @RequestMapping("/confirm_access")
-    public ModelAndView getAccessConfirmation(Map<String, Object> model, HttpServletRequest request) {
+    public ModelAndView getAccessConfirmation(Map<String, Object> model) {
 
         AuthorizationRequest clientAuth = (AuthorizationRequest) model.remove("authorizationRequest");
         if (clientAuth == null) {
@@ -62,7 +61,6 @@ public class AccessConfirmationController {
         }
         model.put("auth_request", clientAuth);
         model.put("client", client);
-        model.put("hasUserRole", request.isUserInRole("ROLE_USER"));
         model.put("loginError", false);
 
         return new ModelAndView("access_confirmation", model);
