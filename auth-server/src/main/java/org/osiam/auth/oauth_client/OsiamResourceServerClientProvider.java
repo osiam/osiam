@@ -43,15 +43,15 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
- * ClientProvider which created the auth server client on startup
+ * ClientProvider which created the resource server client on startup
  * 
  */
 @Service
-public class OsiamAuthServerClientProvider {
+public class OsiamResourceServerClientProvider {
 
-    private static final Logger LOGGER = Logger.getLogger(OsiamAuthServerClientProvider.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(OsiamResourceServerClientProvider.class.getName());
     
-    public static final String AUTH_SERVER_CLIENT_ID = "auth-server";
+    private static final String RESOURCE_SERVER_CLIENT_ID = "resource-server";
     
     @Inject
     private PlatformTransactionManager txManager;
@@ -59,13 +59,14 @@ public class OsiamAuthServerClientProvider {
     @Inject
     private ClientDao clientDao;
     
-    @Value("${org.osiam.auth-server.home}")
-    private String authServerHome;
+    @Value("${org.osiam.resource-server.home}")
+    private String resourceServerHome;
     
-    private String authServerClientSecret;
+    @Value("${org.osiam.resource-server.client.secret}")
+    private String resourceServerClientSecret;
     
     @PostConstruct
-    private void createAuthServerClient() {
+    private void createResourceServerClient() {
         TransactionTemplate tmpl = new TransactionTemplate(txManager);
         tmpl.execute(new TransactionCallbackWithoutResult() {
             @Override
@@ -73,7 +74,7 @@ public class OsiamAuthServerClientProvider {
                 ClientEntity clientEntity = null;
                 
                 try {
-                    clientEntity = clientDao.getClient(AUTH_SERVER_CLIENT_ID);
+                    clientEntity = clientDao.getClient(RESOURCE_SERVER_CLIENT_ID);
                 } catch (ResourceNotFoundException e) {
                     LOGGER.log(Level.INFO, "No auth server found. The auth server will be created.");
                 }
@@ -84,17 +85,15 @@ public class OsiamAuthServerClientProvider {
                     
                     clientEntity = new ClientEntity();
                     Set<String> scopes = new HashSet<String>();
-                    scopes.add(Scope.GET.toString());
                     scopes.add(Scope.POST.toString());
-                    scopes.add(Scope.PATCH.toString());
                     
                     Set<String> grants = new HashSet<String>();
                     grants.add(GrantType.CLIENT_CREDENTIALS.toString());
                     
-                    clientEntity.setId(AUTH_SERVER_CLIENT_ID);
+                    clientEntity.setId(RESOURCE_SERVER_CLIENT_ID);
                     clientEntity.setRefreshTokenValiditySeconds(validity);
                     clientEntity.setAccessTokenValiditySeconds(validity);
-                    clientEntity.setRedirectUri(authServerHome);
+                    clientEntity.setRedirectUri(resourceServerHome);
                     clientEntity.setScope(scopes);
                     Calendar calendar = Calendar.getInstance();
                     calendar.set(Calendar.YEAR, year);
@@ -102,16 +101,11 @@ public class OsiamAuthServerClientProvider {
                     clientEntity.setImplicit(true);
                     clientEntity.setValidityInSeconds(validity);
                     clientEntity.setGrants(grants);
+                    clientEntity.setClientSecret(resourceServerClientSecret);
             
                     clientEntity = clientDao.create(clientEntity);
                 }
-                
-                authServerClientSecret = clientEntity.getClientSecret();
             }
         });
-    }
-
-    public String getClientSecret() {
-        return authServerClientSecret;
     }
 }
