@@ -54,6 +54,11 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
 
     @Value("${org.osiam.resource-server.home}")
     private String resourceServerHome;
+    
+    private static final String RESOURCE_SERVER_CLIENT_ID = "resource-server";
+    
+    @Value("${org.osiam.resource-server.client.secret}")
+    private String resourceServerClientSecret;
 
     @Override
     public OAuth2Authentication loadAuthentication(String token) {
@@ -114,13 +119,13 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
         return accessToken;
     }
 
-    public OsiamConnector createConnector() {
+    private OsiamConnector createConnector() {
         OsiamConnector.Builder oConBuilder = new OsiamConnector.Builder().
                 setAuthServerEndpoint(authServerHome).
                 setResourceServerEndpoint(resourceServerHome).
                 setGrantType(GrantType.CLIENT_CREDENTIALS).
-                setClientId("example-client").
-                setClientSecret("secret").
+                setClientId(RESOURCE_SERVER_CLIENT_ID).
+                setClientSecret(resourceServerClientSecret).
                 setScope(Scope.ALL);
         return oConBuilder.build();
     }
