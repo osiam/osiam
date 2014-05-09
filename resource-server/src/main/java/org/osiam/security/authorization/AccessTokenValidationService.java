@@ -25,7 +25,6 @@ package org.osiam.security.authorization;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.osiam.client.connector.OsiamConnector;
@@ -37,7 +36,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
@@ -77,12 +75,9 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
         Authentication auth = null;
 
         if (!accessToken.isClientOnly()) {
-            List<GrantedAuthority> grantedAuths = new ArrayList<>();
-            grantedAuths.add(new SimpleGrantedAuthority("ROLE_USER"));
-
             User authUser = new User.Builder(accessToken.getUserName()).setId(accessToken.getUserId()).build();
-
-            auth = new UsernamePasswordAuthenticationToken(authUser, null, grantedAuths);
+            
+            auth = new UsernamePasswordAuthenticationToken(authUser, null, new ArrayList<GrantedAuthority>());
         }
 
         return new OAuth2Authentication(authrequest, auth);
