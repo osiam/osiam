@@ -36,7 +36,7 @@ import com.google.common.base.Strings;
 public class QueryFilterParser {
 
     public ParseTree getParseTree(String filter) {
-        if (!Strings.isNullOrEmpty(filter)) {
+        if (Strings.isNullOrEmpty(filter)) {
             return null;
         }
 

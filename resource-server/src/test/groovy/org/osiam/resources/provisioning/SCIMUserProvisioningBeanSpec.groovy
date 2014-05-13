@@ -264,7 +264,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         userConverter.toScim(userEntity) >> userScim
 
         when:
-        def result = scimUserProvisioningBean.search('userName eq marissa', 'userName', 'ascending', 100, 1)
+        def result = scimUserProvisioningBean.search('userName eq "marissa"', 'userName', 'ascending', 100, 1)
 
         then:
         1 * userDao.search(_, 'userName', 'ascending', 100, 0) >> searchResult

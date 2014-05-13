@@ -187,7 +187,7 @@ class SCIMGroupProvisioningBeanSpec extends Specification {
         def groupList = [groupEntity] as List
         
         when:
-        def result = scimGroupProvisioning.search("userName eq marissa", "userName", "ascending", 100, 1)
+        def result = scimGroupProvisioning.search("externalId eq \"group\"", "userName", "ascending", 100, 1)
 
         then:
         1 * groupDao.search(_, "userName", "ascending", 100, 0) >> new SearchResult(groupList, 1000)
