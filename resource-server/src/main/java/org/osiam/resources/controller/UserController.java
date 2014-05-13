@@ -132,6 +132,7 @@ public class  UserController {
         SCIMSearchResult<User> scimSearchResult = scimUserProvisioning.search((String) parameterMap.get("filter"), (String) parameterMap.get("sortBy"), (String) parameterMap.get("sortOrder"),
                 (int) parameterMap.get("count"), (int) parameterMap.get("startIndex"));
         
+
         return attributesRemovalHelper.removeSpecifiedUserAttributes(scimSearchResult, parameterMap);
     }
 

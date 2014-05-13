@@ -29,26 +29,18 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.osiam.storage.entities.ResourceEntity;
-import org.osiam.storage.parser.LogicalOperatorRulesLexer;
-import org.osiam.storage.parser.LogicalOperatorRulesParser;
 
 public abstract class FilterParser<T extends ResourceEntity> {
 
     @PersistenceContext
     protected EntityManager entityManager; // NOSONAR - doesn't need to be private
 
-    public Predicate createPredicateAndJoin(String filterString, Root<T> root) {
-        LogicalOperatorRulesLexer lexer = new LogicalOperatorRulesLexer(new ANTLRInputStream(filterString));
-        LogicalOperatorRulesParser parser = new LogicalOperatorRulesParser(new CommonTokenStream(lexer));
-        parser.addErrorListener(new OsiamAntlrErrorListener());
-        ParseTree tree = parser.parse();
+    public Predicate createPredicateAndJoin(ParseTree filterTree, Root<T> root) {
         EvalVisitor<T> visitor = new EvalVisitor<>(this, root);
 
-        return visitor.visit(tree);
+        return visitor.visit(filterTree);
     }
 
     public Expression<?> createSortByField(String sortBy, Root<T> root) {

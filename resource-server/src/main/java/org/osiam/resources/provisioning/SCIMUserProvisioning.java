@@ -33,6 +33,9 @@ import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.osiam.resources.converter.UserConverter;
 import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
@@ -43,6 +46,10 @@ import org.osiam.resources.scim.User;
 import org.osiam.storage.dao.SearchResult;
 import org.osiam.storage.dao.UserDao;
 import org.osiam.storage.entities.UserEntity;
+import org.osiam.storage.parser.LogicalOperatorRulesLexer;
+import org.osiam.storage.parser.LogicalOperatorRulesParser;
+import org.osiam.storage.query.EvalVisitor;
+import org.osiam.storage.query.OsiamAntlrErrorListener;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -144,9 +151,17 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
     public SCIMSearchResult<User> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
         List<User> users = new ArrayList<>();
 
-        // Decrease startIndex by 1 because scim pagination starts at 1 and JPA doesn't
-        SearchResult<UserEntity> result = userDao.search(filter, sortBy, sortOrder, count, startIndex - 1);
-
+        LogicalOperatorRulesLexer lexer = new LogicalOperatorRulesLexer(new ANTLRInputStream(filter));
+        LogicalOperatorRulesParser parser = new LogicalOperatorRulesParser(new CommonTokenStream(lexer));
+        parser.addErrorListener(new OsiamAntlrErrorListener());
+        ParseTree filterTree = parser.parse();
+        
+        SearchResult<UserEntity> result = userDao.search(filterTree, sortBy, sortOrder, count, startIndex - 1);
+        if(result.totalResults == 0 && filter.contains("password")){
+            // in case password is part on an lefthand value or extension name wee look trough each tree level
+            sleepIfForPasswordWasSearched(filterTree);
+        }
+        
         for (UserEntity userEntity : result.results) {
             User scimResultUser = userConverter.toScim(userEntity);
             users.add(getUserWithoutPassword(scimResultUser));
@@ -155,6 +170,25 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
         return new SCIMSearchResult<>(users, result.totalResults, count, startIndex, Constants.USER_CORE_SCHEMA);
     }
 
+    private boolean searchedForPasswordAndNoResult(SearchResult<UserEntity> result, String filter){
+        return result.totalResults == 0 && filter.contains("password");
+    }
+    
+    private void sleepIfForPasswordWasSearched(ParseTree tree){
+        String leaf = tree.getText();
+        if(leaf.equalsIgnoreCase("password")){
+            try {
+                Thread.sleep(500);
+                return;
+            } catch (InterruptedException e) {
+                // doesn't matter
+            }
+        }
+        for (int counter = 0; counter < tree.getChildCount(); counter++) {
+            sleepIfForPasswordWasSearched(tree.getChild(counter));
+        }
+    }
+    
     @Override
     public User update(String id, User user) {
         UserEntity userEntity = userDao.getById(id);

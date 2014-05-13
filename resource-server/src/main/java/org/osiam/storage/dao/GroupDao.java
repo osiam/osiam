@@ -25,6 +25,7 @@ package org.osiam.storage.dao;
 
 import javax.inject.Inject;
 
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.GroupEntity_;
@@ -118,8 +119,8 @@ public class GroupDao implements GenericDao<GroupEntity> {
     }
 
     @Override
-    public SearchResult<GroupEntity> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
-        return resourceDao.search(GroupEntity.class, filter, count, startIndex, sortBy, sortOrder, filterParser);
+    public SearchResult<GroupEntity> search(ParseTree filterTree, String sortBy, String sortOrder, int count, int startIndex) {
+        return resourceDao.search(GroupEntity.class, filterTree, count, startIndex, sortBy, sortOrder, filterParser);
     }
 
 }

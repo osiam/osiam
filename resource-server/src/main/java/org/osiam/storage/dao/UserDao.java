@@ -25,6 +25,7 @@ package org.osiam.storage.dao;
 
 import javax.inject.Inject;
 
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.entities.UserEntity_;
@@ -125,8 +126,8 @@ public class UserDao implements GenericDao<UserEntity> {
     }
 
     @Override
-    public SearchResult<UserEntity> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
-        return resourceDao.search(UserEntity.class, filter, count, startIndex, sortBy, sortOrder, filterParser);
+    public SearchResult<UserEntity> search(ParseTree filterTree, String sortBy, String sortOrder, int count, int startIndex) {
+        return resourceDao.search(UserEntity.class, filterTree, count, startIndex, sortBy, sortOrder, filterParser);
     }
 
 }

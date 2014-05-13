@@ -23,6 +23,7 @@
 
 package org.osiam.storage.dao;
 
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.osiam.storage.entities.ResourceEntity;
 
 public interface GenericDao<T extends ResourceEntity> {
@@ -35,5 +36,5 @@ public interface GenericDao<T extends ResourceEntity> {
 
     void delete(String id);
 
-    SearchResult<T> search(String filter, String sortBy, String sortOrder, int count, int startIndex);
+    SearchResult<T> search(ParseTree filterTree, String sortBy, String sortOrder, int count, int startIndex);
 }

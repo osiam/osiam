@@ -40,6 +40,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.SingularAttribute;
 
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.osiam.resources.exceptions.OsiamException;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.storage.entities.GroupEntity;
@@ -54,7 +55,7 @@ public class ResourceDao {
     @PersistenceContext
     private EntityManager em;
 
-    public <T extends ResourceEntity> SearchResult<T> search(Class<T> clazz, String filter, int count, int startIndex,
+    public <T extends ResourceEntity> SearchResult<T> search(Class<T> clazz, ParseTree filterTree, int count, int startIndex,
             String sortBy, String sortOrder, FilterParser<T> filterParser) {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -66,8 +67,8 @@ public class ResourceDao {
         Root<T> internalIdRoot = internalIdQuery.from(clazz);
         internalIdQuery.select(internalIdRoot.get(ResourceEntity_.internalId));
 
-        if (filter != null && !filter.isEmpty()) {
-            Predicate predicate = filterParser.createPredicateAndJoin(filter, internalIdRoot);
+        if (filterTree.getChildCount() > 0) {
+            Predicate predicate = filterParser.createPredicateAndJoin(filterTree, internalIdRoot);
             internalIdQuery.where(predicate);
         }
 

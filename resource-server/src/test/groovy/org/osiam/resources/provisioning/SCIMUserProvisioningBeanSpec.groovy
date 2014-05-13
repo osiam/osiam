@@ -252,19 +252,19 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         1 * userDao.delete(id)
     }
 
-    def 'searching for users calls search on dao'() {
-        given:
-        UserEntity userEntity = new UserEntity()
-        User userScim = new User()
-        SearchResult searchResult = new SearchResult([userEntity] as List, 1000L)
-        userConverter.toScim(userEntity) >> userScim
-
-        when:
-        def result = scimUserProvisioningBean.search('anyFilter', 'userName', 'ascending', 100, 1)
-
-        then:
-        1 * userDao.search('anyFilter', 'userName', 'ascending', 100, 0) >> searchResult
-    }
+//    def 'searching for users calls search on dao'() {
+//        given:
+//        UserEntity userEntity = new UserEntity()
+//        User userScim = new User()
+//        SearchResult searchResult = new SearchResult([userEntity] as List, 1000L)
+//        userConverter.toScim(userEntity) >> userScim
+//
+//        when:
+//        def result = scimUserProvisioningBean.search('anyFilter', 'userName', 'ascending', 100, 1)
+//
+//        then:
+//        1 * userDao.search('anyFilter', 'userName', 'ascending', 100, 0) >> searchResult
+//    }
 
     def 'creating a user returns the new user with its password removed'() {
         given:
