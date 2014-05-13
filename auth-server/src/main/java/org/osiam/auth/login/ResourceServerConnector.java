@@ -27,10 +27,9 @@ import javax.inject.Inject;
 
 import org.osiam.auth.oauth_client.OsiamAuthServerClientProvider;
 import org.osiam.auth.token.OsiamAccessTokenProvider;
-import org.osiam.client.connector.OsiamConnector;
-import org.osiam.client.oauth.GrantType;
-import org.osiam.client.oauth.Scope;
-import org.osiam.client.query.StringQueryBuilder;
+import org.osiam.client.OsiamConnector;
+import org.osiam.client.query.Query;
+import org.osiam.client.query.QueryBuilder;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.resources.scim.UpdateUser;
 import org.osiam.resources.scim.User;
@@ -54,10 +53,12 @@ public class ResourceServerConnector {
 
     public User getUserByUsername(final String userName) {
         OsiamConnector osiamConnector = createOsiamConnector();
-        String queryString = new StringQueryBuilder().setFilter("userName eq \"" + userName + "\""
+        Query query = new QueryBuilder().filter("userName eq \"" + userName + "\""
                 + " and active eq \"true\"").build();
-        SCIMSearchResult<User> result = osiamConnector.searchUsers(queryString,
+
+        SCIMSearchResult<User> result = osiamConnector.searchUsers(query,
                 osiamAccessTokenProvider.createAccessToken());
+
         if (result.getTotalResults() != 1) {
             return null;
         } else {
@@ -77,10 +78,12 @@ public class ResourceServerConnector {
 
     public User searchUserByUserNameAndPassword(String userName, String hashedPassword) {
         OsiamConnector osiamConnector = createOsiamConnector();
-        String queryString = new StringQueryBuilder().setFilter("userName eq \"" + userName + "\""
+        Query query = new QueryBuilder().filter("userName eq \"" + userName + "\""
                 + " and password eq \"" + hashedPassword + "\"").build();
-        SCIMSearchResult<User> result = osiamConnector.searchUsers(queryString,
+
+        SCIMSearchResult<User> result = osiamConnector.searchUsers(query,
                 osiamAccessTokenProvider.createAccessToken());
+
         if (result.getTotalResults() != 1) {
             return null;
         } else {
@@ -92,10 +95,8 @@ public class ResourceServerConnector {
         OsiamConnector.Builder oConBuilder = new OsiamConnector.Builder().
                 setAuthServerEndpoint(authServerHome).
                 setResourceServerEndpoint(resourceServerHome).
-                setGrantType(GrantType.CLIENT_CREDENTIALS).
                 setClientId(OsiamAuthServerClientProvider.AUTH_SERVER_CLIENT_ID).
-                setClientSecret(authServerClientProvider.getClientSecret()).
-                setScope(Scope.ALL);
+                setClientSecret(authServerClientProvider.getClientSecret());
         return oConBuilder.build();
     }
 }
