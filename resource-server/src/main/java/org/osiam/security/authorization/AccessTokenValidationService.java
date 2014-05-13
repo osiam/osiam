@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.osiam.client.connector.OsiamConnector;
+import org.osiam.client.OsiamConnector;
 import org.osiam.client.oauth.AccessToken;
 import org.osiam.client.oauth.Scope;
 import org.osiam.resources.scim.User;
@@ -67,7 +67,7 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
 
         if (!accessToken.isClientOnly()) {
             User authUser = new User.Builder(accessToken.getUserName()).setId(accessToken.getUserId()).build();
-            
+
             auth = new UsernamePasswordAuthenticationToken(authUser, null, new ArrayList<GrantedAuthority>());
         }
 
