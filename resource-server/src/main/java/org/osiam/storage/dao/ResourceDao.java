@@ -67,7 +67,7 @@ public class ResourceDao {
         Root<T> internalIdRoot = internalIdQuery.from(clazz);
         internalIdQuery.select(internalIdRoot.get(ResourceEntity_.internalId));
 
-        if (filterTree.getChildCount() > 0) {
+        if (filterTree != null && filterTree.getChildCount() > 0) {
             Predicate predicate = filterParser.createPredicateAndJoin(filterTree, internalIdRoot);
             internalIdQuery.where(predicate);
         }

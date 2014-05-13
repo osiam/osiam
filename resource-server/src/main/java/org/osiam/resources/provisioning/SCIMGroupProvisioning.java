@@ -49,7 +49,10 @@ import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.parser.LogicalOperatorRulesLexer;
 import org.osiam.storage.parser.LogicalOperatorRulesParser;
 import org.osiam.storage.query.OsiamAntlrErrorListener;
+import org.osiam.storage.query.QueryFilterParser;
 import org.springframework.stereotype.Service;
+
+import com.google.common.base.Strings;
 
 @Service
 public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
@@ -64,6 +67,9 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
 
     @Inject
     private GroupUpdater groupUpdater;
+    
+    @Inject
+    private QueryFilterParser queryFilterParser;
 
     @Override
     public Group create(Group group) {
@@ -110,11 +116,8 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
     public SCIMSearchResult<Group> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
         List<Group> groups = new ArrayList<>();
 
-        LogicalOperatorRulesLexer lexer = new LogicalOperatorRulesLexer(new ANTLRInputStream(filter));
-        LogicalOperatorRulesParser parser = new LogicalOperatorRulesParser(new CommonTokenStream(lexer));
-        parser.addErrorListener(new OsiamAntlrErrorListener());
-        ParseTree filterTree = parser.parse();
-        
+        ParseTree filterTree = queryFilterParser.getParseTree(filter);
+
         // Decrease startIndex by 1 because scim pagination starts at 1 and JPA doesn't
         SearchResult<GroupEntity> result = groupDao.search(filterTree, sortBy, sortOrder, count, startIndex - 1);
 

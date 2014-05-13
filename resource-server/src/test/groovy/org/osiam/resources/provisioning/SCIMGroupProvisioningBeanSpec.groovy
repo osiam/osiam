@@ -25,6 +25,8 @@ package org.osiam.resources.provisioning
 
 import javax.persistence.NoResultException
 
+import org.antlr.v4.runtime.tree.ParseTree
+import org.apache.tika.parser.ParseContext
 import org.osiam.resources.converter.GroupConverter
 import org.osiam.resources.exceptions.ResourceExistsException
 import org.osiam.resources.exceptions.ResourceNotFoundException
@@ -35,6 +37,7 @@ import org.osiam.storage.dao.GroupDao
 import org.osiam.storage.dao.SearchResult
 import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.MetaEntity
+import org.osiam.storage.query.QueryFilterParser
 import org.springframework.dao.DataIntegrityViolationException
 
 import spock.lang.Specification
@@ -44,9 +47,10 @@ class SCIMGroupProvisioningBeanSpec extends Specification {
     GroupDao groupDao = Mock()
     GroupConverter groupConverter = Mock()
     GroupUpdater groupUpdater = Mock()
+    QueryFilterParser queryFilterParser = new QueryFilterParser()
 
     SCIMGroupProvisioning scimGroupProvisioning = new SCIMGroupProvisioning(groupDao: groupDao, groupConverter: groupConverter,
-    groupUpdater: groupUpdater)
+    groupUpdater: groupUpdater, queryFilterParser: queryFilterParser)
 
     Group group = Mock()
     GroupEntity groupEntity = Mock()
@@ -178,23 +182,23 @@ class SCIMGroupProvisioningBeanSpec extends Specification {
         1 * groupDao.delete(groupUuid)
     }
 
-//    def 'searching for groups calls groupDao.search(), converts each entity to scim and returns the SCIM search result'() {
-//        given:
-//        def groupList = [groupEntity] as List
-//
-//        when:
-//        def result = scimGroupProvisioning.search("anyFilter", "userName", "ascending", 100, 1)
-//
-//        then:
-//        1 * groupDao.search("anyFilter", "userName", "ascending", 100, 0) >> new SearchResult(groupList, 1000)
-//        1 * groupConverter.toScim(groupEntity) >> group
-//
-//        result.resources.size() == 1
-//        result.resources.first() == group
-//        result.startIndex == 1
-//        result.itemsPerPage == 100
-//        result.totalResults == 1000.toLong()
-//    }
+    def 'searching for groups calls groupDao.search(), converts each entity to scim and returns the SCIM search result'() {
+        given:
+        def groupList = [groupEntity] as List
+        
+        when:
+        def result = scimGroupProvisioning.search("userName eq marissa", "userName", "ascending", 100, 1)
+
+        then:
+        1 * groupDao.search(_, "userName", "ascending", 100, 0) >> new SearchResult(groupList, 1000)
+        1 * groupConverter.toScim(groupEntity) >> group
+
+        result.resources.size() == 1
+        result.resources.first() == group
+        result.startIndex == 1
+        result.itemsPerPage == 100
+        result.totalResults == 1000.toLong()
+    }
 
     def 'updating a group retrieves the entity, updates it and converts it back to scim'() {
         given:

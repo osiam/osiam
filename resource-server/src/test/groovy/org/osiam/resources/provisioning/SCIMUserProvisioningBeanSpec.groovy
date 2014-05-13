@@ -23,6 +23,8 @@
 
 package org.osiam.resources.provisioning
 
+import org.antlr.v4.runtime.tree.ParseTree
+import org.hibernate.hql.spi.FilterTranslator
 import org.osiam.resources.converter.UserConverter
 import org.osiam.resources.exceptions.ResourceExistsException
 import org.osiam.resources.scim.User
@@ -30,6 +32,7 @@ import org.osiam.storage.dao.SearchResult
 import org.osiam.storage.dao.UserDao
 import org.osiam.storage.entities.MetaEntity
 import org.osiam.storage.entities.UserEntity
+import org.osiam.storage.query.QueryFilterParser
 import org.springframework.security.authentication.encoding.PasswordEncoder
 
 import spock.lang.Specification
@@ -39,9 +42,10 @@ class SCIMUserProvisioningBeanSpec extends Specification {
     PasswordEncoder passwordEncoder = Mock()
     UserDao userDao = Mock()
     UserConverter userConverter = Mock()
+    QueryFilterParser queryFilterParser = new QueryFilterParser()
 
     SCIMUserProvisioning scimUserProvisioningBean = new SCIMUserProvisioning(userDao: userDao,
-            userConverter: userConverter, passwordEncoder: passwordEncoder)
+            userConverter: userConverter, passwordEncoder: passwordEncoder, queryFilterParser: queryFilterParser)
 
     def 'should be possible to get a user by his id'() {
         given:
@@ -252,19 +256,19 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         1 * userDao.delete(id)
     }
 
-//    def 'searching for users calls search on dao'() {
-//        given:
-//        UserEntity userEntity = new UserEntity()
-//        User userScim = new User()
-//        SearchResult searchResult = new SearchResult([userEntity] as List, 1000L)
-//        userConverter.toScim(userEntity) >> userScim
-//
-//        when:
-//        def result = scimUserProvisioningBean.search('anyFilter', 'userName', 'ascending', 100, 1)
-//
-//        then:
-//        1 * userDao.search('anyFilter', 'userName', 'ascending', 100, 0) >> searchResult
-//    }
+    def 'searching for users calls search on dao'() {
+        given:
+        UserEntity userEntity = new UserEntity()
+        User userScim = new User()
+        SearchResult searchResult = new SearchResult([userEntity] as List, 1000L)
+        userConverter.toScim(userEntity) >> userScim
+
+        when:
+        def result = scimUserProvisioningBean.search('userName eq marissa', 'userName', 'ascending', 100, 1)
+
+        then:
+        1 * userDao.search(_, 'userName', 'ascending', 100, 0) >> searchResult
+    }
 
     def 'creating a user returns the new user with its password removed'() {
         given:
