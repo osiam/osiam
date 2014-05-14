@@ -29,7 +29,6 @@ import java.util.Set;
 
 import org.osiam.client.connector.OsiamConnector;
 import org.osiam.client.oauth.AccessToken;
-import org.osiam.client.oauth.GrantType;
 import org.osiam.client.oauth.Scope;
 import org.osiam.resources.scim.User;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,14 +48,6 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
 
     @Value("${org.osiam.auth-server.home}")
     private String authServerHome;
-
-    @Value("${org.osiam.resource-server.home}")
-    private String resourceServerHome;
-    
-    private static final String RESOURCE_SERVER_CLIENT_ID = "resource-server";
-    
-    @Value("${org.osiam.resource-server.client.secret}")
-    private String resourceServerClientSecret;
 
     @Override
     public OAuth2Authentication loadAuthentication(String token) {
@@ -105,23 +96,16 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
 
         AccessToken accessToken = null;
         try {
-            accessToken = connector.validateAccessToken(new AccessToken.Builder(token).build(),
-                    connector.retrieveAccessToken());
+            accessToken = connector.validateAccessToken(new AccessToken.Builder(token).build());
         } catch (Exception e) {
             throw new InvalidTokenException("Your token is not valid");
         }
-
         return accessToken;
     }
 
     private OsiamConnector createConnector() {
         OsiamConnector.Builder oConBuilder = new OsiamConnector.Builder().
-                setAuthServerEndpoint(authServerHome).
-                setResourceServerEndpoint(resourceServerHome).
-                setGrantType(GrantType.CLIENT_CREDENTIALS).
-                setClientId(RESOURCE_SERVER_CLIENT_ID).
-                setClientSecret(resourceServerClientSecret).
-                setScope(Scope.ALL);
+                setAuthServerEndpoint(authServerHome);
         return oConBuilder.build();
     }
 }
