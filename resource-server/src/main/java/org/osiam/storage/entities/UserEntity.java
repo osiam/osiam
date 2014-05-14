@@ -341,15 +341,6 @@ public class UserEntity extends ResourceEntity {
     public Set<ExtensionFieldValueEntity> getExtensionFieldValues() {
         return extensionFieldValues;
     }
-
-    /**
-     * @param extensionFieldValues
-     *            the extension data of the user
-     */
-    @Deprecated
-    public void setExtensionFieldValues(Set<ExtensionFieldValueEntity> extensionFieldValues) {
-        this.extensionFieldValues = extensionFieldValues;
-    }
     
     /**
      * Adds a new extensionFieldValue to this user
