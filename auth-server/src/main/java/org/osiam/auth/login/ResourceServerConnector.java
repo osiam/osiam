@@ -57,7 +57,7 @@ public class ResourceServerConnector {
         String queryString = new StringQueryBuilder().setFilter("userName eq \"" + userName + "\""
                 + " and active eq \"true\"").build();
         SCIMSearchResult<User> result = osiamConnector.searchUsers(queryString,
-                osiamAccessTokenProvider.getAccessToken());
+                osiamAccessTokenProvider.createAccessToken());
         if (result.getTotalResults() != 1) {
             return null;
         } else {
@@ -67,12 +67,12 @@ public class ResourceServerConnector {
 
     public User createUser(User user) {
         OsiamConnector osiamConnector = createOsiamConnector();
-        return osiamConnector.createUser(user, osiamAccessTokenProvider.getAccessToken());
+        return osiamConnector.createUser(user, osiamAccessTokenProvider.createAccessToken());
     }
 
     public User updateUser(String userId, UpdateUser user) {
         OsiamConnector osiamConnector = createOsiamConnector();
-        return osiamConnector.updateUser(userId, user, osiamAccessTokenProvider.getAccessToken());
+        return osiamConnector.updateUser(userId, user, osiamAccessTokenProvider.createAccessToken());
     }
 
     public User searchUserByUserNameAndPassword(String userName, String hashedPassword) {
@@ -80,7 +80,7 @@ public class ResourceServerConnector {
         String queryString = new StringQueryBuilder().setFilter("userName eq \"" + userName + "\""
                 + " and password eq \"" + hashedPassword + "\"").build();
         SCIMSearchResult<User> result = osiamConnector.searchUsers(queryString,
-                osiamAccessTokenProvider.getAccessToken());
+                osiamAccessTokenProvider.createAccessToken());
         if (result.getTotalResults() != 1) {
             return null;
         } else {
