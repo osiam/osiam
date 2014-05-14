@@ -89,26 +89,6 @@ ALTER TABLE ONLY osiam_client
 
 
 --
--- TOC entry 1910 (class 2606 OID 34790)
--- Dependencies: 162 162 2111
--- Name: uk_jj3o15pxbkaf4p88paf4l6ax0; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY osiam_client
-    ADD CONSTRAINT uk_jj3o15pxbkaf4p88paf4l6ax0 UNIQUE (redirect_uri);
-
-
---
--- TOC entry 1912 (class 2606 OID 34786)
--- Dependencies: 162 162 2111
--- Name: uk_ktjxo7vyfs0veopytnh1x68sm; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY osiam_client
-    ADD CONSTRAINT uk_ktjxo7vyfs0veopytnh1x68sm UNIQUE (client_secret);
-    
-    
---
 -- TOC entry 1989 (class 2606 OID 34829)
 -- Dependencies: 163 162 1905 2111
 -- Name: fk_ctvkl0udnj6jpn1p93vbwywte; Type: FK CONSTRAINT; Schema: public; Owner: -

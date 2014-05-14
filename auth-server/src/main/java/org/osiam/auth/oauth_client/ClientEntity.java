@@ -80,11 +80,11 @@ public class ClientEntity {
     @JsonProperty
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
-    @Column(name = "redirect_uri", unique = true, nullable = false)
+    @Column(name = "redirect_uri", nullable = false)
     private String redirectUri;
 
     @JsonProperty("client_secret")
-    @Column(name = "client_secret", unique = true, nullable = false)
+    @Column(name = "client_secret", nullable = false)
     private String clientSecret = generateSecret();
 
     @JsonProperty
