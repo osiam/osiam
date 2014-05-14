@@ -61,12 +61,11 @@
     </security:http>
     
     <security:http create-session="never"
-                   access-decision-manager-ref="accessDecisionManager"
                    entry-point-ref="oauthAuthenticationEntryPoint"
-                   pattern="/token/validation/**">
+                   pattern="/token/validation">
 
         <!-- resources below /secured/get/resource/ are accessed via scope "READ" -->
-        <security:intercept-url pattern="/token/validation/**" access="SCOPE_DYNAMIC" />
+        <security:intercept-url pattern="/token/validation" access="IS_AUTHENTICATED_FULLY" />
 
         <!-- validates the delivered access token -->
         <security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />

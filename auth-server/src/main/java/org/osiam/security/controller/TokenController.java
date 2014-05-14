@@ -38,7 +38,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -54,9 +54,11 @@ public class TokenController {
     @Inject
     private DefaultTokenServices tokenServices;
 
-    @RequestMapping(value = "/validation/{token}", method = RequestMethod.POST)
+    @RequestMapping(value = "/validation", method = RequestMethod.POST)
     @ResponseBody
-    public AccessToken tokenValidation(@PathVariable final String token) {
+    public AccessToken tokenValidation(@RequestHeader final String authorization) {
+        int lastIndexOf = authorization.lastIndexOf(' ');
+        String token = authorization.substring(lastIndexOf + 1);
         OAuth2Authentication auth = tokenServices.loadAuthentication(token);
         OAuth2AccessToken accessToken = tokenServices.getAccessToken(auth);
         
