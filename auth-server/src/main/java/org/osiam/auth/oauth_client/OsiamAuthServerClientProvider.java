@@ -23,7 +23,6 @@
 
 package org.osiam.auth.oauth_client;
 
-import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -80,8 +79,7 @@ public class OsiamAuthServerClientProvider {
 
                 if (clientEntity == null) {
                     int validity = 10;
-                    int year = 3000;
-
+                    
                     clientEntity = new ClientEntity();
                     Set<String> scopes = new HashSet<String>();
                     scopes.add(Scope.GET.toString());
@@ -96,9 +94,6 @@ public class OsiamAuthServerClientProvider {
                     clientEntity.setAccessTokenValiditySeconds(validity);
                     clientEntity.setRedirectUri(authServerHome);
                     clientEntity.setScope(scopes);
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.set(Calendar.YEAR, year);
-                    clientEntity.setExpiry(calendar.getTime());
                     clientEntity.setImplicit(true);
                     clientEntity.setValidityInSeconds(validity);
                     clientEntity.setGrants(grants);

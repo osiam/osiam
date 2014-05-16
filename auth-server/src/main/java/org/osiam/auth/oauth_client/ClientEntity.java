@@ -111,6 +111,29 @@ public class ClientEntity {
     public ClientEntity() {
     }
 
+    /**
+     * Used to Map Json to ClientEntity, because some Fields are generated.
+     * 
+     */
+    public ClientEntity(ClientEntity entity) {
+        if (entity.getId() != null) {
+            id = entity.getId();
+        }
+
+        if (entity.getClientSecret() != null) {
+            clientSecret = entity.getClientSecret();
+
+        }
+
+        accessTokenValiditySeconds = entity.getAccessTokenValiditySeconds();
+        refreshTokenValiditySeconds = entity.getRefreshTokenValiditySeconds();
+        redirectUri = entity.getRedirectUri();
+        scope = entity.getScope();
+        implicit = entity.isImplicit();
+        validityInSeconds = entity.getValidityInSeconds();
+        grants = !entity.getGrants().isEmpty() ? entity.getGrants() : generateGrants();
+    }
+
     public int getAccessTokenValiditySeconds() {
         return accessTokenValiditySeconds;
     }
@@ -131,26 +154,6 @@ public class ClientEntity {
         return grants;
     }
 
-    /* Used to Map Json to ClientEntity, because some Fields are generated. */
-    public ClientEntity(ClientEntity entity) {
-        if (entity.getId() != null) {
-            id = entity.getId();
-        }
-
-        if (entity.getClientSecret() != null) {
-            clientSecret = entity.getClientSecret();
-
-        }
-
-        accessTokenValiditySeconds = entity.getAccessTokenValiditySeconds();
-        refreshTokenValiditySeconds = entity.getRefreshTokenValiditySeconds();
-        redirectUri = entity.getRedirectUri();
-        scope = entity.getScope();
-        implicit = entity.isImplicit();
-        validityInSeconds = entity.getValidityInSeconds();
-        grants = !entity.getGrants().isEmpty() ? entity.getGrants() : generateGrants();
-    }
-
     private Set<String> generateGrants() {
         Set<String> result = new HashSet<>();
         Collections.addAll(result, "authorization_code", "refresh-token");
@@ -158,7 +161,6 @@ public class ClientEntity {
     }
 
     private String generateSecret() {
-        // TODO must be improved
         return UUID.randomUUID().toString();
     }
 
