@@ -32,7 +32,8 @@
 	<security:http access-denied-page="/login/error"
 				   disable-url-rewriting="true"
 				   auto-config="false"
-				   entry-point-ref="loginUrlAuthenticationEntryPoint">
+				   entry-point-ref="loginUrlAuthenticationEntryPoint"
+                   create-session="always">
 		<security:intercept-url pattern="/oauth/**" access="IS_AUTHENTICATED_FULLY" />
 					
 		<!-- this needs to be accessible anonymously -->
