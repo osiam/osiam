@@ -50,20 +50,20 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class OsiamAuthServerClientProvider {
 
     private static final Logger LOGGER = Logger.getLogger(OsiamAuthServerClientProvider.class.getName());
-    
+
     public static final String AUTH_SERVER_CLIENT_ID = "auth-server";
-    
+
     @Inject
     private PlatformTransactionManager txManager;
-    
+
     @Inject
     private ClientDao clientDao;
-    
+
     @Value("${org.osiam.auth-server.home}")
     private String authServerHome;
-    
+
     private String authServerClientSecret;
-    
+
     @PostConstruct
     private void createAuthServerClient() {
         TransactionTemplate tmpl = new TransactionTemplate(txManager);
@@ -71,26 +71,26 @@ public class OsiamAuthServerClientProvider {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 ClientEntity clientEntity = null;
-                
+
                 try {
                     clientEntity = clientDao.getClient(AUTH_SERVER_CLIENT_ID);
                 } catch (ResourceNotFoundException e) {
                     LOGGER.log(Level.INFO, "No auth server found. The auth server will be created.");
                 }
-                
-                if(clientEntity == null) {
-                    int validity = 3600;
+
+                if (clientEntity == null) {
+                    int validity = 10;
                     int year = 3000;
-                    
+
                     clientEntity = new ClientEntity();
                     Set<String> scopes = new HashSet<String>();
                     scopes.add(Scope.GET.toString());
                     scopes.add(Scope.POST.toString());
                     scopes.add(Scope.PATCH.toString());
-                    
+
                     Set<String> grants = new HashSet<String>();
                     grants.add(GrantType.CLIENT_CREDENTIALS.toString());
-                    
+
                     clientEntity.setId(AUTH_SERVER_CLIENT_ID);
                     clientEntity.setRefreshTokenValiditySeconds(validity);
                     clientEntity.setAccessTokenValiditySeconds(validity);
@@ -102,10 +102,10 @@ public class OsiamAuthServerClientProvider {
                     clientEntity.setImplicit(true);
                     clientEntity.setValidityInSeconds(validity);
                     clientEntity.setGrants(grants);
-            
+
                     clientEntity = clientDao.create(clientEntity);
                 }
-                
+
                 authServerClientSecret = clientEntity.getClientSecret();
             }
         });

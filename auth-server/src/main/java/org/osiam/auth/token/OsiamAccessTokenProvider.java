@@ -25,6 +25,7 @@ package org.osiam.auth.token;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -37,7 +38,7 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.stereotype.Service;
 
 /**
- * TokenProvider which created an accesstoken for the auth server client on startup
+ * TokenProvider which created an accesstoken for the auth server client
  * 
  */
 @Service
@@ -51,13 +52,17 @@ public class OsiamAccessTokenProvider {
         scopes.add(Scope.GET.toString());
         scopes.add(Scope.POST.toString());
         scopes.add(Scope.PATCH.toString());
+        // Random scope, because the token services generates for every scope but same client
+        // a different access token. This is only made due to the token expired problem, when the auth server
+        // takes his actual access token, but the token is expired during the request to the resource server
+        scopes.add(new Scope(UUID.randomUUID().toString()).toString());
 
         DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest(
                 OsiamAuthServerClientProvider.AUTH_SERVER_CLIENT_ID, scopes);
         authorizationRequest.setApproved(true);
 
         OAuth2Authentication oAuth2Authentication = new OAuth2Authentication(authorizationRequest, null);
-
+        
         return new AccessToken.Builder(tokenServices.createAccessToken(oAuth2Authentication).getValue()).build();
     }
 }
