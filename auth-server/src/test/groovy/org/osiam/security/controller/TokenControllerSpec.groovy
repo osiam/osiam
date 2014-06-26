@@ -72,5 +72,12 @@ class TokenControllerSpec extends Specification {
         result.scopes.contains(new Scope('GET'))
         result.expiresAt == date
     }
+    
+    def 'OSNG-444: A request to revoke a token should be delegated to the TokenService'() {
+        when:
+        tokenController.tokenRevokation('prefix accessToken')
 
+        then:
+        1 * defaultTokenServicesMock.revokeToken('accessToken')
+    }
 }
