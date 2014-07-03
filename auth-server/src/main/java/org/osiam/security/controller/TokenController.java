@@ -56,7 +56,7 @@ public class TokenController {
 
     @RequestMapping(value = "/validation", method = RequestMethod.POST)
     @ResponseBody
-    public AccessToken tokenValidation(@RequestHeader final String authorization) {
+    public AccessToken tokenValidation(@RequestHeader("Authorization") final String authorization) {
         String token = getToken(authorization);
         OAuth2Authentication auth = tokenServices.loadAuthentication(token);
         OAuth2AccessToken accessToken = tokenServices.getAccessToken(auth);
@@ -81,7 +81,7 @@ public class TokenController {
     
     @RequestMapping(value = "/revocation", method = RequestMethod.POST)
     @ResponseBody
-    public void tokenRevokation(@RequestHeader final String authorization) {
+    public void tokenRevokation(@RequestHeader("Authorization") final String authorization) {
         String token = getToken(authorization);
         tokenServices.revokeToken(token);
     }
