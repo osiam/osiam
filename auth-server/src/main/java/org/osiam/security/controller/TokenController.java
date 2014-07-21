@@ -56,9 +56,8 @@ public class TokenController {
 
     @RequestMapping(value = "/validation", method = RequestMethod.POST)
     @ResponseBody
-    public AccessToken tokenValidation(@RequestHeader final String authorization) {
-        int lastIndexOf = authorization.lastIndexOf(' ');
-        String token = authorization.substring(lastIndexOf + 1);
+    public AccessToken tokenValidation(@RequestHeader("Authorization") final String authorization) {
+        String token = getToken(authorization);
         OAuth2Authentication auth = tokenServices.loadAuthentication(token);
         OAuth2AccessToken accessToken = tokenServices.getAccessToken(auth);
         
@@ -79,11 +78,23 @@ public class TokenController {
         
         return tokenBuilder.build();
     }
+    
+    @RequestMapping(value = "/revocation", method = RequestMethod.POST)
+    @ResponseBody
+    public void tokenRevokation(@RequestHeader("Authorization") final String authorization) {
+        String token = getToken(authorization);
+        tokenServices.revokeToken(token);
+    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public AuthenticationError handleClientAuthenticationException(InvalidTokenException ex, HttpServletRequest request) {
         return new AuthenticationError("invalid_token", ex.getMessage());
+    }
+    
+    private String getToken(String authorization) {
+    	int lastIndexOf = authorization.lastIndexOf(' ');
+    	return authorization.substring(lastIndexOf + 1);
     }
 }
