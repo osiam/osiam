@@ -24,7 +24,6 @@
 package org.osiam.auth.login.ldap;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -39,6 +38,7 @@ import org.osiam.resources.scim.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -94,6 +94,10 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
                 loadUserAuthorities(userData, authentication.getName(), (String) authentication.getCredentials()));
 
         user = synchronizeLdapData(userData, user);
+        
+        if (!user.isActive()) {
+            throw new DisabledException("The user with the username '" + username + "' is disabled!");
+        }
         
         User authUser = new User.Builder(username).setId(user.getId()).build();
         

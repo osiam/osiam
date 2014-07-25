@@ -53,8 +53,7 @@ public class ResourceServerConnector {
 
     public User getUserByUsername(final String userName) {
         OsiamConnector osiamConnector = createOsiamConnector();
-        Query query = new QueryBuilder().filter("userName eq \"" + userName + "\""
-                + " and active eq \"true\"").build();
+        Query query = new QueryBuilder().filter("userName eq \"" + userName + "\"").build();
 
         SCIMSearchResult<User> result = osiamConnector.searchUsers(query,
                 osiamAccessTokenProvider.createAccessToken());

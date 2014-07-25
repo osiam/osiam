@@ -33,6 +33,7 @@ import org.osiam.resources.scim.Role;
 import org.osiam.resources.scim.User;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -69,7 +70,11 @@ public class InternalAuthenticationProvider implements AuthenticationProvider {
         User user = resourceServerConnector.getUserByUsername(username);
 
         if (user == null) {
-            throw new BadCredentialsException("The user with the username '" + username + "' not exists!");
+            throw new BadCredentialsException("The user with the username '" + username + "' doesn't exist!");
+        }
+        
+        if (!user.isActive()) {
+            throw new DisabledException("The user with the username '" + username + "' is disabled!");
         }
 
         String hashedPassword = passwordEncoder.encodePassword(password, user.getId());

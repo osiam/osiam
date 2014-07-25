@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.osiam.auth.login.internal.InternalAuthentication;
 import org.osiam.auth.login.ldap.OsiamLdapAuthentication;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -74,7 +75,7 @@ public class LoginDecisionFilter extends AbstractAuthenticationProcessingFilter 
         } else {
             authRequest = new InternalAuthentication(username, password, new ArrayList<GrantedAuthority>());
         }
-
+        
         setDetails(request, authRequest);
         return this.getAuthenticationManager().authenticate(authRequest);
     }
