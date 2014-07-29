@@ -64,6 +64,11 @@ public class ResourceServerConnector {
             return result.getResources().get(0);
         }
     }
+    
+    public User getUserById(final String id) {
+        OsiamConnector osiamConnector = createOsiamConnector();
+        return osiamConnector.getUser(id, osiamAccessTokenProvider.createAccessToken());
+    }
 
     public User createUser(User user) {
         OsiamConnector osiamConnector = createOsiamConnector();

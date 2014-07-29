@@ -23,9 +23,13 @@
 
 package org.osiam.security.controller;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
+import org.osiam.auth.login.ResourceServerConnector;
 import org.osiam.client.oauth.AccessToken;
 import org.osiam.client.oauth.Scope;
 import org.osiam.resources.scim.User;
@@ -38,6 +42,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -53,6 +58,9 @@ public class TokenController {
 
     @Inject
     private DefaultTokenServices tokenServices;
+    
+    @Inject
+    private ResourceServerConnector resourceServerConnector;
 
     @RequestMapping(value = "/validation", method = RequestMethod.POST)
     @ResponseBody
@@ -81,9 +89,26 @@ public class TokenController {
     
     @RequestMapping(value = "/revocation", method = RequestMethod.POST)
     @ResponseBody
-    public void tokenRevokation(@RequestHeader("Authorization") final String authorization) {
+    public void tokenRevocation(@RequestHeader("Authorization") final String authorization) {
         String token = getToken(authorization);
         tokenServices.revokeToken(token);
+    }
+
+    @RequestMapping(value = "/revocation/{id}", method = RequestMethod.POST)
+    @ResponseBody
+    public void tokenRevocation(@PathVariable("id") final String id,
+            @RequestHeader("Authorization") final String authorization) {
+        User user = resourceServerConnector.getUserById(id);
+
+        // the token store maps the tokens of a user to the string representation of the principal
+        String searchKey = new User.Builder(user.getUserName()).setId(id).build().toString();
+        Collection<OAuth2AccessToken> tokens = tokenServices.findTokensByUserName(searchKey);
+        if (tokens == null) {
+            return;
+        }
+        for (OAuth2AccessToken token : new ArrayList<OAuth2AccessToken>(tokens)) {
+            tokenServices.revokeToken(token.getValue());
+        }
     }
 
     @ExceptionHandler
