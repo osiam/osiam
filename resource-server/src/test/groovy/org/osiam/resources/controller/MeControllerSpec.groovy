@@ -29,6 +29,7 @@ import org.joda.time.format.DateTimeFormatter
 import org.joda.time.format.ISODateTimeFormat
 import org.osiam.resources.scim.User;
 import org.osiam.security.authorization.AccessTokenValidationService
+import org.osiam.security.helper.AccessTokenHelper;
 import org.osiam.storage.dao.UserDao
 import org.osiam.storage.entities.EmailEntity
 import org.osiam.storage.entities.MetaEntity
@@ -41,8 +42,10 @@ import spock.lang.Specification
 
 class MeControllerSpec extends Specification {
     AccessTokenValidationService accessTokenValidationService = Mock()
+    AccessTokenHelper accessTokenHelper = Mock()
     UserDao userDao = Mock()
-    MeController underTest = new MeController(accessTokenValidationService: accessTokenValidationService, userDao: userDao)
+    MeController underTest = new MeController(accessTokenValidationService: accessTokenValidationService, 
+        accessTokenHelper: accessTokenHelper, userDao: userDao)
     OAuth2Authentication authentication = Mock(OAuth2Authentication)
     HttpServletRequest request = Mock(HttpServletRequest)
     Authentication userAuthentication = Mock(Authentication)
@@ -105,16 +108,6 @@ class MeControllerSpec extends Specification {
         result.getEmail() == null
     }
 
-    def 'should throw exception when no access_token was submitted'() {
-        given:
-        request.getParameter('access_token') >> null
-        when:
-        underTest.getInformation(request)
-        then:
-        def e = thrown(IllegalArgumentException)
-        e.message == 'No access_token submitted!'
-    }
-
     def 'should get access_token in bearer format'() {
         given:
         User principal = new User.Builder('username').setId('theUserId').build()
@@ -125,7 +118,7 @@ class MeControllerSpec extends Specification {
 
         then:
         1 * request.getParameter('access_token') >> null
-        1 * request.getHeader('Authorization') >> 'Bearer access_token'
+        1 * accessTokenHelper.getBearerToken(request) >> 'access_token'
         1 * accessTokenValidationService.loadAuthentication('access_token') >> authentication
         1 * userAuthentication.getPrincipal() >> principal
         1 * userDao.getById(principal.id) >> user
@@ -137,7 +130,7 @@ class MeControllerSpec extends Specification {
         underTest.getInformation(request)
         then:
         1 * request.getParameter('access_token') >> null
-        1 * request.getHeader('Authorization') >> 'Bearer access_token'
+        1 * accessTokenHelper.getBearerToken(request) >> 'access_token'
         1 * accessTokenValidationService.loadAuthentication('access_token') >> authentication
         1 * userAuthentication.getPrincipal() >> new Object()
         def e = thrown(IllegalArgumentException)
@@ -157,7 +150,7 @@ class MeControllerSpec extends Specification {
 
         then:
         1 * request.getParameter('access_token') >> null
-        1 * request.getHeader('Authorization') >> 'Bearer access_token'
+        1 * accessTokenHelper.getBearerToken(request) >> 'access_token'
         1 * accessTokenValidationService.loadAuthentication('access_token') >> authentication
         1 * userAuthentication.getPrincipal() >> principal
         1 * userDao.getById(principal.id) >> user
@@ -179,7 +172,7 @@ class MeControllerSpec extends Specification {
 
         then:
         1 * request.getParameter('access_token') >> null
-        1 * request.getHeader('Authorization') >> 'Bearer access_token'
+        1 * accessTokenHelper.getBearerToken(request) >> 'access_token'
         1 * accessTokenValidationService.loadAuthentication('access_token') >> authentication
         1 * userAuthentication.getPrincipal() >> principal
         1 * userDao.getById(principal.id) >> user

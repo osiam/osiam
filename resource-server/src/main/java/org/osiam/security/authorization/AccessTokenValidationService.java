@@ -91,6 +91,20 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
         return oAuth2AccessToken;
     }
 
+    /**
+     * Revokes the access tokens of the user with the given ID.
+     * 
+     * @param id
+     *        the user ID
+     * @param token
+     *        the token to access the service
+     */
+    public void revokeAccessTokens(String id, String token) {
+        AccessToken accessToken = new AccessToken.Builder(token).build();
+        OsiamConnector connector = createConnector();
+        connector.revokeAccessTokens(id, accessToken);
+    }
+
     private AccessToken validateAccessToken(String token) {
         OsiamConnector connector = createConnector();
 
