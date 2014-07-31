@@ -42,10 +42,8 @@ import spock.lang.Specification
 
 class MeControllerSpec extends Specification {
     AccessTokenValidationService accessTokenValidationService = Mock()
-    AccessTokenHelper accessTokenHelper = Mock()
     UserDao userDao = Mock()
-    MeController underTest = new MeController(accessTokenValidationService: accessTokenValidationService, 
-        accessTokenHelper: accessTokenHelper, userDao: userDao)
+    MeController underTest = new MeController(accessTokenValidationService: accessTokenValidationService, userDao: userDao)
     OAuth2Authentication authentication = Mock(OAuth2Authentication)
     HttpServletRequest request = Mock(HttpServletRequest)
     Authentication userAuthentication = Mock(Authentication)
@@ -112,26 +110,31 @@ class MeControllerSpec extends Specification {
         given:
         User principal = new User.Builder('username').setId('theUserId').build()
         def userId = 'theUserId'
+        def token = 'access_token'
+        request.getHeader('Authorization') >> 'Bearer ' + token;
 
         when:
         def result = underTest.getInformation(request)
 
         then:
-        1 * request.getParameter('access_token') >> null
-        1 * accessTokenHelper.getBearerToken(request) >> 'access_token'
-        1 * accessTokenValidationService.loadAuthentication('access_token') >> authentication
+        1 * request.getParameter(token) >> null
+        1 * accessTokenValidationService.loadAuthentication(token) >> authentication
         1 * userAuthentication.getPrincipal() >> principal
         1 * userDao.getById(principal.id) >> user
         result
     }
 
     def 'should throw exception if principal is not a String'() {
+        given:
+        def token = 'access_token'
+        request.getHeader('Authorization') >> 'Bearer ' + token;
+
         when:
         underTest.getInformation(request)
+
         then:
         1 * request.getParameter('access_token') >> null
-        1 * accessTokenHelper.getBearerToken(request) >> 'access_token'
-        1 * accessTokenValidationService.loadAuthentication('access_token') >> authentication
+        1 * accessTokenValidationService.loadAuthentication(token) >> authentication
         1 * userAuthentication.getPrincipal() >> new Object()
         def e = thrown(IllegalArgumentException)
         e.message == 'User was not authenticated with OSIAM.'
@@ -144,14 +147,15 @@ class MeControllerSpec extends Specification {
                 userName: 'fpref')
         User principal = new User.Builder('username').setId('theUserId').build()
         def userId = 'theUserId'
+        def token = 'access_token'
+        request.getHeader('Authorization') >> 'Bearer ' + token;
 
         when:
         def result = underTest.getInformation(request)
 
         then:
-        1 * request.getParameter('access_token') >> null
-        1 * accessTokenHelper.getBearerToken(request) >> 'access_token'
-        1 * accessTokenValidationService.loadAuthentication('access_token') >> authentication
+        1 * request.getParameter(token) >> null
+        1 * accessTokenValidationService.loadAuthentication(token) >> authentication
         1 * userAuthentication.getPrincipal() >> principal
         1 * userDao.getById(principal.id) >> user
         result.getEmail() == null
@@ -166,14 +170,15 @@ class MeControllerSpec extends Specification {
         locale: 'de_DE', userName: 'fpref')
         User principal = new User.Builder('username').setId('theUserId').build()
         def userId = 'theUserId'
+        def token = 'access_token'
+        request.getHeader('Authorization') >> 'Bearer ' + token;
 
         when:
         def result = underTest.getInformation(request)
 
         then:
-        1 * request.getParameter('access_token') >> null
-        1 * accessTokenHelper.getBearerToken(request) >> 'access_token'
-        1 * accessTokenValidationService.loadAuthentication('access_token') >> authentication
+        1 * request.getParameter(token) >> null
+        1 * accessTokenValidationService.loadAuthentication(token) >> authentication
         1 * userAuthentication.getPrincipal() >> principal
         1 * userDao.getById(principal.id) >> user
         result.getName() == null

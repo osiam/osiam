@@ -43,14 +43,13 @@ import spock.lang.Specification
 class AccessTokenHelperSpec extends Specification {
 
     HttpServletRequest request = Mock(HttpServletRequest)
-    AccessTokenHelper underTest = new AccessTokenHelper()
 
     def 'should throw exception when no access_token was submitted'() {
         given:
         request.getHeader('Authorization') >> null
 
         when:
-        underTest.getBearerToken(request)
+        AccessTokenHelper.getBearerToken(request)
 
         then:
         def e = thrown(IllegalArgumentException)
@@ -62,7 +61,7 @@ class AccessTokenHelperSpec extends Specification {
         def header = 'Bearer access token'
 
         when:
-        def result = underTest.getBearerToken(request)
+        def result = AccessTokenHelper.getBearerToken(request)
 
         then:
         1 * request.getHeader('Authorization') >> header

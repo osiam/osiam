@@ -55,13 +55,11 @@ class UserControllerSpec extends Specification {
     RequestParamHelper requestParamHelper = Mock()
     JsonInputValidator jsonInputValidator = Mock()
     AttributesRemovalHelper attributesRemovalHelper = Mock()
-    AccessTokenHelper accessTokenHelper = Mock()
     AccessTokenValidationService accessTokenService = Mock()
     SCIMUserProvisioning scimUserProvisioning = Mock()
     UserController userController = new UserController(requestParamHelper: requestParamHelper,
             jsonInputValidator: jsonInputValidator, attributesRemovalHelper: attributesRemovalHelper,
-            scimUserProvisioning: scimUserProvisioning, accessTokenHelper: accessTokenHelper,
-            accessTokenService: accessTokenService)
+            scimUserProvisioning: scimUserProvisioning, accessTokenService: accessTokenService)
     def httpServletRequest = Mock(HttpServletRequest)
     def httpServletResponse = Mock(HttpServletResponse)
 
@@ -323,6 +321,7 @@ class UserControllerSpec extends Specification {
         def token = 'token'
         User updateUser = new User.Builder().setActive(false).build()
         httpServletRequest.getRequestURL() >> new StringBuffer('irrelevant')
+        httpServletRequest.getHeader('Authorization') >> 'Bearer ' + token;
         scimUserProvisioning.update(id, updateUser) >> user
 
         when:'the update is performed'
@@ -330,7 +329,6 @@ class UserControllerSpec extends Specification {
 
         then:'a request to revoke the tokens of the users should be sent'
         1 * jsonInputValidator.validateJsonUser(httpServletRequest) >> updateUser
-        1 * accessTokenHelper.getBearerToken(httpServletRequest) >> token
         1 * accessTokenService.revokeAccessTokens(id, token)
     }
 
@@ -340,6 +338,7 @@ class UserControllerSpec extends Specification {
         def token = 'token'
         User updateUser = new User.Builder().setDisplayName('name').build()
         httpServletRequest.getRequestURL() >> new StringBuffer('irrelevant')
+        httpServletRequest.getHeader('Authorization') >> 'Bearer ' + token;
         scimUserProvisioning.update(id, updateUser) >> user
 
         when:'the update is performed'
@@ -347,7 +346,6 @@ class UserControllerSpec extends Specification {
 
         then:'no request to revoke the tokens of the users should be sent'
         1 * jsonInputValidator.validateJsonUser(httpServletRequest) >> updateUser
-        0 * accessTokenHelper.getBearerToken(httpServletRequest)
         0 * accessTokenService.revokeAccessTokens(id, token)
     }
 
@@ -357,6 +355,7 @@ class UserControllerSpec extends Specification {
         def token = 'token'
         User newUser = new User.Builder().setActive(false).build()
         httpServletRequest.getRequestURL() >> new StringBuffer('irrelevant')
+        httpServletRequest.getHeader('Authorization') >> 'Bearer ' + token;
         scimUserProvisioning.replace(id, newUser) >> user
 
         when:'the user is replaced'
@@ -364,7 +363,6 @@ class UserControllerSpec extends Specification {
 
         then:'a request to revoke the tokens of the users should be sent'
         1 * jsonInputValidator.validateJsonUser(httpServletRequest) >> newUser
-        1 * accessTokenHelper.getBearerToken(httpServletRequest) >> token
         1 * accessTokenService.revokeAccessTokens(id, token)
     }
 
@@ -374,6 +372,7 @@ class UserControllerSpec extends Specification {
         def token = 'token'
         User newUser = new User.Builder().setDisplayName('name').build()
         httpServletRequest.getRequestURL() >> new StringBuffer('irrelevant')
+        httpServletRequest.getHeader('Authorization') >> 'Bearer ' + token;
         scimUserProvisioning.replace(id, newUser) >> user
 
         when:'the user is replaced'
@@ -381,7 +380,6 @@ class UserControllerSpec extends Specification {
 
         then:'no request to revoke the tokens of the users should be sent'
         1 * jsonInputValidator.validateJsonUser(httpServletRequest) >> newUser
-        0 * accessTokenHelper.getBearerToken(httpServletRequest)
         0 * accessTokenService.revokeAccessTokens(id, token)
     }
 }

@@ -14,9 +14,9 @@ public class AccessTokenHelper {
      *        the request
      * @return the bearer token
      * @throws IllegalArgumentException
-     *         if no authorization header was fouund
+     *         if no authorization header was found
      */
-    public String getBearerToken(HttpServletRequest request) {
+    public static String getBearerToken(HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");
         if (authorization == null) {
             throw new IllegalArgumentException("No access_token submitted!");

@@ -61,9 +61,6 @@ public class MeController {
     private AccessTokenValidationService accessTokenValidationService;
 
     @Inject
-    private AccessTokenHelper accessTokenHelper;
-
-    @Inject
     private UserDao userDao;
 
     /**
@@ -114,7 +111,7 @@ public class MeController {
 
     private String getAccessToken(HttpServletRequest request) {
         String accessToken = request.getParameter("access_token");
-        return accessToken != null ? accessToken : accessTokenHelper.getBearerToken(request);
+        return accessToken != null ? accessToken : AccessTokenHelper.getBearerToken(request);
     }
 
     public static class FacebookInformationConstruct {

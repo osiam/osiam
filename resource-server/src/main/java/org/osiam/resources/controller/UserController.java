@@ -75,9 +75,6 @@ public class  UserController {
     @Inject
     private AccessTokenValidationService accessTokenService;
 
-    @Inject
-    private AccessTokenHelper accessTokenHelper;
-
     private RequestParamHelper requestParamHelper = new RequestParamHelper();
 
     private AttributesRemovalHelper attributesRemovalHelper = new AttributesRemovalHelper();
@@ -160,7 +157,7 @@ public class  UserController {
      */
     private void checkAndHandleDeactivation(String id, User updateUser, HttpServletRequest request) {
         if (updateUser.isActive() != null && !updateUser.isActive()) {
-            String bearer = accessTokenHelper.getBearerToken(request);
+            String bearer = AccessTokenHelper.getBearerToken(request);
             accessTokenService.revokeAccessTokens(id, bearer);
         }
     }
