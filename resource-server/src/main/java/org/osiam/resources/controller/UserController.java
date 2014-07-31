@@ -109,6 +109,7 @@ public class  UserController {
     public User replace(@PathVariable final String id, HttpServletRequest request, HttpServletResponse response) throws IOException {
         User user = jsonInputValidator.validateJsonUser(request);
         User createdUser = scimUserProvisioning.replace(id, user);
+        checkAndHandleDeactivation(id, user, request);
         return setLocationUriAndCreateUserForOutput(request, response, createdUser);
     }
 

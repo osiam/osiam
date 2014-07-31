@@ -31,6 +31,8 @@ import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.Name
 import org.osiam.resources.scim.SCIMSearchResult
 import org.osiam.resources.scim.User
+import org.osiam.security.authorization.AccessTokenValidationService;
+import org.osiam.security.helper.AccessTokenHelper
 import org.osiam.storage.entities.EmailEntity
 import org.osiam.storage.entities.MetaEntity
 import org.osiam.storage.entities.NameEntity
@@ -40,10 +42,12 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.ResponseStatus
+
 import spock.lang.Specification
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+
 import java.lang.reflect.Method
 
 class UserControllerSpec extends Specification {
@@ -51,10 +55,13 @@ class UserControllerSpec extends Specification {
     RequestParamHelper requestParamHelper = Mock()
     JsonInputValidator jsonInputValidator = Mock()
     AttributesRemovalHelper attributesRemovalHelper = Mock()
+    AccessTokenHelper accessTokenHelper = Mock()
+    AccessTokenValidationService accessTokenService = Mock()
     SCIMUserProvisioning scimUserProvisioning = Mock()
     UserController userController = new UserController(requestParamHelper: requestParamHelper,
             jsonInputValidator: jsonInputValidator, attributesRemovalHelper: attributesRemovalHelper,
-            scimUserProvisioning: scimUserProvisioning)
+            scimUserProvisioning: scimUserProvisioning, accessTokenHelper: accessTokenHelper,
+            accessTokenService: accessTokenService)
     def httpServletRequest = Mock(HttpServletRequest)
     def httpServletResponse = Mock(HttpServletResponse)
 
@@ -308,5 +315,73 @@ class UserControllerSpec extends Specification {
         mapping.method() == [RequestMethod.POST]
         body
         1 * attributesRemovalHelper.removeSpecifiedUserAttributes(scimSearchResultMock, map)
+    }
+
+    def "OSNG-467: updating a user should lead to a token revocation if the user is deactivated"() {
+        given:'a request to deactivate a user'
+        def id = 'user id'
+        def token = 'token'
+        User updateUser = new User.Builder().setActive(false).build()
+        httpServletRequest.getRequestURL() >> new StringBuffer('irrelevant')
+        scimUserProvisioning.update(id, updateUser) >> user
+
+        when:'the update is performed'
+        userController.update(id, httpServletRequest, httpServletResponse)
+
+        then:'a request to revoke the tokens of the users should be sent'
+        1 * jsonInputValidator.validateJsonUser(httpServletRequest) >> updateUser
+        1 * accessTokenHelper.getBearerToken(httpServletRequest) >> token
+        1 * accessTokenService.revokeAccessTokens(id, token)
+    }
+
+    def "OSNG-467: updating a user should not lead to a token revocation if the user is not deactivated"() {
+        given:'a request to update a user without deactivation'
+        def id = 'user id'
+        def token = 'token'
+        User updateUser = new User.Builder().setDisplayName('name').build()
+        httpServletRequest.getRequestURL() >> new StringBuffer('irrelevant')
+        scimUserProvisioning.update(id, updateUser) >> user
+
+        when:'the update is performed'
+        userController.update(id, httpServletRequest, httpServletResponse)
+
+        then:'no request to revoke the tokens of the users should be sent'
+        1 * jsonInputValidator.validateJsonUser(httpServletRequest) >> updateUser
+        0 * accessTokenHelper.getBearerToken(httpServletRequest)
+        0 * accessTokenService.revokeAccessTokens(id, token)
+    }
+
+    def "OSNG-467: replacing a user should lead to a token revocation if the user is deactivated"() {
+        given:'a request to deactivate a user'
+        def id = 'user id'
+        def token = 'token'
+        User newUser = new User.Builder().setActive(false).build()
+        httpServletRequest.getRequestURL() >> new StringBuffer('irrelevant')
+        scimUserProvisioning.replace(id, newUser) >> user
+
+        when:'the user is replaced'
+        userController.replace(id, httpServletRequest, httpServletResponse)
+
+        then:'a request to revoke the tokens of the users should be sent'
+        1 * jsonInputValidator.validateJsonUser(httpServletRequest) >> newUser
+        1 * accessTokenHelper.getBearerToken(httpServletRequest) >> token
+        1 * accessTokenService.revokeAccessTokens(id, token)
+    }
+
+    def "OSNG-467: replacing a user should not lead to a token revocation if the user is not deactivated"() {
+        given:'a request to update a user without deactivation'
+        def id = 'user id'
+        def token = 'token'
+        User newUser = new User.Builder().setDisplayName('name').build()
+        httpServletRequest.getRequestURL() >> new StringBuffer('irrelevant')
+        scimUserProvisioning.replace(id, newUser) >> user
+
+        when:'the user is replaced'
+        userController.replace(id, httpServletRequest, httpServletResponse)
+
+        then:'no request to revoke the tokens of the users should be sent'
+        1 * jsonInputValidator.validateJsonUser(httpServletRequest) >> newUser
+        0 * accessTokenHelper.getBearerToken(httpServletRequest)
+        0 * accessTokenService.revokeAccessTokens(id, token)
     }
 }
