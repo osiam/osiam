@@ -117,7 +117,7 @@ class TokenControllerSpec extends Specification {
 
         then:
         1 * resourceServerConnectorMock.getUserById(userId) >> user
-        1 * defaultTokenServicesMock.findTokensByUserName(user.toString())
+        1 * defaultTokenServicesMock.findTokensByUserName(user.toString()) >> []
         0 * defaultTokenServicesMock.revokeToken(_)
     }
 }

@@ -103,9 +103,7 @@ public class TokenController {
         // the token store maps the tokens of a user to the string representation of the principal
         String searchKey = new User.Builder(user.getUserName()).setId(id).build().toString();
         Collection<OAuth2AccessToken> tokens = tokenServices.findTokensByUserName(searchKey);
-        if (tokens == null) {
-            return;
-        }
+
         for (OAuth2AccessToken token : new ArrayList<OAuth2AccessToken>(tokens)) {
             tokenServices.revokeToken(token.getValue());
         }
