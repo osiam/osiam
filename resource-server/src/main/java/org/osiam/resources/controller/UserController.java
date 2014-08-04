@@ -123,8 +123,9 @@ public class  UserController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE) // NOSONAR - duplicate literals unnecessary
     @ResponseStatus(HttpStatus.OK)
-    public void delete(@PathVariable final String id) {
+    public void delete(@PathVariable final String id, HttpServletRequest request) {
         scimUserProvisioning.delete(id);
+        revokeAccessTokens(id, request);
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -157,8 +158,15 @@ public class  UserController {
      */
     private void checkAndHandleDeactivation(String id, User updateUser, HttpServletRequest request) {
         if (updateUser.isActive() != null && !updateUser.isActive()) {
-            String bearer = AccessTokenHelper.getBearerToken(request);
-            accessTokenService.revokeAccessTokens(id, bearer);
+            revokeAccessTokens(id, request);
         }
+    }
+
+    /*
+     * Revokes the access tokens of the given user.
+     */
+    private void revokeAccessTokens(String id, HttpServletRequest request) {
+        String bearer = AccessTokenHelper.getBearerToken(request);
+        accessTokenService.revokeAccessTokens(id, bearer);
     }
 }

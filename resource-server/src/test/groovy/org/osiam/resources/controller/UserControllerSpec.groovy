@@ -127,7 +127,7 @@ class UserControllerSpec extends Specification {
 
     def "should contain a method to DELETE a user"() {
         given:
-        Method method = UserController.class.getDeclaredMethod("delete", String)
+        Method method = UserController.class.getDeclaredMethod("delete", String, HttpServletRequest)
         when:
         RequestMapping mapping = method.getAnnotation(RequestMapping)
         ResponseStatus defaultStatus = method.getAnnotation(ResponseStatus)
@@ -136,11 +136,19 @@ class UserControllerSpec extends Specification {
         defaultStatus.value() == HttpStatus.OK
     }
 
-    def "should call provisioning on DELETE"() {
+    def "should call provisioning and revoke access tokens on DELETE"() {
+        given:
+        def id = 'id'
+        def token = 'token'
+        httpServletRequest.getRequestURL() >> new StringBuffer('irrelevant')
+        httpServletRequest.getHeader('Authorization') >> 'Bearer ' + token;
+
         when:
-        userController.delete("id")
+        userController.delete(id, httpServletRequest)
+
         then:
-        1 * scimUserProvisioning.delete("id")
+        1 * accessTokenService.revokeAccessTokens(id, token)
+        1 * scimUserProvisioning.delete(id)
     }
 
     def "should contain a method to PUT a user"() {

@@ -102,7 +102,7 @@ class GroupControllerSpec extends Specification {
 
     def "should contain a method to DELETE a user"() {
         given:
-        Method method = UserController.class.getDeclaredMethod("delete", String)
+        Method method = UserController.class.getDeclaredMethod("delete", String, HttpServletRequest)
         when:
         RequestMapping mapping = method.getAnnotation(RequestMapping)
         ResponseStatus defaultStatus = method.getAnnotation(ResponseStatus)
