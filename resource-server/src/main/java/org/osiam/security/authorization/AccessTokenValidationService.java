@@ -102,7 +102,7 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
     public void revokeAccessTokens(String id, String token) {
         AccessToken accessToken = new AccessToken.Builder(token).build();
         OsiamConnector connector = createConnector();
-        connector.revokeAccessTokens(id, accessToken);
+        connector.revokeAllAccessTokens(id, accessToken);
     }
 
     private AccessToken validateAccessToken(String token) {
