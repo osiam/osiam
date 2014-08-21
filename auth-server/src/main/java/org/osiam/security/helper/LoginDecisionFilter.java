@@ -24,38 +24,23 @@
 package org.osiam.security.helper;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.osiam.auth.login.internal.InternalAuthentication;
 import org.osiam.auth.login.ldap.OsiamLdapAuthentication;
-import org.osiam.resources.scim.User;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.event.AbstractAuthenticationEvent;
-import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
-import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 
 import com.google.common.base.Strings;
 
-public class LoginDecisionFilter extends AbstractAuthenticationProcessingFilter implements
-        ApplicationListener<AbstractAuthenticationEvent> {
-
-    @Value("${org.osiam.auth-server.tempLock.count:0}")
-    private Integer maxLoginFailures;
+public class LoginDecisionFilter extends AbstractAuthenticationProcessingFilter {
 
     private boolean postOnly = true;
-    private final Map<String, Integer> accessCounter = Collections.synchronizedMap(new HashMap<String, Integer>());
 
     public LoginDecisionFilter() {
         super("/login/check");
@@ -82,8 +67,6 @@ public class LoginDecisionFilter extends AbstractAuthenticationProcessingFilter 
 
         username = username.trim();
 
-        checkUserLocking(username);
-
         String provider = request.getParameter("provider");
 
         if (!Strings.isNullOrEmpty(provider) && provider.equals("ldap")) {
@@ -94,19 +77,6 @@ public class LoginDecisionFilter extends AbstractAuthenticationProcessingFilter 
 
         setDetails(request, authRequest);
         return this.getAuthenticationManager().authenticate(authRequest);
-    }
-
-    private void checkUserLocking(String username) {
-        if(isLockMechanismDisabled()) {
-            return;
-        }
-        if (accessCounter.get(username) != null && accessCounter.get(username) >= maxLoginFailures) {
-            throw new LockedException("The user '" + username + "' is temporary locked.");
-        }
-    }
-
-    private boolean isLockMechanismDisabled() {
-        return maxLoginFailures <= 0;
     }
 
     /**
@@ -139,48 +109,5 @@ public class LoginDecisionFilter extends AbstractAuthenticationProcessingFilter 
 
     public final String getPasswordParameter() {
         return "password";
-    }
-
-    @Override
-    public void onApplicationEvent(AbstractAuthenticationEvent appEvent) {
-        String currentUserName = extractUserName(appEvent);
-        if (currentUserName == null || isLockMechanismDisabled()) {
-            return;
-        }
-
-        if (appEvent instanceof AuthenticationSuccessEvent) {
-            if (accessCounter.containsKey(currentUserName)) {
-                if (accessCounter.get(currentUserName) < maxLoginFailures) {
-                    accessCounter.remove(currentUserName);
-                }
-            }
-        }
-
-        if (appEvent instanceof AuthenticationFailureBadCredentialsEvent) {
-            if (accessCounter.containsKey(currentUserName)) {
-                accessCounter.put(currentUserName, accessCounter.get(currentUserName) + 1);
-            } else {
-                accessCounter.put(currentUserName, 1);
-            }
-        }
-    }
-
-    private String extractUserName(AbstractAuthenticationEvent appEvent) {
-        if (appEvent.getSource() != null && appEvent.getSource() instanceof InternalAuthentication) {
-            InternalAuthentication internalAuth = (InternalAuthentication) appEvent.getSource();
-
-            if (internalAuth.getPrincipal() != null) {
-
-                if (internalAuth.getPrincipal() instanceof User) {
-                    User user = (User) internalAuth.getPrincipal();
-                    return user.getUserName();
-                }
-                if (internalAuth.getPrincipal() instanceof String) {
-                    return (String) internalAuth.getPrincipal();
-                }
-            }
-        }
-
-        return null;
     }
 }
