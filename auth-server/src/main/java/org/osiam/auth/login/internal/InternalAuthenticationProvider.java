@@ -25,6 +25,7 @@ package org.osiam.auth.login.internal;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +57,11 @@ public class InternalAuthenticationProvider implements AuthenticationProvider, A
     @Value("${org.osiam.auth-server.tempLock.count:0}")
     private Integer maxLoginFailures;
 
+    @Value("${org.osiam.auth-server.tempLock.timeout}")
+    private Integer lockTimeout;
+
     private final Map<String, Integer> accessCounter = Collections.synchronizedMap(new HashMap<String, Integer>());
+    private final Map<String, Date> lastFailedLogin = Collections.synchronizedMap(new HashMap<String, Date>());
 
     @Inject
     private ResourceServerConnector resourceServerConnector;
@@ -116,8 +121,14 @@ public class InternalAuthenticationProvider implements AuthenticationProvider, A
     }
 
     private void checkUserLocking(String username) {
+        Date logindate = lastFailedLogin.get(username);
+
         if(isLockMechanismDisabled()) {
             return;
+        }
+        if(logindate != null && new Date().getTime()-logindate.getTime() >= (lockTimeout*1000)) {
+            accessCounter.remove(username);
+            lastFailedLogin.remove(username);
         }
         if (accessCounter.get(username) != null && accessCounter.get(username) >= maxLoginFailures) {
             throw new LockedException("The user '" + username + "' is temporary locked.");
@@ -139,6 +150,7 @@ public class InternalAuthenticationProvider implements AuthenticationProvider, A
             if (accessCounter.containsKey(currentUserName)) {
                 if (accessCounter.get(currentUserName) < maxLoginFailures) {
                     accessCounter.remove(currentUserName);
+                    lastFailedLogin.remove(currentUserName);
                 }
             }
         }
@@ -149,6 +161,7 @@ public class InternalAuthenticationProvider implements AuthenticationProvider, A
             } else {
                 accessCounter.put(currentUserName, 1);
             }
+            lastFailedLogin.put(currentUserName, new Date());
         }
     }
 
