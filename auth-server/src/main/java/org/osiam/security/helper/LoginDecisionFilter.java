@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.osiam.auth.login.internal.InternalAuthentication;
 import org.osiam.auth.login.ldap.OsiamLdapAuthentication;
 import org.osiam.resources.scim.User;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.LockedException;
@@ -47,11 +48,12 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 
 import com.google.common.base.Strings;
 
-
 public class LoginDecisionFilter extends AbstractAuthenticationProcessingFilter implements
         ApplicationListener<AbstractAuthenticationEvent> {
 
-    private static final int MAX_LOGIN_FAILED = 3;
+    @Value("${org.osiam.auth-server.tempLock.count:0}")
+    private Integer maxLoginFailures;
+
     private boolean postOnly = true;
     private final Map<String, Integer> accessCounter = Collections.synchronizedMap(new HashMap<String, Integer>());
 
@@ -95,9 +97,16 @@ public class LoginDecisionFilter extends AbstractAuthenticationProcessingFilter 
     }
 
     private void checkUserLocking(String username) {
-        if (accessCounter.get(username) != null && accessCounter.get(username) >= MAX_LOGIN_FAILED) {
+        if(isLockMechanismDisabled()) {
+            return;
+        }
+        if (accessCounter.get(username) != null && accessCounter.get(username) >= maxLoginFailures) {
             throw new LockedException("The user '" + username + "' is temporary locked.");
         }
+    }
+
+    private boolean isLockMechanismDisabled() {
+        return maxLoginFailures <= 0;
     }
 
     /**
@@ -135,13 +144,13 @@ public class LoginDecisionFilter extends AbstractAuthenticationProcessingFilter 
     @Override
     public void onApplicationEvent(AbstractAuthenticationEvent appEvent) {
         String currentUserName = extractUserName(appEvent);
-        if (currentUserName == null) {
+        if (currentUserName == null || isLockMechanismDisabled()) {
             return;
         }
 
         if (appEvent instanceof AuthenticationSuccessEvent) {
             if (accessCounter.containsKey(currentUserName)) {
-                if (accessCounter.get(currentUserName) < MAX_LOGIN_FAILED) {
+                if (accessCounter.get(currentUserName) < maxLoginFailures) {
                     accessCounter.remove(currentUserName);
                 }
             }
