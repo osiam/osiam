@@ -121,18 +121,23 @@ public class InternalAuthenticationProvider implements AuthenticationProvider, A
     }
 
     private void checkUserLocking(String username) {
-        Date logindate = lastFailedLogin.get(username);
-
         if(isLockMechanismDisabled()) {
             return;
         }
-        if(logindate != null && new Date().getTime()-logindate.getTime() >= (lockTimeout*1000)) {
+
+        Date logindate = lastFailedLogin.get(username);
+
+        if(logindate != null && isWaitTimeOver(logindate)) {
             accessCounter.remove(username);
             lastFailedLogin.remove(username);
         }
         if (accessCounter.get(username) != null && accessCounter.get(username) >= maxLoginFailures) {
             throw new LockedException("The user '" + username + "' is temporary locked.");
         }
+    }
+
+    private boolean isWaitTimeOver(Date startWaitingDate) {
+        return new Date().getTime() - startWaitingDate.getTime() >= (lockTimeout*1000);
     }
 
     private boolean isLockMechanismDisabled() {
