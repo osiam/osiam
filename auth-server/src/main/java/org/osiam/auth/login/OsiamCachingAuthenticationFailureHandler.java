@@ -33,6 +33,7 @@ import javax.servlet.http.HttpSession;
 
 import org.osiam.auth.exception.LdapAuthenticationProcessException;
 import org.osiam.security.helper.LoginDecisionFilter;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
@@ -43,6 +44,7 @@ public class OsiamCachingAuthenticationFailureHandler extends SimpleUrlAuthentic
     private static final String LAST_USERNAME_KEY = "LAST_USERNAME";
     private static final String LAST_PROVIDER_KEY = "LAST_PROVIDER";
     private static final String ERROR_KEY = "ERROR_KEY";
+    private static final String IS_LOCKED = "isLocked";
 
     @Inject
     private LoginDecisionFilter loginDecisionFilter;
@@ -54,7 +56,7 @@ public class OsiamCachingAuthenticationFailureHandler extends SimpleUrlAuthentic
             throws IOException, ServletException {
 
         super.onAuthenticationFailure(request, response, exception);
-        
+
         HttpSession session = request.getSession(false);
         if (session != null || isAllowSessionCreation()) {
             String usernameParameter = loginDecisionFilter.getUsernameParameter();
@@ -64,9 +66,14 @@ public class OsiamCachingAuthenticationFailureHandler extends SimpleUrlAuthentic
             String provider = request.getParameter("provider");
             provider = Strings.isNullOrEmpty(provider) ? "internal" : provider;
             request.getSession().setAttribute(LAST_PROVIDER_KEY, provider);
-            
+            request.getSession().setAttribute(IS_LOCKED, false);
+
             if(exception instanceof LdapAuthenticationProcessException) {
                 request.getSession().setAttribute(ERROR_KEY, "login.ldap.internal.user.exists");
+            }
+            if(exception instanceof LockedException) {
+                ((LockedException)exception).getExtraInformation();
+                request.getSession().setAttribute(IS_LOCKED, true);
             }
         }
     }

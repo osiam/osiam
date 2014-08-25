@@ -119,6 +119,7 @@
     </bean>
 
     <mvc:resources mapping="/css/**" location="classpath:/auth-server/resources/css/" />
+    <mvc:resources mapping="/js/**" location="classpath:/auth-server/resources/js/" />
 
     <!-- general access denied handler -->
     <bean id="oauthAccessDeniedHandler" class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler" />

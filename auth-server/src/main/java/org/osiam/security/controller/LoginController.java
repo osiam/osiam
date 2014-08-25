@@ -23,6 +23,9 @@
 
 package org.osiam.security.controller;
 
+import javax.inject.Inject;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,20 +35,47 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/login")
 public class LoginController {
 
+    @Inject
+    private HttpSession session;
+
     @Value("${org.osiam.auth-server.ldap.enabled:false}")
     private boolean isLdapConfigured;
+
+    @Value("${org.osiam.auth-server.tempLock.timeout}")
+    private int templockTimeout;
 
     @RequestMapping
     public String login(Model model) {
         model.addAttribute("isLdapConfigured", isLdapConfigured);
+
+        if (userIsLocked()) {
+            model.addAttribute("locked", true);
+        }
+
         return "login";
     }
 
     @RequestMapping("/error")
-    public String loginError(Model model) {
+    public String loginError(Model model, Exception e) {
         model.addAttribute("loginError", true);
         model.addAttribute("isLdapConfigured", isLdapConfigured);
-        model.addAttribute("errorKey", "login.error");
+
+        if(userIsLocked()) {
+            model.addAttribute("errorKey", "login.lock");
+            model.addAttribute("templockTimeout", templockTimeout);
+        } else {
+            model.addAttribute("errorKey", "login.error");
+        }
+
         return "login";
+    }
+
+    private boolean userIsLocked() {
+        if (session.getAttribute("isLocked") != null && session.getAttribute("isLocked") instanceof Boolean) {
+            if ((Boolean) session.getAttribute("isLocked")) {
+                return true;
+            }
+        }
+        return false;
     }
 }

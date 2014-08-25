@@ -22,54 +22,51 @@
   -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-	<meta charset="utf-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	
-	<title th:text="#{login.title}">Login</title>
-	
-	<link rel="stylesheet" type="text/css" href="../../resources/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}"/>
-    <link rel="stylesheet" type="text/css" href="../../resources/css/style.css" th:href="@{/css/style.css}"/>
-</head>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<body>
+		<title th:text="#{login.title}">Login</title>
 
-	<div class="container">
-		<div class="info-container">
-			<h2 class="form-signin-heading" th:text="#{login.headline}">
-			 	Please sign in
-		    </h2>
-			<div th:if="${loginError} and !${#httpSession.getAttribute('ERROR_KEY')}"
-				 th:class="'alert alert-danger'" class="alert alert-danger" th:text="#{${errorKey}}">
-	            Wrong username or password
-	        </div>
-	        <div th:if="${#httpSession.getAttribute('ERROR_KEY')}"
-				 th:class="'alert alert-danger'" class="alert alert-danger" th:text="#{${#httpSession.getAttribute('ERROR_KEY')}}">
-	            Login with ldap not possible
-	        </div>
-        </div>
-        
-		<form th:action="@{/login/check}" class="form-signin" method="post" role="form">
-			<select name="provider"
-					class="form-control"
-					th:if="${isLdapConfigured}">
-                <option th:value="internal"
-                  	    th:text="#{login.modus.internal}"
-                  	    th:selected="${#httpSession.getAttribute('LAST_PROVIDER') == 'internal'}">Internal login</option>
-          	    <option th:value="ldap"
-                  	    th:text="#{login.modus.ldap}"
-                  	    th:selected="${#httpSession.getAttribute('LAST_PROVIDER') == 'ldap'}">Login with LDAP</option>
-        	</select>
-			<input id="username" name="username" type="text"
-				   class="form-control" th:placeholder="#{login.username}"
-				   th:value="${#httpSession.getAttribute('LAST_USERNAME')}"/>
-			<input id="password" name="password" type="password"
-				   class="form-control" th:placeholder="#{login.password}" />
-			<button class="btn btn-lg btn-primary btn-block" type="submit"
-				th:text="#{login.signin}">Sign in</button>
-		</form>
+		<link rel="stylesheet" type="text/css" href="../../resources/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}"/>
+	    <link rel="stylesheet" type="text/css" href="../../resources/css/style.css" th:href="@{/css/style.css}"/>
+		<script type="text/javascript" src="../js/general.js" th:src="@{/js/general.js}" ></script>
 
-	</div>
-</body>
+	</head>
+
+	<body>
+		<div class="container">
+			<div class="info-container">
+				<h2 class="form-signin-heading" th:text="#{login.headline}">
+			 		Please sign in
+		    	</h2>
+		        <div th:if="${errorKey}" id="errorMsg" th:error="${errorKey}"
+					 th:class="'alert alert-danger'" class="alert alert-danger" th:text="#{${errorKey}(${templockTimeout})}">
+		            Login error
+		        </div>
+        	</div>
+
+			<form th:action="@{/login/check}" class="form-signin" method="post" role="form">
+				<select name="provider"
+						class="form-control"
+						th:if="${isLdapConfigured}">
+	                <option th:value="internal"
+	                  	    th:text="#{login.modus.internal}"
+	                  	    th:selected="${#httpSession.getAttribute('LAST_PROVIDER') == 'internal'}">Internal login</option>
+	          	    <option th:value="ldap"
+	                  	    th:text="#{login.modus.ldap}"
+	                  	    th:selected="${#httpSession.getAttribute('LAST_PROVIDER') == 'ldap'}">Login with LDAP</option>
+	        	</select>
+				<input id="username" name="username" type="text"
+					   class="form-control" th:placeholder="#{login.username}"
+					   th:value="${#httpSession.getAttribute('LAST_USERNAME')}"/>
+				<input id="password" name="password" type="password"
+					   class="form-control" th:placeholder="#{login.password}" />
+				<button class="btn btn-lg btn-primary btn-block" type="submit"
+					th:text="#{login.signin}">Sign in</button>
+			</form>
+		</div>
+
+	</body>
 </html>

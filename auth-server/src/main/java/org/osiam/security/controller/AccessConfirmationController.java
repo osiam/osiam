@@ -37,7 +37,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 /**
  * Controller for retrieving the model for and displaying the confirmation page for access to a protected resource.
- * 
+ *
  */
 @Controller
 @SessionAttributes("authorizationRequest")

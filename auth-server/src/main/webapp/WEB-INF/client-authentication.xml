@@ -89,4 +89,8 @@
         <property name="realmName" value="authorization-server/client"/>
     </bean>
 
+    <!-- login action listener -->
+    <!--bean id="loginActionListener"
+          class="org.osiam.auth.login.listener.AuthenticationListener">
+	</bean-->
 </beans>
