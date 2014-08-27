@@ -41,7 +41,7 @@ public class LoginController {
     @Value("${org.osiam.auth-server.ldap.enabled:false}")
     private boolean isLdapConfigured;
 
-    @Value("${org.osiam.auth-server.tempLock.timeout}")
+    @Value("${org.osiam.auth-server.tempLock.timeout:0}")
     private int templockTimeout;
 
     @RequestMapping
@@ -71,8 +71,8 @@ public class LoginController {
     }
 
     private boolean userIsLocked() {
-        if (session.getAttribute("isLocked") != null && session.getAttribute("isLocked") instanceof Boolean) {
-            if ((Boolean) session.getAttribute("isLocked")) {
+        if (session.getAttribute("IS_LOCKED") != null && session.getAttribute("IS_LOCKED") instanceof Boolean) {
+            if ((Boolean) session.getAttribute("IS_LOCKED")) {
                 return true;
             }
         }

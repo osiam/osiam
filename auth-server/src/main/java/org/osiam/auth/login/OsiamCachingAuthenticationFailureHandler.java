@@ -44,7 +44,7 @@ public class OsiamCachingAuthenticationFailureHandler extends SimpleUrlAuthentic
     private static final String LAST_USERNAME_KEY = "LAST_USERNAME";
     private static final String LAST_PROVIDER_KEY = "LAST_PROVIDER";
     private static final String ERROR_KEY = "ERROR_KEY";
-    private static final String IS_LOCKED = "isLocked";
+    private static final String IS_LOCKED = "IS_LOCKED";
 
     @Inject
     private LoginDecisionFilter loginDecisionFilter;
@@ -72,7 +72,6 @@ public class OsiamCachingAuthenticationFailureHandler extends SimpleUrlAuthentic
                 request.getSession().setAttribute(ERROR_KEY, "login.ldap.internal.user.exists");
             }
             if(exception instanceof LockedException) {
-                ((LockedException)exception).getExtraInformation();
                 request.getSession().setAttribute(IS_LOCKED, true);
             }
         }

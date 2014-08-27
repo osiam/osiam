@@ -57,7 +57,7 @@ public class InternalAuthenticationProvider implements AuthenticationProvider, A
     @Value("${org.osiam.auth-server.tempLock.count:0}")
     private Integer maxLoginFailures;
 
-    @Value("${org.osiam.auth-server.tempLock.timeout}")
+    @Value("${org.osiam.auth-server.tempLock.timeout:0}")
     private Integer lockTimeout;
 
     private final Map<String, Integer> accessCounter = Collections.synchronizedMap(new HashMap<String, Integer>());
@@ -85,7 +85,7 @@ public class InternalAuthenticationProvider implements AuthenticationProvider, A
             throw new BadCredentialsException("InternalAuthenticationProvider: Empty Password");
         }
 
-        checkUserLocking(username);
+        assertUserNotLocked(username);
 
         // Determine username
         User user = resourceServerConnector.getUserByUsername(username);
@@ -120,7 +120,7 @@ public class InternalAuthenticationProvider implements AuthenticationProvider, A
         return InternalAuthentication.class.isAssignableFrom(authentication);
     }
 
-    private void checkUserLocking(String username) {
+    private void assertUserNotLocked(String username) {
         if(isLockMechanismDisabled()) {
             return;
         }
@@ -151,13 +151,12 @@ public class InternalAuthenticationProvider implements AuthenticationProvider, A
             return;
         }
 
-        if (appEvent instanceof AuthenticationSuccessEvent) {
-            if (accessCounter.containsKey(currentUserName)) {
-                if (accessCounter.get(currentUserName) < maxLoginFailures) {
-                    accessCounter.remove(currentUserName);
-                    lastFailedLogin.remove(currentUserName);
-                }
-            }
+        if (appEvent instanceof AuthenticationSuccessEvent &&
+            accessCounter.containsKey(currentUserName) &&
+            accessCounter.get(currentUserName) < maxLoginFailures) {
+
+            accessCounter.remove(currentUserName);
+            lastFailedLogin.remove(currentUserName);
         }
 
         if (appEvent instanceof AuthenticationFailureBadCredentialsEvent) {
