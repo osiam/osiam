@@ -67,12 +67,25 @@
         <!-- uses general oauthAccessDeniedHandler -->
         <access-denied-handler ref="oauthAccessDeniedHandler"/>
     </http>
-    
+
     <http pattern="/Metrics/**" create-session="never" entry-point-ref="oauthAuthenticationEntryPoint"
           access-decision-manager-ref="accessDecisionManager" xmlns="http://www.springframework.org/schema/security">
 
         <!-- resources below /secured/get/resource/ are accessed via scope "READ" -->
         <intercept-url pattern="/Metrics/**" access="SCOPE_DYNAMIC"/>
+
+        <!-- validates the delivered access token -->
+        <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
+
+        <!-- uses general oauthAccessDeniedHandler -->
+        <access-denied-handler ref="oauthAccessDeniedHandler"/>
+    </http>
+
+    <http pattern="/osiam/**" create-session="never" entry-point-ref="oauthAuthenticationEntryPoint"
+          access-decision-manager-ref="accessDecisionManager" xmlns="http://www.springframework.org/schema/security">
+
+        <!-- resources below /secured/get/resource/ are accessed via scope "READ" -->
+        <intercept-url pattern="/osiam/**" access="SCOPE_DYNAMIC"/>
 
         <!-- validates the delivered access token -->
         <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
