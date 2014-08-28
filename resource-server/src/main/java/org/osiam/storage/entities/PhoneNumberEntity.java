@@ -34,7 +34,7 @@ import org.osiam.resources.scim.PhoneNumber;
  * Phone Numbers Entity
  */
 @Entity
-@Table(name = "scim_phoneNumber",
+@Table(name = "scim_phonenumber",
         indexes = {
                 @Index(columnList = "value"),
                 @Index(columnList = "type"),

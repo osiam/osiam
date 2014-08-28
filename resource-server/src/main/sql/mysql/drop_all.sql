@@ -1,0 +1,17 @@
+drop table if exists scim_group_scim_id cascade;
+drop table if exists scim_extension_field_value cascade;
+drop table if exists scim_im cascade;
+drop table if exists scim_phonenumber cascade;
+drop table if exists scim_photo cascade;
+drop table if exists scim_entitlements cascade;
+drop table if exists scim_address cascade;
+drop table if exists scim_roles cascade;
+drop table if exists scim_certificate cascade;
+drop table if exists scim_email cascade;
+drop table if exists scim_user cascade;
+drop table if exists scim_group cascade;
+drop table if exists scim_extension_field cascade;
+drop table if exists scim_extension cascade;
+drop table if exists scim_id cascade;
+drop table if exists scim_name cascade;
+drop table if exists scim_meta cascade;
