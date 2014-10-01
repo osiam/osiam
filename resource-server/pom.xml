@@ -22,7 +22,8 @@
     ~ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -119,7 +120,7 @@
                     </execution>
                 </executions>
             </plugin>
- 
+
             <plugin>
                 <groupId>org.bsc.maven</groupId>
                 <artifactId>maven-processor-plugin</artifactId>
@@ -133,7 +134,8 @@
                         <phase>generate-sources</phase>
                         <configuration>
                             <additionalSourceDirectories>
-                                <additionalSourceDirectory>${project.build.directory}/generated-sources/antlr4</additionalSourceDirectory>
+                                <additionalSourceDirectory>${project.build.directory}/generated-sources/antlr4
+                                </additionalSourceDirectory>
                             </additionalSourceDirectories>
                             <processors>
                                 <processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
@@ -150,11 +152,11 @@
                 </dependencies>
             </plugin>
 
-       </plugins>
+        </plugins>
     </build>
 
     <dependencies>
-    
+
         <dependency>
             <groupId>org.osiam</groupId>
             <artifactId>connector4java</artifactId>
