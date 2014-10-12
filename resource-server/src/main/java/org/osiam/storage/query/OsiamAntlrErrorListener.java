@@ -65,7 +65,7 @@ public class OsiamAntlrErrorListener implements ANTLRErrorListener {
      */
     @Override
     public void reportAmbiguity(@NotNull Parser recognizer, @NotNull DFA dfa, int startIndex, int stopIndex,
-            boolean exact, @NotNull BitSet ambigAlts, @NotNull ATNConfigSet configs) {
+            boolean exact, @Nullable BitSet ambigAlts, @NotNull ATNConfigSet configs) {
     }
 
     /**

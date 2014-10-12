@@ -27,47 +27,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.SetJoin;
+import javax.persistence.criteria.*;
 
 import org.joda.time.format.ISODateTimeFormat;
-import org.osiam.resources.scim.Address;
-import org.osiam.resources.scim.Email;
-import org.osiam.resources.scim.Entitlement;
-import org.osiam.resources.scim.Im;
-import org.osiam.resources.scim.PhoneNumber;
-import org.osiam.resources.scim.Photo;
-import org.osiam.storage.entities.AddressEntity;
-import org.osiam.storage.entities.AddressEntity_;
-import org.osiam.storage.entities.BaseMultiValuedAttributeEntityWithValue_;
-import org.osiam.storage.entities.BaseMultiValuedAttributeEntity_;
-import org.osiam.storage.entities.EmailEntity;
-import org.osiam.storage.entities.EmailEntity_;
-import org.osiam.storage.entities.EntitlementEntity;
-import org.osiam.storage.entities.EntitlementEntity_;
-import org.osiam.storage.entities.GroupEntity;
-import org.osiam.storage.entities.GroupEntity_;
-import org.osiam.storage.entities.ImEntity;
-import org.osiam.storage.entities.ImEntity_;
-import org.osiam.storage.entities.MetaEntity_;
-import org.osiam.storage.entities.NameEntity_;
-import org.osiam.storage.entities.PhoneNumberEntity;
-import org.osiam.storage.entities.PhoneNumberEntity_;
-import org.osiam.storage.entities.PhotoEntity;
-import org.osiam.storage.entities.PhotoEntity_;
-import org.osiam.storage.entities.ResourceEntity_;
-import org.osiam.storage.entities.RoleEntity;
-import org.osiam.storage.entities.RoleEntity_;
-import org.osiam.storage.entities.UserEntity;
-import org.osiam.storage.entities.UserEntity_;
-import org.osiam.storage.entities.X509CertificateEntity;
+import org.osiam.resources.scim.*;
+import org.osiam.storage.entities.*;
 
 public enum UserQueryField implements QueryField<UserEntity> {
-    
+
     EXTERNALID("externalid") {
         @Override
         public Predicate addFilter(Root<UserEntity> root,
@@ -263,7 +230,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
 
         @Override
         public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
-            return root.get(UserEntity_.name).get(NameEntity_.formatted);
+            return createOrGetJoinForName(root).get(NameEntity_.formatted);
         }
 
     },
@@ -277,7 +244,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
 
         @Override
         public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
-            return root.get(UserEntity_.name).get(NameEntity_.familyName);
+            return createOrGetJoinForName(root).get(NameEntity_.familyName);
         }
 
     },
@@ -291,9 +258,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
 
         @Override
         public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
-            return root.get(UserEntity_.name).get(NameEntity_.givenName);
+            return createOrGetJoinForName(root).get(NameEntity_.givenName);
         }
-
     },
     NAME_MIDDLENAME("name.middlename") {
         @Override
@@ -305,7 +271,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
 
         @Override
         public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
-            return root.get(UserEntity_.name).get(NameEntity_.middleName);
+            return createOrGetJoinForName(root).get(NameEntity_.middleName);
         }
 
     },
@@ -319,7 +285,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
 
         @Override
         public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
-            return root.get(UserEntity_.name).get(NameEntity_.honorificPrefix);
+            return createOrGetJoinForName(root).get(NameEntity_.honorificPrefix);
         }
 
     },
@@ -333,7 +299,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
 
         @Override
         public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
-            return root.get(UserEntity_.name).get(NameEntity_.honorificSuffix);
+            return createOrGetJoinForName(root).get(NameEntity_.honorificSuffix);
         }
 
     },
@@ -867,6 +833,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
 
     private static final Map<String, UserQueryField> STRING_TO_ENUM = new HashMap<>();
 
+    private static final String JOIN_ALIAS_FOR_NAME = "nameJoin";
+
     static {
         for (UserQueryField filterField : values()) {
             STRING_TO_ENUM.put(filterField.toString(), filterField);
@@ -882,6 +850,21 @@ public enum UserQueryField implements QueryField<UserEntity> {
     protected RuntimeException handleSortByFieldNotSupported(String fieldName) {
         throw new RuntimeException("Sorting by " + fieldName + " is not supported yet"); // NOSONAR - will be removed
                                                                                          // after implementing
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Join<UserEntity, NameEntity> createOrGetJoinForName(final Root<UserEntity> root) {
+
+        for (final Join<UserEntity, ?> currentJoin : root.getJoins()) {
+            if (currentJoin.getAlias() != null && currentJoin.getAlias().equals(JOIN_ALIAS_FOR_NAME)) {
+                return (Join<UserEntity, NameEntity>) currentJoin;
+            }
+        }
+
+        Join<UserEntity, NameEntity> join = root.join(UserEntity_.name, JoinType.LEFT);
+        join.alias(JOIN_ALIAS_FOR_NAME);
+
+        return join;
     }
 
     @Override
