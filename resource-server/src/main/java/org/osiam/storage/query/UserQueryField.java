@@ -67,7 +67,7 @@ import org.osiam.storage.entities.UserEntity_;
 import org.osiam.storage.entities.X509CertificateEntity;
 
 public enum UserQueryField implements QueryField<UserEntity> {
-    
+
     EXTERNALID("externalid") {
         @Override
         public Predicate addFilter(Root<UserEntity> root,
@@ -804,6 +804,18 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
+            return X509CERTIFICATES_VALUE.addFilter(root, constraint, value, cb);
+        }
+
+        @Override
+        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
+            return X509CERTIFICATES_VALUE.createSortByField(root, cb);
+        }
+    },
+    X509CERTIFICATES_VALUE("x509certificates.value") {
+        @Override
+        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
+                String value, CriteriaBuilder cb) {
             SetJoin<UserEntity, X509CertificateEntity> join = root.join(UserEntity_.x509Certificates, JoinType.LEFT);
             return constraint.createPredicateForStringField(join.get(BaseMultiValuedAttributeEntityWithValue_.value),
                     value, cb);
@@ -812,18 +824,6 @@ public enum UserQueryField implements QueryField<UserEntity> {
         @Override
         public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
             throw handleSortByFieldNotSupported(toString());
-        }
-    },
-    X509CERTIFICATES_VALUE("x509certificates.value") {
-        @Override
-        public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
-                String value, CriteriaBuilder cb) {
-            return X509CERTIFICATES_VALUE.addFilter(root, constraint, value, cb);
-        }
-
-        @Override
-        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
-            return X509CERTIFICATES_VALUE.createSortByField(root, cb);
         }
     },
     GROUPS("groups") {
