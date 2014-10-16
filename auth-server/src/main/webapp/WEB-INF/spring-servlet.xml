@@ -22,58 +22,61 @@
   ~ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
   -->
 
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:context="http://www.springframework.org/schema/context" xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
-    xmlns:util="http://www.springframework.org/schema/util" xmlns:mvc="http://www.springframework.org/schema/mvc"
-    xmlns:aop="http://www.springframework.org/schema/aop"
-    xsi:schemaLocation="http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-1.0.xsd
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-1.0.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
     <!-- JPA -->
-    <import resource="jpa-configuration.xml" />
+    <import resource="jpa-configuration.xml"/>
     <!-- needed for exchanging the authorization_code to an access_token -->
-    <import resource="client-authentication.xml" />
+    <import resource="client-authentication.xml"/>
     <!-- OAuth security config -->
-    <import resource="rest-security.xml" />
+    <import resource="rest-security.xml"/>
     <!-- needed for getting an authorization-code -->
-    <import resource="user-authentication.xml" />
+    <import resource="user-authentication.xml"/>
 
     <!-- configures the OAuth2 authorization server -->
     <oauth:authorization-server client-details-service-ref="osiamClientDetailsService"
-        token-services-ref="tokenServices"
-        token-granter-ref="tokenGranter"
-        user-approval-handler-ref="userApprovalHandler">
-        <oauth:authorization-code />
-        <oauth:refresh-token />
-        <oauth:client-credentials />
-        <oauth:password />
+                                token-services-ref="tokenServices"
+                                token-granter-ref="tokenGranter"
+                                user-approval-handler-ref="userApprovalHandler">
+        <oauth:authorization-code/>
+        <oauth:refresh-token/>
+        <oauth:client-credentials/>
+        <oauth:password/>
     </oauth:authorization-server>
 
-    <bean id="authorizationRequestManager" class="org.springframework.security.oauth2.provider.DefaultAuthorizationRequestManager">
-        <constructor-arg ref="osiamClientDetailsService" />
+    <bean id="authorizationRequestManager"
+          class="org.springframework.security.oauth2.provider.DefaultAuthorizationRequestManager">
+        <constructor-arg ref="osiamClientDetailsService"/>
     </bean>
 
     <bean id="tokenGranter" class="org.osiam.auth.token.OsiamCompositeTokenGranter">
         <constructor-arg>
             <util:list>
                 <bean class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenGranter">
-                    <constructor-arg ref="tokenServices" />
-                    <constructor-arg ref="osiamClientDetailsService" />
+                    <constructor-arg ref="tokenServices"/>
+                    <constructor-arg ref="osiamClientDetailsService"/>
                 </bean>
                 <bean class="org.osiam.auth.login.oauth.OsiamResourceOwnerPasswordTokenGranter">
-                    <constructor-arg ref="authenticationManager" />
-                    <constructor-arg ref="tokenServices" />
-                    <constructor-arg ref="osiamClientDetailsService" />
+                    <constructor-arg ref="authenticationManager"/>
+                    <constructor-arg ref="tokenServices"/>
+                    <constructor-arg ref="osiamClientDetailsService"/>
                 </bean>
                 <bean class="org.springframework.security.oauth2.provider.refresh.RefreshTokenGranter">
-                    <constructor-arg ref="tokenServices" />
-                    <constructor-arg ref="osiamClientDetailsService" />
+                    <constructor-arg ref="tokenServices"/>
+                    <constructor-arg ref="osiamClientDetailsService"/>
                 </bean>
                 <bean class="org.osiam.security.helper.LessStrictRedirectUriAuthorizationCodeTokenGranter">
-                    <constructor-arg ref="tokenServices" />
-                    <constructor-arg ref="osiamClientDetailsService" />
+                    <constructor-arg ref="tokenServices"/>
+                    <constructor-arg ref="osiamClientDetailsService"/>
                 </bean>
             </util:list>
         </constructor-arg>
@@ -81,57 +84,58 @@
 
     <!-- access token services -->
     <bean id="tokenServices" class="org.springframework.security.oauth2.provider.token.DefaultTokenServices">
-        <property name="tokenStore" ref="tokenStore" />
-        <property name="supportRefreshToken" value="true" />
-        <property name="clientDetailsService" ref="osiamClientDetailsService" />
+        <property name="tokenStore" ref="tokenStore"/>
+        <property name="supportRefreshToken" value="true"/>
+        <property name="clientDetailsService" ref="osiamClientDetailsService"/>
     </bean>
 
     <!-- the token storage managing all access tokens -->
-    <bean id="tokenStore" class="org.springframework.security.oauth2.provider.token.InMemoryTokenStore" />
+    <bean id="tokenStore" class="org.springframework.security.oauth2.provider.token.InMemoryTokenStore"/>
 
     <bean id="webTemplateResolver" class="org.osiam.auth.template.resolvers.OsiamWebContextTemplateResolver">
-        <property name="prefix" value="auth-server/templates/web/" />
-        <property name="suffix" value=".html" />
-        <property name="templateMode" value="HTML5" />
-        <property name="characterEncoding" value="UTF-8" />
-        <property name="order" value="1" />
+        <property name="prefix" value="auth-server/templates/web/"/>
+        <property name="suffix" value=".html"/>
+        <property name="templateMode" value="HTML5"/>
+        <property name="characterEncoding" value="UTF-8"/>
+        <property name="order" value="1"/>
     </bean>
 
     <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
         <property name="templateResolvers">
             <set>
-                <ref bean="webTemplateResolver" />
+                <ref bean="webTemplateResolver"/>
             </set>
         </property>
     </bean>
 
     <bean id="viewResolver" class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
-        <property name="templateEngine" ref="templateEngine" />
-        <property name="characterEncoding" value="UTF-8" />
+        <property name="templateEngine" ref="templateEngine"/>
+        <property name="characterEncoding" value="UTF-8"/>
     </bean>
 
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
         <property name="defaultEncoding" value="UTF-8"/>
         <property name="basenames">
             <list>
-                <value>auth-server/l10n/login</value>
+                <value>auth-server/i18n/login</value>
             </list>
         </property>
     </bean>
 
-    <mvc:resources mapping="/css/**" location="classpath:/auth-server/resources/css/" />
-    <mvc:resources mapping="/js/**" location="classpath:/auth-server/resources/js/" />
+    <mvc:resources mapping="/css/**" location="classpath:/auth-server/resources/css/"/>
+    <mvc:resources mapping="/js/**" location="classpath:/auth-server/resources/js/"/>
 
     <!-- general access denied handler -->
-    <bean id="oauthAccessDeniedHandler" class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler" />
+    <bean id="oauthAccessDeniedHandler"
+          class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler"/>
 
-    <mvc:annotation-driven />
+    <mvc:annotation-driven/>
 
-    <mvc:default-servlet-handler />
-    <aop:aspectj-autoproxy proxy-target-class="true" />
+    <mvc:default-servlet-handler/>
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
 
-    <context:property-placeholder location="classpath:auth-server.properties" />
+    <context:property-placeholder location="classpath:auth-server.properties"/>
 
-    <context:component-scan base-package="org.osiam" />
-    <context:annotation-config />
+    <context:component-scan base-package="org.osiam"/>
+    <context:annotation-config/>
 </beans>
