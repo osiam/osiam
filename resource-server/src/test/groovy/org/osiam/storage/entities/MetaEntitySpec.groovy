@@ -28,7 +28,6 @@ import spock.lang.Specification
 class MetaEntitySpec extends Specification {
 
     MetaEntity metaEntity = new MetaEntity()
-    def date = Mock(Date)
 
     def "should not throw NullpointerException if created is null"() {
         when:
