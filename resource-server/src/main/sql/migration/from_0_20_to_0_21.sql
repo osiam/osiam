@@ -1,4 +1,4 @@
-﻿-- Migrationscript from release server version 0.20 to 0.21
+-- Migrationscript from release server version 0.20 to 0.21
 
 
 -- Drop not used tables

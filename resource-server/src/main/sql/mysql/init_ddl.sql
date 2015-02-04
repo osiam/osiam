@@ -1,4 +1,4 @@
-﻿--
+--
 -- TOC entry 174 (class 1259 OID 108930)
 -- Name: scim_address; Type: TABLE; Schema: public; Owner: -
 --
