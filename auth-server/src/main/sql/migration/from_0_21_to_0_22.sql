@@ -1,4 +1,4 @@
-﻿-- Migrationscript from release auth version 0.20 to 0.21
+-- Migrationscript from release auth version 0.20 to 0.21
 
 -- ATTENTION!
 -- Please check the name of the unique constraint of the column 'client_secret'

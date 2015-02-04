@@ -1,4 +1,4 @@
-﻿-- Migrationscript from release auth version 0.20 to 0.21
+-- Migrationscript from release auth version 0.20 to 0.21
 
 -- ATTENTION!
 -- If you drop this sequence, your auto increment values will be deleted!
