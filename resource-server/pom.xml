@@ -36,9 +36,10 @@
     <packaging>war</packaging>
 
     <name>OSIAM Resource Server</name>
+    <description>The resource server holds the scim based user data</description>
+    <url>https://github.com/osiam/server/tree/master/resource-server</url>
 
     <dependencies>
-
         <dependency>
             <groupId>org.osiam</groupId>
             <artifactId>connector4java</artifactId>
@@ -250,7 +251,6 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -364,11 +364,10 @@
                     <dependency>
                         <groupId>org.hibernate</groupId>
                         <artifactId>hibernate-jpamodelgen</artifactId>
-                        <version>4.3.5.Final</version>
+                        <version>4.3.8.Final</version>
                     </dependency>
                 </dependencies>
             </plugin>
-
         </plugins>
     </build>
 </project>
