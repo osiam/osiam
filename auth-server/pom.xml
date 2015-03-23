@@ -36,6 +36,10 @@
     <packaging>war</packaging>
 
     <name>OSIAM Auth Server</name>
+    <description>
+        The auth server handles the authentication and authorization to access the resource servers data
+    </description>
+    <url>https://github.com/osiam/server/tree/master/auth-server</url>
 
     <dependencies>
         <dependency>
@@ -237,7 +241,6 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
-
     </dependencies>
 
     <build>
