@@ -33,8 +33,7 @@
         <property name="location" value="classpath:resource-server.properties"/>
     </bean>
 
-    <bean id="myEmf"
-          class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+    <bean id="myEmf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" depends-on="flyway">
         <property name="dataSource" ref="dataSource"/>
         <property name="packagesToScan" value="org.osiam.storage.entities"/>
         <property name="jpaVendorAdapter">
@@ -44,10 +43,14 @@
                 <property name="databasePlatform" value="${org.osiam.resource-server.db.dialect}"/>
             </bean>
         </property>
+        <property name="jpaProperties">
+            <props>
+                <prop key="hibernate.hbm2ddl.auto">validate</prop>
+            </props>
+        </property>
     </bean>
 
-    <bean id="dataSource"
-          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="${org.osiam.resource-server.db.driver}"/>
         <property name="url" value="${org.osiam.resource-server.db.url}"/>
         <property name="username" value="${org.osiam.resource-server.db.username}"/>
@@ -57,5 +60,18 @@
     <bean id="txManager" class="org.springframework.orm.jpa.JpaTransactionManager">
         <property name="entityManagerFactory" ref="myEmf"/>
     </bean>
+
+    <bean id="flyway" class="org.flywaydb.core.Flyway" init-method="migrate">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="baselineOnMigrate" value="true"/>
+        <property name="table" value="resource_server_schema_version"/>
+        <property name="locations" value="db/migration/${org.osiam.resource-server.db.vendor}"/>
+        <property name="initVersion">
+            <bean class="org.flywaydb.core.api.MigrationVersion">
+                <constructor-arg index="0" value="0" />
+            </bean>
+        </property>
+    </bean>
+
     <tx:annotation-driven transaction-manager="txManager"/>
 </beans>
