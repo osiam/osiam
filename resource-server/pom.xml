@@ -45,25 +45,21 @@
             <artifactId>connector4java</artifactId>
         </dependency>
 
-        <!-- Groovy SDK LICENSE: Apache 2.0 according to http://grepcode.com/snapshot/repo1.maven.org/maven2/org.codehaus.groovy/groovy-all/2.0.4 -->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
         </dependency>
 
-        <!-- Spock testing framework for all kinds of tests LICENSE: Apache 2.0 according to http://code.google.com/p/spock/ -->
         <dependency>
             <groupId>org.spockframework</groupId>
             <artifactId>spock-core</artifactId>
         </dependency>
 
-        <!-- Support for mocking concrete classes within Spock LICENSE: Apache 2.0 according to source package -->
         <dependency>
             <groupId>cglib</groupId>
             <artifactId>cglib-nodep</artifactId>
         </dependency>
 
-        <!-- Support for mocking classes without constructor within Spock LICENSE: Apache 2.0 according to http://objenesis.googlecode.com/svn/docs/license.html -->
         <dependency>
             <groupId>org.objenesis</groupId>
             <artifactId>objenesis</artifactId>
@@ -102,7 +98,6 @@
             <artifactId>spring-jdbc</artifactId>
         </dependency>
 
-        <!-- Spring -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
@@ -116,7 +111,6 @@
             <artifactId>spring-web</artifactId>
         </dependency>
 
-        <!-- AOP dependency -->
         <dependency>
             <groupId>cglib</groupId>
             <artifactId>cglib</artifactId>
@@ -131,34 +125,37 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-expression</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
         </dependency>
 
-        <!-- Security -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-taglibs</artifactId>
         </dependency>
 
-        <!-- Servlet -->
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-servlet_3.0_spec</artifactId>
@@ -199,7 +196,6 @@
             <artifactId>commons-logging</artifactId>
         </dependency>
 
-        <!-- @Inject -->
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
@@ -231,7 +227,6 @@
             <version>4.5</version>
         </dependency>
 
-        <!-- Codahale Metrics -->
         <dependency>
             <groupId>com.codahale.metrics</groupId>
             <artifactId>metrics-core</artifactId>
