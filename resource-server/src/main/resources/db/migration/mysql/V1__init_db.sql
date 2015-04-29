@@ -279,7 +279,7 @@ ADD CONSTRAINT uk_1onynolltgwuk8a5ngjhkqcl1 UNIQUE (username);
 -- Name: uk_60sysrrwavtwwnji8nw5tng2x; Type: CONSTRAINT; Schema: public; Owner: -
 --
 ALTER TABLE scim_extension
-ADD CONSTRAINT uk_60sysrrwavtwwnji8nw5tng2x UNIQUE (urn(767));
+ADD CONSTRAINT uk_60sysrrwavtwwnji8nw5tng2x UNIQUE (urn(255));
 --
 -- TOC entry 2229 (class 2606 OID 109074)
 -- Name: uk_9rvm7w04q503y4gx9q0c55cnv; Type: CONSTRAINT; Schema: public; Owner: -
@@ -319,7 +319,7 @@ CREATE INDEX uk_31njuvoulynkorup0b5pjqni6 USING BTREE ON scim_im (value(767));
 -- TOC entry 2205 (class 1259 OID 109061)
 -- Name: uk_3hqwl74jwjq0dksv2t4iqlptm; Type: INDEX; Schema: public; Owner: -
 --
-CREATE INDEX uk_3hqwl74jwjq0dksv2t4iqlptm USING BTREE ON scim_address (country, region, locality, postalcode, streetaddress);
+CREATE INDEX uk_3hqwl74jwjq0dksv2t4iqlptm USING BTREE ON scim_address (country(200), region(200), locality(200), postalcode(200), streetaddress(200));
 
 --
 -- TOC entry 2264 (class 1259 OID 109090)
