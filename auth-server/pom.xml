@@ -309,6 +309,7 @@
                 <version>2.4</version>
                 <configuration>
                     <warName>osiam-auth-server</warName>
+                    <attachClasses>true</attachClasses>
                 </configuration>
             </plugin>
 
