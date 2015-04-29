@@ -318,6 +318,7 @@
                 <version>2.4</version>
                 <configuration>
                     <warName>osiam-resource-server</warName>
+                    <attachClasses>true</attachClasses>
                 </configuration>
             </plugin>
 
