@@ -66,11 +66,7 @@
         <property name="baselineOnMigrate" value="true"/>
         <property name="table" value="resource_server_schema_version"/>
         <property name="locations" value="db/migration/${org.osiam.resource-server.db.vendor}"/>
-        <property name="initVersion">
-            <bean class="org.flywaydb.core.api.MigrationVersion">
-                <constructor-arg index="0" value="0" />
-            </bean>
-        </property>
+        <property name="baselineVersionAsString" value="0"/>
     </bean>
 
     <tx:annotation-driven transaction-manager="txManager"/>
