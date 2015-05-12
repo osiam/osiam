@@ -25,115 +25,148 @@ package org.osiam.security.authorization
 
 import org.osiam.security.authentication.OsiamClientDetails
 import org.osiam.security.authentication.OsiamClientDetailsService
+import org.osiam.util.TestAuthentication
+import org.osiam.util.TestHttpSession
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.provider.AuthorizationRequest
-
+import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest
 import spock.lang.Specification
+
+import javax.servlet.http.HttpSession
 
 class OsiamUserApprovalHandlerSpec extends Specification {
 
+    HttpSession httpSession = new TestHttpSession()
     OsiamClientDetailsService osiamClientDetailsService = Mock()
-    OsiamUserApprovalHandler osiamUserApprovalHandler = new OsiamUserApprovalHandler(osiamClientDetailsService: osiamClientDetailsService)
-    AuthorizationRequest authorizationRequestMock = Mock()
-    Authentication authenticationMock = Mock()
+    OsiamUserApprovalHandler osiamUserApprovalHandler =
+            new OsiamUserApprovalHandler(osiamClientDetailsService: osiamClientDetailsService, httpSession: httpSession)
 
-    def 'should only add approval date if it is the correct state and user approved successfully'() {
+    def 'The session is empty when the user is not authenticated'() {
         given:
-        OsiamClientDetails client = new OsiamClientDetails()
-        authorizationRequestMock.getClientId() >> 'example-client'
-        authorizationRequestMock.getApprovalParameters() >> ['user_oauth_approval':'true']
+        Authentication authentication = new TestAuthentication(false)
+        AuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest([:])
 
         when:
-        osiamUserApprovalHandler.updateBeforeApproval(authorizationRequestMock, authenticationMock)
+        osiamUserApprovalHandler.updateBeforeApproval(authorizationRequest, authentication)
 
         then:
-        1 * osiamClientDetailsService.loadClientByClientId('example-client') >> client
-        1 * osiamClientDetailsService.updateClientExpiry('example-client', _)
+        httpSession.getAttribute('approvals') == null
     }
 
-    def 'should not add approval date if approval param map is empty and not containing key user_oauth_approval'() {
+    def 'The session is empty when the user is authenticated but did not approve'() {
         given:
-        def approvalParams = [:]
-        authorizationRequestMock.getApprovalParameters() >> approvalParams
+        Authentication authentication = new TestAuthentication(true)
+        AuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest([:])
 
         when:
-        osiamUserApprovalHandler.updateBeforeApproval(authorizationRequestMock, authenticationMock)
+        osiamUserApprovalHandler.updateBeforeApproval(authorizationRequest, authentication)
 
         then:
-        0 * osiamClientDetailsService.updateClientExpiry(_, _)
-        true
+        httpSession.getAttribute('approvals') == null
     }
 
-    def 'should not add approval date if user denies approval'() {
+    def 'The session is not empty when the user is authenticated and the approvalParameter is set'() {
         given:
-        def approvalParams = ['user_oauth_approval':'false']
-        authorizationRequestMock.getApprovalParameters() >> approvalParams
+        AuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest([:], [user_oauth_approval: 'true'],
+                'test-client', null)
+        Authentication authentication = new TestAuthentication(true)
 
         when:
-        osiamUserApprovalHandler.updateBeforeApproval(authorizationRequestMock, authenticationMock)
+        osiamUserApprovalHandler.updateBeforeApproval(authorizationRequest, authentication)
+        Map approvals = httpSession.getAttribute('approvals')
 
         then:
-        0 * 0 * osiamClientDetailsService.updateClientExpiry(_, _)
-        true
+        approvals != null
+        approvals.containsKey('test-client')
+        approvals.get('test-client') != null
     }
 
-    def 'should return true if implicit is configured as true to not ask user for approval'() {
+    def 'The client is not approved if the user is not authenticated'() {
         given:
-        OsiamClientDetails clientMock = Mock()
-        authorizationRequestMock.getClientId() >> 'example-client'
-        osiamClientDetailsService.loadClientByClientId('example-client') >> clientMock
-        authenticationMock.isAuthenticated() >> true
-        clientMock.isImplicit() >> true
+        Authentication authentication = new TestAuthentication(false)
 
-        when:
-        def result = osiamUserApprovalHandler.isApproved(authorizationRequestMock, authenticationMock)
-
-        then:
-        result
+        expect:
+        osiamUserApprovalHandler.isApproved(null, authentication) == false
     }
 
-    def 'should return true if expiry date is valid and user approved client already and must not approve it again'() {
+    def 'The client is approved if the user is authenticated and has already authorized the client'() {
         given:
-        OsiamClientDetails clientMock = Mock()
-        authorizationRequestMock.getClientId() >> 'example-client'
-        osiamClientDetailsService.loadClientByClientId('example-client') >> clientMock
-        authenticationMock.isAuthenticated() >> true
-        clientMock.getExpiry() >> new Date(System.currentTimeMillis() + (1337 * 1000))
+        Authentication authentication = new TestAuthentication(true)
+        AuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest([:], [user_oauth_approval: 'true'],
+                null, null)
 
-        when:
-        def result = osiamUserApprovalHandler.isApproved(authorizationRequestMock, authenticationMock)
-
-        then:
-        result
+        expect:
+        osiamUserApprovalHandler.isApproved(authorizationRequest, authentication) == true
     }
 
-    def 'should return false if implicit is not configured and user never approved the client before'() {
+    def 'The client is approved if approval is implicit'() {
         given:
-        OsiamClientDetails clientMock = Mock()
-        authorizationRequestMock.getClientId() >> 'example-client'
-        osiamClientDetailsService.loadClientByClientId('example-client') >> clientMock
-        clientMock.isImplicit() >> false
-        clientMock.getExpiry() >> null
+        Authentication authentication = new TestAuthentication(true)
+        AuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest([:], [:], 'test-client', null)
 
         when:
-        def result = osiamUserApprovalHandler.isApproved(authorizationRequestMock, authenticationMock)
+        boolean approved = osiamUserApprovalHandler.isApproved(authorizationRequest, authentication)
 
         then:
-        !result
+        1 * osiamClientDetailsService.loadClientByClientId('test-client') >> new OsiamClientDetails(implicit: true)
+        approved == true
     }
 
-    def 'should return false if implicit is not configured and user approval date is expired'() {
+    def 'The client is not approved if the session is empty'() {
         given:
-        OsiamClientDetails clientMock = Mock()
-        authorizationRequestMock.getClientId() >> 'example-client'
-        osiamClientDetailsService.loadClientByClientId('example-client') >> clientMock
-        clientMock.isImplicit() >> false
-        clientMock.getExpiry() >> new Date(System.currentTimeMillis() - 100000)
+        Authentication authentication = new TestAuthentication(true)
+        AuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest([:], [:], 'test-client', null)
 
         when:
-        def result = osiamUserApprovalHandler.isApproved(authorizationRequestMock, authenticationMock)
+        boolean approved = osiamUserApprovalHandler.isApproved(authorizationRequest, authentication)
 
         then:
-        !result
+        1 * osiamClientDetailsService.loadClientByClientId('test-client') >> new OsiamClientDetails()
+        approved == false
+    }
+
+    def 'The client is not approved if the session has no approval time for the client'() {
+        given:
+        Authentication authentication = new TestAuthentication(true)
+        AuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest([:], [:], 'test-client', null)
+        httpSession.setAttribute('approvals', [someOtherClient: 1L])
+
+        when:
+        boolean approved = osiamUserApprovalHandler.isApproved(authorizationRequest, authentication)
+
+        then:
+        1 * osiamClientDetailsService.loadClientByClientId('test-client') >> new OsiamClientDetails()
+        approved == false
+    }
+
+    def 'The client is not approved and the expired approval is deleted from the session if the approval is expired'() {
+        given:
+        Authentication authentication = new TestAuthentication(true)
+        AuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest([:], [:], 'test-client', null)
+        httpSession.setAttribute('approvals', ['test-client': 1L])
+
+        when:
+        boolean approved = osiamUserApprovalHandler.isApproved(authorizationRequest, authentication)
+
+        then:
+        1 * osiamClientDetailsService.loadClientByClientId('test-client') >>
+                new OsiamClientDetails(validityInSeconds: 1)
+        httpSession.getAttribute('approvals').isEmpty()
+        approved == false
+    }
+
+    def 'The client is approved if there is a non-expired approval stored in the session'() {
+        given:
+        Authentication authentication = new TestAuthentication(true)
+        AuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest([:], [:], 'test-client', null)
+        httpSession.setAttribute('approvals', ['test-client': System.currentTimeMillis()])
+
+        when:
+        boolean approved = osiamUserApprovalHandler.isApproved(authorizationRequest, authentication)
+
+        then:
+        1 * osiamClientDetailsService.loadClientByClientId('test-client') >>
+                new OsiamClientDetails(validityInSeconds: 10)
+        approved == true
     }
 }
