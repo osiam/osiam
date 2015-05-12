@@ -24,9 +24,12 @@
 package org.osiam.security.authorization;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpSession;
 
 import org.osiam.security.authentication.OsiamClientDetails;
 import org.osiam.security.authentication.OsiamClientDetailsService;
@@ -44,6 +47,9 @@ import org.springframework.security.oauth2.provider.approval.DefaultUserApproval
 public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
 
     private static final int MILLISECONDS = 1000;
+
+    @Inject
+    private HttpSession httpSession;
 
     @Inject
     private OsiamClientDetailsService osiamClientDetailsService;
@@ -70,8 +76,14 @@ public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
             final OsiamClientDetails client = getClientDetails(authorizationRequest);
             final Date date = new Date(System.currentTimeMillis() + client.getValidityInSeconds() * MILLISECONDS);
             client.setExpiry(date);
-
             osiamClientDetailsService.updateClientExpiry(authorizationRequest.getClientId(), client.getExpiry());
+
+            Map<String, Long> approvals = (Map<String, Long>) httpSession.getAttribute("approvals");
+            if (approvals == null) {
+                approvals = new HashMap<>();
+                httpSession.setAttribute("approvals", approvals);
+            }
+            approvals.put(authorizationRequest.getClientId(), System.currentTimeMillis());
         }
         return super.updateBeforeApproval(authorizationRequest, userAuthentication);
     }
@@ -89,6 +101,7 @@ public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
     public boolean isApproved(final AuthorizationRequest authorizationRequest, final Authentication userAuthentication) {
         // check if implicit is configured in client or if user already confirmed approval once and validity time is not
         // over
+
         final OsiamClientDetails client = getClientDetails(authorizationRequest);
         if (userAuthentication.isAuthenticated() && client.isImplicit()) {
             return true;
@@ -102,5 +115,4 @@ public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
     private OsiamClientDetails getClientDetails(final AuthorizationRequest authorizationRequest) {
         return osiamClientDetailsService.loadClientByClientId(authorizationRequest.getClientId());
     }
-
 }
