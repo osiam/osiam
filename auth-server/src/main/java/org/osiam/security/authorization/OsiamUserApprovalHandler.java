@@ -23,10 +23,13 @@
 
 package org.osiam.security.authorization;
 
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpSession;
 
 import org.osiam.security.authentication.OsiamClientDetails;
 import org.osiam.security.authentication.OsiamClientDetailsService;
@@ -43,7 +46,8 @@ import org.springframework.security.oauth2.provider.approval.DefaultUserApproval
 @Named("userApprovalHandler")
 public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
 
-    private static final int MILLISECONDS = 1000;
+    @Inject
+    private HttpSession httpSession;
 
     @Inject
     private OsiamClientDetailsService osiamClientDetailsService;
@@ -62,18 +66,18 @@ public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
     @Override
     public AuthorizationRequest updateBeforeApproval(final AuthorizationRequest authorizationRequest,
             final Authentication userAuthentication) {
-        // check if "user_oauth_approval" is in the authorizationRequests approvalParameters and the (size != 0)
-        // -> true for accessConfirmation -> save actual date
-        if (authorizationRequest.getApprovalParameters().containsKey("user_oauth_approval")
-                && authorizationRequest.getApprovalParameters().get("user_oauth_approval").equals("true")) {
 
-            final OsiamClientDetails client = getClientDetails(authorizationRequest);
-            final Date date = new Date(System.currentTimeMillis() + client.getValidityInSeconds() * MILLISECONDS);
-            client.setExpiry(date);
+        if (super.isApproved(authorizationRequest, userAuthentication)) {
 
-            osiamClientDetailsService.updateClientExpiry(authorizationRequest.getClientId(), client.getExpiry());
+            @SuppressWarnings("unchecked")
+            Map<String, Long> approvals = (Map<String, Long>) httpSession.getAttribute("approvals");
+            if (approvals == null) {
+                approvals = new HashMap<>();
+                httpSession.setAttribute("approvals", approvals);
+            }
+            approvals.put(authorizationRequest.getClientId(), System.currentTimeMillis());
         }
-        return super.updateBeforeApproval(authorizationRequest, userAuthentication);
+        return authorizationRequest;
     }
 
     /**
@@ -87,20 +91,41 @@ public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
      */
     @Override
     public boolean isApproved(final AuthorizationRequest authorizationRequest, final Authentication userAuthentication) {
-        // check if implicit is configured in client or if user already confirmed approval once and validity time is not
-        // over
-        final OsiamClientDetails client = getClientDetails(authorizationRequest);
-        if (userAuthentication.isAuthenticated() && client.isImplicit()) {
-            return true;
-        } else if (userAuthentication.isAuthenticated()
-                && client.getExpiry() != null && client.getExpiry().compareTo(new Date()) >= 0) {
+
+        if (!userAuthentication.isAuthenticated()) {
+            return false;
+        }
+
+        if (super.isApproved(authorizationRequest, userAuthentication)) {
             return true;
         }
-        return false;
-    }
 
-    private OsiamClientDetails getClientDetails(final AuthorizationRequest authorizationRequest) {
-        return osiamClientDetailsService.loadClientByClientId(authorizationRequest.getClientId());
-    }
+        final OsiamClientDetails client = osiamClientDetailsService.loadClientByClientId(authorizationRequest
+                .getClientId());
 
+        if (client.isImplicit()) {
+            return true;
+        }
+
+        @SuppressWarnings("unchecked")
+        Map<String, Long> approvals = (Map<String, Long>) httpSession.getAttribute("approvals");
+        if (approvals == null) {
+            return false;
+        }
+
+        final Long approvalTime = approvals.get(authorizationRequest.getClientId());
+
+        if (approvalTime == null) {
+            return false;
+        }
+
+        final long validityInSeconds = client.getValidityInSeconds();
+
+        if (System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(validityInSeconds) > approvalTime) {
+            approvals.remove(authorizationRequest.getClientId());
+            return false;
+        }
+
+        return true;
+    }
 }

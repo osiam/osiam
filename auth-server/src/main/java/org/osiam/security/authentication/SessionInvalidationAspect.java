@@ -19,10 +19,10 @@ import org.springframework.web.servlet.View;
  * This class is responsible for invalidating the session after the user got the grant.
  * We need this, because when a user is deactivated, his access token will be revoked too.
  * After the token revocation the user should not be able to login without the login form.
- * If the session will not be invalidated, the user will get a new access token without 
+ * If the session will not be invalidated, the user will get a new access token without
  * need for re-login.
- * 
- * This class is copied from 
+ *
+ * This class is copied from
  * @see https://github.com/spring-projects/spring-security-oauth/issues/140
  */
 @Service
@@ -44,7 +44,7 @@ public class SessionInvalidationAspect {
 
     @AfterReturning(value = "within(org.springframework.security.oauth2.provider.endpoint..*) && @annotation(org.springframework.web.bind.annotation.RequestMapping)", returning = "result")
     public void authorizationAdvice(JoinPoint joinpoint, View result) throws Throwable {
-        // Anything returning a view and not a ModelView is going to be redirecting outside of the app (I think). 
+        // Anything returning a view and not a ModelView is going to be redirecting outside of the app (I think).
         // This happens after the authorize approve / deny page with the POST to /oauth/authorize. This is the time
         // to kill the session since they'll be being sent back to the requesting app.
         invalidateSession();
