@@ -96,7 +96,6 @@ class ClientDaoSpec extends Specification {
         newClient.setAccessTokenValiditySeconds(123)
         newClient.setRedirectUri("uri")
         newClient.setScope(["bla", "blub"] as Set)
-        newClient.setExpiry(new Date(System.currentTimeMillis()))
         newClient.setValidityInSeconds(123)
         newClient.setImplicit(true)
 

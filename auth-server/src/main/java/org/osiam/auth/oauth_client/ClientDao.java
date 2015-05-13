@@ -62,7 +62,6 @@ public class ClientDao {
         clientEntity.setAccessTokenValiditySeconds(client.getAccessTokenValiditySeconds());
         clientEntity.setRedirectUri(client.getRedirectUri());
         clientEntity.setScope(client.getScope());
-        clientEntity.setExpiry(client.getExpiry());
         clientEntity.setImplicit(client.isImplicit());
         clientEntity.setValidityInSeconds(client.getValidityInSeconds());
         clientEntity.setId(client.getId());

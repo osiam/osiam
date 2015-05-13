@@ -23,15 +23,12 @@
 
 package org.osiam.security.authentication;
 
-import java.util.Date;
-
 import javax.inject.Inject;
 
 import org.osiam.auth.oauth_client.ClientDao;
 import org.osiam.auth.oauth_client.ClientEntity;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * OSIAM {@link ClientDetailsService} implementation.
@@ -47,11 +44,6 @@ public class OsiamClientDetailsService implements ClientDetailsService {
         return toOsiamClientDetails(clientDao.getClient(clientId));
     }
 
-    @Transactional
-    public void updateClientExpiry(final String clientId, final Date newExpiry) {
-        clientDao.getClient(clientId).setExpiry(newExpiry);
-    }
-
     private OsiamClientDetails toOsiamClientDetails(final ClientEntity client) {
         final OsiamClientDetails clientDetails = new OsiamClientDetails();
 
@@ -63,10 +55,8 @@ public class OsiamClientDetailsService implements ClientDetailsService {
         clientDetails.setAccessTokenValiditySeconds(client.getAccessTokenValiditySeconds());
         clientDetails.setRefreshTokenValiditySeconds(client.getRefreshTokenValiditySeconds());
         clientDetails.setImplicit(client.isImplicit());
-        clientDetails.setExpiry(client.getExpiry());
         clientDetails.setValidityInSeconds(client.getValidityInSeconds());
 
         return clientDetails;
     }
-
 }
