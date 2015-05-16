@@ -75,29 +75,6 @@ class ClientEntitySpec extends Specification {
         under_test.getValidityInSeconds() == 100
     }
 
-    def "should be able to set the day on which approval was granted"() {
-        given:
-        def date = new Date(1000)
-
-        when:
-        under_test.setExpiry(date)
-
-        then:
-        under_test.getExpiry() == date
-    }
-
-    def "should not throw null pointer exception if expiry is null"() {
-        given:
-        under_test.setExpiry(null)
-
-        when:
-        def result = under_test.getExpiry()
-
-        then:
-        notThrown(NullPointerException)
-        result == null
-    }
-
     def "should generate a secret"() {
         when:
         def b = new ClientEntity()

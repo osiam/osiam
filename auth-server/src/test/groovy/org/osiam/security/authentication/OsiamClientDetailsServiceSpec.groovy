@@ -47,19 +47,6 @@ class OsiamClientDetailsServiceSpec extends Specification {
         isEqual(result, clientEntity)
     }
 
-    def 'updating the client expiry actually calls setExpiry on entity'() {
-        given:
-        ClientEntity clientEntity = Mock()
-        def newExpiry = new Date()
-
-        when:
-        osiamClientDetailsService.updateClientExpiry(clientId, newExpiry)
-
-        then:
-        1 * clientDao.getClient(clientId) >> clientEntity
-        1 * clientEntity.setExpiry(newExpiry)
-    }
-
     void isEqual(OsiamClientDetails result, ClientEntity clientEntity) {
         assert result.getId() == clientEntity.getId()
         assert result.getClientSecret() == clientEntity.getClientSecret()
@@ -69,7 +56,6 @@ class OsiamClientDetailsServiceSpec extends Specification {
         assert result.getAccessTokenValiditySeconds() == clientEntity.getAccessTokenValiditySeconds()
         assert result.getRefreshTokenValiditySeconds() == clientEntity.getRefreshTokenValiditySeconds()
         assert result.isImplicit() == clientEntity.isImplicit()
-        assert result.getExpiry() == clientEntity.getExpiry()
         assert result.getValidityInSeconds() == clientEntity.getValidityInSeconds()
     }
 
@@ -83,7 +69,6 @@ class OsiamClientDetailsServiceSpec extends Specification {
         result.setAccessTokenValiditySeconds(10000)
         result.setRefreshTokenValiditySeconds(100000)
         result.setImplicit(false)
-        result.setExpiry(new Date())
         result.setValidityInSeconds(1000)
         return result
     }

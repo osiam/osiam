@@ -105,9 +105,6 @@ public class ClientEntity {
     @Column(nullable = false)
     private long validityInSeconds;
 
-    @JsonProperty
-    private Date expiry;
-
     public ClientEntity() {
     }
 
@@ -222,13 +219,5 @@ public class ClientEntity {
 
     public void setValidityInSeconds(long validity) {
         this.validityInSeconds = validity;
-    }
-
-    public Date getExpiry() {
-        return expiry != null ? (Date) expiry.clone() : null;
-    }
-
-    public void setExpiry(Date expiry) {
-        this.expiry = expiry != null ? (Date) expiry.clone() : null;
     }
 }
