@@ -57,7 +57,7 @@ public class AddressConverter implements Converter<Address, AddressEntity> {
                 .setCountry(entity.getCountry())
                 .setFormatted(entity.getFormatted())
                 .setLocality(entity.getLocality())
-                .setPostalCode(String.valueOf(entity.getPostalCode()))
+                .setPostalCode(entity.getPostalCode())
                 .setRegion(entity.getRegion())
                 .setStreetAddress(entity.getStreetAddress())
                 .setPrimary(entity.isPrimary())
