@@ -25,7 +25,6 @@ package org.osiam.resources.converter
 
 import org.osiam.resources.scim.Address
 import org.osiam.storage.entities.AddressEntity
-
 import spock.lang.Specification
 
 class AddressConverterSpec extends Specification {
@@ -98,5 +97,37 @@ class AddressConverterSpec extends Specification {
     def 'passing null addressEntity returns null'() {
         expect:
         addressConverter.toScim(null) == null
+    }
+
+    def 'all attributes of the scim address should be null'() {
+        given:
+        AddressEntity addressEntity = new AddressEntity()
+
+        when:
+        Address result = addressConverter.toScim(addressEntity)
+
+        then:
+        result.country == null
+        result.formatted == null
+        result.locality == null
+        result.postalCode == null
+        result.region == null
+        result.streetAddress == null
+    }
+
+    def 'all attributes of the address entity should be null'() {
+        given:
+        Address address = new Address.Builder().build()
+
+        when:
+        AddressEntity result = addressConverter.fromScim(address)
+
+        then:
+        result.country == null
+        result.formatted == null
+        result.locality == null
+        result.postalCode == null
+        result.region == null
+        result.streetAddress == null
     }
 }
