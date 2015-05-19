@@ -164,20 +164,9 @@ class OsiamClientDetailsSpec extends Specification {
         osiamClientDetails.getGrants() == grantTypes
     }
 
-    def "getExpiry should work"() {
-        given: "an expiry Date"
-        def expiryDate = MutableDateTime.now().toDate()
-
-        when:
-        osiamClientDetails.setExpiry(expiryDate)
-
-        then:
-        osiamClientDetails.getExpiry() == expiryDate
-    }
-
     def "isImplicit should work"() {
-        given: "an expiry Date"
-        def implicit = true as boolean
+        given:
+        boolean implicit = true
 
         when:
         osiamClientDetails.setImplicit(implicit)
@@ -195,17 +184,5 @@ class OsiamClientDetailsSpec extends Specification {
 
         then:
         osiamClientDetails.getValidityInSeconds() == validitySeconds
-    }
-
-    def "should not throw null pointer exception if expiry is null"() {
-        given:
-        osiamClientDetails.setExpiry(null)
-
-        when:
-        def result = osiamClientDetails.getExpiry()
-
-        then:
-        notThrown(NullPointerException)
-        result == null
     }
 }
