@@ -101,7 +101,7 @@
     </bean>
 
     <!-- general access decision manager for OAuth2 secured resources -->
-    <bean id="accessDecisionManager" class="org.springframework.security.access.vote.UnanimousBased"
+    <bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased"
           xmlns="http://www.springframework.org/schema/beans">
         <constructor-arg>
             <list>
