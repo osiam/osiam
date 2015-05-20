@@ -36,8 +36,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Controller
 @RequestMapping(value = "/ServiceProviderConfigs")
-@Transactional
 public class ServiceProviderConfigsController {
+
     @RequestMapping
     @ResponseBody
     public ServiceProviderConfig getConfig() {
