@@ -41,7 +41,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 @RequestMapping(value = "/")
-@Transactional
 public class RootController {
 
     @RequestMapping(method = RequestMethod.GET)
