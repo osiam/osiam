@@ -21,23 +21,27 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.auth.login.internal;
+package org.osiam.auth.oauth_client;
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
+import java.util.List;
 
-public class InternalAuthentication extends UsernamePasswordAuthenticationToken {
+@Transactional
+@Repository
+public interface ClientRepository extends JpaRepository<ClientEntity, Long> {
 
-    private static final long serialVersionUID = 5020697919339414782L;
+    ClientEntity findById(String id);
 
-    public InternalAuthentication(Object principal, Object credentials) {
-        super(principal, credentials);
-    }
+    void deleteById(String id);
 
-    public InternalAuthentication(Object principal, Object credentials,
-            Collection<? extends GrantedAuthority> authorities) {
-        super(principal, credentials, authorities);
-    }
+    @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END FROM ClientEntity c WHERE c.id = :id")
+    boolean existsById(@Param("id") String id);
+
+    @Query("select c.id from ClientEntity c")
+    List<String> findAllClientIds();
 }

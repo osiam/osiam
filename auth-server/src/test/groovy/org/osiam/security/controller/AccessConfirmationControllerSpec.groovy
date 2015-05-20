@@ -23,41 +23,38 @@
 
 package org.osiam.security.controller
 
-import javax.servlet.http.HttpServletRequest
-
+import org.osiam.auth.oauth_client.ClientEntity
 import org.springframework.security.oauth2.provider.AuthorizationRequest
 import org.springframework.security.oauth2.provider.ClientDetails
 import org.springframework.security.oauth2.provider.ClientDetailsService
-import org.springframework.ui.Model
-import org.springframework.web.servlet.ModelAndView
-
 import spock.lang.Specification
 
 class AccessConfirmationControllerSpec extends Specification{
 
     ClientDetailsService clientDetailsServiceMock = Mock()
-    AccessConfirmationController underTest = new AccessConfirmationController(clientDetailsService: clientDetailsServiceMock)
+    AccessConfirmationController accessConfirmationController =
+            new AccessConfirmationController(clientDetailsService: clientDetailsServiceMock)
 
     def 'should call clientDetailsService and put auth_request and client into model on access confirmation'(){
         given:
-        AuthorizationRequest authRequest = Mock()
-        ClientDetails client = Mock()
+        ClientDetails client = new ClientEntity()
+        AuthorizationRequest authRequest = new AuthorizationRequest()
+        authRequest.setClientId('test-client')
         def model = ['authorizationRequest': authRequest]
-        authRequest.clientId >> 'huch'
 
         when:
-        def result = underTest.getAccessConfirmation(model)
+        def modelAndView = accessConfirmationController.getAccessConfirmation(model)
 
         then:
-        1 * clientDetailsServiceMock.loadClientByClientId('huch') >> client
-        result.model.get('auth_request') == authRequest
-        result.model.get('client') == client
-        result.viewName == 'access_confirmation'
+        1 * clientDetailsServiceMock.loadClientByClientId('test-client') >> client
+        modelAndView.model.get('auth_request') == authRequest
+        modelAndView.model.get('client') == client
+        modelAndView.viewName == 'access_confirmation'
     }
 
     def 'should set error message on handleError'(){
         when:
-        String result = underTest.handleError()
+        String result = accessConfirmationController.handleError()
 
         then:
         result == 'oauth_error'

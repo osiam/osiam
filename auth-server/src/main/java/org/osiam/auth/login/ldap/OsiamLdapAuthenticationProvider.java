@@ -26,15 +26,14 @@ package org.osiam.auth.login.ldap;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
-import org.osiam.auth.configuration.LdapConfiguration;
+import org.osiam.auth.configuration.LdapAuthentication;
 import org.osiam.auth.exception.LdapAuthenticationProcessException;
 import org.osiam.auth.login.ResourceServerConnector;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.Role;
 import org.osiam.resources.scim.UpdateUser;
 import org.osiam.resources.scim.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -52,18 +51,23 @@ import com.google.common.base.Strings;
 
 public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider {
 
-    @Inject
+    @Autowired
     private ResourceServerConnector resourceServerConnector;
 
     @Value("${org.osiam.auth-server.ldap.sync-user-data:true}")
     private boolean syncUserData;
 
-    private OsiamLdapUserContextMapper osiamLdapUserContextMapper;
+    private final OsiamLdapUserContextMapper osiamLdapUserContextMapper;
 
     public OsiamLdapAuthenticationProvider(LdapAuthenticator authenticator,
             LdapAuthoritiesPopulator authoritiesPopulator, OsiamLdapUserContextMapper osiamLdapUserContextMapper) {
         super(authenticator, authoritiesPopulator);
         this.osiamLdapUserContextMapper = osiamLdapUserContextMapper;
+    }
+
+    @Override
+    public boolean supports(Class<?> authentication) {
+        return OsiamLdapAuthentication.class.isAssignableFrom(authentication);
     }
 
     @Override
@@ -101,13 +105,15 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
 
         User authUser = new User.Builder(username).setId(user.getId()).build();
 
-        List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
+        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
 
         for (Role role : user.getRoles()) {
             grantedAuthorities.add(new SimpleGrantedAuthority(role.getValue()));
         }
 
-        UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(authUser, null, grantedAuthorities);
+        UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(authUser, null,
+                grantedAuthorities);
+
         result.setDetails(authentication.getDetails());
 
         return result;
@@ -121,12 +127,12 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
     }
 
     private boolean hasAuthServerExtension(User user) {
-        if (!user.isExtensionPresent(LdapConfiguration.AUTH_EXTENSION)) {
+        if (!user.isExtensionPresent(LdapAuthentication.AUTH_EXTENSION)) {
             return false;
         }
-        Extension authExtension = user.getExtension(LdapConfiguration.AUTH_EXTENSION);
+        Extension authExtension = user.getExtension(LdapAuthentication.AUTH_EXTENSION);
         return authExtension.isFieldPresent("origin")
-                && authExtension.getFieldAsString("origin").equals(LdapConfiguration.LDAP_PROVIDER);
+                && authExtension.getFieldAsString("origin").equals(LdapAuthentication.LDAP_PROVIDER);
     }
 
     private User synchronizeLdapData(DirContextOperations ldapUserData, User user) {
@@ -141,10 +147,5 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
         }
 
         return userToReturn;
-    }
-
-    @Override
-    public boolean supports(Class<?> authentication) {
-        return OsiamLdapAuthentication.class.isAssignableFrom(authentication);
     }
 }

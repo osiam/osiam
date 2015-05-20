@@ -23,22 +23,21 @@
 
 package org.osiam.security.helper;
 
-import java.util.ArrayList;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.common.base.Strings;
 import org.osiam.auth.login.internal.InternalAuthentication;
 import org.osiam.auth.login.ldap.OsiamLdapAuthentication;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 
-import com.google.common.base.Strings;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class LoginDecisionFilter extends AbstractAuthenticationProcessingFilter {
+
+    public static final String USERNAME_PARAMETER = "username";
+    private static final String PASSWORD_PARAMETER = "password";
 
     private boolean postOnly = true;
 
@@ -51,8 +50,6 @@ public class LoginDecisionFilter extends AbstractAuthenticationProcessingFilter 
         if (postOnly && !request.getMethod().equals("POST")) {
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
         }
-
-        UsernamePasswordAuthenticationToken authRequest = null;
 
         String username = request.getParameter(getUsernameParameter());
         String password = request.getParameter(getPasswordParameter());
@@ -69,10 +66,11 @@ public class LoginDecisionFilter extends AbstractAuthenticationProcessingFilter 
 
         String provider = request.getParameter("provider");
 
+        UsernamePasswordAuthenticationToken authRequest;
         if (!Strings.isNullOrEmpty(provider) && provider.equals("ldap")) {
             authRequest = new OsiamLdapAuthentication(username, password);
         } else {
-            authRequest = new InternalAuthentication(username, password, new ArrayList<GrantedAuthority>());
+            authRequest = new InternalAuthentication(username, password);
         }
 
         setDetails(request, authRequest);
@@ -83,9 +81,9 @@ public class LoginDecisionFilter extends AbstractAuthenticationProcessingFilter 
      * Provided so that subclasses may configure what is put into the authentication request's details property.
      *
      * @param request
-     *        that an authentication request is being created for
+     *         that an authentication request is being created for
      * @param authRequest
-     *        the authentication request object that should have its details set
+     *         the authentication request object that should have its details set
      */
     protected void setDetails(HttpServletRequest request, UsernamePasswordAuthenticationToken authRequest) {
         authRequest.setDetails(authenticationDetailsSource.buildDetails(request));
@@ -104,10 +102,10 @@ public class LoginDecisionFilter extends AbstractAuthenticationProcessingFilter 
     }
 
     public final String getUsernameParameter() {
-        return "username";
+        return USERNAME_PARAMETER;
     }
 
     public final String getPasswordParameter() {
-        return "password";
+        return PASSWORD_PARAMETER;
     }
 }

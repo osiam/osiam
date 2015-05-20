@@ -23,44 +23,53 @@
 
 package org.osiam.auth.token;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
-import javax.inject.Inject;
-
 import org.osiam.auth.oauth_client.OsiamAuthServerClientProvider;
 import org.osiam.client.oauth.AccessToken;
 import org.osiam.client.oauth.Scope;
-import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
+import org.springframework.security.oauth2.provider.OAuth2Request;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * TokenProvider which created an accesstoken for the auth server client
- *
  */
 @Service
 public class OsiamAccessTokenProvider {
 
-    @Inject
-    private DefaultTokenServices tokenServices;
+    @Autowired
+    private TokenStore tokenStore;
 
     public AccessToken createAccessToken() {
-        Set<String> scopes = new HashSet<String>();
+        Set<String> scopes = new HashSet<>();
         scopes.add(Scope.ADMIN.toString());
         // Random scope, because the token services generates for every scope but same client
         // a different access token. This is only made due to the token expired problem, when the auth server
         // takes his actual access token, but the token is expired during the request to the resource server
         scopes.add(new Scope(UUID.randomUUID().toString()).toString());
 
-        DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest(
-                OsiamAuthServerClientProvider.AUTH_SERVER_CLIENT_ID, scopes);
-        authorizationRequest.setApproved(true);
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("client_id", OsiamAuthServerClientProvider.AUTH_SERVER_CLIENT_ID);
+        OAuth2Request authRequest = new OAuth2Request(
+                parameters, OsiamAuthServerClientProvider.AUTH_SERVER_CLIENT_ID, null, true, scopes,
+                null, null, null, null
+        );
 
-        OAuth2Authentication oAuth2Authentication = new OAuth2Authentication(authorizationRequest, null);
+        OAuth2Authentication oAuth2Authentication = new OAuth2Authentication(authRequest, null);
 
-        return new AccessToken.Builder(tokenServices.createAccessToken(oAuth2Authentication).getValue()).build();
+        OAuth2AccessToken oAuth2AccessToken = new DefaultOAuth2AccessToken(UUID.randomUUID().toString());
+
+        tokenStore.storeAccessToken(oAuth2AccessToken, oAuth2Authentication);
+
+        return new AccessToken.Builder(oAuth2AccessToken.getValue()).build();
     }
 }

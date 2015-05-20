@@ -23,14 +23,18 @@
 
 package org.osiam.auth.login.internal;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
 
 import org.osiam.auth.login.ResourceServerConnector;
 import org.osiam.resources.scim.Role;
 import org.osiam.resources.scim.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -47,7 +51,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import org.springframework.stereotype.Component;
 
+@Component
 public class InternalAuthenticationProvider implements AuthenticationProvider,
         ApplicationListener<AbstractAuthenticationEvent> {
 
@@ -60,10 +66,10 @@ public class InternalAuthenticationProvider implements AuthenticationProvider,
     private final Map<String, Integer> accessCounter = Collections.synchronizedMap(new HashMap<String, Integer>());
     private final Map<String, Date> lastFailedLogin = Collections.synchronizedMap(new HashMap<String, Date>());
 
-    @Inject
+    @Autowired
     private ResourceServerConnector resourceServerConnector;
 
-    @Inject
+    @Autowired
     private ShaPasswordEncoder passwordEncoder;
 
     @Override
@@ -103,7 +109,7 @@ public class InternalAuthenticationProvider implements AuthenticationProvider,
 
         User authUser = new User.Builder(username).setId(user.getId()).build();
 
-        List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
+        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
 
         for (Role role : user.getRoles()) {
             grantedAuthorities.add(new SimpleGrantedAuthority(role.getValue()));
@@ -135,7 +141,6 @@ public class InternalAuthenticationProvider implements AuthenticationProvider,
 
     private boolean isWaitTimeOver(Date startWaitingDate) {
         return System.currentTimeMillis() - startWaitingDate.getTime() >= TimeUnit.SECONDS.toMillis(lockTimeout);
-
     }
 
     private boolean isLockMechanismDisabled() {
@@ -149,8 +154,9 @@ public class InternalAuthenticationProvider implements AuthenticationProvider,
             return;
         }
 
-        if (appEvent instanceof AuthenticationSuccessEvent && accessCounter.containsKey(currentUserName)
-                && accessCounter.get(currentUserName) < maxLoginFailures) {
+        if (appEvent instanceof AuthenticationSuccessEvent &&
+                accessCounter.containsKey(currentUserName) &&
+                accessCounter.get(currentUserName) < maxLoginFailures) {
 
             accessCounter.remove(currentUserName);
             lastFailedLogin.remove(currentUserName);

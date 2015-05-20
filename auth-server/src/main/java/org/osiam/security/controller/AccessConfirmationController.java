@@ -25,8 +25,7 @@ package org.osiam.security.controller;
 
 import java.util.Map;
 
-import javax.inject.Inject;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
@@ -44,7 +43,7 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/oauth")
 public class AccessConfirmationController {
 
-    @Inject
+    @Autowired
     private ClientDetailsService clientDetailsService;
 
     @RequestMapping("/confirm_access")
@@ -54,8 +53,8 @@ public class AccessConfirmationController {
         if (clientAuth == null) {
             return new ModelAndView("redirect:/oauth/error");
         }
-        ClientDetails client = clientDetailsService.loadClientByClientId(clientAuth.getClientId()); // NOSONAR
-        // Sonar message: clientDetailsService is initialized via setter injection
+        String clientId = clientAuth.getClientId();
+        ClientDetails client = clientDetailsService.loadClientByClientId(clientId);
         if (client == null) {
             return new ModelAndView("redirect:/oauth/error");
         }

@@ -29,7 +29,6 @@ import org.osiam.resources.scim.Im
 import org.osiam.resources.scim.PhoneNumber
 import org.osiam.resources.scim.Photo
 import org.osiam.resources.scim.Role
-import org.osiam.resources.scim.UpdateUser
 import org.osiam.resources.scim.User
 import org.osiam.resources.scim.X509Certificate
 import org.springframework.ldap.core.DirContextAdapter
@@ -41,7 +40,8 @@ class OsiamLdapUserContextMapperSpec extends Specification {
 
     DirContextOperations userData = new DirContextAdapter()
     Map<String, String> scimLdapAttributes = new HashMap<String, String>()
-    OsiamLdapUserContextMapper osiamLdapUserContextMapper
+    ScimToLdapAttributeMapping scimToLdapAttributeMapping = Mock()
+    OsiamLdapUserContextMapper osiamLdapUserContextMapper = new OsiamLdapUserContextMapper(scimToLdapAttributeMapping)
 
     String type = 'ldap'
     String userNameValue = 'userNameValue'
@@ -75,54 +75,40 @@ class OsiamLdapUserContextMapperSpec extends Specification {
     def setup() {
         scimLdapAttributes.put('userName', 'uid')
         userData.setAttributeValue('uid', userNameValue)
-
         scimLdapAttributes.put('name.familyName', 'sn')
         scimLdapAttributes.put('name.givenName', 'givenName')
         scimLdapAttributes.put('name.formatted', 'formatted')
         scimLdapAttributes.put('name.middleName', 'middleName')
         scimLdapAttributes.put('name.honorificPrefix', 'honorificPrefix')
         scimLdapAttributes.put('name.honorificSuffix', 'honorificSuffix')
-
         userData.setAttributeValue('sn', nameFamilyNameValue)
         userData.setAttributeValue('formatted', nameFormattedValue)
         userData.setAttributeValue('givenName', nameGivenNameValue)
         userData.setAttributeValue('middleName', nameMiddleNameValue)
         userData.setAttributeValue('honorificPrefix', nameHonorificPrefixValue)
         userData.setAttributeValue('honorificSuffix', nameHonorificSuffixValue)
-
         scimLdapAttributes.put('displayName', 'displayName')
         userData.setAttributeValue('displayName', displayNameValue)
-
         scimLdapAttributes.put('nickName', 'nickName')
         userData.setAttributeValue('nickName', nickNameValue)
-
         scimLdapAttributes.put('title', 'title')
         userData.setAttributeValue('title', titleValue)
-
         scimLdapAttributes.put('userType', 'userType')
-        userData.setAttributeValue('userType', userNameValue)
-
+        userData.setAttributeValue('userType', userTypeValue)
         scimLdapAttributes.put('preferredLanguage', 'preferredLanguage')
         userData.setAttributeValue('preferredLanguage', preferredLanguageValue)
-
         scimLdapAttributes.put('locale', 'location')
         userData.setAttributeValue('location', localeValue)
-
         scimLdapAttributes.put('timezone', 'timeZone')
         userData.setAttributeValue('timeZone', timeZoneValue)
-
         scimLdapAttributes.put('email', 'mail')
         userData.setAttributeValue('mail', emailValue)
-
         scimLdapAttributes.put('phoneNumber', 'telephoneNumber')
         userData.setAttributeValue('telephoneNumber', phoneNumberValue)
-
         scimLdapAttributes.put('im', 'im')
         userData.setAttributeValue('im', imValue)
-
         scimLdapAttributes.put('photo', 'picture')
         userData.setAttributeValue('picture', photoValue)
-
         scimLdapAttributes.put('address.formatted', 'addressFormatted')
         scimLdapAttributes.put('address.streetAddress', 'streetAddress')
         scimLdapAttributes.put('address.locality', 'l')
@@ -135,83 +121,79 @@ class OsiamLdapUserContextMapperSpec extends Specification {
         userData.setAttributeValue('st', addressRegionValue)
         userData.setAttributeValue('postalCode', addressPostalCodeValue)
         userData.setAttributeValue('countryCode', addressCountryValue)
-
         scimLdapAttributes.put('entitlement', 'entitlement')
         userData.setAttributeValue('entitlement', entitlementValue)
-
         scimLdapAttributes.put('role', 'role')
         userData.setAttributeValue('role', roleValue)
-
         scimLdapAttributes.put('x509Certificate', 'x509Certificate')
         userData.setAttributeValue('x509Certificate', x509CertificateValue)
-    }
-    
-    def 'All user data from ldap will be mapped to scim user'() {
-        given:
-        osiamLdapUserContextMapper = new OsiamLdapUserContextMapper(scimLdapAttributes)
 
+        scimToLdapAttributeMapping.toLdapAttribute(_) >> { String scim -> scimLdapAttributes.get(scim) }
+        scimToLdapAttributeMapping.scimAttributes() >> scimLdapAttributes.keySet()
+    }
+
+    def 'all user data from LDAP will be mapped to SCIM user'() {
         when:
         User user = osiamLdapUserContextMapper.mapUser(userData)
 
         then:
-        conformUserData(user)
+        user.getUserName() == userNameValue
+        user.getPassword().length() > 0
+        user.isActive()
+        userDataIsCorrectlyMapped(user)
     }
-    
-    def 'All user data from ldap will be mapped to scim update user'() {
+
+    def 'all user data from LDAP will be mapped to SCIM update user'() {
         given:
-        User user = new User.Builder().build()
-        osiamLdapUserContextMapper = new OsiamLdapUserContextMapper(scimLdapAttributes)
+        User user = new User.Builder('userNameValue').build()
 
         when:
         user = osiamLdapUserContextMapper.mapUpdateUser(user, userData).scimConformUpdateUser
 
         then:
-        conformUserData(user)
+        userDataIsCorrectlyMapped(user)
     }
-    
-    def conformUserData(User user) {
-        user.getUserName() == userNameValue
-        user.getName().getFormatted() == nameFormattedValue
-        user.getName().getFamilyName() == nameFamilyNameValue
-        user.getName().getGivenName() == nameGivenNameValue
-        user.getName().getMiddleName() == nameMiddleNameValue
-        user.getName().getHonorificPrefix() == nameHonorificPrefixValue
-        user.getName().getHonorificSuffix() == nameHonorificSuffixValue
-        user.getDisplayName() == displayNameValue
-        user.getNickName() == nickNameValue
-        user.getTitle() == titleValue
-        user.getPreferredLanguage() == preferredLanguageValue
-        user.getLocale() == localeValue
-        user.getTimezone() == timeZoneValue
-        user.isActive() == true
-        user.getPassword().length() > 0
+
+    void userDataIsCorrectlyMapped(User user) {
+        assert user.getName().getFormatted() == nameFormattedValue
+        assert user.getName().getFamilyName() == nameFamilyNameValue
+        assert user.getName().getGivenName() == nameGivenNameValue
+        assert user.getName().getMiddleName() == nameMiddleNameValue
+        assert user.getName().getHonorificPrefix() == nameHonorificPrefixValue
+        assert user.getName().getHonorificSuffix() == nameHonorificSuffixValue
+        assert user.getDisplayName() == displayNameValue
+        assert user.getNickName() == nickNameValue
+        assert user.getTitle() == titleValue
+        assert user.getPreferredLanguage() == preferredLanguageValue
+        assert user.getLocale() == localeValue
+        assert user.getTimezone() == timeZoneValue
         Email email = user.getEmails().iterator().next()
-        email.getValue() == emailValue
-        email.getType().toString() == type
+        assert email.getValue() == emailValue
+        assert email.getType().toString() == type
         PhoneNumber phoneNumber = user.getPhoneNumbers().iterator().next()
-        phoneNumber.getValue() == phoneNumberValue
-        phoneNumber.getType().toString() == type
+        assert phoneNumber.getValue() == phoneNumberValue
+        assert phoneNumber.getType().toString() == type
         Im im = user.getIms().iterator().next()
-        im.getValue() == imValue
-        im.getType().toString() == type
+        assert im.getValue() == imValue
+        assert im.getType().toString() == type
         Photo photo = user.getPhotos().iterator().next()
-        photo.getValue() == photoValue
-        photo.getType().toString() == type
-        user.getAddresses().get(0).getFormatted() == addressFormattedValue
-        user.getAddresses().get(0).getStreetAddress() == addressStreetValue
-        user.getAddresses().get(0).getLocality() == addressLocalityValue
-        user.getAddresses().get(0).getRegion() == addressRegionValue
-        user.getAddresses().get(0).getPostalCode() == addressPostalCodeValue
-        user.getAddresses().get(0).getCountry() == addressCountryValue
-        user.getAddresses().get(0).getType().toString() == type
+        assert photo.getValue() == photoValue
+        assert photo.getType().toString() == type
+        assert user.getAddresses().get(0).getFormatted() == addressFormattedValue
+        assert user.getAddresses().get(0).getStreetAddress() == addressStreetValue
+        assert user.getAddresses().get(0).getLocality() == addressLocalityValue
+        assert user.getAddresses().get(0).getRegion() == addressRegionValue
+        assert user.getAddresses().get(0).getPostalCode() == addressPostalCodeValue
+        assert user.getAddresses().get(0).getCountry() == addressCountryValue
+        assert user.getAddresses().get(0).getType().toString() == type
         Entitlement entitlements = user.getEntitlements().iterator().next()
-        entitlements.getValue() == entitlementValue
-        entitlements.getType().toString() == type
+        assert entitlements.getValue() == entitlementValue
+        assert entitlements.getType().toString() == type
         Role roles = user.getRoles().iterator().next()
-        roles.getValue() == roleValue
-        roles.getType().toString() == type
+        assert roles.getValue() == roleValue
+        assert roles.getType().toString() == type
         X509Certificate x509Certificates = user.getX509Certificates().iterator().next()
-        x509Certificates.getValue() == x509CertificateValue
-        x509Certificates.getType().toString() == type
+        assert x509Certificates.getValue() == x509CertificateValue
+        assert x509Certificates.getType().toString() == type
     }
 }

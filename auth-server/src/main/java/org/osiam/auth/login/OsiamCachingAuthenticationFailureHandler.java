@@ -23,21 +23,17 @@
 
 package org.osiam.auth.login;
 
-import java.io.IOException;
-
-import javax.inject.Inject;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
+import com.google.common.base.Strings;
 import org.osiam.auth.exception.LdapAuthenticationProcessException;
 import org.osiam.security.helper.LoginDecisionFilter;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
-import com.google.common.base.Strings;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 public class OsiamCachingAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
@@ -46,34 +42,34 @@ public class OsiamCachingAuthenticationFailureHandler extends SimpleUrlAuthentic
     private static final String ERROR_KEY = "ERROR_KEY";
     private static final String IS_LOCKED = "IS_LOCKED";
 
-    @Inject
-    private LoginDecisionFilter loginDecisionFilter;
+    public OsiamCachingAuthenticationFailureHandler(String defaultFailureUrl) {
+        super(defaultFailureUrl);
+    }
 
     @Override
-    public void onAuthenticationFailure(
-            HttpServletRequest request, HttpServletResponse response,
-            AuthenticationException exception)
-            throws IOException, ServletException {
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
+            AuthenticationException exception) throws IOException, ServletException {
 
         super.onAuthenticationFailure(request, response, exception);
 
-        HttpSession session = request.getSession(false);
-        if (session != null || isAllowSessionCreation()) {
-            String usernameParameter = loginDecisionFilter.getUsernameParameter();
-            String lastUserName = request.getParameter(usernameParameter);
-            request.getSession().setAttribute(LAST_USERNAME_KEY, lastUserName);
+        if (request.getSession(false) == null && !isAllowSessionCreation()) {
+            return;
+        }
 
-            String provider = request.getParameter("provider");
-            provider = Strings.isNullOrEmpty(provider) ? "internal" : provider;
-            request.getSession().setAttribute(LAST_PROVIDER_KEY, provider);
-            request.getSession().setAttribute(IS_LOCKED, false);
-
-            if(exception instanceof LdapAuthenticationProcessException) {
-                request.getSession().setAttribute(ERROR_KEY, "login.ldap.internal.user.exists");
-            }
-            if(exception instanceof LockedException) {
-                request.getSession().setAttribute(IS_LOCKED, true);
-            }
+        request.getSession().setAttribute(
+                LAST_USERNAME_KEY, request.getParameter(LoginDecisionFilter.USERNAME_PARAMETER)
+        );
+        request.getSession().setAttribute(
+                LAST_PROVIDER_KEY,
+                Strings.isNullOrEmpty(request.getParameter("provider"))
+                        ? "internal"
+                        : request.getParameter("provider")
+        );
+        request.getSession().setAttribute(IS_LOCKED, false);
+        if (exception instanceof LdapAuthenticationProcessException) {
+            request.getSession().setAttribute(ERROR_KEY, "login.ldap.internal.user.exists");
+        } else if (exception instanceof LockedException) {
+            request.getSession().setAttribute(IS_LOCKED, true);
         }
     }
 }
