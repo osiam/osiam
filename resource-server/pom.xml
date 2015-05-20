@@ -408,7 +408,6 @@
                     <compilerId>groovy-eclipse-compiler</compilerId>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
-                    <compilerArgument>-proc:none</compilerArgument>
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -420,6 +419,11 @@
                         <groupId>org.codehaus.groovy</groupId>
                         <artifactId>groovy-eclipse-compiler</artifactId>
                         <version>2.9.2-01</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.hibernate</groupId>
+                        <artifactId>hibernate-jpamodelgen</artifactId>
+                        <version>4.3.9.Final</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -526,38 +530,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.bsc.maven</groupId>
-                <artifactId>maven-processor-plugin</artifactId>
-                <version>2.2.4</version>
-                <executions>
-                    <execution>
-                        <id>process</id>
-                        <goals>
-                            <goal>process</goal>
-                        </goals>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <additionalSourceDirectories>
-                                <additionalSourceDirectory>
-                                    ${project.build.directory}/generated-sources/antlr4
-                                </additionalSourceDirectory>
-                            </additionalSourceDirectories>
-                            <processors>
-                                <processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
-                            </processors>
-                        </configuration>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.hibernate</groupId>
-                        <artifactId>hibernate-jpamodelgen</artifactId>
-                        <version>4.3.9.Final</version>
-                    </dependency>
-                </dependencies>
             </plugin>
 
             <plugin>
