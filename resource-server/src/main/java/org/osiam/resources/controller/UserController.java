@@ -43,11 +43,7 @@ import org.osiam.security.helper.AccessTokenHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriTemplate;
 
 /**
@@ -64,7 +60,7 @@ import org.springframework.web.util.UriTemplate;
 @Controller
 @RequestMapping(value = "/Users")
 @Transactional
-public class  UserController {
+public class UserController {
 
     @Inject
     private SCIMUserProvisioning scimUserProvisioning;
@@ -79,7 +75,7 @@ public class  UserController {
 
     private AttributesRemovalHelper attributesRemovalHelper = new AttributesRemovalHelper();
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET) // NOSONAR - duplicate literals unnecessary
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
     public User getUser(@PathVariable final String id) {
         return scimUserProvisioning.getById(id);
@@ -100,17 +96,18 @@ public class  UserController {
         return new User.Builder(createdUser).setMeta(newMeta).build();
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT) // NOSONAR - duplicate literals unnecessary
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public User replace(@PathVariable final String id, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public User replace(@PathVariable final String id, HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
         User user = jsonInputValidator.validateJsonUser(request);
         User createdUser = scimUserProvisioning.replace(id, user);
         checkAndHandleDeactivation(id, user, request);
         return setLocationUriAndCreateUserForOutput(request, response, createdUser);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PATCH) // NOSONAR - duplicate literals unnecessary
+    @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public User update(@PathVariable final String id, HttpServletRequest request, HttpServletResponse response)
@@ -121,7 +118,7 @@ public class  UserController {
         return setLocationUriAndCreateUserForOutput(request, response, createdUser);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE) // NOSONAR - duplicate literals unnecessary
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable final String id, HttpServletRequest request) {
         scimUserProvisioning.delete(id);
@@ -137,20 +134,18 @@ public class  UserController {
     @RequestMapping(value = "/.search", method = RequestMethod.POST)
     @ResponseBody
     public SCIMSearchResult<User> searchWithPost(HttpServletRequest request) {
-        Map<String,Object> parameterMap = requestParamHelper.getRequestParameterValues(request);
-        SCIMSearchResult<User> scimSearchResult = scimUserProvisioning.search(
-                (String) parameterMap.get("filter"),
+        Map<String, Object> parameterMap = requestParamHelper.getRequestParameterValues(request);
+        SCIMSearchResult<User> scimSearchResult = scimUserProvisioning.search((String) parameterMap.get("filter"),
                 (String) parameterMap.get("sortBy"),
                 (String) parameterMap.get("sortOrder"),
                 (int) parameterMap.get("count"),
-                (int) parameterMap.get("startIndex")
-        );
+                (int) parameterMap.get("startIndex"));
 
         return attributesRemovalHelper.removeSpecifiedUserAttributes(scimSearchResult, parameterMap);
     }
 
     private User setLocationUriAndCreateUserForOutput(HttpServletRequest request, HttpServletResponse response,
-                                                      User createdUser) {
+            User createdUser) {
         String requestUrl = request.getRequestURL().toString();
         response.setHeader("Location", requestUrl);
         Meta newMeta = new Meta.Builder(createdUser.getMeta()).setLocation(requestUrl).build();
