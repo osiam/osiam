@@ -58,7 +58,7 @@ public class TokenController {
 
     @RequestMapping(value = "/validation", method = RequestMethod.POST)
     @ResponseBody
-    public AccessToken tokenValidation(@RequestHeader("Authorization") final String authorization) {
+    public AccessToken validateToken(@RequestHeader("Authorization") final String authorization) {
         String token = getToken(authorization);
         OAuth2Authentication auth = tokenServices.loadAuthentication(token);
         OAuth2AccessToken accessToken = tokenServices.getAccessToken(auth);
@@ -83,19 +83,19 @@ public class TokenController {
 
     @RequestMapping(value = "/revocation", method = RequestMethod.POST)
     @ResponseBody
-    public void tokenRevocation(@RequestHeader("Authorization") final String authorization) {
+    public void revokeToken(@RequestHeader("Authorization") final String authorization) {
         String token = getToken(authorization);
         tokenServices.revokeToken(token);
     }
 
-    @RequestMapping(value = "/revocation/{id}", method = RequestMethod.POST)
+    @RequestMapping(value = "/revocation/{userId}", method = RequestMethod.POST)
     @ResponseBody
-    public void tokenRevocation(@PathVariable("id") final String id,
-            @RequestHeader("Authorization") final String authorization) {
-        User user = resourceServerConnector.getUserById(id);
+    public void revokeAllTokensOfUser(@PathVariable("userId") final String userId) {
+
+        User user = resourceServerConnector.getUserById(userId);
 
         // the token store maps the tokens of a user to the string representation of the principal
-        String searchKey = new User.Builder(user.getUserName()).setId(id).build().toString();
+        String searchKey = new User.Builder(user.getUserName()).setId(userId).build().toString();
         Collection<OAuth2AccessToken> tokens = tokenServices.findTokensByUserName(searchKey);
 
         for (OAuth2AccessToken token : new ArrayList<>(tokens)) {

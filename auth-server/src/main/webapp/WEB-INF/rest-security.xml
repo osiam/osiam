@@ -45,9 +45,16 @@
         <security:access-denied-handler ref="oauthAccessDeniedHandler"/>
     </security:http>
 
-    <security:http pattern="/token/**" create-session="never" entry-point-ref="oauthAuthenticationEntryPoint">
+    <security:http pattern="/token/validation" create-session="never" entry-point-ref="oauthAuthenticationEntryPoint">
+        <security:intercept-url pattern="/token/validation" access="IS_AUTHENTICATED_FULLY"/>
+        <security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
+        <security:access-denied-handler ref="oauthAccessDeniedHandler"/>
+    </security:http>
 
-        <security:intercept-url pattern="/token/**" access="IS_AUTHENTICATED_FULLY"/>
+    <security:http pattern="/token/revocation/**" create-session="never" entry-point-ref="oauthAuthenticationEntryPoint"
+                   access-decision-manager-ref="accessDecisionManager">
+
+        <security:intercept-url pattern="/token/revocation/**" access="SCOPE_DYNAMIC"/>
         <security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
         <security:access-denied-handler ref="oauthAccessDeniedHandler"/>
     </security:http>
@@ -58,15 +65,20 @@
         <property name="realmName" value="oauth2-authorization-server"/>
     </bean>
 
-    <bean id="accessDecisionManager" class="org.springframework.security.access.vote.UnanimousBased"
-          xmlns="http://www.springframework.org/schema/beans">
+    <bean id="scopeVoter" class="org.springframework.security.oauth2.provider.vote.ScopeVoter">
+        <property name="throwException" value="false"/>
+    </bean>
+
+    <bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
+        <property name="allowIfAllAbstainDecisions" value="false"/>
 
         <constructor-arg>
             <list>
+                <bean class="org.osiam.security.authorization.MeScopeAccessDecisionVoter">
+                    <constructor-arg ref="scopeVoter"/>
+                </bean>
                 <bean class="org.osiam.security.authorization.DynamicHTTPMethodScopeEnhancer">
-                    <constructor-arg>
-                        <bean class="org.springframework.security.oauth2.provider.vote.ScopeVoter"/>
-                    </constructor-arg>
+                    <constructor-arg ref="scopeVoter"/>
                 </bean>
             </list>
         </constructor-arg>
