@@ -41,13 +41,7 @@ import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * This Controller is used to handle OAuth2 access tokens with Spring Security.
@@ -58,7 +52,7 @@ public class TokenController {
 
     @Inject
     private DefaultTokenServices tokenServices;
-    
+
     @Inject
     private ResourceServerConnector resourceServerConnector;
 
@@ -68,25 +62,25 @@ public class TokenController {
         String token = getToken(authorization);
         OAuth2Authentication auth = tokenServices.loadAuthentication(token);
         OAuth2AccessToken accessToken = tokenServices.getAccessToken(auth);
-        
+
         AuthorizationRequest authReq = auth.getAuthorizationRequest();
         AccessToken.Builder tokenBuilder = new AccessToken.Builder(token).setClientId(authReq.getClientId());
-        
-        if(auth.getUserAuthentication() != null && auth.getPrincipal() instanceof User) {
+
+        if (auth.getUserAuthentication() != null && auth.getPrincipal() instanceof User) {
             User user = (User) auth.getPrincipal();
             tokenBuilder.setUserName(user.getUserName());
             tokenBuilder.setUserId(user.getId());
         }
-        
+
         tokenBuilder.setExpiresAt(accessToken.getExpiration());
-        
+
         for (String scopeString : authReq.getScope()) {
             tokenBuilder.addScope(new Scope(scopeString));
         }
-        
+
         return tokenBuilder.build();
     }
-    
+
     @RequestMapping(value = "/revocation", method = RequestMethod.POST)
     @ResponseBody
     public void tokenRevocation(@RequestHeader("Authorization") final String authorization) {
@@ -104,7 +98,7 @@ public class TokenController {
         String searchKey = new User.Builder(user.getUserName()).setId(id).build().toString();
         Collection<OAuth2AccessToken> tokens = tokenServices.findTokensByUserName(searchKey);
 
-        for (OAuth2AccessToken token : new ArrayList<OAuth2AccessToken>(tokens)) {
+        for (OAuth2AccessToken token : new ArrayList<>(tokens)) {
             tokenServices.revokeToken(token.getValue());
         }
     }
@@ -115,9 +109,9 @@ public class TokenController {
     public AuthenticationError handleClientAuthenticationException(InvalidTokenException ex, HttpServletRequest request) {
         return new AuthenticationError("invalid_token", ex.getMessage());
     }
-    
+
     private String getToken(String authorization) {
-    	int lastIndexOf = authorization.lastIndexOf(' ');
-    	return authorization.substring(lastIndexOf + 1);
+        int lastIndexOf = authorization.lastIndexOf(' ');
+        return authorization.substring(lastIndexOf + 1);
     }
 }
