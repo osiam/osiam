@@ -1,53 +1,50 @@
 package org.osiam;
 
-import java.sql.SQLException;
-import java.util.Properties;
+import java.util.*;
+import java.util.concurrent.*;
 
-import javax.persistence.EntityManagerFactory;
-import javax.servlet.Filter;
-import javax.sql.DataSource;
+import javax.servlet.*;
+import javax.sql.*;
 
-import org.flywaydb.core.Flyway;
-import org.flywaydb.core.api.MigrationVersion;
-import org.osiam.security.authorization.AccessTokenValidationService;
-import org.osiam.security.authorization.OsiamMethodSecurityExpressionHandler;
-import org.osiam.security.helper.SSLRequestLoggingFilter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.flywaydb.core.*;
+import org.flywaydb.core.api.*;
+import org.osiam.security.authorization.*;
+import org.osiam.security.helper.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.boot.*;
+import org.springframework.boot.autoconfigure.*;
+import org.springframework.boot.builder.*;
+import org.springframework.boot.context.web.*;
 import org.springframework.context.annotation.*;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpMethod;
-import org.springframework.orm.hibernate4.HibernateExceptionTranslator;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
-import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
-import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
-import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.filter.CharacterEncodingFilter;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.http.*;
+import org.springframework.security.authentication.encoding.*;
+import org.springframework.security.config.annotation.web.builders.*;
+import org.springframework.security.config.annotation.web.configuration.*;
+import org.springframework.security.oauth2.config.annotation.web.configuration.*;
+import org.springframework.security.oauth2.config.annotation.web.configurers.*;
+import org.springframework.security.oauth2.provider.error.*;
+import org.springframework.transaction.annotation.*;
+import org.springframework.web.filter.*;
+import org.springframework.web.servlet.config.annotation.*;
 
-import com.codahale.metrics.MetricRegistry;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
+import com.codahale.metrics.*;
+import com.codahale.metrics.jvm.*;
+import com.fasterxml.jackson.databind.*;
+import com.google.common.collect.*;
+import com.ryantenney.metrics.spring.config.annotation.*;
+import com.zaxxer.hikari.*;
 
-@Configuration
-@ComponentScan
+@SpringBootApplication
 @EnableWebMvc
 @EnableWebSecurity
 @EnableTransactionManagement
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-public class ResourceServer {
+@EnableMetrics
+@PropertySource("classpath:resource-server.properties")
+public class ResourceServer extends SpringBootServletInitializer {
+
+    private static final Map<String, Object> NAMING_STRATEGY = ImmutableMap.<String, Object> of(
+            "spring.jpa.hibernate.naming_strategy", "org.hibernate.cfg.ImprovedNamingStrategy");
 
     @Value("${org.osiam.resource-server.db.driver}")
     private String driverClassName;
@@ -61,19 +58,19 @@ public class ResourceServer {
     @Value("${org.osiam.resource-server.db.password}")
     private String databasePassword;
 
-    @Value("${org.osiam.resource-server.db.dialect}")
-    private String databasePlatform;
-
     @Value("${org.osiam.resource-server.db.vendor}")
     private String databaseVendor;
 
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer properties() {
-        PropertySourcesPlaceholderConfigurer propertySources = new PropertySourcesPlaceholderConfigurer();
-        Resource[] resources = new ClassPathResource[] { new ClassPathResource("resource-server.properties") };
-        propertySources.setLocations(resources);
-        propertySources.setIgnoreUnresolvablePlaceholders(true);
-        return propertySources;
+    public static void main(String[] args) {
+        SpringApplication application = new SpringApplication(ResourceServer.class, args);
+        application.setDefaultProperties(NAMING_STRATEGY);
+        application.run();
+    }
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        application.application().setDefaultProperties(NAMING_STRATEGY);
+        return application.sources(ResourceServer.class);
     }
 
     @Bean
@@ -122,45 +119,6 @@ public class ResourceServer {
     }
 
     @Bean
-    @DependsOn("flyway")
-    public EntityManagerFactory entityManagerFactory() throws SQLException {
-        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-        vendorAdapter.setGenerateDdl(false);
-        vendorAdapter.setShowSql(false);
-        vendorAdapter.setDatabasePlatform(databasePlatform);
-
-        Properties jpaProperties = new Properties();
-        jpaProperties.put("hibernate.hbm2ddl.auto", "validate");
-        jpaProperties.put("hibernate.ejb.naming_strategy", "org.hibernate.cfg.ImprovedNamingStrategy");
-
-        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
-        factory.setJpaVendorAdapter(vendorAdapter);
-        factory.setPackagesToScan("org.osiam.storage.entities");
-        factory.setDataSource(dataSource());
-        factory.setJpaProperties(jpaProperties);
-        factory.afterPropertiesSet();
-
-        return factory.getNativeEntityManagerFactory();
-    }
-
-    @Bean
-    public JpaTransactionManager transactionManager() throws SQLException {
-        JpaTransactionManager txManager = new JpaTransactionManager();
-        txManager.setEntityManagerFactory(entityManagerFactory());
-        return txManager;
-    }
-
-    @Bean
-    public MetricRegistry metricRegistry() {
-        return new MetricRegistry();
-    }
-
-    @Bean
-    public HibernateExceptionTranslator hibernateExceptionTranslator() {
-        return new HibernateExceptionTranslator();
-    }
-
-    @Bean
     public ShaPasswordEncoder passwordEncoder() {
         ShaPasswordEncoder passwordEncoder = new ShaPasswordEncoder(512);
         passwordEncoder.setIterations(1000);
@@ -206,6 +164,16 @@ public class ResourceServer {
         @Bean
         public OAuth2AccessDeniedHandler oauthAccessDeniedHandler() {
             return new OAuth2AccessDeniedHandler();
+        }
+    }
+
+    @Configuration
+    @EnableMetrics
+    protected static class MetricsConfiguration extends MetricsConfigurerAdapter {
+
+        @Override
+        public void configureReporters(MetricRegistry metricRegistry) {
+            metricRegistry.register("jvm.memory", new MemoryUsageGaugeSet());
         }
     }
 }
