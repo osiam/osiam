@@ -23,22 +23,21 @@
 
 package org.osiam.storage.dao;
 
-import javax.inject.Inject;
-
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.entities.UserEntity_;
 import org.osiam.storage.query.UserFilterParser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class UserDao implements GenericDao<UserEntity> {
 
-    @Inject
+    @Autowired
     private UserFilterParser filterParser;
 
-    @Inject
+    @Autowired
     private ResourceDao resourceDao;
 
     @Override

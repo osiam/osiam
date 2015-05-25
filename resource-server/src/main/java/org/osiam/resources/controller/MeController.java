@@ -25,7 +25,6 @@ package org.osiam.resources.controller;
 
 import java.util.Set;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
 import org.joda.time.format.DateTimeFormatter;
@@ -38,6 +37,7 @@ import org.osiam.storage.dao.UserDao;
 import org.osiam.storage.entities.EmailEntity;
 import org.osiam.storage.entities.NameEntity;
 import org.osiam.storage.entities.UserEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
@@ -57,10 +57,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Transactional
 public class MeController {
 
-    @Inject
+    @Autowired
     private AccessTokenValidationService accessTokenValidationService;
 
-    @Inject
+    @Autowired
     private UserDao userDao;
 
     /**
@@ -68,6 +68,7 @@ public class MeController {
      * <p/>
      * The result should be in json format and look like:
      * <p/>
+     * {
      * "id": "73821979327912",
      * "name": "Arthur Dent",
      * "first_name": "Arthur",

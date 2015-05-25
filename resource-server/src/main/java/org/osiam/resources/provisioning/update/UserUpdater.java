@@ -26,13 +26,12 @@ package org.osiam.resources.provisioning.update;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.inject.Inject;
-
 import org.osiam.resources.exceptions.OsiamException;
 import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.scim.User;
 import org.osiam.storage.dao.UserDao;
 import org.osiam.storage.entities.UserEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -44,43 +43,43 @@ import com.google.common.base.Strings;
 @Service
 public class UserUpdater {
 
-    @Inject
+    @Autowired
     private UserDao userDao;
 
-    @Inject
+    @Autowired
     private ResourceUpdater resourceUpdater;
 
-    @Inject
+    @Autowired
     private NameUpdater nameUpdater;
 
-    @Inject
+    @Autowired
     private EmailUpdater emailUpdater;
 
-    @Inject
+    @Autowired
     private PhoneNumberUpdater phoneNumberUpdater;
 
-    @Inject
+    @Autowired
     private ImUpdater imUpdater;
 
-    @Inject
+    @Autowired
     private PhotoUpdater photoUpdater;
 
-    @Inject
+    @Autowired
     private EntitlementsUpdater entitlementUpdater;
 
-    @Inject
+    @Autowired
     private RoleUpdater roleUpdater;
 
-    @Inject
+    @Autowired
     private X509CertificateUpdater x509CertificateUpdater;
 
-    @Inject
+    @Autowired
     private AddressUpdater addressUpdater;
 
-    @Inject
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Inject
+    @Autowired
     private ExtensionUpdater extensionUpdater;
 
     /**

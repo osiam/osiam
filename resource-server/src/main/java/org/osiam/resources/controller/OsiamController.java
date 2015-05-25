@@ -2,10 +2,9 @@ package org.osiam.resources.controller;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.osiam.resources.provisioning.SCIMExtensionProvisioning;
 import org.osiam.resources.provisioning.model.ExtensionDefinition;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @RequestMapping(value = "/osiam")
 public class OsiamController {
 
-    @Inject
+    @Autowired
     private SCIMExtensionProvisioning extensionProvisioning;
 
     /**

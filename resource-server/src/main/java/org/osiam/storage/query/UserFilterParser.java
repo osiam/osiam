@@ -25,20 +25,19 @@ package org.osiam.storage.query;
 
 import java.util.Locale;
 
-import javax.inject.Inject;
-
 import org.osiam.storage.dao.ExtensionDao;
 import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.helper.NumberPadder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserFilterParser extends FilterParser<UserEntity> {
 
-    @Inject
+    @Autowired
     private ExtensionDao extensionDao;
 
-    @Inject
+    @Autowired
     private NumberPadder numberPadder;
 
     @Override

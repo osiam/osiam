@@ -23,22 +23,21 @@
 
 package org.osiam.storage.dao;
 
-import javax.inject.Inject;
-
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.osiam.resources.exceptions.ResourceNotFoundException;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.GroupEntity_;
 import org.osiam.storage.query.GroupFilterParser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public class GroupDao implements GenericDao<GroupEntity> {
 
-    @Inject
+    @Autowired
     private GroupFilterParser filterParser;
 
-    @Inject
+    @Autowired
     private ResourceDao resourceDao;
 
     @Override

@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 
@@ -45,6 +44,7 @@ import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.query.QueryFilterParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -54,19 +54,19 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
     private static final Logger LOGGER = LoggerFactory.getLogger(SCIMUserProvisioning.class);
     private static final int PASSWORD_SEARCH_DELAY = 500;
 
-    @Inject
+    @Autowired
     private UserConverter userConverter;
 
-    @Inject
+    @Autowired
     private UserDao userDao;
 
-    @Inject
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Inject
+    @Autowired
     private UserUpdater userUpdater;
 
-    @Inject
+    @Autowired
     private QueryFilterParser queryFilterParser;
 
     @Override

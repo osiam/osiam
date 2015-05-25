@@ -26,12 +26,11 @@ package org.osiam.resources.provisioning.update;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Inject;
-
 import org.osiam.resources.converter.EmailConverter;
 import org.osiam.resources.scim.Email;
 import org.osiam.storage.entities.EmailEntity;
 import org.osiam.storage.entities.UserEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
@@ -42,7 +41,7 @@ import com.google.common.base.Strings;
 @Service
 class EmailUpdater {
 
-    @Inject
+    @Autowired
     private EmailConverter emailConverter;
 
     /**
@@ -95,5 +94,4 @@ class EmailUpdater {
             }
         }
     }
-
 }
