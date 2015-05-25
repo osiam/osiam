@@ -28,100 +28,87 @@
         http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
 
-    <!-- Resource Service interface secured via OAuth2 -->
     <http pattern="/" create-session="never" entry-point-ref="oauthAuthenticationEntryPoint"
           access-decision-manager-ref="accessDecisionManager" xmlns="http://www.springframework.org/schema/security">
 
-        <!-- resources below /secured/get/resource/ are accessed via scope "READ" -->
         <intercept-url pattern="/**" access="SCOPE_DYNAMIC"/>
-
-        <!-- validates the delivered access token -->
         <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
-
-        <!-- uses general oauthAccessDeniedHandler -->
         <access-denied-handler ref="oauthAccessDeniedHandler"/>
     </http>
 
     <http pattern="/Users/**" create-session="never" entry-point-ref="oauthAuthenticationEntryPoint"
           access-decision-manager-ref="accessDecisionManager" xmlns="http://www.springframework.org/schema/security">
 
-        <!-- resources below /secured/get/resource/ are accessed via scope "READ" -->
         <intercept-url pattern="/Users/**" access="SCOPE_DYNAMIC"/>
-
-        <!-- validates the delivered access token -->
         <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
+        <access-denied-handler ref="oauthAccessDeniedHandler"/>
+    </http>
 
-        <!-- uses general oauthAccessDeniedHandler -->
+    <http pattern="/me/**" create-session="never" entry-point-ref="oauthAuthenticationEntryPoint"
+          access-decision-manager-ref="accessDecisionManager" xmlns="http://www.springframework.org/schema/security">
+
+        <intercept-url pattern="/me/**" access="SCOPE_DYNAMIC"/>
+        <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
         <access-denied-handler ref="oauthAccessDeniedHandler"/>
     </http>
 
     <http pattern="/Groups/**" create-session="never" entry-point-ref="oauthAuthenticationEntryPoint"
           access-decision-manager-ref="accessDecisionManager" xmlns="http://www.springframework.org/schema/security">
 
-        <!-- resources below /secured/get/resource/ are accessed via scope "READ" -->
         <intercept-url pattern="/Groups/**" access="SCOPE_DYNAMIC"/>
-
-        <!-- validates the delivered access token -->
         <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
-
-        <!-- uses general oauthAccessDeniedHandler -->
         <access-denied-handler ref="oauthAccessDeniedHandler"/>
     </http>
 
     <http pattern="/Metrics/**" create-session="never" entry-point-ref="oauthAuthenticationEntryPoint"
           access-decision-manager-ref="accessDecisionManager" xmlns="http://www.springframework.org/schema/security">
 
-        <!-- resources below /secured/get/resource/ are accessed via scope "READ" -->
         <intercept-url pattern="/Metrics/**" access="SCOPE_DYNAMIC"/>
-
-        <!-- validates the delivered access token -->
         <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
-
-        <!-- uses general oauthAccessDeniedHandler -->
         <access-denied-handler ref="oauthAccessDeniedHandler"/>
     </http>
 
     <http pattern="/osiam/**" create-session="never" entry-point-ref="oauthAuthenticationEntryPoint"
           access-decision-manager-ref="accessDecisionManager" xmlns="http://www.springframework.org/schema/security">
 
-        <!-- resources below /secured/get/resource/ are accessed via scope "READ" -->
         <intercept-url pattern="/osiam/**" access="SCOPE_DYNAMIC"/>
-
-        <!-- validates the delivered access token -->
         <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
-
-        <!-- uses general oauthAccessDeniedHandler -->
         <access-denied-handler ref="oauthAccessDeniedHandler"/>
     </http>
 
-    <!-- entry point for OAuth2 secured resources -->
+    <authentication-manager xmlns="http://www.springframework.org/schema/security"/>
+
+    <oauth:resource-server id="resourceServerFilter" resource-id="oauth2res"
+                           token-services-ref="accessTokenValidationService"/>
+
     <bean id="oauthAuthenticationEntryPoint"
           class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
+
         <property name="realmName" value="oauth2-authorization-server"/>
     </bean>
 
-    <!-- general access decision manager for OAuth2 secured resources -->
-    <bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased"
-          xmlns="http://www.springframework.org/schema/beans">
+    <bean id="scopeVoter" class="org.springframework.security.oauth2.provider.vote.ScopeVoter">
+        <property name="throwException" value="false"/>
+    </bean>
+
+    <bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
+        <property name="allowIfAllAbstainDecisions" value="false"/>
+
         <constructor-arg>
             <list>
+                <bean class="org.osiam.security.authorization.MeScopeAccessDecisionVoter">
+                    <constructor-arg ref="scopeVoter"/>
+                </bean>
                 <bean class="org.osiam.security.authorization.DynamicHTTPMethodScopeEnhancer">
-                    <constructor-arg>
-                        <bean class="org.springframework.security.oauth2.provider.vote.ScopeVoter"/>
-                    </constructor-arg>
+                    <constructor-arg ref="scopeVoter"/>
                 </bean>
             </list>
         </constructor-arg>
     </bean>
 
-    <authentication-manager xmlns="http://www.springframework.org/schema/security" />
-
     <bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
         <constructor-arg value="512"/>
         <property name="iterations" value="1000"/>
     </bean>
-
-    <!-- filter to validate the delivered access token -->
-    <oauth:resource-server id="resourceServerFilter" resource-id="oauth2res" token-services-ref="accessTokenValidationService"/>
 
 </beans>
