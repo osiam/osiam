@@ -96,6 +96,9 @@
 
         <constructor-arg>
             <list>
+                <bean class="org.osiam.security.authorization.AdminScopeAccessDecisionVoter">
+                    <constructor-arg ref="scopeVoter"/>
+                </bean>
                 <bean class="org.osiam.security.authorization.MeScopeAccessDecisionVoter">
                     <constructor-arg ref="scopeVoter"/>
                 </bean>
