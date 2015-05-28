@@ -200,15 +200,19 @@ details.
 
 ### Supported scopes
 
-OSIAM implements the different http methods as single scopes plus the scope 'email':
+OSIAM knows about the following scopes:
 
-* GET - allows you all get calls it stands for reading,
+* GET - allows you all get calls it stands for reading
 * POST - allows you all post calls it stands mostly for creating
 * PUT - allows you all put calls it stands for replacing
 * PATCH - allows you all patch calls which means updating
 * DELETE - allows you all delete calls which means deleting
-* email - allows the access to a basic dataset of the user was authenticated
-during the OAuth 2.0 flow
+* ADMIN - allows full access to any resource
+* ME - allows read and write access to the data of the user associated with the
+  access token
+
+The first five scopes obviously map to the respective HTTP methods and will be
+removed soon.
 
 ## Client Management
 
