@@ -1,5 +1,12 @@
 # OSIAM auth server
 
+## Unreleased
+
+### Features
+
+- Support for new `ME` scope
+- Support for new `ADMIN` scope
+
 ## 2.0 - 2015-04-29
 
 **Breaking changes!**
