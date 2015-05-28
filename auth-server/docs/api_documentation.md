@@ -243,9 +243,9 @@ and refresh_token
 * implicit = the value indicates whether the client authorization to access
 protected resources is done with or without asking the user
 * validityInSeconds = is the validity in seconds for the client authorization
-to access protected resources if implicit is not wanted
-* expiry = the day of expiry of the client authorization to access protected
-resources. Is generated in dependence on validityInSeconds
+to access protected resources if implicit is not wanted. The user will be asked
+again to authorize the client to access they data, after this time is expired.
+The auth-server holds this information in the user's session.
 
 ### Get a single client
 
