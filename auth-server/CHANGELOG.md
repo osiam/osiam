@@ -6,6 +6,16 @@
 
 - Support for new `ME` scope
 - Support for new `ADMIN` scope
+- Remember and check timestamp of approval per client in web session
+
+### Changes
+
+- Remove field `expiry` from OAuth clients
+
+### Fixes
+
+- Revert change that disabled single sign-on
+- Secure the '/token/revocation' endpoints
 
 ## 2.0 - 2015-04-29
 
