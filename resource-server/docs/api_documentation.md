@@ -3,6 +3,7 @@
 ## Table of contents
 
 - [Basics](#basics)
+- [Access](#access)
 - [SCIM](#scim)
   - [OSIAM Implementation Specifics](#osiam-implementation-specifics)
   - [OSIAM's Known Limitations](#osiams-known-limitations)
@@ -31,36 +32,58 @@
 
 ## Basics
 
-The resource interface - also called functional interface - implements the SCIMv2 standard. It's used for management of the user data (identities) within OSIAM.
+The resource interface - also called functional interface - implements the
+SCIMv2 standard. It's used for management of the user data (identities) within
+OSIAM.
 
-The user needs to be stored in the OSIAM database, including an authentication parameter (e.g. a password).
+The user needs to be stored in the OSIAM database, including an authentication
+parameter (e.g. a password).
 
-## SCIM
+## Access
 
-All scim calls are secured by OAuth 2.0, so you will at least have to send an access token in order get the expected response:
+All SCIM endpoints are secured with OAuth 2.0, so you will at least have to
+send an access token in order get the expected response:
 
 ```sh
 curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN" http://OSIAMHOST:8080/osiam-resource-server/Users/ID
 ```
 
 The parameters are:
-* YOUR_ACCESS_TOKEN - the access token that was provided through the OAuth 2.0 grant
+* YOUR_ACCESS_TOKEN - the access token that was provided through the OAuth 2.0
+  grant
 * ID - The ID of the user record you want to retrieve
+
+You can retrieve an access token if you by following [these instructions]
+(https://github.com/osiam/osiam/blob/master/docs/detailed-reference-installation.md#customized-setup).
+
+Most endpoints can only be accessed with a proper authorization. The access
+tokens are bound to a client or a user and need specific scopes, which are
+[defined per client in the auth-server]
+(https://github.com/osiam/auth-server/blob/master/docs/api_documentation.md#supported-scopes).
+
+## SCIM
+
+The resource-server is part of the [SCIM v2](http://www.simplecloud.info/)
+implementation
 
 ### OSIAM Implementation Specifics
 * The default maxResults of a filter is 100
 * xmlDataFormat is not supported
 
 ### OSIAM's Known Limitations
-* the [etag](http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.11) is not supported yet, but it is already in OSIAMs backlog
+* the [etag](http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.11) is
+not supported yet, but it is already in OSIAMs backlog
 
 ### Unsupported Interfaces
 * SCIM bulk actions: Is not yet implemented, but it is on the roadmap
-* Cross ressource types search from the server's root: We do not understand the use case for this functionality at the moment, please let us know if you have a reasonable use case.
+* Cross ressource types search from the server's root: We do not understand the
+use case for this functionality at the moment, please let us know if you have a
+reasonable use case.
 
 ### Service provider configuration
 
-The following URI provides the service provider configuration of the addressed server:
+The following URI provides the service provider configuration of the addressed
+server:
 
 ```http
 http://OSIAMHOST:8080/osiam-resource-server/ServiceProviderConfigs
@@ -165,7 +188,8 @@ The following filter options are supported:
 * lt = less than
 * le = less equals
 
-**The value must be provided in double quotes. To provide a quote as part of the search value, the input must contain \" for each desired quote.**
+**The value must be provided in double quotes. To provide a quote as part of
+the search value, the input must contain \" for each desired quote.**
  
 Here are some examples:
 
@@ -187,7 +211,8 @@ http://OSIAMHOST:8080/osiam-resource-server/Users?access_token=YOUR_ACCESSTOKEN&
 http://OSIAMHOST:8080/osiam-resource-server/Users?access_token=YOUR_ACCESSTOKEN&filter=meta.created%20le%20<an existing time>
 ```
 
-Additionally "AND" and "OR" as logical operators are supported, including grouping with parentheses.
+Additionally "AND" and "OR" as logical operators are supported, including
+grouping with parentheses.
 
 ```http
 http://OSIAMHOST:8080/osiam-resource-server/Users?access_token=YOUR_ACCESSTOKEN&filter=userName%20eq%20"TheUserName"%20and%20meta.created%20lt%20"2013-05-23T13:12:45.672#;4302:00"
@@ -197,7 +222,8 @@ http://OSIAMHOST:8080/osiam-resource-server/Users?access_token=YOUR_ACCESSTOKEN&
 http://OSIAMHOST:8080/osiam-resource-server/Users?access_token=YOUR_ACCESSTOKEN&filter=(userName%20eq%20"TheUserName"%20or%20userName%20eq%20"TheUserName1")%20and%20meta.created%20gt%20"2013-05-23T13:12:45.672#;4302:00"
 ```
 
-Also the "NOT" operator is supported. The parentheses are required and not optional. The "NOT" can also include filters already combined with "AND" and "OR".
+Also the "NOT" operator is supported. The parentheses are required and not
+optional. The "NOT" can also include filters already combined with "AND" and "OR".
 
 ```http
 http://OSIAMHOST:8080/osiam-resource-server/Users?access_token=YOUR_ACCESSTOKEN&filter=active%20eq%20"true"%20and%20not%20(groups.display%20eq%20"TheGroupName")
@@ -205,7 +231,9 @@ http://OSIAMHOST:8080/osiam-resource-server/Users?access_token=YOUR_ACCESSTOKEN&
 
 #### Limiting the output to predefined attributes
 
-It is possible to search and limit the output to a the given list of attributes. To define more than one separate them with comma using the ``attributes`` parameter.
+It is possible to search and limit the output to a the given list of
+attributes. To define more than one separate them with comma using the
+`attributes` parameter.
 
 ```http
 http://OSIAMHOST:8080/osiam-resource-server/Users?access_token=YOUR_ACCESSTOKEN&attributes=userName,displayName,meta.created
@@ -213,9 +241,11 @@ http://OSIAMHOST:8080/osiam-resource-server/Users?access_token=YOUR_ACCESSTOKEN&
 
 #### Sorting
 
-To sort the results ascending or descending by a given attribute use the following parameters:
+To sort the results ascending or descending by a given attribute use the
+following parameters:
 * sortOrder - ascending and descending. Default is ascending
-* sortBy - the attribute so sort by. For example "userName". The default is "id"
+* sortBy - the attribute so sort by. For example "userName". The default is
+"id"
 
 ```http
 http://OSIAMHOST:8080/osiam-resource-server/Users?access_token=YOUR_ACCESSTOKEN&sortBy=meta.created&sortOrder=ascending
@@ -225,11 +255,13 @@ http://OSIAMHOST:8080/osiam-resource-server/Users?access_token=YOUR_ACCESSTOKEN&
 
 #### Paging
 
-The paging is done via two parameters that limit the output shown per page and define the starting point using the following parameters:
+The paging is done via two parameters that limit the output shown per page and
+define the starting point using the following parameters:
 * count - will limit the items per page to the given value. Default is 100
 * startIndex - will define the start index of the search. Default is 0
 
-To paginate through the results increase the startIndex to the next desired position.
+To paginate through the results increase the startIndex to the next desired
+position.
 
 ```http
 http://OSIAMHOST:8080/osiam-resource-server/Users?access_token=$YOUR_ACCESSTOKEN&count=5&startIndex=0
@@ -243,28 +275,34 @@ This section will describe the handling of user with OSIAM.
 
 #### Get a single User
 
-To get a single user you need to send a GET request to the URL providing the user's ID
+To get a single user you need to send a GET request to the URL providing the
+user's ID
 
 ```http
 http://OSIAMHOST:8080/osiam-resource-server/Users/ID
 ```
 
-The response contains the SCIM compliant record of the user from the OSIAM database.
+The response contains the SCIM compliant record of the user from the OSIAM
+database.
 
 e.g.:
 
 ```sh
 curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET OSIAMHOST:8080/osiam-resource-server/Users/$ID
 ```
-See [SCIMv2 specification](http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.2.1) for further details.
+See [SCIMv2 specification]
+(http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.2.1) for further
+details.
 
 #### Get the User of the current accessToken
 
-To know the user of the actual accessToken OSIAM implemented an /me interface. For more detail information please look [here](#facebooks-me).
+To know the user of the actual accessToken OSIAM implemented an /me interface.
+For more detail information please look [here](#facebooks-me).
 
 #### Create a new User
 
-To create a new user you need to send the user input as JSON via POST to the URL
+To create a new user you need to send the user input as JSON via POST to the
+URL
 
 ```http
 http://OSIAMHOST:8080/osiam-resource-server/Users
@@ -278,10 +316,13 @@ e.g.:
 curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X POST LOCALHOST:8080/osiam-resource-server/Users -d '{"schemas":["urn:scim:schemas:core:1.0"],"externalId":"admin","userName":"Arthur Dent","password":""}'
 ```
 
-See [scim 2 rest spec](http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.1) for further details.
+See [scim 2 rest spec]
+(http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.1) for further
+details.
 
 #### Replace an existing User
-To replace an existing user you need to send the user input as json via put to the url
+To replace an existing user you need to send the user input as json via put to
+the url
 
 ```http
 http://OSIAMHOST:8080/osiam-resource-server/Users/$ID
@@ -294,10 +335,13 @@ e.g.:
 curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT OSIAMHOST:8080/osiam-resource-server/Users/$ID -d '{"schemas":["urn:scim:schemas:core:1.0"], "externalId":"admin","userName":"Arthur Dent","password":""}'
 ```
 
-See [scim 2 rest spec](http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.3.1) for further details.
+See [scim 2 rest spec]
+(http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.3.1) for further
+details.
 
 #### Update a User
-To update an existing user you need to send the fields you which to update oder delete as json via patch to the url
+To update an existing user you need to send the fields you which to update or
+delete as json via patch to the url
 
 ```http
 http://OSIAMHOST:8080/osiam-resource-server/Users/$ID
@@ -309,7 +353,9 @@ e.g.:
 ```sh
 curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PATCH OSIAMHOST:8080/osiam-resource-server/Users/$ID -d '{"schemas":["urn:scim:schemas:core:1.0"], "externalId":"admin","userName":"Arthur Dent","password":""}'
 ```
-See [scim 2 rest spec](http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.3.2) for further details.
+See [scim 2 rest spec]
+(http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.3.2) for further
+details.
 
 #### Delete a User
 To delete an existing user you need to call the url via delete
@@ -346,10 +392,13 @@ e.g.:
 curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET OSIAMHOST:8080/osiam-resource-server/Groups/$ID
 ```
 
-See [scim 2 rest spec](http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.2.1) for further details.
+See [scim 2 rest spec]
+(http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.2.1) for further
+details.
 
 #### Create a new Group
-To create a new group you need to send the group input as json via post to the url
+To create a new group you need to send the group input as json via post to the
+url
 
 ```http
 http://OSIAMHOST:8080/osiam-resource-server/Groups
@@ -363,7 +412,9 @@ e.g.:
 curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X POST OSIAMHOST:8080/osiam-resource-server/Groups -d '{"schemas":["urn:scim:schemas:core:1.0"],"displayName":"adminsGroup"}'
 ```
 
-See [scim 2 rest spec](http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.1) for further details.
+See [scim 2 rest spec]
+(http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.1) for further
+details.
 
 #### Replace an existing Group
 To replace a group you need to send the group input as json via put to the url
@@ -379,10 +430,13 @@ e.g.:
 ```sh
 curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT OSIAMHOST:8080/osiam-resource-server/Groups/$ID -d '{"schemas":["urn:scim:schemas:core:1.0"], "displayName":"Group1"}'
 ```
-See [scim 2 rest spec](http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.3.1) for further details.
+See [scim 2 rest spec]
+(http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.3.1) for further
+details.
 
 #### Update a Group
-To update a group you need to send the fields you which to update oder delete as json via patch to the url
+To update a group you need to send the fields you which to update oder delete
+as json via patch to the url
 
 ```http
 http://OSIAMHOST:8080/osiam-resource-server/Groups/$ID
@@ -395,7 +449,9 @@ e.g.:
 ```sh
 curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PATCH OSIAMHOST:8080/osiam-resource-server/Groups/$ID -d '{"schemas":["urn:scim:schemas:core:1.0"], "displayName":"adminsGroup"}'
 ```
-See [scim 2 rest spec](http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.3.2) for further details.
+See [scim 2 rest spec]
+(http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.3.2) for further
+details.
 
 #### Delete a Group
 To delete a group you need to call the url via delete
