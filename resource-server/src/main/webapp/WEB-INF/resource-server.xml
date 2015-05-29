@@ -36,6 +36,14 @@
         <access-denied-handler ref="oauthAccessDeniedHandler"/>
     </http>
 
+    <http pattern="/.search" create-session="never" entry-point-ref="oauthAuthenticationEntryPoint"
+          access-decision-manager-ref="accessDecisionManager" xmlns="http://www.springframework.org/schema/security">
+
+        <intercept-url pattern="/.search" access="SCOPE_DYNAMIC"/>
+        <custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
+        <access-denied-handler ref="oauthAccessDeniedHandler"/>
+    </http>
+
     <http pattern="/Users/**" create-session="never" entry-point-ref="oauthAuthenticationEntryPoint"
           access-decision-manager-ref="accessDecisionManager" xmlns="http://www.springframework.org/schema/security">
 
