@@ -7,8 +7,9 @@ Chapters:
  - [Authorization Code Grant](#authorization-code-grant)
  - [Resource Owner Password Credentials Grant](#resource-owner-password-credentials-grant)
  - [Client Credentials Grant](#client-credentials-grant)
-- [Scopes] (#scopes)
+- [Scopes](#scopes)
  - [Supported scopes](#supported-scopes)
+- [Client Management](#client-management)
 
 ## Basics
 
