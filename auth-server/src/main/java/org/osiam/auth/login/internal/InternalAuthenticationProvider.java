@@ -23,12 +23,8 @@
 
 package org.osiam.auth.login.internal;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -52,7 +48,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
-public class InternalAuthenticationProvider implements AuthenticationProvider, ApplicationListener<AbstractAuthenticationEvent> {
+public class InternalAuthenticationProvider implements AuthenticationProvider,
+        ApplicationListener<AbstractAuthenticationEvent> {
 
     @Value("${org.osiam.auth-server.tempLock.count:0}")
     private Integer maxLoginFailures;
@@ -121,13 +118,13 @@ public class InternalAuthenticationProvider implements AuthenticationProvider, A
     }
 
     private void assertUserNotLocked(String username) {
-        if(isLockMechanismDisabled()) {
+        if (isLockMechanismDisabled()) {
             return;
         }
 
         Date logindate = lastFailedLogin.get(username);
 
-        if(logindate != null && isWaitTimeOver(logindate)) {
+        if (logindate != null && isWaitTimeOver(logindate)) {
             accessCounter.remove(username);
             lastFailedLogin.remove(username);
         }
@@ -137,7 +134,8 @@ public class InternalAuthenticationProvider implements AuthenticationProvider, A
     }
 
     private boolean isWaitTimeOver(Date startWaitingDate) {
-        return new Date().getTime() - startWaitingDate.getTime() >= (lockTimeout*1000);
+        return System.currentTimeMillis() - startWaitingDate.getTime() >= TimeUnit.SECONDS.toMillis(lockTimeout);
+
     }
 
     private boolean isLockMechanismDisabled() {
@@ -151,9 +149,8 @@ public class InternalAuthenticationProvider implements AuthenticationProvider, A
             return;
         }
 
-        if (appEvent instanceof AuthenticationSuccessEvent &&
-            accessCounter.containsKey(currentUserName) &&
-            accessCounter.get(currentUserName) < maxLoginFailures) {
+        if (appEvent instanceof AuthenticationSuccessEvent && accessCounter.containsKey(currentUserName)
+                && accessCounter.get(currentUserName) < maxLoginFailures) {
 
             accessCounter.remove(currentUserName);
             lastFailedLogin.remove(currentUserName);

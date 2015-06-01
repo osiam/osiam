@@ -60,7 +60,7 @@ public class LoginController {
         model.addAttribute("loginError", true);
         model.addAttribute("isLdapConfigured", isLdapConfigured);
 
-        if(userIsLocked()) {
+        if (userIsLocked()) {
             model.addAttribute("errorKey", "login.lock");
             model.addAttribute("templockTimeout", templockTimeout);
         } else {
@@ -71,11 +71,8 @@ public class LoginController {
     }
 
     private boolean userIsLocked() {
-        if (session.getAttribute("IS_LOCKED") != null && session.getAttribute("IS_LOCKED") instanceof Boolean) {
-            if ((Boolean) session.getAttribute("IS_LOCKED")) {
-                return true;
-            }
-        }
-        return false;
+        return session.getAttribute("IS_LOCKED") != null && session.getAttribute("IS_LOCKED") instanceof Boolean
+                && (Boolean) session.getAttribute("IS_LOCKED");
+
     }
 }

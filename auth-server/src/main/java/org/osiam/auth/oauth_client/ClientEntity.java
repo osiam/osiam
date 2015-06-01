@@ -24,24 +24,11 @@
 package org.osiam.auth.oauth_client;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import org.hibernate.annotations.Type;
 
@@ -55,20 +42,22 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @NamedQueries({ @NamedQuery(name = "getClientById", query = "SELECT i FROM ClientEntity i WHERE i.id= :id") })
 public class ClientEntity {
 
-    private static final int LENGTH = 32;
+    private static final int ID_LENGTH = 32;
+    private static final int SEQUENCE_INITIAL_VALUE = 100;
+    private static final int SEQUENCE_ALLOCATION_SIZE = 1;
 
     @Id
     @SequenceGenerator(name = "sequence_osiam_client",
             sequenceName = "auth_server_sequence_osiam_client",
-            allocationSize = 1,
-            initialValue = 100)
+            allocationSize = SEQUENCE_ALLOCATION_SIZE,
+            initialValue = SEQUENCE_INITIAL_VALUE)
     @GeneratedValue(generator = "sequence_osiam_client")
     @JsonIgnore
     @Column(name = "internal_id")
     private long internalId;
 
     @JsonProperty
-    @Column(unique = true, nullable = false, length = LENGTH)
+    @Column(unique = true, nullable = false, length = ID_LENGTH)
     private String id;
 
     @JsonProperty
@@ -110,7 +99,7 @@ public class ClientEntity {
 
     /**
      * Used to Map Json to ClientEntity, because some Fields are generated.
-     * 
+     *
      */
     public ClientEntity(ClientEntity entity) {
         if (entity.getId() != null) {
