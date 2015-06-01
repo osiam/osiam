@@ -55,6 +55,10 @@
         </developer>
     </developers>
 
+    <prerequisites>
+        <maven>3.0.4</maven>
+    </prerequisites>
+
     <scm>
         <connection>scm:https://github.com/osiam/auth-server.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/osiam/auth-server.git</developerConnection>
@@ -80,8 +84,7 @@
 
         <version.spring>4.1.6.RELEASE</version.spring>
         <version.spring.security>3.2.7.RELEASE</version.spring.security>
-        <version.hibernate>4.3.9.Final</version.hibernate>
-        <version.slf4j>1.7.12</version.slf4j>
+        <version.hibernate>4.3.10.Final</version.hibernate>
         <version.aspectj>1.8.5</version.aspectj>
         <version.thymeleaf>2.1.4.RELEASE</version.thymeleaf>
 
@@ -94,7 +97,7 @@
         <dependency>
             <groupId>org.osiam</groupId>
             <artifactId>connector4java</artifactId>
-            <version>1.4</version>
+            <version>1.5.1</version>
         </dependency>
 
         <dependency>
@@ -379,7 +382,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.2</version>
+                <version>3.3</version>
                 <extensions>true</extensions>
                 <configuration>
                     <compilerId>groovy-eclipse-compiler</compilerId>
@@ -428,7 +431,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
+                <version>2.4</version>
                 <inherited>true</inherited>
                 <executions>
                     <execution>
@@ -461,7 +464,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.8</version>
+                <version>1.9.1</version>
                 <executions>
                     <execution>
                         <id>add-test-source</id>
@@ -481,7 +484,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.4</version>
+                <version>2.6</version>
                 <configuration>
                     <warName>osiam-auth-server</warName>
                     <attachClasses>true</attachClasses>
@@ -503,7 +506,7 @@
 
             <plugin>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.1</version>
+                <version>2.5.2</version>
                 <configuration>
                     <tagNameFormat>v@{project.version}</tagNameFormat>
                 </configuration>
@@ -518,7 +521,7 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-assembly-plugin</artifactId>
-                        <version>2.5.3</version>
+                        <version>2.5.4</version>
                         <executions>
                             <execution>
                                 <id>distribution-assembly</id>
