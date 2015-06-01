@@ -1,6 +1,6 @@
 # OSIAM auth server
 
-## Unreleased
+## 2.1 - 2015-06-01
 
 ### Features
 
@@ -11,11 +11,17 @@
 ### Changes
 
 - Remove field `expiry` from OAuth clients
+- Bump dependencies
 
 ### Fixes
 
 - Revert change that disabled single sign-on
 - Secure the '/token/revocation' endpoints
+
+### Other
+
+- Auth-server now lives in its own Git repo
+- Changed artifact id from `osiam-auth-server` to `auth-server`
 
 ## 2.0 - 2015-04-29
 
