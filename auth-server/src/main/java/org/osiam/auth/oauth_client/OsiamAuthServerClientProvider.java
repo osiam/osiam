@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 import org.osiam.auth.exception.ResourceNotFoundException;
 import org.osiam.client.oauth.GrantType;
@@ -43,7 +44,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * ClientProvider which created the auth server client on startup
- * 
+ *
  */
 @Service
 public class OsiamAuthServerClientProvider {
@@ -51,6 +52,7 @@ public class OsiamAuthServerClientProvider {
     private static final Logger LOGGER = Logger.getLogger(OsiamAuthServerClientProvider.class.getName());
 
     public static final String AUTH_SERVER_CLIENT_ID = "auth-server";
+    public static final int CLIENT_VALIDITY = 10;
 
     @Inject
     private PlatformTransactionManager txManager;
@@ -74,12 +76,12 @@ public class OsiamAuthServerClientProvider {
                 try {
                     clientEntity = clientDao.getClient(AUTH_SERVER_CLIENT_ID);
                 } catch (ResourceNotFoundException e) {
-                    LOGGER.log(Level.INFO, "No auth server found. The auth server will be created.");
+                    LOGGER.log(Level.INFO, "No auth server client found, so it will be created.");
                 }
 
                 if (clientEntity == null) {
-                    int validity = 10;
-                    
+                    int validity = CLIENT_VALIDITY;
+
                     clientEntity = new ClientEntity();
                     Set<String> scopes = new HashSet<String>();
                     scopes.add(Scope.GET.toString());

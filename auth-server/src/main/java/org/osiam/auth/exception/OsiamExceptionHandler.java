@@ -49,18 +49,20 @@ public class OsiamExceptionHandler extends SimpleMappingExceptionResolver {
         LOGGER.log(Level.WARNING, "An exception occurred", e);
         return new ModelAndView("oauth_error");
     }
-    
+
     @ExceptionHandler(value = { ResourceNotFoundException.class })
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    protected @ResponseBody JsonErrorResult handleResourceNotFound(HttpServletRequest request, HttpServletResponse response, ResourceNotFoundException e) {
+    @ResponseBody
+    protected JsonErrorResult handleResourceNotFound(HttpServletRequest request,
+            HttpServletResponse response, ResourceNotFoundException e) {
+
         LOGGER.log(Level.WARNING, "A ResourceNotFoundException occurred", e);
-        JsonErrorResult error = new JsonErrorResult(HttpStatus.NOT_FOUND.name(), e.getMessage());
-        return error;
+        return new JsonErrorResult(HttpStatus.NOT_FOUND.name(), e.getMessage());
     }
-    
+
     @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
     static class JsonErrorResult {
-        private String error_code; // NOSONAR - needed pattern due to json serializing
+        private String error_code;
         private String description;
 
         public JsonErrorResult(String name, String message) {

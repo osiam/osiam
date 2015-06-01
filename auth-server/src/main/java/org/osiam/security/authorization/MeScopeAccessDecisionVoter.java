@@ -22,6 +22,7 @@ public class MeScopeAccessDecisionVoter implements AccessDecisionVoter<FilterInv
 
     public static final SecurityConfig SCOPE_DYNAMIC = new SecurityConfig("SCOPE_DYNAMIC");
     public static final SecurityConfig SCOPE_ME = new SecurityConfig("SCOPE_ME");
+    public static final int REVOCATION_PATH_SEGMENTS_SIZE = 3;
 
     private final ScopeVoter scopeVoter;
 
@@ -44,9 +45,8 @@ public class MeScopeAccessDecisionVoter implements AccessDecisionVoter<FilterInv
             Collection<ConfigAttribute> attributes) {
 
         String requestUrl = filterInvocation.getRequestUrl();
-        String requestMethod = filterInvocation.getHttpRequest().getMethod();
 
-        if (!canVoteOn(authentication, requestUrl, requestMethod)) {
+        if (!canVoteOn(authentication, requestUrl)) {
             return ACCESS_ABSTAIN;
         }
 
@@ -71,7 +71,7 @@ public class MeScopeAccessDecisionVoter implements AccessDecisionVoter<FilterInv
         return enhancedAttributes;
     }
 
-    private boolean canVoteOn(Authentication authentication, String url, String method) {
+    private boolean canVoteOn(Authentication authentication, String url) {
         if (!(authentication instanceof OAuth2Authentication)) {
             return false;
         }
@@ -101,7 +101,7 @@ public class MeScopeAccessDecisionVoter implements AccessDecisionVoter<FilterInv
                     .trimResults()
                     .splitToList(path);
 
-            if (pathSegments.size() < 3) {
+            if (pathSegments.size() < REVOCATION_PATH_SEGMENTS_SIZE) {
                 return false;
             }
 

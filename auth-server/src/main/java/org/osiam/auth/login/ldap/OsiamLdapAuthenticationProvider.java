@@ -90,29 +90,30 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
 
         DirContextOperations userData = doAuthentication(userToken);
 
-        UserDetails ldapUser = osiamLdapUserContextMapper.mapUserFromContext(userData, authentication.getName(),
+        // TODO: check if the next call is needed for it's side effects
+        osiamLdapUserContextMapper.mapUserFromContext(userData, authentication.getName(),
                 loadUserAuthorities(userData, authentication.getName(), (String) authentication.getCredentials()));
 
         user = synchronizeLdapData(userData, user);
-        
+
         if (!user.isActive()) {
             throw new DisabledException("The user with the username '" + username + "' is disabled!");
         }
-        
+
         User authUser = new User.Builder(username).setId(user.getId()).build();
-        
+
         List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
-        
+
         for (Role role : user.getRoles()) {
             grantedAuthorities.add(new SimpleGrantedAuthority(role.getValue()));
         }
-        
+
         UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(authUser, null, grantedAuthorities);
         result.setDetails(authentication.getDetails());
-        
+
         return result;
     }
-    
+
     private void checkIfInternalUserExists(User user) {
         if (user != null && !hasAuthServerExtension(user)) {
             throw new LdapAuthenticationProcessException("Can't create the ldap user with the username '"
@@ -130,16 +131,17 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
     }
 
     private User synchronizeLdapData(DirContextOperations ldapUserData, User user) {
-        boolean userExists = user != null;
+        User userToReturn = user;
 
-        if (!userExists) {
-            user = osiamLdapUserContextMapper.mapUser(ldapUserData);
-            user = resourceServerConnector.createUser(user);
-        } else if (syncUserData && userExists) {
+        if (userToReturn == null) {
+            User newUser = osiamLdapUserContextMapper.mapUser(ldapUserData);
+            userToReturn = resourceServerConnector.createUser(newUser);
+        } else if (syncUserData) {
             UpdateUser updateUser = osiamLdapUserContextMapper.mapUpdateUser(user, ldapUserData);
-            user = resourceServerConnector.updateUser(user.getId(), updateUser);
+            userToReturn = resourceServerConnector.updateUser(user.getId(), updateUser);
         }
-        return user;
+
+        return userToReturn;
     }
 
     @Override
