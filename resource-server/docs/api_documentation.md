@@ -285,10 +285,8 @@ http://OSIAMHOST:8080/osiam-resource-server/Users/ID
 The response contains the SCIM compliant record of the user from the OSIAM
 database.
 
-e.g.:
-
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET OSIAMHOST:8080/osiam-resource-server/Users/$ID
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET http://localhost:8080/osiam-resource-server/Users/$ID
 ```
 See [SCIMv2 specification]
 (http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.2.1) for further
@@ -313,7 +311,7 @@ the response will be the created user.
 e.g.:
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X POST LOCALHOST:8080/osiam-resource-server/Users -d '{"schemas":["urn:scim:schemas:core:1.0"],"externalId":"admin","userName":"Arthur Dent","password":""}'
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X POST http://localhost:8080/osiam-resource-server/Users -d '{"schemas":["urn:scim:schemas:core:2.0:User"],"externalId":"external_id","userName":"arthur","password":"dent"}'
 ```
 
 See [scim 2 rest spec]
@@ -332,7 +330,7 @@ the response will be the replaced user in json format.
 
 e.g.:
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT OSIAMHOST:8080/osiam-resource-server/Users/$ID -d '{"schemas":["urn:scim:schemas:core:1.0"], "externalId":"admin","userName":"Arthur Dent","password":""}'
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT http://localhost:8080/osiam-resource-server/Users/$ID -d '{"schemas":["urn:scim:schemas:core:2.0:User"], "externalId":"new_external_id","userName":"arthur","password":"dent"}'
 ```
 
 See [scim 2 rest spec]
@@ -351,7 +349,7 @@ the response will be the updated user in json format.
 
 e.g.:
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PATCH OSIAMHOST:8080/osiam-resource-server/Users/$ID -d '{"schemas":["urn:scim:schemas:core:1.0"], "externalId":"admin","userName":"Arthur Dent","password":""}'
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PATCH http://localhost:8080/osiam-resource-server/Users/$ID -d '{"schemas":["urn:scim:schemas:core:2.0:User"], "externalId":"new_external_id"}'
 ```
 See [scim 2 rest spec]
 (http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.3.2) for further
@@ -369,16 +367,16 @@ the response will be the http status.
 e.g.:
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X DELETE OSIAMHOST:8080/osiam-resource-server/Users/$ID
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X DELETE http://localhost:8080/osiam-resource-server/Users/$ID
 ```
 
 ### Group management
 
-This section will descripe the handling of user in the osiam context.
+This section will describe the handling of user in the osiam context.
 
 #### Get a single Group
 
-To get a single group you need to send a GET request to the url 
+To get a single group you need to send a GET request to the url
 
 ```http
 http://OSIAMHOST:8080/osiam-resource-server/Groups/$ID
@@ -389,7 +387,7 @@ the response will be a osiam group in json format.
 e.g.:
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET OSIAMHOST:8080/osiam-resource-server/Groups/$ID
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET http://localhost:8080/osiam-resource-server/Groups/$ID
 ```
 
 See [scim 2 rest spec]
@@ -409,7 +407,7 @@ the response will be the created group in json format.
 e.g.:
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X POST OSIAMHOST:8080/osiam-resource-server/Groups -d '{"schemas":["urn:scim:schemas:core:1.0"],"displayName":"adminsGroup"}'
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X POST http://localhost:8080/osiam-resource-server/Groups -d '{"schemas":["urn:scim:schemas:core:2.0:Group"],"displayName":"adminsGroup"}'
 ```
 
 See [scim 2 rest spec]
@@ -428,7 +426,7 @@ the response will be the replaced group in json format.
 e.g.:
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT OSIAMHOST:8080/osiam-resource-server/Groups/$ID -d '{"schemas":["urn:scim:schemas:core:1.0"], "displayName":"Group1"}'
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT http://localhost:8080/osiam-resource-server/Groups/$ID -d '{"schemas":["urn:scim:schemas:core:2.0:Group"], "displayName":"Group1"}'
 ```
 See [scim 2 rest spec]
 (http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.3.1) for further
@@ -447,7 +445,7 @@ the response will be the updated group in json format.
 e.g.:
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PATCH OSIAMHOST:8080/osiam-resource-server/Groups/$ID -d '{"schemas":["urn:scim:schemas:core:1.0"], "displayName":"adminsGroup"}'
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PATCH http://localhost:8080/osiam-resource-server/Groups/$ID -d '{"schemas":["urn:scim:schemas:core:2.0:Group"], "displayName":"adminsGroup"}'
 ```
 See [scim 2 rest spec]
 (http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.3.2) for further
@@ -465,7 +463,7 @@ the response will be status.
 e.g.:
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X DELETE OSIAMHOST:8080/osiam-resource-server/Groups/$ID
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X DELETE http://localhost:8080/osiam-resource-server/Groups/$ID
 ```
 
 ## Other
@@ -480,7 +478,7 @@ http://OSIAMHOST:8080/osiam-resource-server/me
 
 e.g.:
 ```sh
-curl -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" OSIAMHOST:8080/osiam-resource-server/me
+curl -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" http://localhost:8080/osiam-resource-server/me
 ```
 
 The response is like the result of facebooks /me:
