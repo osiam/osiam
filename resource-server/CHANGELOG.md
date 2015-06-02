@@ -1,11 +1,21 @@
 # OSIAM resource server
 
-## Unreleased
+## 2.1 - 2015-06-02
 
 ### Features
 
 - Support for new `ME` scope
 - Support for new `ADMIN` scope
+
+### Fixes
+
+- Secure search endpoint on `/`
+- PostalCode should not be retrieved as literal `null` string when not set
+
+### Other
+
+- resource-server now lives in its own Git repo
+- Changed artifact id from `osiam-resource-server` to `resource-server`
 
 ## 2.0 - 2015-04-29
 
