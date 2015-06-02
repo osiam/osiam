@@ -635,7 +635,7 @@
                         <executions>
                             <execution>
                                 <id>generate-data</id>
-                                <phase>package</phase>
+                                <phase>test</phase>
 
                                 <goals>
                                     <goal>cobertura</goal>
