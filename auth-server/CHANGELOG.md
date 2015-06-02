@@ -1,5 +1,11 @@
 # OSIAM auth server
 
+## 2.1.1 - 2015-06-02
+
+### Other
+
+- Append classifier to distribution artifact
+
 ## 2.1 - 2015-06-02
 
 ### Features
