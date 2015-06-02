@@ -37,16 +37,18 @@ import org.springframework.beans.factory.annotation.Value;
  *
  */
 public class MeasureDurationTimeOfMethods {
-    
-    private static Logger LOGGER = Logger.getLogger(MeasureDurationTimeOfMethods.class.getName()); //NOSONAR excluded because of testing
-    
+
+    private static Logger LOGGER = Logger.getLogger(MeasureDurationTimeOfMethods.class.getName());
+
     @Value("${org.osiam.resource-server.profiling:false}")
     private boolean enabled;
 
     @Around("excludeDynamicHTTPMethodScopeEnhancer() && includeOrgOsiam()")
-    public Object measureTime(ProceedingJoinPoint joinPoint) throws Throwable { //NOSONAR the join point throws it and can't be omitted
+    public Object measureTime(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = 0, end;
-        if (enabled) { start = System.currentTimeMillis(); }
+        if (enabled) {
+            start = System.currentTimeMillis();
+        }
         Object result = wrapExceptionForSonar(joinPoint);
         if (enabled) {
             end = System.currentTimeMillis();
@@ -57,7 +59,7 @@ public class MeasureDurationTimeOfMethods {
 
     }
 
-    private Object wrapExceptionForSonar(ProceedingJoinPoint joinPoint) throws Throwable { //NOSONAR the join point throws it and can't be omitted
+    private Object wrapExceptionForSonar(ProceedingJoinPoint joinPoint) throws Throwable {
         Object result;
         result = joinPoint.proceed();
 

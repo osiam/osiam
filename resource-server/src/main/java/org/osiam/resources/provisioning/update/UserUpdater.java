@@ -79,7 +79,7 @@ public class UserUpdater {
 
     @Inject
     private PasswordEncoder passwordEncoder;
-    
+
     @Inject
     private ExtensionUpdater extensionUpdater;
 

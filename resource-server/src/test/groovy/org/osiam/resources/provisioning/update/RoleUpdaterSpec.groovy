@@ -28,7 +28,6 @@ import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.Role
 import org.osiam.storage.entities.RoleEntity
 import org.osiam.storage.entities.UserEntity
-
 import spock.lang.Specification
 
 class RoleUpdaterSpec extends Specification {
@@ -39,7 +38,7 @@ class RoleUpdaterSpec extends Specification {
     UserEntity userEntity = Mock()
     RoleEntity roleEntity = Mock()
     RoleConverter roleConverter = Mock()
-    RoleUpdater roleUpdater = new RoleUpdater(roleConverter : roleConverter)
+    RoleUpdater roleUpdater = new RoleUpdater(roleConverter: roleConverter)
 
     def 'removing all roles is possible'() {
         when:
@@ -48,14 +47,14 @@ class RoleUpdaterSpec extends Specification {
         then:
         1 * userEntity.removeAllRoles()
         userEntity.getRoles() >> ([
-            new RoleEntity(value : IRRELEVANT),
-            new RoleEntity(value : IRRELEVANT_02)] as Set)
+                new RoleEntity(value: IRRELEVANT),
+                new RoleEntity(value: IRRELEVANT_02)] as Set)
     }
 
-    def 'removing an role is possible'(){
+    def 'removing an role is possible'() {
         given:
-        MultiValuedAttribute role01 = new Role.Builder(value : IRRELEVANT, operation : 'delete', ).build()
-        RoleEntity roleEntity01 = new RoleEntity(value : IRRELEVANT)
+        MultiValuedAttribute role01 = new Role.Builder(value: IRRELEVANT, operation: 'delete',).build()
+        RoleEntity roleEntity01 = new RoleEntity(value: IRRELEVANT)
 
         when:
         roleUpdater.update([role01] as List, userEntity, [] as Set)
@@ -65,10 +64,10 @@ class RoleUpdaterSpec extends Specification {
         1 * userEntity.removeRole(roleEntity01)
     }
 
-    def 'adding a new role is possible'(){
+    def 'adding a new role is possible'() {
         given:
-        MultiValuedAttribute role = new Role.Builder(value : IRRELEVANT).build()
-        RoleEntity roleEntity = new RoleEntity(value : IRRELEVANT)
+        MultiValuedAttribute role = new Role.Builder(value: IRRELEVANT).build()
+        RoleEntity roleEntity = new RoleEntity(value: IRRELEVANT)
 
         when:
         roleUpdater.update([role] as List, userEntity, [] as Set)
@@ -77,17 +76,17 @@ class RoleUpdaterSpec extends Specification {
         1 * roleConverter.fromScim(role) >> roleEntity
         1 * userEntity.addRole(roleEntity)
     }
-    
-    def 'adding a new primary role removes the primary attribite from the old one'(){
+
+    def 'adding a new primary role removes the primary attribite from the old one'() {
         given:
-        MultiValuedAttribute newPrimaryRole = new Role.Builder(value : IRRELEVANT, primary : true).build()
-        RoleEntity newPrimaryRoleEntity = new RoleEntity(value : IRRELEVANT, primary : true)
+        MultiValuedAttribute newPrimaryRole = new Role.Builder(value: IRRELEVANT, primary: true).build()
+        RoleEntity newPrimaryRoleEntity = new RoleEntity(value: IRRELEVANT, primary: true)
 
         RoleEntity oldPrimaryRoleEntity = Spy()
         oldPrimaryRoleEntity.setValue(IRRELEVANT_02)
         oldPrimaryRoleEntity.setPrimary(true)
 
-        RoleEntity roleEntity = new RoleEntity(value : IRRELEVANT_02, primary : false)
+        RoleEntity roleEntity = new RoleEntity(value: IRRELEVANT_02, primary: false)
 
         when:
         roleUpdater.update([newPrimaryRole] as List, userEntity, [] as Set)

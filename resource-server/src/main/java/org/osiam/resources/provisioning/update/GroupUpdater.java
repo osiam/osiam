@@ -74,7 +74,8 @@ public class GroupUpdater {
 
         if (!Strings.isNullOrEmpty(displayName)) {
             if (groupDao.isDisplayNameAlreadyTaken(displayName, groupEntity.getId().toString())) {
-                throw new ResourceExistsException(String.format("Group with displayName '%s' already exists", displayName));
+                throw new ResourceExistsException(String.format("Group with displayName '%s' already exists",
+                        displayName));
             }
             groupEntity.setDisplayName(displayName);
         }

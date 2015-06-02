@@ -48,14 +48,17 @@ import com.google.common.collect.ImmutableSet;
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class ResourceEntity {
 
+    private static final int SEQUENCE_ALLOCATION_SIZE = 1;
+    private static final int SEQUENCE_INITIAL_VALUE = 100;
+
     @Column(unique = true, nullable = false)
     private String id;
 
     @Id
     @SequenceGenerator(name = "sequence_scim_id",
             sequenceName = "resource_server_sequence_scim_id",
-            allocationSize = 1,
-            initialValue = 100)
+            allocationSize = SEQUENCE_ALLOCATION_SIZE,
+            initialValue = SEQUENCE_INITIAL_VALUE)
     @GeneratedValue(generator = "sequence_scim_id")
     @Column(name = "internal_id")
     private long internalId;

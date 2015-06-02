@@ -23,13 +23,10 @@
 
 package org.osiam.resources.controller
 
-import javax.servlet.http.HttpServletRequest
-
 import org.joda.time.format.DateTimeFormatter
 import org.joda.time.format.ISODateTimeFormat
-import org.osiam.resources.scim.User;
+import org.osiam.resources.scim.User
 import org.osiam.security.authorization.AccessTokenValidationService
-import org.osiam.security.helper.AccessTokenHelper;
 import org.osiam.storage.dao.UserDao
 import org.osiam.storage.entities.EmailEntity
 import org.osiam.storage.entities.MetaEntity
@@ -37,8 +34,9 @@ import org.osiam.storage.entities.NameEntity
 import org.osiam.storage.entities.UserEntity
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.provider.OAuth2Authentication
-
 import spock.lang.Specification
+
+import javax.servlet.http.HttpServletRequest
 
 class MeControllerSpec extends Specification {
     AccessTokenValidationService accessTokenValidationService = Mock()
@@ -49,10 +47,10 @@ class MeControllerSpec extends Specification {
     Authentication userAuthentication = Mock(Authentication)
     NameEntity name = new NameEntity(familyName: 'Prefect', givenName: 'Fnord', formatted: 'Fnord Prefect')
     UserEntity user = new UserEntity(active: true, emails: [
-        new EmailEntity(primary: true, value: 'test@test.de')
+            new EmailEntity(primary: true, value: 'test@test.de')
     ],
-    name: name, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
-    locale: 'de_DE', userName: 'fpref')
+            name: name, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
+            locale: 'de_DE', userName: 'fpref')
     DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTime()
 
     def setup() {
@@ -89,9 +87,9 @@ class MeControllerSpec extends Specification {
     def 'should not provide an email address if no primary email exists'() {
         given:
         UserEntity user = new UserEntity(active: true, name: name, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
-        emails: [
-            new EmailEntity(primary: false, value: 'test@test.de')
-        ], locale: 'de_DE', userName: 'fpref')
+                emails: [
+                        new EmailEntity(primary: false, value: 'test@test.de')
+                ], locale: 'de_DE', userName: 'fpref')
         User principal = new User.Builder('username').setId('theUserId').build()
         def userId = 'theUserId'
 
@@ -164,10 +162,10 @@ class MeControllerSpec extends Specification {
     def 'should not provide name, first name, last name if no name was submitted'() {
         given:
         def user = new UserEntity(active: true, emails: [
-            new EmailEntity(primary: true, value: 'test@test.de')
+                new EmailEntity(primary: true, value: 'test@test.de')
         ],
-        name: null, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
-        locale: 'de_DE', userName: 'fpref')
+                name: null, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
+                locale: 'de_DE', userName: 'fpref')
         User principal = new User.Builder('username').setId('theUserId').build()
         def userId = 'theUserId'
         def token = 'access_token'

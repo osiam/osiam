@@ -50,11 +50,11 @@ class PhotoUpdater {
      * List of Photo's
      * 
      * @param photos
-     *        list of Photo's to be deleted, updated or added
+     *            list of Photo's to be deleted, updated or added
      * @param userEntity
-     *        user who needs to be updated
+     *            user who needs to be updated
      * @param attributes
-     *        all {@link PhotoEntity}'s will be deleted if this Set contains 'photos'
+     *            all {@link PhotoEntity}'s will be deleted if this Set contains 'photos'
      */
     void update(List<Photo> photos, UserEntity userEntity, Set<String> attributes) {
 
@@ -82,9 +82,9 @@ class PhotoUpdater {
      * will be removed
      * 
      * @param newPhoto
-     *        to be checked if it is primary
+     *            to be checked if it is primary
      * @param photos
-     *        all existing photo's of the {@link UserEntity}
+     *            all existing photo's of the {@link UserEntity}
      */
     private void ensureOnlyOnePrimaryPhotoExists(PhotoEntity newPhoto, Set<PhotoEntity> photos) {
         if (newPhoto.isPrimary()) {

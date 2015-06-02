@@ -24,7 +24,6 @@
 package org.osiam.storage.dao
 
 import org.osiam.storage.entities.GroupEntity
-
 import spock.lang.Specification
 
 class GroupDaoSpec extends Specification {

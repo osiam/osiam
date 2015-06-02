@@ -28,7 +28,6 @@ import org.joda.time.format.ISODateTimeFormat
 import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.SCIMSearchResult
 import org.osiam.resources.scim.User
-
 import spock.lang.Specification
 
 class AttributesRemovalHelperSpec extends Specification {
@@ -61,7 +60,7 @@ class AttributesRemovalHelperSpec extends Specification {
     def "should return Json string with additional values for searches on users, groups and filtering for userName"() {
         given:
         def user = new User.Builder("username").setSchemas([
-            "urn:scim:schemas:core:2.0:User"] as Set).build()
+                "urn:scim:schemas:core:2.0:User"] as Set).build()
         def userList = [user] as List<User>
         def parameterMapMock = Mock(Map)
         def attributes = ["userName"] as String[]
@@ -80,13 +79,13 @@ class AttributesRemovalHelperSpec extends Specification {
         result.startIndex == 0
         result.itemsPerPage == 0
         result.totalResults == 1337
-        result.getResources() == [[schemas:['urn:scim:schemas:core:2.0:User'], userName: 'username']]
+        result.getResources() == [[schemas: ['urn:scim:schemas:core:2.0:User'], userName: 'username']]
     }
 
     def "should not filter the search result if attributes are empty"() {
         given:
         def user = new User.Builder("username").setSchemas([
-            "schemas:urn:scim:schemas:core:1.0"] as Set).build()
+                "schemas:urn:scim:schemas:core:1.0"] as Set).build()
         def userList = [user] as List<User>
         def parameterMapMock = Mock(Map)
         def attributes = [] as String[]
@@ -106,15 +105,15 @@ class AttributesRemovalHelperSpec extends Specification {
         result.itemsPerPage == 0
         result.totalResults == 1337
         result.getResources() == [
-            ["schemas": [
-                    "schemas:urn:scim:schemas:core:1.0"
+                ["schemas"   : [
+                        "schemas:urn:scim:schemas:core:1.0"
                 ], "userName": "username"]] as List
     }
 
     def "should return only data of a complex type"() {
         given:
         def set = [
-            "urn:scim:schemas:core:2.0:User"] as Set
+                "urn:scim:schemas:core:2.0:User"] as Set
         String[] pA = ["meta", "created"]
         def param = ["attributes": pA, "count": 23, "startIndex": 23]
 
@@ -133,8 +132,8 @@ class AttributesRemovalHelperSpec extends Specification {
         result.startIndex == 1
         result.itemsPerPage == 23
         result.totalResults == 1
-        result.getResources() == [[meta:[created:created], schemas:['urn:scim:schemas:core:2.0:User']]] as List
+        result.getResources() == [[meta: [created: created], schemas: ['urn:scim:schemas:core:2.0:User']]] as List
         result.getSchemas() == [
-            'urn:scim:schemas:core:2.0:User'] as Set
+                'urn:scim:schemas:core:2.0:User'] as Set
     }
 }

@@ -23,13 +23,9 @@
 
 package org.osiam.resources.provisioning.update
 
-import org.osiam.resources.exceptions.OsiamException
-import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.Name
-import org.osiam.resources.scim.User
 import org.osiam.storage.entities.NameEntity
 import org.osiam.storage.entities.UserEntity
-
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -50,10 +46,10 @@ class NameUpdaterSpec extends Specification {
         1 * userEntity.setName(null)
     }
 
-    def 'updating the name if at least one sub-attribute is set and the user entity has no name set, creates a new name entity'(){
+    def 'updating the name if at least one sub-attribute is set and the user entity has no name set, creates a new name entity'() {
         given:
         userEntity = new UserEntity()
-        name = new Name(formatted : IRRELEVANT)
+        name = new Name(formatted: IRRELEVANT)
 
         when:
         nameUpdater.update(name, userEntity, [] as Set)
@@ -64,7 +60,7 @@ class NameUpdaterSpec extends Specification {
 
     def 'deleting the formatted attribute is possible'() {
         given:
-        userEntity = new UserEntity(name:nameEntity)
+        userEntity = new UserEntity(name: nameEntity)
 
         when:
         nameUpdater.update(null, userEntity, ['name.formatted'] as Set)
@@ -73,10 +69,10 @@ class NameUpdaterSpec extends Specification {
         1 * nameEntity.setFormatted(null)
     }
 
-    def 'updating the formatted attribute is possible'(){
+    def 'updating the formatted attribute is possible'() {
         given:
-        userEntity = new UserEntity(name:nameEntity)
-        name = new Name(formatted : IRRELEVANT)
+        userEntity = new UserEntity(name: nameEntity)
+        name = new Name(formatted: IRRELEVANT)
 
         when:
         nameUpdater.update(name, userEntity, [] as Set)
@@ -88,8 +84,8 @@ class NameUpdaterSpec extends Specification {
     @Unroll
     def 'updating formatted attribute to #value is not possible'() {
         given:
-        userEntity = new UserEntity(name:nameEntity)
-        name = new Name(formatted : formatted)
+        userEntity = new UserEntity(name: nameEntity)
+        name = new Name(formatted: formatted)
 
         when:
         nameUpdater.update(name, userEntity, [] as Set)
@@ -105,7 +101,7 @@ class NameUpdaterSpec extends Specification {
 
     def 'deleting the familyName attribute is possible'() {
         given:
-        userEntity = new UserEntity(name:nameEntity)
+        userEntity = new UserEntity(name: nameEntity)
 
         when:
         nameUpdater.update(null, userEntity, ['name.familyName'] as Set)
@@ -114,10 +110,10 @@ class NameUpdaterSpec extends Specification {
         1 * nameEntity.setFamilyName(null)
     }
 
-    def 'updating the familyName attribute is possible'(){
+    def 'updating the familyName attribute is possible'() {
         given:
-        userEntity = new UserEntity(name:nameEntity)
-        name = new Name(familyName : IRRELEVANT)
+        userEntity = new UserEntity(name: nameEntity)
+        name = new Name(familyName: IRRELEVANT)
 
         when:
         nameUpdater.update(name, userEntity, [] as Set)
@@ -129,8 +125,8 @@ class NameUpdaterSpec extends Specification {
     @Unroll
     def 'updating familyName attribute to #value is not possible'() {
         given:
-        userEntity = new UserEntity(name:nameEntity)
-        name = new Name(familyName : familyName)
+        userEntity = new UserEntity(name: nameEntity)
+        name = new Name(familyName: familyName)
 
         when:
         nameUpdater.update(name, userEntity, [] as Set)
@@ -146,7 +142,7 @@ class NameUpdaterSpec extends Specification {
 
     def 'deleting the givenName attribute is possible'() {
         given:
-        userEntity = new UserEntity(name:nameEntity)
+        userEntity = new UserEntity(name: nameEntity)
 
         when:
         nameUpdater.update(null, userEntity, ['name.givenName'] as Set)
@@ -157,8 +153,8 @@ class NameUpdaterSpec extends Specification {
 
     def 'updating the givenName attribute is possible'() {
         given:
-        userEntity = new UserEntity(name:nameEntity)
-        name = new Name(givenName : IRRELEVANT)
+        userEntity = new UserEntity(name: nameEntity)
+        name = new Name(givenName: IRRELEVANT)
 
         when:
         nameUpdater.update(name, userEntity, [] as Set)
@@ -170,8 +166,8 @@ class NameUpdaterSpec extends Specification {
     @Unroll
     def 'updating givenName attribute to #value is not possible'() {
         given:
-        userEntity = new UserEntity(name:nameEntity)
-        name = new Name(givenName : givenName)
+        userEntity = new UserEntity(name: nameEntity)
+        name = new Name(givenName: givenName)
 
         when:
         nameUpdater.update(name, userEntity, [] as Set)
@@ -187,7 +183,7 @@ class NameUpdaterSpec extends Specification {
 
     def 'deleting the middleName attribute is possible'() {
         given:
-        userEntity = new UserEntity(name:nameEntity)
+        userEntity = new UserEntity(name: nameEntity)
 
         when:
         nameUpdater.update(null, userEntity, ['name.middleName'] as Set)
@@ -198,8 +194,8 @@ class NameUpdaterSpec extends Specification {
 
     def 'updating the middleName attribute is possible'() {
         given:
-        userEntity = new UserEntity(name:nameEntity)
-        name = new Name(middleName : IRRELEVANT)
+        userEntity = new UserEntity(name: nameEntity)
+        name = new Name(middleName: IRRELEVANT)
 
         when:
         nameUpdater.update(name, userEntity, [] as Set)
@@ -211,8 +207,8 @@ class NameUpdaterSpec extends Specification {
     @Unroll
     def 'updating middleName attribute to #value is not possible'() {
         given:
-        userEntity = new UserEntity(name:nameEntity)
-        name = new Name(middleName : middleName)
+        userEntity = new UserEntity(name: nameEntity)
+        name = new Name(middleName: middleName)
 
         when:
         nameUpdater.update(name, userEntity, [] as Set)
@@ -228,7 +224,7 @@ class NameUpdaterSpec extends Specification {
 
     def 'deleting the honorificPrefix attribute is possible'() {
         given:
-        userEntity = new UserEntity(name:nameEntity)
+        userEntity = new UserEntity(name: nameEntity)
 
         when:
         nameUpdater.update(null, userEntity, ['name.honorificPrefix'] as Set)
@@ -239,8 +235,8 @@ class NameUpdaterSpec extends Specification {
 
     def 'updating the honorificPrefix attribute is possible'() {
         given:
-        userEntity = new UserEntity(name:nameEntity)
-        name = new Name(honorificPrefix : IRRELEVANT)
+        userEntity = new UserEntity(name: nameEntity)
+        name = new Name(honorificPrefix: IRRELEVANT)
 
         when:
         nameUpdater.update(name, userEntity, [] as Set)
@@ -252,8 +248,8 @@ class NameUpdaterSpec extends Specification {
     @Unroll
     def 'updating honorificPrefix attribute to #value is not possible'() {
         given:
-        userEntity = new UserEntity(name:nameEntity)
-        name = new Name(honorificPrefix : honorificPrefix)
+        userEntity = new UserEntity(name: nameEntity)
+        name = new Name(honorificPrefix: honorificPrefix)
 
         when:
         nameUpdater.update(name, userEntity, [] as Set)
@@ -269,7 +265,7 @@ class NameUpdaterSpec extends Specification {
 
     def 'deleting the honorificSuffix attribute is possible'() {
         given:
-        userEntity = new UserEntity(name:nameEntity)
+        userEntity = new UserEntity(name: nameEntity)
 
         when:
         nameUpdater.update(null, userEntity, ['name.honorificSuffix'] as Set)
@@ -280,8 +276,8 @@ class NameUpdaterSpec extends Specification {
 
     def 'updating the honorificSuffix attribute is possible'() {
         given:
-        userEntity = new UserEntity(name:nameEntity)
-        name = new Name(honorificSuffix : IRRELEVANT)
+        userEntity = new UserEntity(name: nameEntity)
+        name = new Name(honorificSuffix: IRRELEVANT)
 
         when:
         nameUpdater.update(name, userEntity, [] as Set)
@@ -293,8 +289,8 @@ class NameUpdaterSpec extends Specification {
     @Unroll
     def 'updating honorificSuffix attribute to #value is not possible'() {
         given:
-        userEntity = new UserEntity(name:nameEntity)
-        name = new Name(honorificSuffix : honorificSuffix)
+        userEntity = new UserEntity(name: nameEntity)
+        name = new Name(honorificSuffix: honorificSuffix)
 
         when:
         nameUpdater.update(name, userEntity, [] as Set)

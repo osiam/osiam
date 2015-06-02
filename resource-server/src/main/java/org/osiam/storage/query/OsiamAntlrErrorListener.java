@@ -48,12 +48,13 @@ public class OsiamAntlrErrorListener implements ANTLRErrorListener {
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer, @Nullable Object offendingSymbol, int line,
             int charPositionInLine, String msg, @Nullable RecognitionException e) {
-        if (e instanceof InputMismatchException
-                && msg.endsWith(" expecting VALUE")) {
-            msg += ". Please make sure that all values are surrounded by double quotes.";
+
+        String errorMessage = msg;
+        if (e instanceof InputMismatchException && msg.endsWith(" expecting VALUE")) {
+            errorMessage += ". Please make sure that all values are surrounded by double quotes.";
         }
 
-        throw new IllegalArgumentException(msg);
+        throw new IllegalArgumentException(errorMessage);
     }
 
     /**

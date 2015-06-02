@@ -28,7 +28,7 @@ public class OsiamController {
      *
      * @return The list with all extension definitions.
      */
-    @RequestMapping(value="/extension-definition", method = RequestMethod.GET)
+    @RequestMapping(value = "/extension-definition", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public List<ExtensionDefinition> getAllExtensions() {

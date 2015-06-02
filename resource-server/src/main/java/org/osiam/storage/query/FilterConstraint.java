@@ -297,6 +297,12 @@ public enum FilterConstraint {
         }
     }
 
+    private final String name;
+
+    FilterConstraint(String constraint) {
+        name = constraint;
+    }
+
     public static FilterConstraint fromString(String name) {
         return STRING_TO_ENUM.get(name.toLowerCase(Locale.ENGLISH));
     }
@@ -304,12 +310,6 @@ public enum FilterConstraint {
     @Override
     public String toString() {
         return name;
-    }
-
-    private final String name; // NOSONAR - is not singular because it is used in the static block
-
-    FilterConstraint(String constraint) {
-        name = constraint;
     }
 
     public abstract Predicate createPredicateForStringField(Path<String> path, String value, CriteriaBuilder cb);

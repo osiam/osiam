@@ -31,7 +31,6 @@ import org.osiam.storage.dao.GroupDao
 import org.osiam.storage.dao.ResourceDao
 import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.ResourceEntity
-
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -116,7 +115,7 @@ class GroupUpdaterSpec extends Specification {
         0 * groupEntity._
     }
 
-    def 'adding a member is possible'(){
+    def 'adding a member is possible'() {
         given:
         def memberId = 'irrelevant'
         def member = new GroupEntity()
@@ -135,7 +134,7 @@ class GroupUpdaterSpec extends Specification {
         0 * groupEntity._
     }
 
-    def 'removing a member is possible'(){
+    def 'removing a member is possible'() {
         given:
         def memberId = UUID.randomUUID()
         GroupEntity member = new GroupEntity(id: memberId)
@@ -154,10 +153,10 @@ class GroupUpdaterSpec extends Specification {
         0 * groupEntity._
     }
 
-    def 'updating the displayName checks if the displayName already exists' () {
+    def 'updating the displayName checks if the displayName already exists'() {
         given:
         def uuid = UUID.randomUUID()
-        Group group = new Group.Builder(displayName : IRRELEVANT).build()
+        Group group = new Group.Builder(displayName: IRRELEVANT).build()
         groupEntity.getId() >> uuid
 
         when:
@@ -167,10 +166,10 @@ class GroupUpdaterSpec extends Specification {
         1 * groupDao.isDisplayNameAlreadyTaken(IRRELEVANT, uuid.toString())
     }
 
-    def 'updating the displayName to an existing dislpayName raises exception' () {
+    def 'updating the displayName to an existing dislpayName raises exception'() {
         given:
         def uuid = UUID.randomUUID()
-        Group group = new Group.Builder(displayName : IRRELEVANT).build()
+        Group group = new Group.Builder(displayName: IRRELEVANT).build()
         groupEntity.getId() >> uuid
 
         when:

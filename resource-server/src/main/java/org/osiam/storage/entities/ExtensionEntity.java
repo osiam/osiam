@@ -88,6 +88,15 @@ public class ExtensionEntity {
         return fields;
     }
 
+    public void setFields(Set<ExtensionFieldEntity> extensionFields) {
+        if (extensionFields != null) {
+            for (ExtensionFieldEntity extensionFieldEntity : extensionFields) {
+                extensionFieldEntity.setExtension(this);
+            }
+        }
+        this.fields = extensionFields;
+    }
+
     public ExtensionFieldEntity getFieldForName(String fieldName, boolean caseInsensitive) {
         for (ExtensionFieldEntity field : fields) {
             if (!caseInsensitive) {
@@ -106,15 +115,6 @@ public class ExtensionEntity {
 
     public ExtensionFieldEntity getFieldForName(String fieldName) {
         return getFieldForName(fieldName, false);
-    }
-
-    public void setFields(Set<ExtensionFieldEntity> extensionFields) {
-        if (extensionFields != null) {
-            for (ExtensionFieldEntity extensionFieldEntity : extensionFields) {
-                extensionFieldEntity.setExtension(this);
-            }
-        }
-        this.fields = extensionFields;
     }
 
     @Override

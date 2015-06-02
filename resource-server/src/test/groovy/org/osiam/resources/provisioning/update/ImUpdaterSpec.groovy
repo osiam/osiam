@@ -28,7 +28,6 @@ import org.osiam.resources.scim.Im
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.storage.entities.ImEntity
 import org.osiam.storage.entities.UserEntity
-
 import spock.lang.Specification
 
 class ImUpdaterSpec extends Specification {
@@ -39,7 +38,7 @@ class ImUpdaterSpec extends Specification {
     UserEntity userEntity = Mock()
     ImEntity imEntity = Mock()
     ImConverter imConverter = Mock()
-    ImUpdater imUpdater = new ImUpdater(imConverter : imConverter)
+    ImUpdater imUpdater = new ImUpdater(imConverter: imConverter)
 
     def 'removing all ims is possible'() {
         when:
@@ -48,14 +47,14 @@ class ImUpdaterSpec extends Specification {
         then:
         1 * userEntity.removeAllIms()
         userEntity.getIms() >> ([
-            new ImEntity(value : IRRELEVANT),
-            new ImEntity(value : IRRELEVANT_02)] as Set)
+                new ImEntity(value: IRRELEVANT),
+                new ImEntity(value: IRRELEVANT_02)] as Set)
     }
 
-    def 'removing an im is possible'(){
+    def 'removing an im is possible'() {
         given:
-        MultiValuedAttribute im01 = new Im.Builder(value : IRRELEVANT, operation : 'delete', ).build()
-        ImEntity imEntity01 = new ImEntity(value : IRRELEVANT)
+        MultiValuedAttribute im01 = new Im.Builder(value: IRRELEVANT, operation: 'delete',).build()
+        ImEntity imEntity01 = new ImEntity(value: IRRELEVANT)
 
         when:
         imUpdater.update([im01] as List, userEntity, [] as Set)
@@ -65,10 +64,10 @@ class ImUpdaterSpec extends Specification {
         1 * userEntity.removeIm(imEntity01)
     }
 
-    def 'adding a new im is possible'(){
+    def 'adding a new im is possible'() {
         given:
-        MultiValuedAttribute im = new Im.Builder(value : IRRELEVANT).build()
-        ImEntity imEntity = new ImEntity(value : IRRELEVANT)
+        MultiValuedAttribute im = new Im.Builder(value: IRRELEVANT).build()
+        ImEntity imEntity = new ImEntity(value: IRRELEVANT)
 
         when:
         imUpdater.update([im] as List, userEntity, [] as Set)
@@ -77,17 +76,17 @@ class ImUpdaterSpec extends Specification {
         1 * imConverter.fromScim(im) >> imEntity
         1 * userEntity.addIm(imEntity)
     }
-    
-    def 'adding a new primary im removes the primary attribite from the old one'(){
+
+    def 'adding a new primary im removes the primary attribite from the old one'() {
         given:
-        MultiValuedAttribute newPrimaryIm = new Im.Builder(value : IRRELEVANT, primary : true).build()
-        ImEntity newPrimaryImEntity = new ImEntity(value : IRRELEVANT, primary : true)
+        MultiValuedAttribute newPrimaryIm = new Im.Builder(value: IRRELEVANT, primary: true).build()
+        ImEntity newPrimaryImEntity = new ImEntity(value: IRRELEVANT, primary: true)
 
         ImEntity oldPrimaryImEntity = Spy()
         oldPrimaryImEntity.setValue(IRRELEVANT_02)
         oldPrimaryImEntity.setPrimary(true)
 
-        ImEntity imEntity = new ImEntity(value : IRRELEVANT_02, primary : false)
+        ImEntity imEntity = new ImEntity(value: IRRELEVANT_02, primary: false)
 
         when:
         imUpdater.update([newPrimaryIm] as List, userEntity, [] as Set)

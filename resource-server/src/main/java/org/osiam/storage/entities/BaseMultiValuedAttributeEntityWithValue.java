@@ -29,10 +29,10 @@ import javax.persistence.MappedSuperclass;
 import org.hibernate.annotations.Type;
 
 @MappedSuperclass
-public abstract class BaseMultiValuedAttributeEntityWithValue extends BaseMultiValuedAttributeEntity{
+public abstract class BaseMultiValuedAttributeEntityWithValue extends BaseMultiValuedAttributeEntity {
 
     @Lob
-    @Type(type="org.hibernate.type.StringClobType")
+    @Type(type = "org.hibernate.type.StringClobType")
     private String value;
 
     public String getValue() {

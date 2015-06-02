@@ -33,8 +33,6 @@ import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.osiam.resources.converter.UserConverter;
 import org.osiam.resources.exceptions.ResourceExistsException;
@@ -46,20 +44,15 @@ import org.osiam.resources.scim.User;
 import org.osiam.storage.dao.SearchResult;
 import org.osiam.storage.dao.UserDao;
 import org.osiam.storage.entities.UserEntity;
-import org.osiam.storage.parser.LogicalOperatorRulesLexer;
-import org.osiam.storage.parser.LogicalOperatorRulesParser;
-import org.osiam.storage.query.EvalVisitor;
-import org.osiam.storage.query.OsiamAntlrErrorListener;
 import org.osiam.storage.query.QueryFilterParser;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import com.google.common.base.Strings;
 
 @Service
 public class SCIMUserProvisioning implements SCIMProvisioning<User> {
 
     private static final Logger LOGGER = Logger.getLogger(SCIMUserProvisioning.class.getName());
+    private static final int PASSWORD_SEARCH_DELAY = 500;
 
     @Inject
     private UserConverter userConverter;
@@ -72,7 +65,7 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
 
     @Inject
     private UserUpdater userUpdater;
-    
+
     @Inject
     private QueryFilterParser queryFilterParser;
 
@@ -111,9 +104,7 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
 
         userDao.create(userEntity);
 
-        User result = getUserWithoutPassword(userConverter.toScim(userEntity));
-
-        return result;
+        return getUserWithoutPassword(userConverter.toScim(userEntity));
     }
 
     @Override
@@ -148,9 +139,7 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
 
         userEntity = userDao.update(userEntity);
 
-        User result = getUserWithoutPassword(userConverter.toScim(userEntity));
-
-        return result;
+        return getUserWithoutPassword(userConverter.toScim(userEntity));
     }
 
     @Override
@@ -177,13 +166,13 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
     }
 
     private void sleepIfForPasswordWasSearched(ParseTree tree) {
-        if(tree == null){
+        if (tree == null) {
             return;
         }
         String leaf = tree.getText();
         if (leaf.equalsIgnoreCase("password")) {
             try {
-                Thread.sleep(500);
+                Thread.sleep(PASSWORD_SEARCH_DELAY);
                 return;
             } catch (InterruptedException e) {
                 // doesn't matter
@@ -213,9 +202,7 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
 
         userEntity.touch();
 
-        User result = getUserWithoutPassword(userConverter.toScim(userEntity));
-
-        return result;
+        return getUserWithoutPassword(userConverter.toScim(userEntity));
     }
 
     @Override
@@ -230,5 +217,4 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
     private User getUserWithoutPassword(User user) {
         return new User.Builder(user).setPassword(null).build();
     }
-
 }

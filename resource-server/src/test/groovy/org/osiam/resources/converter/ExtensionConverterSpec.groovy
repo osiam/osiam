@@ -31,7 +31,6 @@ import org.osiam.storage.entities.ExtensionEntity
 import org.osiam.storage.entities.ExtensionFieldEntity
 import org.osiam.storage.entities.ExtensionFieldValueEntity
 import org.osiam.storage.helper.NumberPadder
-
 import spock.lang.Specification
 
 class ExtensionConverterSpec extends Specification {
@@ -49,12 +48,12 @@ class ExtensionConverterSpec extends Specification {
             [fieldname: 'size', valueAsString: '1.78', value: new BigDecimal('1.78'), type: ExtensionFieldType.DECIMAL],
             [fieldname: 'numberChildren', valueAsString: '2', value: BigInteger.valueOf(2), type: ExtensionFieldType.INTEGER],
             [fieldname: 'birth', valueAsString: '2008-01-23T04:56:22.000Z',
-                value: new Date(ISODateTimeFormat.dateTime().withZoneUTC().parseDateTime("2008-01-23T04:56:22.000Z").getMillis())
-                , type: ExtensionFieldType.DATE_TIME],
+             value    : new Date(ISODateTimeFormat.dateTime().withZoneUTC().parseDateTime("2008-01-23T04:56:22.000Z").getMillis())
+             , type   : ExtensionFieldType.DATE_TIME],
             [fieldname: 'newsletter', valueAsString: 'true', value: true, type: ExtensionFieldType.BOOLEAN]
-        ], (URN2): [
+    ], (URN2)             : [
             [fieldname: 'favoredPet', valueAsString: 'doc', value: 'doc', type: ExtensionFieldType.STRING],
-        ]]
+    ]]
 
     def 'convert extensionEntity set to scim extension set works'() {
         given:
@@ -113,7 +112,7 @@ class ExtensionConverterSpec extends Specification {
 
     private def createExtension(def urn) {
         def fixtureData = fixtures[urn]
-        def fields = fixtureData.collect { new ExtensionFieldEntity(name: it.fieldname, type : it.type) }
+        def fields = fixtureData.collect { new ExtensionFieldEntity(name: it.fieldname, type: it.type) }
         new ExtensionEntity(urn: urn, fields: fields as Set)
     }
 

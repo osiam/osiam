@@ -35,7 +35,7 @@ import org.osiam.storage.entities.ResourceEntity;
 public abstract class FilterParser<T extends ResourceEntity> {
 
     @PersistenceContext
-    protected EntityManager entityManager; // NOSONAR - doesn't need to be private
+    protected EntityManager entityManager;
 
     public Predicate createPredicateAndJoin(ParseTree filterTree, Root<T> root) {
         EvalVisitor<T> visitor = new EvalVisitor<>(this, root);

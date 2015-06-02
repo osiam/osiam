@@ -125,11 +125,12 @@ public class ExtensionConverter implements Converter<Set<Extension>, Set<Extensi
         for (Extension.Builder builder : extensionMap.values()) {
             extensions.add(builder.build());
         }
-        
+
         return extensions;
     }
 
-    private <T> void addField(Extension.Builder extensionBuilder, ExtensionFieldType<T> type, String fieldName, String stringValue) {
+    private <T> void addField(Extension.Builder extensionBuilder, ExtensionFieldType<T> type, String fieldName,
+            String stringValue) {
         extensionBuilder.setField(fieldName, type.fromString(stringValue), type);
     }
 }

@@ -48,11 +48,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RequestMapping(value = "/Metrics")
 public class MetricsController {
 
-    @Inject
-    private MetricRegistry registry;
-
     private static final String RATE_UNIT = MetricsController.class.getCanonicalName() + ".rateUnit";
     private static final String DURATION_UNIT = MetricsController.class.getCanonicalName() + ".durationUnit";
+
+    @Inject
+    private MetricRegistry registry;
 
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getMetrics() throws JsonProcessingException {

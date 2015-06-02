@@ -31,7 +31,7 @@ class NumberPadderSpec extends Specification {
     NumberPadder numberPadder = new NumberPadder()
 
     @Unroll
-    def 'padding #inputValue results in #expectedValue'(){
+    def 'padding #inputValue results in #expectedValue'() {
         expect:
         numberPadder.pad(inputValue) == expectedValue
 
@@ -49,7 +49,7 @@ class NumberPadderSpec extends Specification {
         '-99999999999999999999' | '000000000000000000001'
     }
 
-    def 'padding a number that is too big raises exception'(){
+    def 'padding a number that is too big raises exception'() {
         given:
         def number = '100002000030000400005'
 
@@ -57,10 +57,10 @@ class NumberPadderSpec extends Specification {
         numberPadder.pad(number)
 
         then:
-        thrown (IllegalArgumentException)
+        thrown(IllegalArgumentException)
     }
 
-    def 'padding a negative number that is too big raises exception'(){
+    def 'padding a negative number that is too big raises exception'() {
         given:
         def number = '-100002000030000400005'
 
@@ -68,11 +68,11 @@ class NumberPadderSpec extends Specification {
         numberPadder.pad(number)
 
         then:
-        thrown (IllegalArgumentException)
+        thrown(IllegalArgumentException)
     }
 
     @Unroll
-    def 'unpadding #inputValue results in #expectedValue'(){
+    def 'unpadding #inputValue results in #expectedValue'() {
         expect:
         numberPadder.unpad(inputValue) == expectedValue
 

@@ -27,9 +27,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * This class is used to transform
- * No enum constant org.osiam.storage.entities.*Entity.*.huch
- * Messages to a more readable way.
+ * This class is used to transform No enum constant org.osiam.storage.entities.*Entity.*.huch Messages to a more
+ * readable way.
  */
 public class TypeErrorMessageTransformer implements ErrorMessageTransformer {
     // Will load:
@@ -42,11 +41,13 @@ public class TypeErrorMessageTransformer implements ErrorMessageTransformer {
 
     @Override
     public String transform(String message) {
-        if (message == null) { return null; }
+        if (message == null) {
+            return null;
+        }
         Matcher matcher = pattern.matcher(message);
         if (matcher.matches()) {
-            String values = loadEnumConstAsStringByClassName(matcher.group(1) + "$" + matcher.group(3)); // NOSONAR - no need to make a constant for numbers
-            return matcher.group(4) + " is not a valid " + matcher.group(2) + " type. Only " + values + " are allowed."; // NOSONAR - no need to make a constant for numbers
+            String values = loadEnumConstAsStringByClassName(matcher.group(1) + "$" + matcher.group(3));
+            return matcher.group(4) + " is not a valid " + matcher.group(2) + " type. Only " + values + " are allowed.";
         }
         return message;
     }
@@ -54,7 +55,8 @@ public class TypeErrorMessageTransformer implements ErrorMessageTransformer {
     /**
      * Loads an Enum and return its values combined as String.
      *
-     * @param enumName, the full qualified name of the enum
+     * @param enumName
+     *            , the full qualified name of the enum
      * @return the string values of the enum
      */
     private String loadEnumConstAsStringByClassName(String enumName) {
@@ -70,10 +72,10 @@ public class TypeErrorMessageTransformer implements ErrorMessageTransformer {
     }
 
     /**
-     * Iterates through a given array of enums and combines each element to a string:
-     * , <const.toString>
+     * Iterates through a given array of enums and combines each element to a string: , <const.toString>
      *
-     * @param enumConstants the array of enums to combine
+     * @param enumConstants
+     *            the array of enums to combine
      * @return combined string list of enums separated by comma
      */
     private String combineEnumConstantsToString(Enum<?>[] enumConstants) {

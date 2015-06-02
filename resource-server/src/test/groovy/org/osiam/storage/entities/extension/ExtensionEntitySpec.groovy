@@ -23,11 +23,9 @@
 
 package org.osiam.storage.entities.extension
 
-import org.hibernate.dialect.function.NoArgSQLFunction
 import org.osiam.resources.exceptions.NoSuchElementException
 import org.osiam.storage.entities.ExtensionEntity
 import org.osiam.storage.entities.ExtensionFieldEntity
-
 import spock.lang.Specification
 
 class ExtensionEntitySpec extends Specification {

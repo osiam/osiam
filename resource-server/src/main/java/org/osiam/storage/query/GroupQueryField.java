@@ -61,8 +61,8 @@ public enum GroupQueryField implements QueryField<GroupEntity> {
         public Predicate addFilter(Root<GroupEntity> root,
                 FilterConstraint constraint, String value, CriteriaBuilder cb) {
             Date date = ISODateTimeFormat.dateTimeParser().parseDateTime(value).toDate();
-            return constraint.createPredicateForDateField(root.get(GroupEntity_.meta).get(MetaEntity_.created), date,// NOSONAR
-                    cb); // NOSONAR - XEntity_.X will be filled by JPA provider
+            return constraint.createPredicateForDateField(root.get(GroupEntity_.meta).get(MetaEntity_.created), date,
+                    cb);
         }
 
         @Override
@@ -76,8 +76,7 @@ public enum GroupQueryField implements QueryField<GroupEntity> {
                 FilterConstraint constraint, String value, CriteriaBuilder cb) {
             Date date = ISODateTimeFormat.dateTimeParser().parseDateTime(value).toDate();
             return constraint.createPredicateForDateField(
-                    root.get(GroupEntity_.meta).get(MetaEntity_.lastModified), date, cb); // NOSONAR - XEntity_.X will
-                                                                                          // be filled by JPA provider
+                    root.get(GroupEntity_.meta).get(MetaEntity_.lastModified), date, cb);
         }
 
         @Override
@@ -90,7 +89,7 @@ public enum GroupQueryField implements QueryField<GroupEntity> {
         public Predicate addFilter(Root<GroupEntity> root,
                 FilterConstraint constraint, String value, CriteriaBuilder cb) {
             return constraint.createPredicateForStringField(root.get(GroupEntity_.meta)
-                    .get(MetaEntity_.location), value, cb); // NOSONAR - XEntity_.X will be filled by JPA provider
+                    .get(MetaEntity_.location), value, cb);
         }
 
         @Override
@@ -102,8 +101,7 @@ public enum GroupQueryField implements QueryField<GroupEntity> {
         @Override
         public Predicate addFilter(Root<GroupEntity> root, FilterConstraint constraint,
                 String value, CriteriaBuilder cb) {
-            return constraint.createPredicateForStringField(root.get(GroupEntity_.displayName), value, cb); // NOSONAR -
-            // XEntity_.X will be filled by JPA provider
+            return constraint.createPredicateForStringField(root.get(GroupEntity_.displayName), value, cb);
         }
 
         @Override
@@ -115,8 +113,7 @@ public enum GroupQueryField implements QueryField<GroupEntity> {
 
         @Override
         public Predicate addFilter(Root<GroupEntity> root, FilterConstraint constraint, String value, CriteriaBuilder cb) {
-            SetJoin<GroupEntity, ResourceEntity> join = createOrGetJoin("members", root, GroupEntity_.members); // NOSONAR
-            // - XEntity_.X will be filled by JPA provider
+            SetJoin<GroupEntity, ResourceEntity> join = createOrGetJoin("members", root, GroupEntity_.members);
             return constraint.createPredicateForStringField(join.get(ResourceEntity_.id), value, cb);
         }
 
@@ -150,8 +147,12 @@ public enum GroupQueryField implements QueryField<GroupEntity> {
 
     private final String name;
 
-    private GroupQueryField(String name) {
+    GroupQueryField(String name) {
         this.name = name;
+    }
+
+    public static GroupQueryField fromString(String name) {
+        return STRING_TO_ENUM.get(name);
     }
 
     @Override
@@ -159,13 +160,8 @@ public enum GroupQueryField implements QueryField<GroupEntity> {
         return name;
     }
 
-    public static GroupQueryField fromString(String name) {
-        return STRING_TO_ENUM.get(name);
-    }
-
     protected RuntimeException handleSortByFieldNotSupported(String fieldName) {
-        throw new RuntimeException("Sorting by " + fieldName + " is not supported yet");// NOSONAR - will be removed
-                                                                                        // after implementing
+        throw new RuntimeException("Sorting by " + fieldName + " is not supported yet");
     }
 
     @SuppressWarnings("unchecked")

@@ -60,8 +60,9 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
             }
         }
 
-        DefaultAuthorizationRequest authrequest = new DefaultAuthorizationRequest(accessToken.getClientId(), scopes);
-        authrequest.setApproved(true);
+        DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest(accessToken.getClientId(),
+                scopes);
+        authorizationRequest.setApproved(true);
 
         Authentication auth = null;
 
@@ -71,14 +72,14 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
             auth = new UsernamePasswordAuthenticationToken(authUser, null, new ArrayList<GrantedAuthority>());
         }
 
-        return new OAuth2Authentication(authrequest, auth);
+        return new OAuth2Authentication(authorizationRequest, auth);
     }
 
     @Override
     public OAuth2AccessToken readAccessToken(String token) {
         AccessToken accessToken = validateAccessToken(token);
 
-        Set<String> scopes = new HashSet<String>();
+        Set<String> scopes = new HashSet<>();
         for (Scope scope : accessToken.getScopes()) {
             scopes.add(scope.toString());
         }
@@ -95,9 +96,9 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
      * Revokes the access tokens of the user with the given ID.
      * 
      * @param id
-     *        the user ID
+     *            the user ID
      * @param token
-     *        the token to access the service
+     *            the token to access the service
      */
     public void revokeAccessTokens(String id, String token) {
         AccessToken accessToken = new AccessToken.Builder(token).build();
@@ -108,11 +109,11 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
     private AccessToken validateAccessToken(String token) {
         OsiamConnector connector = createConnector();
 
-        AccessToken accessToken = null;
+        AccessToken accessToken;
         try {
             accessToken = connector.validateAccessToken(new AccessToken.Builder(token).build());
         } catch (Exception e) {
-            throw new InvalidTokenException("Your token is not valid");
+            throw new InvalidTokenException("Your token is not valid", e);
         }
         return accessToken;
     }

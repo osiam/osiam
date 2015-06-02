@@ -46,11 +46,14 @@ import org.hibernate.annotations.Type;
         })
 public class ExtensionFieldValueEntity {
 
+    private static final int SEQUENCE_ALLOCATION_SIZE = 1;
+    private static final int SEQUENCE_INITIAL_VALUE = 100;
+
     @Id
     @SequenceGenerator(name = "sequence_scim_extension_field_value",
             sequenceName = "resource_server_sequence_scim_extension_field_value",
-            allocationSize = 1,
-            initialValue = 100)
+            allocationSize = SEQUENCE_ALLOCATION_SIZE,
+            initialValue = SEQUENCE_INITIAL_VALUE)
     @GeneratedValue(generator = "sequence_scim_extension_field_value")
     @Column(name = "internal_id")
     private long internalId;
@@ -66,7 +69,7 @@ public class ExtensionFieldValueEntity {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = UserEntity.JOIN_COLUMN_NAME, nullable = false, insertable = false, updatable = false)
-    private UserEntity user; // NOSONAR: set by Hibernate and used by building Query
+    private UserEntity user;
 
     public long getInternalId() {
         return internalId;

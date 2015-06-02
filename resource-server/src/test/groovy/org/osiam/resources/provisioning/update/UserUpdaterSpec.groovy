@@ -28,12 +28,9 @@ import org.osiam.resources.exceptions.ResourceExistsException
 import org.osiam.resources.scim.Group
 import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.User
-import org.osiam.storage.dao.ExtensionDao
 import org.osiam.storage.dao.UserDao
 import org.osiam.storage.entities.UserEntity
-import org.osiam.storage.helper.NumberPadder
 import org.springframework.security.authentication.encoding.PasswordEncoder
-
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -67,7 +64,7 @@ class UserUpdaterSpec extends Specification {
             addressUpdater: addressUpdater,
             userDao: userDao,
             passwordEncoder: passwordEncoder,
-            extensionUpdater : extensionUpdater)
+            extensionUpdater: extensionUpdater)
 
     User user
     UserEntity userEntity = Mock()
@@ -96,7 +93,7 @@ class UserUpdaterSpec extends Specification {
         oe.getMessage().contains('userName')
     }
 
-    def 'updating the userName is possible' () {
+    def 'updating the userName is possible'() {
         given:
         def uuid = UUID.randomUUID()
         User user = new User.Builder(IRRELEVANT).build()
@@ -224,7 +221,7 @@ class UserUpdaterSpec extends Specification {
         then:
         1 * addressUpdater.update([] as List, userEntity, new HashSet())
     }
-    
+
     def 'updating a user triggers extension updater'() {
         given:
         user = new User.Builder().build()
@@ -248,9 +245,9 @@ class UserUpdaterSpec extends Specification {
         1 * userEntity.setDisplayName(null)
     }
 
-    def 'updating the displayName is possible' () {
+    def 'updating the displayName is possible'() {
         given:
-        User user = new User.Builder(displayName : IRRELEVANT).build()
+        User user = new User.Builder(displayName: IRRELEVANT).build()
 
         when:
         userUpdater.update(user, userEntity)
@@ -288,9 +285,9 @@ class UserUpdaterSpec extends Specification {
         1 * userEntity.setNickName(null)
     }
 
-    def 'updating the nickName is possible' () {
+    def 'updating the nickName is possible'() {
         given:
-        User user = new User.Builder(nickName : IRRELEVANT).build()
+        User user = new User.Builder(nickName: IRRELEVANT).build()
 
         when:
         userUpdater.update(user, userEntity)
@@ -328,9 +325,9 @@ class UserUpdaterSpec extends Specification {
         1 * userEntity.setProfileUrl(null)
     }
 
-    def 'updating the profileUrl is possible' () {
+    def 'updating the profileUrl is possible'() {
         given:
-        User user = new User.Builder(profileUrl : IRRELEVANT).build()
+        User user = new User.Builder(profileUrl: IRRELEVANT).build()
 
         when:
         userUpdater.update(user, userEntity)
@@ -368,9 +365,9 @@ class UserUpdaterSpec extends Specification {
         1 * userEntity.setTitle(null)
     }
 
-    def 'updating the title is possible' () {
+    def 'updating the title is possible'() {
         given:
-        User user = new User.Builder(title : IRRELEVANT).build()
+        User user = new User.Builder(title: IRRELEVANT).build()
 
         when:
         userUpdater.update(user, userEntity)
@@ -408,9 +405,9 @@ class UserUpdaterSpec extends Specification {
         1 * userEntity.setUserType(null)
     }
 
-    def 'updating the userType is possible' () {
+    def 'updating the userType is possible'() {
         given:
-        User user = new User.Builder(userType : IRRELEVANT).build()
+        User user = new User.Builder(userType: IRRELEVANT).build()
 
         when:
         userUpdater.update(user, userEntity)
@@ -448,9 +445,9 @@ class UserUpdaterSpec extends Specification {
         1 * userEntity.setPreferredLanguage(null)
     }
 
-    def 'updating the preferredLanguage is possible' () {
+    def 'updating the preferredLanguage is possible'() {
         given:
-        User user = new User.Builder(preferredLanguage : IRRELEVANT).build()
+        User user = new User.Builder(preferredLanguage: IRRELEVANT).build()
 
         when:
         userUpdater.update(user, userEntity)
@@ -488,9 +485,9 @@ class UserUpdaterSpec extends Specification {
         1 * userEntity.setLocale(null)
     }
 
-    def 'updating the locale is possible' () {
+    def 'updating the locale is possible'() {
         given:
-        User user = new User.Builder(locale : IRRELEVANT).build()
+        User user = new User.Builder(locale: IRRELEVANT).build()
 
         when:
         userUpdater.update(user, userEntity)
@@ -528,9 +525,9 @@ class UserUpdaterSpec extends Specification {
         1 * userEntity.setTimezone(null)
     }
 
-    def 'updating the timezone is possible' () {
+    def 'updating the timezone is possible'() {
         given:
-        User user = new User.Builder(timezone : IRRELEVANT).build()
+        User user = new User.Builder(timezone: IRRELEVANT).build()
 
         when:
         userUpdater.update(user, userEntity)
@@ -568,9 +565,9 @@ class UserUpdaterSpec extends Specification {
         1 * userEntity.setActive(null)
     }
 
-    def 'updating the active is possible' () {
+    def 'updating the active is possible'() {
         given:
-        User user = new User.Builder(active : true).build()
+        User user = new User.Builder(active: true).build()
 
         when:
         userUpdater.update(user, userEntity)
@@ -591,8 +588,8 @@ class UserUpdaterSpec extends Specification {
         0 * userEntity.setActive(_)
 
         where:
-        value          | active
-        'null'         | null
+        value  | active
+        'null' | null
     }
 
     def 'removing the password attribute raises exception'() {
@@ -608,10 +605,10 @@ class UserUpdaterSpec extends Specification {
         oe.getMessage().contains('password')
     }
 
-    def 'updating the password is possible' () {
+    def 'updating the password is possible'() {
         given:
-        def uuid= UUID.randomUUID()
-        User user = new User.Builder(password : IRRELEVANT).build()
+        def uuid = UUID.randomUUID()
+        User user = new User.Builder(password: IRRELEVANT).build()
 
         when:
         userUpdater.update(user, userEntity)
@@ -639,7 +636,7 @@ class UserUpdaterSpec extends Specification {
         'empty string' | ''
     }
 
-    def 'deleting all groups raises an exception'(){
+    def 'deleting all groups raises an exception'() {
         given:
         Meta meta = new Meta(attributes: ['groups'] as Set)
         user = new User.Builder(meta: meta).build()
@@ -652,9 +649,9 @@ class UserUpdaterSpec extends Specification {
         oe.getMessage().contains('group')
     }
 
-    def 'modify a single group raises an exception'(){
+    def 'modify a single group raises an exception'() {
         given:
-        user = new User.Builder(groups : [new Group()] as List).build()
+        user = new User.Builder(groups: [new Group()] as List).build()
 
         when:
         userUpdater.update(user, userEntity)
@@ -664,7 +661,7 @@ class UserUpdaterSpec extends Specification {
         oe.getMessage().contains('group')
     }
 
-    def 'updating the userName checks if the userName already exists' () {
+    def 'updating the userName checks if the userName already exists'() {
         given:
         def uuid = UUID.randomUUID()
         User user = new User.Builder(IRRELEVANT).build()
@@ -677,7 +674,7 @@ class UserUpdaterSpec extends Specification {
         1 * userDao.isUserNameAlreadyTaken(IRRELEVANT, uuid.toString())
     }
 
-    def 'updating the userName to an existing userName raises exception' () {
+    def 'updating the userName to an existing userName raises exception'() {
         given:
         def uuid = UUID.randomUUID()
         User user = new User.Builder(IRRELEVANT).build()

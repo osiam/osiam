@@ -27,11 +27,46 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.SetJoin;
 
 import org.joda.time.format.ISODateTimeFormat;
-import org.osiam.resources.scim.*;
-import org.osiam.storage.entities.*;
+import org.osiam.resources.scim.Address;
+import org.osiam.resources.scim.Email;
+import org.osiam.resources.scim.Entitlement;
+import org.osiam.resources.scim.Im;
+import org.osiam.resources.scim.PhoneNumber;
+import org.osiam.resources.scim.Photo;
+import org.osiam.storage.entities.AddressEntity;
+import org.osiam.storage.entities.AddressEntity_;
+import org.osiam.storage.entities.BaseMultiValuedAttributeEntityWithValue_;
+import org.osiam.storage.entities.BaseMultiValuedAttributeEntity_;
+import org.osiam.storage.entities.EmailEntity;
+import org.osiam.storage.entities.EmailEntity_;
+import org.osiam.storage.entities.EntitlementEntity;
+import org.osiam.storage.entities.EntitlementEntity_;
+import org.osiam.storage.entities.GroupEntity;
+import org.osiam.storage.entities.GroupEntity_;
+import org.osiam.storage.entities.ImEntity;
+import org.osiam.storage.entities.ImEntity_;
+import org.osiam.storage.entities.MetaEntity_;
+import org.osiam.storage.entities.NameEntity;
+import org.osiam.storage.entities.NameEntity_;
+import org.osiam.storage.entities.PhoneNumberEntity;
+import org.osiam.storage.entities.PhoneNumberEntity_;
+import org.osiam.storage.entities.PhotoEntity;
+import org.osiam.storage.entities.PhotoEntity_;
+import org.osiam.storage.entities.ResourceEntity_;
+import org.osiam.storage.entities.RoleEntity;
+import org.osiam.storage.entities.RoleEntity_;
+import org.osiam.storage.entities.UserEntity;
+import org.osiam.storage.entities.UserEntity_;
+import org.osiam.storage.entities.X509CertificateEntity;
 
 public enum UserQueryField implements QueryField<UserEntity> {
 
@@ -354,11 +389,8 @@ public enum UserQueryField implements QueryField<UserEntity> {
                 emailType = new Email.Type(value);
             }
             SetJoin<UserEntity, EmailEntity> join = root.join(UserEntity_.emails, JoinType.LEFT);
-            return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(EmailEntity_.type), // NOSONAR -
-                                                                                                           // XEntity_.X
-                                                                                                           // will
-                    // be filled by JPA provider
-                    emailType, cb);
+            return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(EmailEntity_.type), emailType,
+                    cb);
         }
 
         @Override
@@ -373,10 +405,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
                 String value, CriteriaBuilder cb) {
 
             SetJoin<UserEntity, EmailEntity> join = root.join(UserEntity_.emails, JoinType.LEFT);
-            return constraint.createPredicateForBooleanField(join.get(BaseMultiValuedAttributeEntity_.primary), // NOSONAR
-                                                                                                                // -
-                                                                                                                // XEntity_.X
-                    // will be filled by JPA provider
+            return constraint.createPredicateForBooleanField(join.get(BaseMultiValuedAttributeEntity_.primary),
                     Boolean.valueOf(value), cb);
         }
 
@@ -422,9 +451,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
                 phoneNumberType = new PhoneNumber.Type(value);
             }
             SetJoin<UserEntity, PhoneNumberEntity> join = root.join(UserEntity_.phoneNumbers, JoinType.LEFT);
-            return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(PhoneNumberEntity_.type), // NOSONAR
-                                                                                                                 // -
-                    // XEntity_.X will be filled by JPA provider
+            return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(PhoneNumberEntity_.type),
                     phoneNumberType, cb);
         }
 
@@ -484,9 +511,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
             }
 
             SetJoin<UserEntity, ImEntity> join = root.join(UserEntity_.ims, JoinType.LEFT);
-            return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(ImEntity_.type), imType, cb); // NOSONAR
-                                                                                                                     // -
-            // XEntity_.X will be filled by JPA provider
+            return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(ImEntity_.type), imType, cb);
         }
 
         @Override
@@ -544,8 +569,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
 
             SetJoin<UserEntity, PhotoEntity> join = root.join(UserEntity_.photos, JoinType.LEFT);
             return constraint.createPredicateForMultiValuedAttributeTypeField(join.get(PhotoEntity_.type), photoType,
-                    cb); // NOSONAR -
-            // XEntity_.X will be filled by JPA provider
+                    cb);
         }
 
         @Override
@@ -847,9 +871,12 @@ public enum UserQueryField implements QueryField<UserEntity> {
         this.name = name;
     }
 
+    public static UserQueryField fromString(String name) {
+        return STRING_TO_ENUM.get(name);
+    }
+
     protected RuntimeException handleSortByFieldNotSupported(String fieldName) {
-        throw new RuntimeException("Sorting by " + fieldName + " is not supported yet"); // NOSONAR - will be removed
-                                                                                         // after implementing
+        throw new RuntimeException("Sorting by " + fieldName + " is not supported yet");
     }
 
     @SuppressWarnings("unchecked")
@@ -870,9 +897,5 @@ public enum UserQueryField implements QueryField<UserEntity> {
     @Override
     public String toString() {
         return name;
-    }
-
-    public static UserQueryField fromString(String name) {
-        return STRING_TO_ENUM.get(name);
     }
 }

@@ -37,6 +37,7 @@ public class PutValidator implements Validator {
     public PutValidator(ObjectMapper mapper) {
         this.mapper = mapper;
     }
+
     @Override
     public User validateJsonUser(String json) throws IOException {
 

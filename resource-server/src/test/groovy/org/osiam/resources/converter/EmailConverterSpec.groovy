@@ -25,7 +25,6 @@ package org.osiam.resources.converter
 
 import org.osiam.resources.scim.Email
 import org.osiam.storage.entities.EmailEntity
-
 import spock.lang.Specification
 
 class EmailConverterSpec extends Specification {
@@ -34,7 +33,7 @@ class EmailConverterSpec extends Specification {
     Email attribute
     EmailConverter converter
 
-    def setup(){
+    def setup() {
         def value = 'example@web.com'
         def type = Email.Type.WORK
 

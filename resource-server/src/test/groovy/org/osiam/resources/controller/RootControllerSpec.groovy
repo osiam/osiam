@@ -23,19 +23,18 @@
 
 package org.osiam.resources.controller
 
-import java.lang.reflect.Method
-
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.ResponseBody
-
 import spock.lang.Specification
 
-class RootControllerSpec extends Specification{
+import java.lang.reflect.Method
+
+class RootControllerSpec extends Specification {
 
     def underTest = new RootController()
 
-    def "should throw Unsupported exception on / URI with GET method" () {
+    def "should throw Unsupported exception on / URI with GET method"() {
         given:
         Method method = RootController.class.getDeclaredMethod("searchWithGet")
 
@@ -54,7 +53,7 @@ class RootControllerSpec extends Specification{
                 "(see https://github.com/osiam/osiam/blob/master/README.md for details on the bug tracker)."
     }
 
-    def "should throw Unsupported exception on /.search URI with POST method" () {
+    def "should throw Unsupported exception on /.search URI with POST method"() {
         given:
         Method method = RootController.class.getDeclaredMethod("searchWithPost")
 

@@ -39,11 +39,14 @@ import org.hibernate.annotations.Type;
 @Table(name = "scim_name")
 public class NameEntity {
 
+    private static final int SEQUENCE_ALLOCATION_SIZE = 1;
+    private static final int SEQUENCE_INITIAL_VALUE = 100;
+
     @Id
     @SequenceGenerator(name = "sequence_scim_name",
             sequenceName = "resource_server_sequence_scim_name",
-            allocationSize = 1,
-            initialValue = 100)
+            allocationSize = SEQUENCE_ALLOCATION_SIZE,
+            initialValue = SEQUENCE_INITIAL_VALUE)
     @GeneratedValue(generator = "sequence_scim_name")
     private long id;
 

@@ -26,7 +26,6 @@ package org.osiam.resources.converter
 import org.osiam.resources.scim.Im
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.storage.entities.ImEntity
-
 import spock.lang.Specification
 
 class ImConverterSpec extends Specification {
@@ -35,7 +34,7 @@ class ImConverterSpec extends Specification {
     MultiValuedAttribute attribute
     ImConverter converter
 
-    def setup(){
+    def setup() {
         def value = 'user@gmail.com'
         def type = Im.Type.GTALK
 

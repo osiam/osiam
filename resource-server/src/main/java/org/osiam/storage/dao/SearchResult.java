@@ -29,8 +29,8 @@ import org.osiam.storage.entities.ResourceEntity;
 
 public class SearchResult<T extends ResourceEntity> {
 
-    public final List<T> results; // NOSONAR - field is final and can be public
-    public final long totalResults; // NOSONAR - field is final and can be public
+    public final List<T> results;
+    public final long totalResults;
 
     public SearchResult(List<T> results, long totalResults) {
         this.results = results;

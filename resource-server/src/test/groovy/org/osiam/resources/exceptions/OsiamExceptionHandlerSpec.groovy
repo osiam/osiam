@@ -25,15 +25,9 @@ package org.osiam.resources.exceptions
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.osiam.resources.scim.User
-import org.osiam.storage.entities.EmailEntity
-import org.osiam.storage.entities.ImEntity
-import org.osiam.storage.entities.PhoneNumberEntity
-import org.osiam.storage.entities.PhotoEntity
 import org.springframework.http.HttpStatus
 import org.springframework.web.context.request.WebRequest
-import spock.lang.Shared
 import spock.lang.Specification
-import spock.lang.Unroll
 
 class OsiamExceptionHandlerSpec extends Specification {
     def exceptionHandler = new OsiamExceptionHandler()

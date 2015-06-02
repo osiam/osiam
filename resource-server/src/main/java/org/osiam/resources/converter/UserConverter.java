@@ -51,24 +51,34 @@ public class UserConverter implements Converter<User, UserEntity> {
 
     @Inject
     private X509CertificateConverter x509CertificateConverter;
+
     @Inject
     private RoleConverter roleConverter;
+
     @Inject
     private PhotoConverter photoConverter;
+
     @Inject
     private PhoneNumberConverter phoneNumberConverter;
+
     @Inject
     private ImConverter imConverter;
+
     @Inject
     private EntitlementConverter entitlementConverter;
+
     @Inject
     private EmailConverter emailConverter;
+
     @Inject
     private AddressConverter addressConverter;
+
     @Inject
     private NameConverter nameConverter;
+
     @Inject
     private ExtensionConverter extensionConverter;
+
     @Inject
     private MetaConverter metaConverter;
 
@@ -102,37 +112,45 @@ public class UserConverter implements Converter<User, UserEntity> {
         for (AddressEntity addressEntity : addresses) {
             userEntity.addAddress(addressEntity);
         }
+
         Set<EmailEntity> emails = convertMultiValueFromScim(emailConverter, new HashSet<>(user.getEmails()));
-        for (EmailEntity emailEntitty : emails) {
-            userEntity.addEmail(emailEntitty);
+        for (EmailEntity emailEntity : emails) {
+            userEntity.addEmail(emailEntity);
         }
+
         Set<EntitlementEntity> entitlements = convertMultiValueFromScim(entitlementConverter,
                 new HashSet<>(user.getEntitlements()));
-        for (EntitlementEntity entitlementEntitty : entitlements) {
-            userEntity.addEntitlement(entitlementEntitty);
+        for (EntitlementEntity entitlementEntity : entitlements) {
+            userEntity.addEntitlement(entitlementEntity);
         }
+
         Set<ImEntity> ims = convertMultiValueFromScim(imConverter, new HashSet<>(user.getIms()));
         for (ImEntity imEntity : ims) {
             userEntity.addIm(imEntity);
         }
+
         Set<PhoneNumberEntity> phoneNumbers = convertMultiValueFromScim(phoneNumberConverter,
                 new HashSet<>(user.getPhoneNumbers()));
         for (PhoneNumberEntity phoneNumberEntity : phoneNumbers) {
             userEntity.addPhoneNumber(phoneNumberEntity);
         }
+
         Set<PhotoEntity> photos = convertMultiValueFromScim(photoConverter, new HashSet<>(user.getPhotos()));
         for (PhotoEntity photoEntity : photos) {
             userEntity.addPhoto(photoEntity);
         }
+
         Set<RoleEntity> roles = convertMultiValueFromScim(roleConverter, new HashSet<>(user.getRoles()));
         for (RoleEntity roleEntity : roles) {
             userEntity.addRole(roleEntity);
         }
+
         Set<X509CertificateEntity> x509Certificates = convertMultiValueFromScim(x509CertificateConverter,
                 new HashSet<>(user.getX509Certificates()));
         for (X509CertificateEntity x509CertificateEntity : x509Certificates) {
             userEntity.addX509Certificate(x509CertificateEntity);
         }
+
         Set<ExtensionFieldValueEntity> fieldValues = extensionConverter.fromScim(new HashSet<>(user.getExtensions()
                 .values()));
         for (ExtensionFieldValueEntity fieldValue : fieldValues) {
@@ -177,7 +195,6 @@ public class UserConverter implements Converter<User, UserEntity> {
     }
 
     private void addExtensions(User.Builder userBuilder, Set<ExtensionFieldValueEntity> extensionFieldValues) {
-
         Set<Extension> extensions = extensionConverter.toScim(extensionFieldValues);
 
         for (Extension extension : extensions) {
@@ -192,16 +209,18 @@ public class UserConverter implements Converter<User, UserEntity> {
             E entity = converter.fromScim(multiValue);
             entities.add(entity);
         }
+
         return entities;
     }
 
     private <S, E> List<S> convertMultiValueToScim(Converter<S, E> converter, Set<E> entities) {
-        List<S> multiValues = new ArrayList<S>();
+        List<S> multiValues = new ArrayList<>();
 
         for (E entity : entities) {
-            S multitValue = converter.toScim(entity);
-            multiValues.add(multitValue);
+            S multiValue = converter.toScim(entity);
+            multiValues.add(multiValue);
         }
+
         return multiValues;
     }
 
@@ -218,5 +237,4 @@ public class UserConverter implements Converter<User, UserEntity> {
 
         return groupsForMapping;
     }
-
 }

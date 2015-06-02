@@ -40,16 +40,16 @@ public class PhotoConverter implements Converter<Photo, PhotoEntity> {
         photoEntity.setValue(scim.getValueAsURI().toString());
         photoEntity.setType(scim.getType());
         photoEntity.setPrimary(scim.isPrimary());
-        
+
         return photoEntity;
     }
 
     @Override
     public Photo toScim(PhotoEntity entity) {
         Photo scimPhoto;
-        
+
         try {
-            scimPhoto =  new Photo.Builder()
+            scimPhoto = new Photo.Builder()
                     .setType(entity.getType())
                     .setValue(new URI(entity.getValue()))
                     .setPrimary(entity.isPrimary())

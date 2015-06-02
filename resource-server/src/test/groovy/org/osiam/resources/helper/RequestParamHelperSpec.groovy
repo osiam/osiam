@@ -23,12 +23,9 @@
 
 package org.osiam.resources.helper
 
-import javax.servlet.http.HttpServletRequest
-
-import org.osiam.storage.dao.ResourceDao
-
-import spock.lang.Ignore
 import spock.lang.Specification
+
+import javax.servlet.http.HttpServletRequest
 
 class RequestParamHelperSpec extends Specification {
 
@@ -194,10 +191,10 @@ class RequestParamHelperSpec extends Specification {
 
         then:
         result.get("attributes") == [
-            "userName",
-            "title",
-            "meta",
-            "created"
+                "userName",
+                "title",
+                "meta",
+                "created"
         ]
     }
 }

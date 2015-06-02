@@ -58,19 +58,19 @@ public class ExtensionQueryField {
         if (constraint != FilterConstraint.PRESENT && (field.getType() == ExtensionFieldType.INTEGER ||
                 field.getType() == ExtensionFieldType.DECIMAL)) {
 
-            value = numberPadder.pad(value); // NOSONAR - We want our modify our parameters
+            value = numberPadder.pad(value);
         }
 
         final SetJoin<UserEntity, ExtensionFieldValueEntity> join = createOrGetJoin(
                 generateAlias(urn + "." + field.getName()), root, UserEntity_.extensionFieldValues);
-        
+
         Predicate filterPredicate = constraint.createPredicateForExtensionField(
-                join.get(ExtensionFieldValueEntity_.value), // NOSONAR - XEntity_.X will be filled by JPA provider
+                join.get(ExtensionFieldValueEntity_.value),
                 value, field, cb);
-        
+
         Predicate valueBelongsToField = cb.equal(join.get(ExtensionFieldValueEntity_.extensionField)
                 .get(ExtensionFieldEntity_.internalId), field.getInternalId());
-        
+
         join.on(valueBelongsToField);
 
         return filterPredicate;

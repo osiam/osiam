@@ -28,7 +28,6 @@ import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.PhoneNumber
 import org.osiam.storage.entities.PhoneNumberEntity
 import org.osiam.storage.entities.UserEntity
-
 import spock.lang.Specification
 
 class PhoneNumbersUpdaterSpec extends Specification {
@@ -39,7 +38,7 @@ class PhoneNumbersUpdaterSpec extends Specification {
     UserEntity userEntity = Mock()
     PhoneNumberEntity phoneNumberEntity = Mock()
     PhoneNumberConverter phoneNumberConverter = Mock()
-    PhoneNumberUpdater phoneNumberUpdater = new PhoneNumberUpdater(phoneNumberConverter : phoneNumberConverter)
+    PhoneNumberUpdater phoneNumberUpdater = new PhoneNumberUpdater(phoneNumberConverter: phoneNumberConverter)
 
     def 'removing all phoneNumbers is possible'() {
         when:
@@ -48,14 +47,14 @@ class PhoneNumbersUpdaterSpec extends Specification {
         then:
         1 * userEntity.removeAllPhoneNumbers()
         userEntity.getPhoneNumbers() >> ([
-            new PhoneNumberEntity(value : IRRELEVANT),
-            new PhoneNumberEntity(value : IRRELEVANT_02)] as Set)
+                new PhoneNumberEntity(value: IRRELEVANT),
+                new PhoneNumberEntity(value: IRRELEVANT_02)] as Set)
     }
 
-    def 'removing an phoneNumber is possible'(){
+    def 'removing an phoneNumber is possible'() {
         given:
-        MultiValuedAttribute phoneNumber01 = new PhoneNumber.Builder(value : IRRELEVANT, operation : 'delete', ).build()
-        PhoneNumberEntity phoneNumberEntity01 = new PhoneNumberEntity(value : IRRELEVANT)
+        MultiValuedAttribute phoneNumber01 = new PhoneNumber.Builder(value: IRRELEVANT, operation: 'delete',).build()
+        PhoneNumberEntity phoneNumberEntity01 = new PhoneNumberEntity(value: IRRELEVANT)
 
         when:
         phoneNumberUpdater.update([phoneNumber01] as List, userEntity, [] as Set)
@@ -65,10 +64,10 @@ class PhoneNumbersUpdaterSpec extends Specification {
         1 * userEntity.removePhoneNumber(phoneNumberEntity01)
     }
 
-    def 'adding a new phoneNumber is possible'(){
+    def 'adding a new phoneNumber is possible'() {
         given:
-        MultiValuedAttribute phoneNumber = new PhoneNumber.Builder(value : IRRELEVANT).build()
-        PhoneNumberEntity phoneNumberEntity = new PhoneNumberEntity(value : IRRELEVANT)
+        MultiValuedAttribute phoneNumber = new PhoneNumber.Builder(value: IRRELEVANT).build()
+        PhoneNumberEntity phoneNumberEntity = new PhoneNumberEntity(value: IRRELEVANT)
 
         when:
         phoneNumberUpdater.update([phoneNumber] as List, userEntity, [] as Set)
@@ -77,17 +76,17 @@ class PhoneNumbersUpdaterSpec extends Specification {
         1 * phoneNumberConverter.fromScim(phoneNumber) >> phoneNumberEntity
         1 * userEntity.addPhoneNumber(phoneNumberEntity)
     }
-    
-    def 'adding a new primary phoneNumber removes the primary attribite from the old one'(){
+
+    def 'adding a new primary phoneNumber removes the primary attribite from the old one'() {
         given:
-        MultiValuedAttribute newPrimaryPhoneNumber = new PhoneNumber.Builder(value : IRRELEVANT, primary : true).build()
-        PhoneNumberEntity newPrimaryPhoneNumberEntity = new PhoneNumberEntity(value : IRRELEVANT, primary : true)
+        MultiValuedAttribute newPrimaryPhoneNumber = new PhoneNumber.Builder(value: IRRELEVANT, primary: true).build()
+        PhoneNumberEntity newPrimaryPhoneNumberEntity = new PhoneNumberEntity(value: IRRELEVANT, primary: true)
 
         PhoneNumberEntity oldPrimaryPhoneNumberEntity = Spy()
         oldPrimaryPhoneNumberEntity.setValue(IRRELEVANT_02)
         oldPrimaryPhoneNumberEntity.setPrimary(true)
 
-        PhoneNumberEntity phoneNumberEntity = new PhoneNumberEntity(value : IRRELEVANT_02, primary : false)
+        PhoneNumberEntity phoneNumberEntity = new PhoneNumberEntity(value: IRRELEVANT_02, primary: false)
 
         when:
         phoneNumberUpdater.update([newPrimaryPhoneNumber] as List, userEntity, [] as Set)

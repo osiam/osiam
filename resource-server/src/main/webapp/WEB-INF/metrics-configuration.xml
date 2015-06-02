@@ -22,20 +22,20 @@
     ~ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -->
 
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:metrics="http://www.ryantenney.com/schema/metrics"
-    xsi:schemaLocation="
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:metrics="http://www.ryantenney.com/schema/metrics"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="
            http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
            http://www.ryantenney.com/schema/metrics
            http://www.ryantenney.com/schema/metrics/metrics-3.0.xsd">
 
     <!-- Registry should be defined in only one context XML file -->
-    <metrics:metric-registry id="metrics" />
+    <metrics:metric-registry id="metrics"/>
 
     <!-- require the metrics-jvm dependency -->
     <metrics:register metric-registry="metrics">
-        <bean metrics:name="jvm.memory" class="com.codahale.metrics.jvm.MemoryUsageGaugeSet" />
+        <bean metrics:name="jvm.memory" class="com.codahale.metrics.jvm.MemoryUsageGaugeSet"/>
     </metrics:register>
 
 </beans>

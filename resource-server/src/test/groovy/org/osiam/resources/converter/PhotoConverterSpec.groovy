@@ -25,7 +25,6 @@ package org.osiam.resources.converter
 
 import org.osiam.resources.scim.Photo
 import org.osiam.storage.entities.PhotoEntity
-
 import spock.lang.Specification
 
 class PhotoConverterSpec extends Specification {
@@ -34,7 +33,7 @@ class PhotoConverterSpec extends Specification {
     Photo attribute
     PhotoConverter converter
 
-    def setup(){
+    def setup() {
         def value = 'myphoto.com/me.JPG'
         def type = Photo.Type.PHOTO
 

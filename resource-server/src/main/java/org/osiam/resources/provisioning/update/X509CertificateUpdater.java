@@ -50,11 +50,11 @@ class X509CertificateUpdater {
      * the given List of X509Certificate's
      * 
      * @param x509Certificates
-     *        list of X509Certificate's to be deleted, updated or added
+     *            list of X509Certificate's to be deleted, updated or added
      * @param userEntity
-     *        user who needs to be updated
+     *            user who needs to be updated
      * @param attributes
-     *        all {@link X509CertificateEntity}'s will be deleted if this Set contains 'x509Certificates'
+     *            all {@link X509CertificateEntity}'s will be deleted if this Set contains 'x509Certificates'
      */
     void update(List<X509Certificate> x509Certificates, UserEntity userEntity, Set<String> attributes) {
 
@@ -82,9 +82,9 @@ class X509CertificateUpdater {
      * {@link UserEntity} will be removed
      * 
      * @param newX509Certificate
-     *        to be checked if it is primary
+     *            to be checked if it is primary
      * @param x509Certificates
-     *        all existing x509Certificate's of the {@link UserEntity}
+     *            all existing x509Certificate's of the {@link UserEntity}
      */
     private void ensureOnlyOnePrimaryX509CertificateExists(X509CertificateEntity newX509Certificate,
             Set<X509CertificateEntity> x509Certificates) {

@@ -28,12 +28,12 @@ import javax.persistence.Converter;
 import org.osiam.resources.scim.ExtensionFieldType;
 
 @SuppressWarnings("rawtypes")
-@Converter(autoApply=true)
+@Converter(autoApply = true)
 public class ExtensionFieldTypeConverter implements AttributeConverter<ExtensionFieldType, String> {
 
     @Override
     public String convertToDatabaseColumn(ExtensionFieldType attribute) {
-        if(attribute == null){
+        if (attribute == null) {
             throw new IllegalArgumentException("The extension type can't be null.");
         }
         return attribute.toString();
