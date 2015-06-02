@@ -62,16 +62,16 @@ public class OsiamExceptionHandler extends SimpleMappingExceptionResolver {
 
     @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
     static class JsonErrorResult {
-        private String error;
+        private String error_code;
         private String description;
 
         public JsonErrorResult(String name, String message) {
-            error = name;
+            error_code = name;
             description = message;
         }
 
-        public String getError() {
-            return error;
+        public String getError_code() { // NOSONAR - needed pattern due to json serializing
+            return error_code;
         }
 
         public String getDescription() {
