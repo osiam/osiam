@@ -1,6 +1,6 @@
 # OSIAM auth server
 
-## 2.1 - 2015-06-01
+## 2.1 - 2015-06-02
 
 ### Features
 
@@ -17,6 +17,23 @@
 
 - Revert change that disabled single sign-on
 - Secure the '/token/revocation' endpoints
+- Change OAuth JSON error to comply to spec
+
+    Was:
+    ```json
+    {
+      "error_code": "...",
+      "description": "..."
+    }
+    ```
+
+    Changed to:
+    ```json
+    {
+      "error": "...",
+      "description": "..."
+    }
+    ```
 
 ### Other
 
