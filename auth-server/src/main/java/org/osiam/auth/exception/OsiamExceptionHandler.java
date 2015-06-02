@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -62,16 +63,18 @@ public class OsiamExceptionHandler extends SimpleMappingExceptionResolver {
 
     @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
     static class JsonErrorResult {
-        private String error_code;
+
+        @JsonProperty("error_code")
+        private String errorCode;
         private String description;
 
         public JsonErrorResult(String name, String message) {
-            error_code = name;
+            errorCode = name;
             description = message;
         }
 
-        public String getError_code() { // NOSONAR - needed pattern due to json serializing
-            return error_code;
+        public String getErrorCode() {
+            return errorCode;
         }
 
         public String getDescription() {
