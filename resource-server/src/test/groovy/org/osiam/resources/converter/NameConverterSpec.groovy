@@ -25,7 +25,6 @@ package org.osiam.resources.converter
 
 import org.osiam.resources.scim.Name
 import org.osiam.storage.entities.NameEntity
-
 import spock.lang.Specification
 
 class NameConverterSpec extends Specification {
@@ -42,7 +41,7 @@ class NameConverterSpec extends Specification {
                 middleName: 'Jay',
                 honorificPrefix: 'Dr.',
                 honorificSuffix: 'md.'
-                )
+        )
 
         scimName = new Name.Builder()
                 .setFormatted('Mr. Homer Simpson')

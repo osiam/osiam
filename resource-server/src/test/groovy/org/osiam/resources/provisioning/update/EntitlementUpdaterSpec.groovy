@@ -28,7 +28,6 @@ import org.osiam.resources.scim.Entitlement
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.storage.entities.EntitlementEntity
 import org.osiam.storage.entities.UserEntity
-
 import spock.lang.Specification
 
 class EntitlementUpdaterSpec extends Specification {
@@ -39,7 +38,7 @@ class EntitlementUpdaterSpec extends Specification {
     UserEntity userEntity = Mock()
     EntitlementEntity entitlementEntity = Mock()
     EntitlementConverter entitlementConverter = Mock()
-    EntitlementsUpdater entitlementUpdater = new EntitlementsUpdater(entitlementConverter : entitlementConverter)
+    EntitlementsUpdater entitlementUpdater = new EntitlementsUpdater(entitlementConverter: entitlementConverter)
 
     def 'removing all entitlements is possible'() {
         when:
@@ -48,14 +47,14 @@ class EntitlementUpdaterSpec extends Specification {
         then:
         1 * userEntity.removeAllEntitlements()
         userEntity.getEntitlements() >> ([
-            new EntitlementEntity(value : IRRELEVANT),
-            new EntitlementEntity(value : IRRELEVANT_02)] as Set)
+                new EntitlementEntity(value: IRRELEVANT),
+                new EntitlementEntity(value: IRRELEVANT_02)] as Set)
     }
 
-    def 'removing an entitlement is possible'(){
+    def 'removing an entitlement is possible'() {
         given:
-        MultiValuedAttribute entitlement01 = new Entitlement.Builder(value : IRRELEVANT, operation : 'delete', ).build()
-        EntitlementEntity entitlementEntity01 = new EntitlementEntity(value : IRRELEVANT)
+        MultiValuedAttribute entitlement01 = new Entitlement.Builder(value: IRRELEVANT, operation: 'delete',).build()
+        EntitlementEntity entitlementEntity01 = new EntitlementEntity(value: IRRELEVANT)
 
         when:
         entitlementUpdater.update([entitlement01] as List, userEntity, [] as Set)
@@ -65,10 +64,10 @@ class EntitlementUpdaterSpec extends Specification {
         1 * userEntity.removeEntitlement(entitlementEntity01)
     }
 
-    def 'adding a new entitlement is possible'(){
+    def 'adding a new entitlement is possible'() {
         given:
-        MultiValuedAttribute entitlement = new Entitlement.Builder(value : IRRELEVANT).build()
-        EntitlementEntity entitlementEntity = new EntitlementEntity(value : IRRELEVANT)
+        MultiValuedAttribute entitlement = new Entitlement.Builder(value: IRRELEVANT).build()
+        EntitlementEntity entitlementEntity = new EntitlementEntity(value: IRRELEVANT)
 
         when:
         entitlementUpdater.update([entitlement] as List, userEntity, [] as Set)
@@ -77,17 +76,17 @@ class EntitlementUpdaterSpec extends Specification {
         1 * entitlementConverter.fromScim(entitlement) >> entitlementEntity
         1 * userEntity.addEntitlement(entitlementEntity)
     }
-    
-    def 'adding a new primary entitlement removes the primary attribite from the old one'(){
+
+    def 'adding a new primary entitlement removes the primary attribite from the old one'() {
         given:
-        MultiValuedAttribute newPrimaryEntitlement = new Entitlement.Builder(value : IRRELEVANT, primary : true).build()
-        EntitlementEntity newPrimaryEntitlementEntity = new EntitlementEntity(value : IRRELEVANT, primary : true)
+        MultiValuedAttribute newPrimaryEntitlement = new Entitlement.Builder(value: IRRELEVANT, primary: true).build()
+        EntitlementEntity newPrimaryEntitlementEntity = new EntitlementEntity(value: IRRELEVANT, primary: true)
 
         EntitlementEntity oldPrimaryEntitlementEntity = Spy()
         oldPrimaryEntitlementEntity.setValue(IRRELEVANT_02)
         oldPrimaryEntitlementEntity.setPrimary(true)
 
-        EntitlementEntity entitlementEntity = new EntitlementEntity(value : IRRELEVANT_02, primary : false)
+        EntitlementEntity entitlementEntity = new EntitlementEntity(value: IRRELEVANT_02, primary: false)
 
         when:
         entitlementUpdater.update([newPrimaryEntitlement] as List, userEntity, [] as Set)

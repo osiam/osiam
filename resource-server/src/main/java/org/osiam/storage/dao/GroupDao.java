@@ -78,7 +78,7 @@ public class GroupDao implements GenericDao<GroupEntity> {
     public boolean isDisplayNameAlreadyTaken(String displayName, String id) {
         return resourceDao.isUniqueAttributeAlreadyTaken(displayName, id, GroupEntity_.displayName, GroupEntity.class);
     }
-    
+
     /**
      * Checks if a external id is already taken by another group or user.
      *
@@ -89,7 +89,7 @@ public class GroupDao implements GenericDao<GroupEntity> {
     public boolean isExternalIdAlreadyTaken(String externalId) {
         return resourceDao.isExternalIdAlreadyTaken(externalId);
     }
-    
+
     /**
      * Checks if a external id is already taken by another group or user. Ignores the group with the given id.
      *
@@ -102,7 +102,6 @@ public class GroupDao implements GenericDao<GroupEntity> {
     public boolean isExternalIdAlreadyTaken(String externalId, String id) {
         return resourceDao.isExternalIdAlreadyTaken(externalId, id);
     }
-    
 
     @Override
     public void delete(String id) {
@@ -119,7 +118,8 @@ public class GroupDao implements GenericDao<GroupEntity> {
     }
 
     @Override
-    public SearchResult<GroupEntity> search(ParseTree filterTree, String sortBy, String sortOrder, int count, int startIndex) {
+    public SearchResult<GroupEntity> search(ParseTree filterTree, String sortBy, String sortOrder, int count,
+            int startIndex) {
         return resourceDao.search(GroupEntity.class, filterTree, count, startIndex, sortBy, sortOrder, filterParser);
     }
 

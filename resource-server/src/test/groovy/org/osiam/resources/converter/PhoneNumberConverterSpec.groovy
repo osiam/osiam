@@ -25,7 +25,6 @@ package org.osiam.resources.converter
 
 import org.osiam.resources.scim.PhoneNumber
 import org.osiam.storage.entities.PhoneNumberEntity
-
 import spock.lang.Specification
 
 class PhoneNumberConverterSpec extends Specification {
@@ -34,7 +33,7 @@ class PhoneNumberConverterSpec extends Specification {
     PhoneNumber attribute
     PhoneNumberConverter converter
 
-    def setup(){
+    def setup() {
         def value = '+49 179 48754125'
         def type = PhoneNumber.Type.WORK
 

@@ -25,10 +25,8 @@ package org.osiam.resources.provisioning.update
 
 import org.osiam.resources.converter.EmailConverter
 import org.osiam.resources.scim.Email
-import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.storage.entities.EmailEntity
 import org.osiam.storage.entities.UserEntity
-
 import spock.lang.Specification
 
 class EmailUpdaterSpec extends Specification {
@@ -39,7 +37,7 @@ class EmailUpdaterSpec extends Specification {
     UserEntity userEntity = Mock()
     EmailEntity emailEntity = Mock()
     EmailConverter emailConverter = Mock()
-    EmailUpdater emailUpdater = new EmailUpdater(emailConverter : emailConverter)
+    EmailUpdater emailUpdater = new EmailUpdater(emailConverter: emailConverter)
 
     def 'removing all emails is possible'() {
         when:
@@ -49,10 +47,10 @@ class EmailUpdaterSpec extends Specification {
         1 * userEntity.removeAllEmails()
     }
 
-    def 'removing an email is possible'(){
+    def 'removing an email is possible'() {
         given:
-        Email email01 = new Email.Builder(value : IRRELEVANT, operation : 'delete', ).build()
-        EmailEntity emailEntity01 = new EmailEntity(value : IRRELEVANT)
+        Email email01 = new Email.Builder(value: IRRELEVANT, operation: 'delete',).build()
+        EmailEntity emailEntity01 = new EmailEntity(value: IRRELEVANT)
 
         when:
         emailUpdater.update([email01] as List, userEntity, [] as Set)
@@ -62,10 +60,10 @@ class EmailUpdaterSpec extends Specification {
         1 * userEntity.removeEmail(emailEntity01)
     }
 
-    def 'adding a new email is possible'(){
+    def 'adding a new email is possible'() {
         given:
-        Email email = new Email.Builder(value : IRRELEVANT).build()
-        EmailEntity emailEntity = new EmailEntity(value : IRRELEVANT)
+        Email email = new Email.Builder(value: IRRELEVANT).build()
+        EmailEntity emailEntity = new EmailEntity(value: IRRELEVANT)
 
         when:
         emailUpdater.update([email] as List, userEntity, [] as Set)
@@ -75,16 +73,16 @@ class EmailUpdaterSpec extends Specification {
         1 * userEntity.addEmail(emailEntity)
     }
 
-    def 'adding a new primary email removes the primary attribite from the old one'(){
+    def 'adding a new primary email removes the primary attribite from the old one'() {
         given:
-        Email newPrimaryEmail = new Email.Builder(value : IRRELEVANT, primary : true).build()
-        EmailEntity newPrimaryEmailEntity = new EmailEntity(value : IRRELEVANT, primary : true)
+        Email newPrimaryEmail = new Email.Builder(value: IRRELEVANT, primary: true).build()
+        EmailEntity newPrimaryEmailEntity = new EmailEntity(value: IRRELEVANT, primary: true)
 
         EmailEntity oldPrimaryEmailEntity = Spy()
         oldPrimaryEmailEntity.setValue(IRRELEVANT_02)
         oldPrimaryEmailEntity.setPrimary(true)
 
-        EmailEntity emailEntity = new EmailEntity(value : IRRELEVANT_02, primary : false)
+        EmailEntity emailEntity = new EmailEntity(value: IRRELEVANT_02, primary: false)
 
         when:
         emailUpdater.update([newPrimaryEmail] as List, userEntity, [] as Set)

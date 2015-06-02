@@ -23,32 +23,29 @@
 
 package org.osiam.resources.helper
 
-import java.util.logging.Logger
-
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Pointcut
-
 import spock.lang.Specification
 
 class MeasureDurationTimeOfMethodsSpec extends Specification {
+
     def underTest = new MeasureDurationTimeOfMethods()
-    def logger = Mock(Logger)
-    def joinPoint = Mock(ProceedingJoinPoint)
+    ProceedingJoinPoint joinPoint = Mock()
     def resultOfMethod = new Object()
 
     def setup() {
-        MeasureDurationTimeOfMethods.LOGGER = logger
         joinPoint.proceed() >> resultOfMethod
     }
 
     def "should just return result when not enabled"() {
         given:
         underTest.enabled = false
+
         when:
         def result = underTest.measureTime(joinPoint)
+
         then:
         result == resultOfMethod
-        0 * logger.info(_)
     }
 
     def "should measure time when enabled"() {
@@ -58,7 +55,6 @@ class MeasureDurationTimeOfMethodsSpec extends Specification {
         def result = underTest.measureTime(joinPoint)
         then:
         result == resultOfMethod
-        1 * logger.info(_)
     }
 
     def "should include org.osiam"() {

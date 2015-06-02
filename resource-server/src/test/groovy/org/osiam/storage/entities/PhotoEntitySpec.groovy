@@ -23,11 +23,6 @@
 
 package org.osiam.storage.entities
 
-import org.osiam.resources.exceptions.OsiamException
-import org.osiam.resources.scim.MultiValuedAttribute
-import org.osiam.storage.entities.PhotoEntity
-import org.osiam.storage.entities.UserEntity
-
 import spock.lang.Specification
 
 class PhotoEntitySpec extends Specification {

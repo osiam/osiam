@@ -28,7 +28,6 @@ import org.osiam.resources.scim.Group
 import org.osiam.resources.scim.Meta
 import org.osiam.storage.dao.ResourceDao
 import org.osiam.storage.entities.GroupEntity
-
 import spock.lang.Specification
 
 class ResourceUpdaterSpec extends Specification {
@@ -67,7 +66,7 @@ class ResourceUpdaterSpec extends Specification {
         1 * groupEntity.setExternalId(IRRELEVANT)
     }
 
-    def 'updating the externalId checks if the externalId already exists' () {
+    def 'updating the externalId checks if the externalId already exists'() {
         given:
         def uuid = UUID.randomUUID()
         Group group = new Group.Builder(externalId: IRRELEVANT).build()
@@ -80,7 +79,7 @@ class ResourceUpdaterSpec extends Specification {
         1 * resourceDao.isExternalIdAlreadyTaken(IRRELEVANT, uuid.toString())
     }
 
-    def 'updating the externalId to an existing externalId raises exception' () {
+    def 'updating the externalId to an existing externalId raises exception'() {
         given:
         def uuid = UUID.randomUUID()
         Group group = new Group.Builder(externalId: IRRELEVANT).build()

@@ -23,12 +23,11 @@
 
 package org.osiam.resources.provisioning
 
-import javax.persistence.NoResultException
-
 import org.osiam.resources.exceptions.ResourceNotFoundException
 import org.osiam.storage.dao.UserDao
-
 import spock.lang.Specification
+
+import javax.persistence.NoResultException
 
 class UserDeleteSpec extends Specification {
 

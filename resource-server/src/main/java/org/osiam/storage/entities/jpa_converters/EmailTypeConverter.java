@@ -29,12 +29,12 @@ import org.osiam.resources.scim.Email;
 
 import com.google.common.base.Strings;
 
-@Converter(autoApply=true)
+@Converter(autoApply = true)
 public class EmailTypeConverter implements AttributeConverter<Email.Type, String> {
 
     @Override
     public String convertToDatabaseColumn(Email.Type attribute) {
-        if(attribute == null || Strings.isNullOrEmpty(attribute.getValue())) {
+        if (attribute == null || Strings.isNullOrEmpty(attribute.getValue())) {
             return null;
         }
 
@@ -43,7 +43,7 @@ public class EmailTypeConverter implements AttributeConverter<Email.Type, String
 
     @Override
     public Email.Type convertToEntityAttribute(String dbData) {
-        if(Strings.isNullOrEmpty(dbData)) {
+        if (Strings.isNullOrEmpty(dbData)) {
             return null;
         }
 

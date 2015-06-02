@@ -23,10 +23,6 @@
 
 package org.osiam.resources.provisioning
 
-import javax.persistence.NoResultException
-
-import org.antlr.v4.runtime.tree.ParseTree
-import org.apache.tika.parser.ParseContext
 import org.osiam.resources.converter.GroupConverter
 import org.osiam.resources.exceptions.ResourceExistsException
 import org.osiam.resources.exceptions.ResourceNotFoundException
@@ -36,11 +32,10 @@ import org.osiam.resources.scim.MemberRef
 import org.osiam.storage.dao.GroupDao
 import org.osiam.storage.dao.SearchResult
 import org.osiam.storage.entities.GroupEntity
-import org.osiam.storage.entities.MetaEntity
 import org.osiam.storage.query.QueryFilterParser
-import org.springframework.dao.DataIntegrityViolationException
-
 import spock.lang.Specification
+
+import javax.persistence.NoResultException
 
 class SCIMGroupProvisioningBeanSpec extends Specification {
 
@@ -50,7 +45,7 @@ class SCIMGroupProvisioningBeanSpec extends Specification {
     QueryFilterParser queryFilterParser = new QueryFilterParser()
 
     SCIMGroupProvisioning scimGroupProvisioning = new SCIMGroupProvisioning(groupDao: groupDao, groupConverter: groupConverter,
-    groupUpdater: groupUpdater, queryFilterParser: queryFilterParser)
+            groupUpdater: groupUpdater, queryFilterParser: queryFilterParser)
 
     Group group = Mock()
     GroupEntity groupEntity = Mock()
@@ -185,7 +180,7 @@ class SCIMGroupProvisioningBeanSpec extends Specification {
     def 'searching for groups calls groupDao.search(), converts each entity to scim and returns the SCIM search result'() {
         given:
         def groupList = [groupEntity] as List
-        
+
         when:
         def result = scimGroupProvisioning.search("externalId eq \"group\"", "userName", "ascending", 100, 1)
 

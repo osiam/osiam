@@ -1,10 +1,10 @@
 package org.osiam.resources.provisioning.model;
 
-import org.osiam.resources.scim.Extension;
-import org.osiam.resources.scim.ExtensionFieldType;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.osiam.resources.scim.Extension;
+import org.osiam.resources.scim.ExtensionFieldType;
 
 /**
  * This class contains meta information about a {@link Extension}.

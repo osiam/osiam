@@ -39,14 +39,15 @@ import org.apache.log4j.Logger;
  */
 public class SSLRequestLoggingFilter implements Filter {
 
-    protected Logger logger = Logger.getLogger(SSLRequestLoggingFilter.class.getName()); // NOSONAR - need it in tests
+    protected Logger logger = Logger.getLogger(SSLRequestLoggingFilter.class.getName());
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
+            ServletException {
         if (request.getScheme().equals("http")) {
             logger.warn("SSL/TLS should be used");
         }

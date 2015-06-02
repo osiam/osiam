@@ -52,8 +52,8 @@ public class RequestParamHelper {
     private void translateAttributesForJackson(HttpServletRequest request, Map<String, Object> parameterMap) {
         String[] strings =
                 request.getParameter("attributes") != null ? request.getParameter("attributes").split("[,|\\.]") :
-                    new String[0];
-                parameterMap.put("attributes", strings);
+                        new String[0];
+        parameterMap.put("attributes", strings);
     }
 
     private void validateCount(HttpServletRequest request, Map<String, Object> parameterMap) {

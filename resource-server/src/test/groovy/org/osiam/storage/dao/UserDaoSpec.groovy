@@ -23,17 +23,7 @@
 
 package org.osiam.storage.dao
 
-import javax.persistence.EntityManager
-import javax.persistence.NoResultException
-import javax.persistence.Query
-
-import org.osiam.resources.exceptions.ResourceNotFoundException
-import org.osiam.storage.entities.GroupEntity
-import org.osiam.storage.entities.ResourceEntity
-import org.osiam.storage.entities.RoleEntity
 import org.osiam.storage.entities.UserEntity
-import org.osiam.storage.query.UserFilterParser
-
 import spock.lang.Specification
 
 class UserDaoSpec extends Specification {

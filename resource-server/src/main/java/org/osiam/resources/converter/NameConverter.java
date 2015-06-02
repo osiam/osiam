@@ -28,11 +28,11 @@ import org.osiam.storage.entities.NameEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-public class NameConverter implements Converter<Name, NameEntity>{
+public class NameConverter implements Converter<Name, NameEntity> {
 
     @Override
     public NameEntity fromScim(Name scim) {
-        if(scim == null){
+        if (scim == null) {
             return null;
         }
         NameEntity nameEntity = new NameEntity();
@@ -47,7 +47,7 @@ public class NameConverter implements Converter<Name, NameEntity>{
 
     @Override
     public Name toScim(NameEntity entity) {
-        if(entity == null){
+        if (entity == null) {
             return null;
         }
         return new Name.Builder().

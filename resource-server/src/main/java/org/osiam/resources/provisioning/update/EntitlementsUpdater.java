@@ -50,11 +50,11 @@ class EntitlementsUpdater {
      * given List of Entitlement's
      * 
      * @param entitlements
-     *        list of Entitlement's to be deleted, updated or added
+     *            list of Entitlement's to be deleted, updated or added
      * @param userEntity
-     *        user who needs to be updated
+     *            user who needs to be updated
      * @param attributes
-     *        all {@link EntitlementEntity}'s will be deleted if this Set contains 'entitlements'
+     *            all {@link EntitlementEntity}'s will be deleted if this Set contains 'entitlements'
      */
     void update(List<Entitlement> entitlements, UserEntity userEntity, Set<String> attributes) {
 
@@ -82,9 +82,9 @@ class EntitlementsUpdater {
      * {@link UserEntity} will be removed
      * 
      * @param newEntitlement
-     *        to be checked if it is primary
+     *            to be checked if it is primary
      * @param entitlements
-     *        all existing entitlement's of the {@link UserEntity}
+     *            all existing entitlement's of the {@link UserEntity}
      */
     private void ensureOnlyOnePrimaryEntitlementExists(EntitlementEntity newEntitlement,
             Set<EntitlementEntity> entitlements) {

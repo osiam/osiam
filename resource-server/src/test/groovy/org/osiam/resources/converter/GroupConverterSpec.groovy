@@ -31,25 +31,24 @@ import org.osiam.storage.entities.GroupEntity
 import org.osiam.storage.entities.MetaEntity
 import org.osiam.storage.entities.ResourceEntity
 import org.osiam.storage.entities.UserEntity
-
 import spock.lang.Specification
 
 class GroupConverterSpec extends Specification {
 
     static def IRRELEVANT = 'irrelevant'
     Map fixtures = [displayName: 'displayName',
-        externalId: 'externalId'
+                    externalId : 'externalId'
     ]
 
     def memberUuidFixtures = [
-        user: 'c2b4f6d0-7028-4f8d-b78a-bb4d3eadc5bd',
-        group: '0c60179c-0b9c-4cad-a918-4ec59bbab173',
-        'non-existant': 'e75522d8-2b4d-4b60-bb92-6c6cda8faaea']
+            user          : 'c2b4f6d0-7028-4f8d-b78a-bb4d3eadc5bd',
+            group         : '0c60179c-0b9c-4cad-a918-4ec59bbab173',
+            'non-existant': 'e75522d8-2b4d-4b60-bb92-6c6cda8faaea']
 
     private ResourceDao resourceDao = Mock()
 
     MetaConverter metaConverter = Mock()
-    GroupConverter groupConverter = new GroupConverter(resourceDao: resourceDao, metaConverter:metaConverter)
+    GroupConverter groupConverter = new GroupConverter(resourceDao: resourceDao, metaConverter: metaConverter)
 
     def 'mapping a user as member works'() {
         given:
@@ -86,7 +85,9 @@ class GroupConverterSpec extends Specification {
         GroupEntity GroupEntity = groupConverter.fromScim(group)
 
         then:
-        1 * resourceDao.getById(memberUuidFixtures['non-existant'], ResourceEntity.class) >> { throw new ResourceNotFoundException('') }
+        1 * resourceDao.getById(memberUuidFixtures['non-existant'], ResourceEntity.class) >> {
+            throw new ResourceNotFoundException('')
+        }
         thrown(ResourceNotFoundException)
     }
 

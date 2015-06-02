@@ -41,7 +41,7 @@ import com.google.common.collect.ImmutableSet;
 @Entity
 @Table(name = "scim_group")
 public class GroupEntity extends ResourceEntity {
-    
+
     private static final int BATCH_SIZE = 100;
     @ManyToMany
     @BatchSize(size = BATCH_SIZE)

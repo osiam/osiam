@@ -50,11 +50,11 @@ class AddressUpdater {
      * {@link Address}
      * 
      * @param addresss
-     *        list of {@link Address} to be deleted, updated or added
+     *            list of {@link Address} to be deleted, updated or added
      * @param userEntity
-     *        user who needs to be updated
+     *            user who needs to be updated
      * @param attributes
-     *        all {@link AddressEntity}'s will be deleted if this Set contains 'address'
+     *            all {@link AddressEntity}'s will be deleted if this Set contains 'address'
      */
     void update(List<Address> addresss, UserEntity userEntity, Set<String> attributes) {
 
@@ -82,9 +82,9 @@ class AddressUpdater {
      * {@link UserEntity} will be removed
      * 
      * @param newAddress
-     *        to be checked if it is primary
+     *            to be checked if it is primary
      * @param addresss
-     *        all existing address's of the {@link UserEntity}
+     *            all existing address's of the {@link UserEntity}
      */
     private void ensureOnlyOnePrimaryAddressExists(AddressEntity newAddress, Set<AddressEntity> addresss) {
         if (newAddress.isPrimary()) {

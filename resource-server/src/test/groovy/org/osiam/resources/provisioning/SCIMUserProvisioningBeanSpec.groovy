@@ -23,8 +23,6 @@
 
 package org.osiam.resources.provisioning
 
-import org.antlr.v4.runtime.tree.ParseTree
-import org.hibernate.hql.spi.FilterTranslator
 import org.osiam.resources.converter.UserConverter
 import org.osiam.resources.exceptions.ResourceExistsException
 import org.osiam.resources.scim.User
@@ -34,7 +32,6 @@ import org.osiam.storage.entities.MetaEntity
 import org.osiam.storage.entities.UserEntity
 import org.osiam.storage.query.QueryFilterParser
 import org.springframework.security.authentication.encoding.PasswordEncoder
-
 import spock.lang.Specification
 
 class SCIMUserProvisioningBeanSpec extends Specification {
@@ -172,7 +169,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
 
         then:
 
-        1 * existingEntity.getInternalId() >>internalId
+        1 * existingEntity.getInternalId() >> internalId
         1 * existingEntity.getMeta() >> meta
         1 * existingEntity.getId() >> id
         1 * userEntity.setInternalId(internalId)
@@ -180,7 +177,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         1 * userEntity.setId(id)
     }
 
-    def 'replacing a user with a password set, encodes and stores the new password' (){
+    def 'replacing a user with a password set, encodes and stores the new password'() {
         given:
         def id = UUID.randomUUID()
         def password = 'irrelevant'
@@ -202,7 +199,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         1 * userEntity.setPassword(hashedPassword)
     }
 
-    def 'replacing a user without a password set, copies the original password' () {
+    def 'replacing a user without a password set, copies the original password'() {
         given:
         def id = UUID.randomUUID()
         def password = 'irrelevant'
@@ -222,7 +219,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         1 * userEntity.setPassword(password)
     }
 
-    def 'replacing a user return the replaced user with its password removed' () {
+    def 'replacing a user return the replaced user with its password removed'() {
         given:
         def id = UUID.randomUUID()
         def password = 'irrelevant'

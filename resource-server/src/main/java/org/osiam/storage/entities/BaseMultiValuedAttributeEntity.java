@@ -32,11 +32,14 @@ import javax.persistence.SequenceGenerator;
 @MappedSuperclass
 public abstract class BaseMultiValuedAttributeEntity {
 
+    private static final int SEQUENCE_ALLOCATION_SIZE = 1;
+    private static final int SEQUENCE_INITIAL_VALUE = 100;
+
     @Id
     @SequenceGenerator(name = "sequence_scim_multi_valued_attribute",
             sequenceName = "resource_server_sequence_scim_multi_valued_attribute",
-            allocationSize = 1,
-            initialValue = 100)
+            allocationSize = SEQUENCE_ALLOCATION_SIZE,
+            initialValue = SEQUENCE_INITIAL_VALUE)
     @GeneratedValue(generator = "sequence_scim_multi_valued_attribute")
     @Column(name = "multi_value_id")
     private long multiValueId;
@@ -44,12 +47,12 @@ public abstract class BaseMultiValuedAttributeEntity {
     @Column(name = "is_primary")
     private Boolean primary;
 
-    public void setMultiValueId(long id) {
-        this.multiValueId = id;
-    }
-
     public long getMultiValueId() {
         return multiValueId;
+    }
+
+    public void setMultiValueId(long id) {
+        this.multiValueId = id;
     }
 
     public boolean isPrimary() {

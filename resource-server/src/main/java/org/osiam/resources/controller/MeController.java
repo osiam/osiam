@@ -68,15 +68,14 @@ public class MeController {
      * <p/>
      * The result should be in json format and look like:
      * <p/>
-     * {
      * "id": "73821979327912",
      * "name": "Arthur Dent",
-     * "first_name": "Arthur
+     * "first_name": "Arthur",
      * "last_name": "Dent",
      * "link": "https://www.facebook.com/arthur.dent.167",
      * "username": "arthur.dent.167",
      * "gender": "male",
-     * "email": "...@....de",
+     * "email": "arthur@dent.de",
      * "timezone": 2,
      * "locale": "en_US",
      * "verified": true,
@@ -87,18 +86,18 @@ public class MeController {
      *
      * @return an object to represent the json format.
      */
-    @RequestMapping(value = "/**", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/**", method = { RequestMethod.GET, RequestMethod.POST })
     @ResponseBody
     public FacebookInformationConstruct getInformation(HttpServletRequest request) {
         String accessToken = getAccessToken(request);
-        
+
         OAuth2Authentication oAuth = accessTokenValidationService.loadAuthentication(accessToken);
-        if(oAuth.isClientOnly()) {
+        if (oAuth.isClientOnly()) {
             throw new ConflictException("Can't return an user. This access token belongs to a client.");
         }
-        
+
         Authentication userAuthentication = oAuth.getUserAuthentication();
-        
+
         Object principal = userAuthentication.getPrincipal();
         if (principal instanceof User) {
             User user = (User) principal;
@@ -120,16 +119,16 @@ public class MeController {
         private final DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTime();
         private String id;
         private String name;
-        private String first_name; // NOSONAR - needed pattern due to json serializing
-        private String last_name; // NOSONAR - needed pattern due to json serializing
+        private String first_name;
+        private String last_name;
         private String link = "not supported.";
         private String userName;
         private String gender = "not supported.";
         private String email;
-        private int timezone = 2; //The user's timezone offset from UTC
+        private int timezone = 2; // The user's timezone offset from UTC
         private String locale;
         private boolean verified = true;
-        private String updated_time; // NOSONAR - needed pattern due to json serializing
+        private String updated_time;
 
         public FacebookInformationConstruct(UserEntity userEntity) {
             this.id = userEntity.getId().toString();
@@ -166,11 +165,11 @@ public class MeController {
             }
         }
 
-        public String getFirst_name() { // NOSONAR - needed pattern due to json serializing
+        public String getFirst_name() {
             return first_name;
         }
 
-        public String getLast_name() { // NOSONAR - needed pattern due to json serializing
+        public String getLast_name() {
             return last_name;
         }
 
@@ -178,7 +177,7 @@ public class MeController {
             return link;
         }
 
-        public String getUserName() { // NOSONAR - (confusing names) UserEntity.getUsername() is overwritten from super class
+        public String getUserName() {
             return userName;
         }
 
@@ -202,7 +201,7 @@ public class MeController {
             return verified;
         }
 
-        public String getUpdated_time() { // NOSONAR - needed pattern due to json serializing
+        public String getUpdated_time() {
             return updated_time;
         }
     }

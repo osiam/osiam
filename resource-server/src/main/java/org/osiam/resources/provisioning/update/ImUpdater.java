@@ -50,11 +50,11 @@ class ImUpdater {
      * List of Im's
      * 
      * @param ims
-     *        list of Im's to be deleted, updated or added
+     *            list of Im's to be deleted, updated or added
      * @param userEntity
-     *        user who needs to be updated
+     *            user who needs to be updated
      * @param attributes
-     *        all {@link ImEntity}'s will be deleted if this Set contains 'ims'
+     *            all {@link ImEntity}'s will be deleted if this Set contains 'ims'
      */
     void update(List<Im> ims, UserEntity userEntity, Set<String> attributes) {
 
@@ -82,9 +82,9 @@ class ImUpdater {
      * removed
      * 
      * @param newIm
-     *        to be checked if it is primary
+     *            to be checked if it is primary
      * @param ims
-     *        all existing im's of the {@link UserEntity}
+     *            all existing im's of the {@link UserEntity}
      */
     private void ensureOnlyOnePrimaryImExists(ImEntity newIm, Set<ImEntity> ims) {
         if (newIm.isPrimary()) {

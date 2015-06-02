@@ -61,12 +61,12 @@ class ExtensionUpdater {
      * of Email's
      * 
      * @param extensions
-     *        map of {@link Extension} to be removed or updated
+     *            map of {@link Extension} to be removed or updated
      * @param userEntity
-     *        user who needs to be updated
+     *            user who needs to be updated
      * @param attributes
-     *        all {@link Extension}'s field values of the user will be removed if this Set contains an existing urn and
-     *        field name
+     *            all {@link Extension}'s field values of the user will be removed if this Set contains an existing urn
+     *            and field name
      */
     void update(Map<String, Extension> extensions, UserEntity userEntity, Set<String> attributes) {
 
@@ -93,7 +93,8 @@ class ExtensionUpdater {
     }
 
     private void removeExtensionFieldValue(UserEntity userEntity, String urn, String fieldName) {
-        ImmutableSet<ExtensionFieldValueEntity> extensionEntities = ImmutableSet.copyOf(userEntity.getExtensionFieldValues());
+        ImmutableSet<ExtensionFieldValueEntity> extensionEntities = ImmutableSet.copyOf(userEntity
+                .getExtensionFieldValues());
         for (ExtensionFieldValueEntity extensionFieldValue : extensionEntities) {
             ExtensionFieldEntity extensionField = extensionFieldValue.getExtensionField();
             if (extensionField.getExtension().getUrn().equalsIgnoreCase(urn)

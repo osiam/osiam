@@ -33,9 +33,7 @@ import org.osiam.storage.entities.ExtensionEntity
 import org.osiam.storage.entities.ExtensionFieldEntity
 import org.osiam.storage.entities.ExtensionFieldValueEntity
 import org.osiam.storage.entities.UserEntity
-
 import spock.lang.Specification
-
 
 class ExtensionUpdaterSpec extends Specification {
 
@@ -50,9 +48,9 @@ class ExtensionUpdaterSpec extends Specification {
     ExtensionEntity extensionEntity = Mock()
     ExtensionConverter extensionConverter = Mock()
     ExtensionDao extensionDao = Mock()
-    ExtensionUpdater extensionUpdater = new ExtensionUpdater(extensionDao : extensionDao)
+    ExtensionUpdater extensionUpdater = new ExtensionUpdater(extensionDao: extensionDao)
 
-    def 'removing an extension is possible'(){
+    def 'removing an extension is possible'() {
         when:
         extensionUpdater.update(null, userEntity, [URN] as Set)
 
@@ -61,7 +59,7 @@ class ExtensionUpdaterSpec extends Specification {
         1 * userEntity.removeAllExtensionFieldValues(URN)
     }
 
-    def 'removing an extension field is possible'(){
+    def 'removing an extension field is possible'() {
         when:
         extensionUpdater.update(null, userEntity, [URN + "." + FIELD] as Set)
 
@@ -71,53 +69,53 @@ class ExtensionUpdaterSpec extends Specification {
         1 * userEntity.removeExtensionFieldValue(_)
     }
 
-    def 'updating a not registered extension raises an exception'(){
+    def 'updating a not registered extension raises an exception'() {
         given:
         Extension extension = extensionWithValue()
 
         when:
-        extensionUpdater.update([(URN) : extension] as Map, userEntity, [] as Set)
+        extensionUpdater.update([(URN): extension] as Map, userEntity, [] as Set)
 
         then:
         1 * extensionDao.getExtensionByUrn(URN) >> { throw new OsiamException() }
         thrown(OsiamException)
     }
 
-    def 'updating a not registered extension field raises an exception'(){
+    def 'updating a not registered extension field raises an exception'() {
         given:
-        
+
         Extension extension = new Extension.Builder(URN).setField(IRRELEVANT, VALUE).build()
         ExtensionEntity extensionEntity = createExtensionEntity()
 
         when:
-        extensionUpdater.update([(URN) : extension] as Map, userEntity, [] as Set)
+        extensionUpdater.update([(URN): extension] as Map, userEntity, [] as Set)
 
         then:
         1 * extensionDao.getExtensionByUrn(URN) >> extensionEntity
         thrown(NoSuchElementException)
     }
 
-    def 'updating an exisitng extension field is possible'(){
+    def 'updating an exisitng extension field is possible'() {
         given:
         Extension extension = extensionWithValue()
         ExtensionEntity extensionEntity = createExtensionEntity()
 
         when:
-        extensionUpdater.update([(URN) : extension] as Map, userEntity, [] as Set)
+        extensionUpdater.update([(URN): extension] as Map, userEntity, [] as Set)
 
         then:
         1 * extensionDao.getExtensionByUrn(URN) >> extensionEntity
         1 * userEntity.getExtensionFieldValues() >> ([getExtensionValueEntity()] as Set)
         1 * userEntity.addOrUpdateExtensionValue(_)
     }
-    
-    def 'updating an non exisitng extension field is possible'(){
+
+    def 'updating an non exisitng extension field is possible'() {
         given:
         Extension extension = extensionWithValue()
         ExtensionEntity extensionEntity = createExtensionEntity()
 
         when:
-        extensionUpdater.update([(URN) : extension] as Map, userEntity, [] as Set)
+        extensionUpdater.update([(URN): extension] as Map, userEntity, [] as Set)
 
         then:
         1 * extensionDao.getExtensionByUrn(URN) >> extensionEntity
@@ -140,10 +138,10 @@ class ExtensionUpdaterSpec extends Specification {
         return extension
     }
 
-    private getExtensionValueEntity(){
+    private getExtensionValueEntity() {
         ExtensionEntity extensionEntity = new ExtensionEntity()
         extensionEntity.urn = URN
-        ExtensionFieldEntity extensionField = new ExtensionFieldEntity(extension : extensionEntity, name: FIELD, type: ExtensionFieldType.STRING)
-        new ExtensionFieldValueEntity(extensionField : extensionField, value : VALUE)
+        ExtensionFieldEntity extensionField = new ExtensionFieldEntity(extension: extensionEntity, name: FIELD, type: ExtensionFieldType.STRING)
+        new ExtensionFieldValueEntity(extensionField: extensionField, value: VALUE)
     }
 }

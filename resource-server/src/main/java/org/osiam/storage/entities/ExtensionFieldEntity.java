@@ -47,34 +47,57 @@ import org.osiam.resources.scim.ExtensionFieldType;
         indexes = {
                 @Index(unique = true, columnList = "extension_internal_id, name")
         })
-public class ExtensionFieldEntity { // NOSONAR - will be constructed by jackson
+public class ExtensionFieldEntity {
 
+    private static final int SEQUENCE_ALLOCATION_SIZE = 1;
+    private static final int SEQUENCE_INITIAL_VALUE = 100;
+    private static Set<ConstraintAndType> invalidTypeForConstraint = new HashSet<>(Arrays.asList(
+            new ConstraintAndType(ExtensionFieldType.INTEGER, "co"),
+            new ConstraintAndType(ExtensionFieldType.INTEGER, "sw"),
+            new ConstraintAndType(ExtensionFieldType.DECIMAL, "co"),
+            new ConstraintAndType(ExtensionFieldType.DECIMAL, "sw"),
+            new ConstraintAndType(ExtensionFieldType.BOOLEAN, "co"),
+            new ConstraintAndType(ExtensionFieldType.BOOLEAN, "sw"),
+            new ConstraintAndType(ExtensionFieldType.BOOLEAN, "gt"),
+            new ConstraintAndType(ExtensionFieldType.BOOLEAN, "ge"),
+            new ConstraintAndType(ExtensionFieldType.BOOLEAN, "lt"),
+            new ConstraintAndType(ExtensionFieldType.BOOLEAN, "le"),
+            new ConstraintAndType(ExtensionFieldType.DATE_TIME, "co"),
+            new ConstraintAndType(ExtensionFieldType.DATE_TIME, "sw"),
+            new ConstraintAndType(ExtensionFieldType.BINARY, "eq"),
+            new ConstraintAndType(ExtensionFieldType.BINARY, "co"),
+            new ConstraintAndType(ExtensionFieldType.BINARY, "sw"),
+            new ConstraintAndType(ExtensionFieldType.BINARY, "gt"),
+            new ConstraintAndType(ExtensionFieldType.BINARY, "ge"),
+            new ConstraintAndType(ExtensionFieldType.BINARY, "lt"),
+            new ConstraintAndType(ExtensionFieldType.BINARY, "le"),
+            new ConstraintAndType(ExtensionFieldType.REFERENCE, "gt"),
+            new ConstraintAndType(ExtensionFieldType.REFERENCE, "ge"),
+            new ConstraintAndType(ExtensionFieldType.REFERENCE, "lt"),
+            new ConstraintAndType(ExtensionFieldType.REFERENCE, "le")
+            ));
     @Id
     @SequenceGenerator(name = "sequence_scim_extension_field",
             sequenceName = "resource_server_sequence_scim_extension_field",
-            allocationSize = 1,
-            initialValue = 100)
+            allocationSize = SEQUENCE_ALLOCATION_SIZE,
+            initialValue = SEQUENCE_INITIAL_VALUE)
     @GeneratedValue(generator = "sequence_scim_extension_field")
     @Column(name = "internal_id")
     private long internalId;
-
     private String name;
-
     /**
      * <p>
      * The type of this extension field.
      * </p>
-     * 
+     *
      * <p>
      * Custom type mapping is provided by {@link org.osiam.storage.entities.jpa_converters.ExtensionFieldTypeConverter}.
      * </p>
      */
     @Basic(optional = false)
     private ExtensionFieldType<?> type;
-
     @Column(name = "is_required")
     private boolean required;
-
     @ManyToOne
     private ExtensionEntity extension;
 
@@ -168,33 +191,7 @@ public class ExtensionFieldEntity { // NOSONAR - will be constructed by jackson
         return builder.toString();
     }
 
-    private static Set<ConstraintAndType> invalidTypeForConstraint = new HashSet<>(Arrays.asList(
-            new ConstraintAndType(ExtensionFieldType.INTEGER, "co"),
-            new ConstraintAndType(ExtensionFieldType.INTEGER, "sw"),
-            new ConstraintAndType(ExtensionFieldType.DECIMAL, "co"),
-            new ConstraintAndType(ExtensionFieldType.DECIMAL, "sw"),
-            new ConstraintAndType(ExtensionFieldType.BOOLEAN, "co"),
-            new ConstraintAndType(ExtensionFieldType.BOOLEAN, "sw"),
-            new ConstraintAndType(ExtensionFieldType.BOOLEAN, "gt"),
-            new ConstraintAndType(ExtensionFieldType.BOOLEAN, "ge"),
-            new ConstraintAndType(ExtensionFieldType.BOOLEAN, "lt"),
-            new ConstraintAndType(ExtensionFieldType.BOOLEAN, "le"),
-            new ConstraintAndType(ExtensionFieldType.DATE_TIME, "co"),
-            new ConstraintAndType(ExtensionFieldType.DATE_TIME, "sw"),
-            new ConstraintAndType(ExtensionFieldType.BINARY, "eq"),
-            new ConstraintAndType(ExtensionFieldType.BINARY, "co"),
-            new ConstraintAndType(ExtensionFieldType.BINARY, "sw"),
-            new ConstraintAndType(ExtensionFieldType.BINARY, "gt"),
-            new ConstraintAndType(ExtensionFieldType.BINARY, "ge"),
-            new ConstraintAndType(ExtensionFieldType.BINARY, "lt"),
-            new ConstraintAndType(ExtensionFieldType.BINARY, "le"),
-            new ConstraintAndType(ExtensionFieldType.REFERENCE, "gt"),
-            new ConstraintAndType(ExtensionFieldType.REFERENCE, "ge"),
-            new ConstraintAndType(ExtensionFieldType.REFERENCE, "lt"),
-            new ConstraintAndType(ExtensionFieldType.REFERENCE, "le")
-            ));
-
-    private static class ConstraintAndType { // NOSONAR - class can be private
+    private static class ConstraintAndType {
         private final ExtensionFieldType<?> type;
         private final String constraint;
 
@@ -205,22 +202,19 @@ public class ExtensionFieldEntity { // NOSONAR - will be constructed by jackson
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) {// NOSONAR - false-positive from clover; if-expression is correct
+            if (this == o) {
                 return true;
             }
-            if (o == null || getClass() != o.getClass()) {// NOSONAR - false-positive from clover; if-expression is
-                                                          // correct
+            if (o == null || getClass() != o.getClass()) {
                 return false;
             }
 
             ConstraintAndType that = (ConstraintAndType) o;
 
-            if (constraint != null ? !constraint.equals(that.constraint) : that.constraint != null) {// NOSONAR -
-                // false-positive from clover; if-expression is correct
+            if (constraint != null ? !constraint.equals(that.constraint) : that.constraint != null) {
                 return false;
             }
-            if (type != null ? !type.equals(that.type) : that.type != null) {// NOSONAR - false-positive from clover;
-                                                                             // if-expression is correct
+            if (type != null ? !type.equals(that.type) : that.type != null) {
                 return false;
             }
 

@@ -36,7 +36,7 @@ public class X509CertificateConverter implements Converter<X509Certificate, X509
         x509CertificateEntity.setValue(scim.getValue());
         x509CertificateEntity.setType(scim.getType());
         x509CertificateEntity.setPrimary(scim.isPrimary());
-        
+
         return x509CertificateEntity;
     }
 

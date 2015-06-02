@@ -60,12 +60,14 @@ public class DynamicHTTPMethodScopeEnhancer implements AccessDecisionVoter<Objec
     }
 
     @Override
-    public int vote(final Authentication authentication, final Object object, final Collection<ConfigAttribute> attributes) {
+    public int vote(final Authentication authentication, final Object object,
+            final Collection<ConfigAttribute> attributes) {
         Set<ConfigAttribute> dynamicConfigs = ifScopeDynamicAddMethodScope(object, attributes);
         return basedOnVoter.vote(authentication, object, dynamicConfigs);
     }
 
-    private Set<ConfigAttribute> ifScopeDynamicAddMethodScope(final Object object, final Collection<ConfigAttribute> attributes) {
+    private Set<ConfigAttribute> ifScopeDynamicAddMethodScope(final Object object,
+            final Collection<ConfigAttribute> attributes) {
         Set<ConfigAttribute> dynamicConfigs = new HashSet<>(attributes);
         if (object instanceof FilterInvocation && dynamicConfigs.remove(dynamic)) {
             addMethodScope(object, dynamicConfigs);

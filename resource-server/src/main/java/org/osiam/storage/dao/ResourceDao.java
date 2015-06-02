@@ -55,7 +55,8 @@ public class ResourceDao {
     @PersistenceContext
     private EntityManager em;
 
-    public <T extends ResourceEntity> SearchResult<T> search(Class<T> clazz, ParseTree filterTree, int count, int startIndex,
+    public <T extends ResourceEntity> SearchResult<T> search(Class<T> clazz, ParseTree filterTree, int count,
+            int startIndex,
             String sortBy, String sortOrder, FilterParser<T> filterParser) {
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -120,12 +121,12 @@ public class ResourceDao {
      * Retrieves a single {@link ResourceEntity} by the given id.
      * 
      * @param id
-     *        the id of the resource to retrieve it by
+     *            the id of the resource to retrieve it by
      * @param clazz
-     *        the concrete resource entity class to retrieve (may also be {@link ResourceEntity})
+     *            the concrete resource entity class to retrieve (may also be {@link ResourceEntity})
      * @return The matching {@link ResourceEntity}
      * @throws ResourceNotFoundException
-     *         if no {@link ResourceEntity} with the given id could be found
+     *             if no {@link ResourceEntity} with the given id could be found
      */
     public <T extends ResourceEntity> T getById(String id, Class<T> clazz) {
         return getByAttribute(ResourceEntity_.id, id, clazz);
@@ -135,16 +136,16 @@ public class ResourceDao {
      * Retrieves a single {@link ResourceEntity} by the given attribute and value.
      * 
      * @param attribute
-     *        The attribute of the resource entity to retrieve it by
+     *            The attribute of the resource entity to retrieve it by
      * @param value
-     *        The value of the attribute to compare it to
+     *            The value of the attribute to compare it to
      * @param clazz
-     *        The concrete resource entity class to retrieve (may also be {@link ResourceEntity})
+     *            The concrete resource entity class to retrieve (may also be {@link ResourceEntity})
      * @return The matching {@link ResourceEntity}
      * @throws ResourceNotFoundException
-     *         If no {@link ResourceEntity} could be found
+     *             If no {@link ResourceEntity} could be found
      * @throws OsiamException
-     *         If more than 1 {@link ResourceEntity} was found
+     *             If more than 1 {@link ResourceEntity} was found
      */
     public <T extends ResourceEntity, V> T getByAttribute(SingularAttribute<? super T, V> attribute, V value,
             Class<T> clazz) {
@@ -200,11 +201,11 @@ public class ResourceDao {
      * Removes a {@link ResourceEntity} from the database by its id
      * 
      * @param id
-     *        id of the {@link ResourceEntity}
+     *            id of the {@link ResourceEntity}
      * @throws ResourceNotFoundException
-     *         if no {@link ResourceEntity} could be found with the given id
+     *             if no {@link ResourceEntity} could be found with the given id
      * @throws IllegalArgumentException
-     *         if the instance is not a managed {@link ResourceEntity}
+     *             if the instance is not a managed {@link ResourceEntity}
      */
     public void delete(String id) {
         ResourceEntity resourceEntity = getById(id, ResourceEntity.class);

@@ -23,26 +23,13 @@
 
 package org.osiam.security.helper
 
-import javax.servlet.http.HttpServletRequest
-
-import org.joda.time.format.DateTimeFormatter
-import org.joda.time.format.ISODateTimeFormat
-import org.osiam.resources.scim.User;
-import org.osiam.security.authorization.AccessTokenValidationService
-import org.osiam.security.helper.AccessTokenHelper;
-import org.osiam.storage.dao.UserDao
-import org.osiam.storage.entities.EmailEntity
-import org.osiam.storage.entities.MetaEntity
-import org.osiam.storage.entities.NameEntity
-import org.osiam.storage.entities.UserEntity
-import org.springframework.security.core.Authentication
-import org.springframework.security.oauth2.provider.OAuth2Authentication
-
 import spock.lang.Specification
+
+import javax.servlet.http.HttpServletRequest
 
 class AccessTokenHelperSpec extends Specification {
 
-    HttpServletRequest request = Mock(HttpServletRequest)
+    HttpServletRequest request = Mock()
 
     def 'should throw exception when no access_token was submitted'() {
         given:
@@ -53,7 +40,7 @@ class AccessTokenHelperSpec extends Specification {
 
         then:
         def e = thrown(IllegalArgumentException)
-        e.message == 'No access_token submitted!'
+        e.message == 'No access token submitted!'
     }
 
     def 'should get access_token in bearer format'() {

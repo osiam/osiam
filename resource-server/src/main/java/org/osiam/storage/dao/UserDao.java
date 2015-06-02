@@ -67,7 +67,7 @@ public class UserDao implements GenericDao<UserEntity> {
      * Checks if a userName is already taken by another user.
      * 
      * @param userName
-     *        the userName to check
+     *            the userName to check
      * @return true if the userName is taken, otherwise false
      */
     public boolean isUserNameAlreadyTaken(String userName) {
@@ -78,9 +78,9 @@ public class UserDao implements GenericDao<UserEntity> {
      * Checks if a userName is already taken by another user. Ignores the user with the given id.
      * 
      * @param userName
-     *        the userName to check
+     *            the userName to check
      * @param id
-     *        the id of the user to ignore
+     *            the id of the user to ignore
      * @return true if the userName is taken, otherwise false
      */
     public boolean isUserNameAlreadyTaken(String userName, String id) {
@@ -91,7 +91,7 @@ public class UserDao implements GenericDao<UserEntity> {
      * Checks if a externalId is already taken by another user.
      * 
      * @param externalId
-     *        the userName to check
+     *            the userName to check
      * @return true if the externalId is taken, otherwise false
      */
     public boolean isExternalIdAlreadyTaken(String externalId) {
@@ -102,9 +102,9 @@ public class UserDao implements GenericDao<UserEntity> {
      * Checks if a externalId is already taken by another user. Ignores the user with the given id.
      * 
      * @param externalId
-     *        the externalId to check
+     *            the externalId to check
      * @param id
-     *        the id of the user to ignore
+     *            the id of the user to ignore
      * @return true if the externalId is taken, otherwise false
      */
     public boolean isExternalIdAlreadyTaken(String externalId, String id) {
@@ -126,7 +126,8 @@ public class UserDao implements GenericDao<UserEntity> {
     }
 
     @Override
-    public SearchResult<UserEntity> search(ParseTree filterTree, String sortBy, String sortOrder, int count, int startIndex) {
+    public SearchResult<UserEntity> search(ParseTree filterTree, String sortBy, String sortOrder, int count,
+            int startIndex) {
         return resourceDao.search(UserEntity.class, filterTree, count, startIndex, sortBy, sortOrder, filterParser);
     }
 

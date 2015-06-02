@@ -28,7 +28,7 @@ import org.osiam.storage.entities.MetaEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MetaConverter implements Converter<Meta, MetaEntity>{
+public class MetaConverter implements Converter<Meta, MetaEntity> {
 
     @Override
     public MetaEntity fromScim(Meta scim) {
@@ -38,14 +38,12 @@ public class MetaConverter implements Converter<Meta, MetaEntity>{
 
     @Override
     public Meta toScim(MetaEntity entity) {
-        if(entity == null){
+        if (entity == null) {
             return null;
         }
         return new Meta.Builder(entity.getCreated(), entity.getLastModified())
-                         .setResourceType(entity.getResourceType())
-                         .build();
+                .setResourceType(entity.getResourceType())
+                .build();
     }
-
-   
 
 }

@@ -41,12 +41,10 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
     private final ScimExpression scimExpression;
 
     private final QueryField<UserEntity> userFilterField;
-
-    private ExtensionQueryField extensionFilterField;
-
     private final ExtensionDao extensionDao;
     private final CriteriaBuilder criteriaBuilder;
     private final NumberPadder numberPadder;
+    private ExtensionQueryField extensionFilterField;
 
     public UserSimpleFilterChain(CriteriaBuilder criteriaBuilder, ExtensionDao extensionDao,
             ScimExpression scimExpression,
@@ -55,7 +53,7 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
         this.extensionDao = extensionDao;
         this.numberPadder = numberPadder;
         this.scimExpression = scimExpression;
-        
+
         String field = scimExpression.getField();
 
         userFilterField = UserQueryField.fromString(field.toLowerCase(Locale.ENGLISH));
@@ -63,7 +61,7 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
         // It's not a known user field, so try to build a extension filter
         if (userFilterField == null) {
             extensionFilterField = getExtensionFilterField(field.toLowerCase(Locale.ENGLISH));
-            if(extensionFilterField == null) {
+            if (extensionFilterField == null) {
                 throw new IllegalArgumentException("Filtering not possible: '" + field + "' not available");
             }
         }

@@ -31,8 +31,7 @@ import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.Name
 import org.osiam.resources.scim.SCIMSearchResult
 import org.osiam.resources.scim.User
-import org.osiam.security.authorization.AccessTokenValidationService;
-import org.osiam.security.helper.AccessTokenHelper
+import org.osiam.security.authorization.AccessTokenValidationService
 import org.osiam.storage.entities.EmailEntity
 import org.osiam.storage.entities.MetaEntity
 import org.osiam.storage.entities.NameEntity
@@ -42,12 +41,10 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.ResponseStatus
-
 import spock.lang.Specification
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-
 import java.lang.reflect.Method
 
 class UserControllerSpec extends Specification {
@@ -84,10 +81,10 @@ class UserControllerSpec extends Specification {
 
     NameEntity nameEntity = new NameEntity(familyName: "Prefect", givenName: "Fnord", formatted: "Fnord Prefect")
     UserEntity userEntity = new UserEntity(active: true, emails: [
-        new EmailEntity(primary: true, value: "test@test.de")
+            new EmailEntity(primary: true, value: "test@test.de")
     ],
-    name: nameEntity, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
-    locale: "de_DE", userName: "fpref")
+            name: nameEntity, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
+            locale: "de_DE", userName: "fpref")
 
     def 'getting a user calls getById on provisioning bean'() {
         given:
@@ -204,11 +201,11 @@ class UserControllerSpec extends Specification {
         assert result.id == user.id
         assert result.externalId == user.externalId
 
-        if(!locationChanged){
+        if (!locationChanged) {
             assert result.meta == user.meta
-        }else{
+        } else {
 
-        result.meta.attributes  == user.meta.attributes
+            result.meta.attributes == user.meta.attributes
             result.meta.created == user.meta.created
             result.meta.lastModified == user.meta.lastModified
             result.meta.resourceType == user.meta.resourceType
@@ -324,7 +321,7 @@ class UserControllerSpec extends Specification {
     }
 
     def "OSNG-467: updating a user should lead to a token revocation if the user is deactivated"() {
-        given:'a request to deactivate a user'
+        given: 'a request to deactivate a user'
         def id = 'user id'
         def token = 'token'
         User updateUser = new User.Builder().setActive(false).build()
@@ -332,16 +329,16 @@ class UserControllerSpec extends Specification {
         httpServletRequest.getHeader('Authorization') >> 'Bearer ' + token;
         scimUserProvisioning.update(id, updateUser) >> user
 
-        when:'the update is performed'
+        when: 'the update is performed'
         userController.update(id, httpServletRequest, httpServletResponse)
 
-        then:'a request to revoke the tokens of the users should be sent'
+        then: 'a request to revoke the tokens of the users should be sent'
         1 * jsonInputValidator.validateJsonUser(httpServletRequest) >> updateUser
         1 * accessTokenService.revokeAccessTokens(id, token)
     }
 
     def "OSNG-467: updating a user should not lead to a token revocation if the user is not deactivated"() {
-        given:'a request to update a user without deactivation'
+        given: 'a request to update a user without deactivation'
         def id = 'user id'
         def token = 'token'
         User updateUser = new User.Builder().setDisplayName('name').build()
@@ -349,16 +346,16 @@ class UserControllerSpec extends Specification {
         httpServletRequest.getHeader('Authorization') >> 'Bearer ' + token;
         scimUserProvisioning.update(id, updateUser) >> user
 
-        when:'the update is performed'
+        when: 'the update is performed'
         userController.update(id, httpServletRequest, httpServletResponse)
 
-        then:'no request to revoke the tokens of the users should be sent'
+        then: 'no request to revoke the tokens of the users should be sent'
         1 * jsonInputValidator.validateJsonUser(httpServletRequest) >> updateUser
         0 * accessTokenService.revokeAccessTokens(id, token)
     }
 
     def "OSNG-467: replacing a user should lead to a token revocation if the user is deactivated"() {
-        given:'a request to deactivate a user'
+        given: 'a request to deactivate a user'
         def id = 'user id'
         def token = 'token'
         User newUser = new User.Builder().setActive(false).build()
@@ -366,16 +363,16 @@ class UserControllerSpec extends Specification {
         httpServletRequest.getHeader('Authorization') >> 'Bearer ' + token;
         scimUserProvisioning.replace(id, newUser) >> user
 
-        when:'the user is replaced'
+        when: 'the user is replaced'
         userController.replace(id, httpServletRequest, httpServletResponse)
 
-        then:'a request to revoke the tokens of the users should be sent'
+        then: 'a request to revoke the tokens of the users should be sent'
         1 * jsonInputValidator.validateJsonUser(httpServletRequest) >> newUser
         1 * accessTokenService.revokeAccessTokens(id, token)
     }
 
     def "OSNG-467: replacing a user should not lead to a token revocation if the user is not deactivated"() {
-        given:'a request to update a user without deactivation'
+        given: 'a request to update a user without deactivation'
         def id = 'user id'
         def token = 'token'
         User newUser = new User.Builder().setDisplayName('name').build()
@@ -383,10 +380,10 @@ class UserControllerSpec extends Specification {
         httpServletRequest.getHeader('Authorization') >> 'Bearer ' + token;
         scimUserProvisioning.replace(id, newUser) >> user
 
-        when:'the user is replaced'
+        when: 'the user is replaced'
         userController.replace(id, httpServletRequest, httpServletResponse)
 
-        then:'no request to revoke the tokens of the users should be sent'
+        then: 'no request to revoke the tokens of the users should be sent'
         1 * jsonInputValidator.validateJsonUser(httpServletRequest) >> newUser
         0 * accessTokenService.revokeAccessTokens(id, token)
     }

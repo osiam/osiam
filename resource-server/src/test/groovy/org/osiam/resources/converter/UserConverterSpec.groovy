@@ -26,23 +26,22 @@ package org.osiam.resources.converter
 import org.osiam.resources.scim.*
 import org.osiam.storage.dao.UserDao
 import org.osiam.storage.entities.*
-
 import spock.lang.Specification
 
 class UserConverterSpec extends Specification {
 
-    Map fixtures = [displayName: 'displayName',
-        externalId: 'externalId',
-        locale: 'locale',
-        nickName: 'nickName',
-        password: 'password',
-        preferredLanguage: 'preferredLanguage',
-        profileUrl: 'profileURL',
-        timezone: 'timeZone',
-        title: 'title',
-        userName: 'userName',
-        userType: 'userType',
-        active: true]
+    Map fixtures = [displayName      : 'displayName',
+                    externalId       : 'externalId',
+                    locale           : 'locale',
+                    nickName         : 'nickName',
+                    password         : 'password',
+                    preferredLanguage: 'preferredLanguage',
+                    profileUrl       : 'profileURL',
+                    timezone         : 'timeZone',
+                    title            : 'title',
+                    userName         : 'userName',
+                    userType         : 'userType',
+                    active           : true]
 
     X509CertificateConverter x509CertificateConverter = Mock()
     RoleConverter roleConverter = Mock()

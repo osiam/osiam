@@ -50,11 +50,11 @@ class RoleUpdater {
      * List of Role's
      * 
      * @param roles
-     *        list of Role's to be deleted, updated or added
+     *            list of Role's to be deleted, updated or added
      * @param userEntity
-     *        user who needs to be updated
+     *            user who needs to be updated
      * @param attributes
-     *        all {@link RoleEntity}'s will be deleted if this Set contains 'roles'
+     *            all {@link RoleEntity}'s will be deleted if this Set contains 'roles'
      */
     void update(List<Role> roles, UserEntity userEntity, Set<String> attributes) {
 
@@ -82,9 +82,9 @@ class RoleUpdater {
      * will be removed
      * 
      * @param newRole
-     *        to be checked if it is primary
+     *            to be checked if it is primary
      * @param roles
-     *        all existing role's of the {@link UserEntity}
+     *            all existing role's of the {@link UserEntity}
      */
     private void ensureOnlyOnePrimaryRoleExists(RoleEntity newRole, Set<RoleEntity> roles) {
         if (newRole.isPrimary()) {

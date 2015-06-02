@@ -38,6 +38,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @ControllerAdvice
 public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
+
     private static final Logger LOGGER = Logger.getLogger(OsiamExceptionHandler.class.getName());
 
     /**
@@ -48,7 +49,7 @@ public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
             new JsonPropertyMessageTransformer(),
             new JsonMappingMessageTransformer() };
 
-    @ExceptionHandler(value = {Exception.class})
+    @ExceptionHandler(value = { Exception.class })
     protected ResponseEntity<Object> handleConflict(Exception ex, WebRequest request) {
         LOGGER.log(Level.WARNING, "An exception occurred", ex);
         HttpStatus status = setStatus(ex);
@@ -57,10 +58,11 @@ public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * This method may transform error messages to a more human readable message if the message contains some
-     * known buzzwords to trigger the effect.
+     * This method may transform error messages to a more human readable message if the message contains some known
+     * buzzwords to trigger the effect.
      *
-     * @param message the message to check and transform
+     * @param message
+     *            the message to check and transform
      * @return the original message or a transformed message
      */
     private String constructMessage(String message) {
@@ -87,7 +89,7 @@ public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
 
     @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
     static class JsonErrorResult {
-        private String error_code; // NOSONAR - needed pattern due to json serializing
+        private String error_code;
         private String description;
 
         public JsonErrorResult(String name, String message) {
@@ -95,7 +97,7 @@ public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
             description = message;
         }
 
-        public String getError_code() { // NOSONAR - needed pattern due to json serializing
+        public String getError_code() {
             return error_code;
         }
 

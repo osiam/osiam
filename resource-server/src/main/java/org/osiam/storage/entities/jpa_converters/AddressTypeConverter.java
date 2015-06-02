@@ -29,12 +29,12 @@ import org.osiam.resources.scim.Address;
 
 import com.google.common.base.Strings;
 
-@Converter(autoApply=true)
+@Converter(autoApply = true)
 public class AddressTypeConverter implements AttributeConverter<Address.Type, String> {
 
     @Override
     public String convertToDatabaseColumn(Address.Type attribute) {
-        if(attribute == null || Strings.isNullOrEmpty(attribute.getValue())) {
+        if (attribute == null || Strings.isNullOrEmpty(attribute.getValue())) {
             return null;
         }
 
@@ -43,7 +43,7 @@ public class AddressTypeConverter implements AttributeConverter<Address.Type, St
 
     @Override
     public Address.Type convertToEntityAttribute(String dbData) {
-        if(Strings.isNullOrEmpty(dbData)) {
+        if (Strings.isNullOrEmpty(dbData)) {
             return null;
         }
 

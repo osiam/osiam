@@ -50,11 +50,11 @@ class PhoneNumberUpdater {
      * given List of PhoneNumber's
      * 
      * @param phoneNumbers
-     *        list of PhoneNumber's to be deleted, updated or added
+     *            list of PhoneNumber's to be deleted, updated or added
      * @param userEntity
-     *        user who needs to be updated
+     *            user who needs to be updated
      * @param attributes
-     *        all {@link PhoneNumberEntity}'s will be deleted if this Set contains 'phoneNumbers'
+     *            all {@link PhoneNumberEntity}'s will be deleted if this Set contains 'phoneNumbers'
      */
     void update(List<PhoneNumber> phoneNumbers, UserEntity userEntity, Set<String> attributes) {
 
@@ -82,9 +82,9 @@ class PhoneNumberUpdater {
      * {@link UserEntity} will be removed
      * 
      * @param newPhoneNumber
-     *        to be checked if it is primary
+     *            to be checked if it is primary
      * @param phoneNumbers
-     *        all existing phoneNumber's of the {@link UserEntity}
+     *            all existing phoneNumber's of the {@link UserEntity}
      */
     private void ensureOnlyOnePrimaryPhoneNumberExists(PhoneNumberEntity newPhoneNumber,
             Set<PhoneNumberEntity> phoneNumbers) {

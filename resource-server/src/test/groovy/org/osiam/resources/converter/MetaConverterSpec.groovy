@@ -25,7 +25,6 @@ package org.osiam.resources.converter
 
 import org.osiam.resources.scim.Meta
 import org.osiam.storage.entities.MetaEntity
-
 import spock.lang.Specification
 
 class MetaConverterSpec extends Specification {
@@ -47,7 +46,7 @@ class MetaConverterSpec extends Specification {
         meta.getResourceType() == 'USER'
     }
 
-    def 'passing null metaEntity returns null'(){
+    def 'passing null metaEntity returns null'() {
         expect:
         metaConverter.toScim(null) == null
     }

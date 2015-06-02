@@ -62,7 +62,8 @@ public class ResourceUpdater {
 
         if (externalId != null && !externalId.isEmpty()) {
             if (resourceDao.isExternalIdAlreadyTaken(externalId, resourceEntity.getId().toString())) {
-                throw new ResourceExistsException(String.format("Resource with externalId '%s' already exists", externalId));
+                throw new ResourceExistsException(String.format("Resource with externalId '%s' already exists",
+                        externalId));
             }
 
             resourceEntity.setExternalId(externalId);

@@ -86,32 +86,34 @@ public class GroupController {
         response.setHeader("Location", requestUrl);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET) // NOSONAR - duplicate literals unnecessary
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
     public Group get(@PathVariable final String id) {
         return scimGroupProvisioning.getById(id);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE) // NOSONAR - duplicate literals unnecessary
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable final String id) {
         scimGroupProvisioning.delete(id);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT) // NOSONAR - duplicate literals unnecessary
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Group replace(@PathVariable final String id, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public Group replace(@PathVariable final String id, HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
         Group group = jsonInputValidator.validateJsonGroup(request);
         Group createdGroup = scimGroupProvisioning.replace(id, group);
         setLocation(request, response);
         return createdGroup;
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PATCH) // NOSONAR - duplicate literals unnecessary
+    @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Group update(@PathVariable final String id, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public Group update(@PathVariable final String id, HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
         Group group = jsonInputValidator.validateJsonGroup(request);
         Group createdGroup = scimGroupProvisioning.update(id, group);
         setLocation(request, response);
@@ -121,9 +123,10 @@ public class GroupController {
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
     public SCIMSearchResult<Group> searchWithGet(HttpServletRequest request) {
-        Map<String,Object> parameterMap = requestParamHelper.getRequestParameterValues(request);
-        SCIMSearchResult<Group> scimSearchResult = scimGroupProvisioning.search((String)parameterMap.get("filter"), (String)parameterMap.get("sortBy"), (String)parameterMap.get("sortOrder"),
-                (int)parameterMap.get("count"), (int)parameterMap.get("startIndex"));
+        Map<String, Object> parameterMap = requestParamHelper.getRequestParameterValues(request);
+        SCIMSearchResult<Group> scimSearchResult = scimGroupProvisioning.search((String) parameterMap.get("filter"),
+                (String) parameterMap.get("sortBy"), (String) parameterMap.get("sortOrder"),
+                (int) parameterMap.get("count"), (int) parameterMap.get("startIndex"));
 
         return attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResult, parameterMap);
     }
@@ -131,9 +134,10 @@ public class GroupController {
     @RequestMapping(value = "/.search", method = RequestMethod.POST)
     @ResponseBody
     public SCIMSearchResult<Group> searchWithPost(HttpServletRequest request) {
-        Map<String,Object> parameterMap = requestParamHelper.getRequestParameterValues(request);
-        SCIMSearchResult<Group> scimSearchResult = scimGroupProvisioning.search((String)parameterMap.get("filter"), (String)parameterMap.get("sortBy"), (String)parameterMap.get("sortOrder"),
-                (int)parameterMap.get("count"), (int)parameterMap.get("startIndex"));
+        Map<String, Object> parameterMap = requestParamHelper.getRequestParameterValues(request);
+        SCIMSearchResult<Group> scimSearchResult = scimGroupProvisioning.search((String) parameterMap.get("filter"),
+                (String) parameterMap.get("sortBy"), (String) parameterMap.get("sortOrder"),
+                (int) parameterMap.get("count"), (int) parameterMap.get("startIndex"));
 
         return attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResult, parameterMap);
     }

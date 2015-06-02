@@ -26,7 +26,6 @@ package org.osiam.resources.converter
 import org.osiam.resources.scim.MultiValuedAttribute
 import org.osiam.resources.scim.Role
 import org.osiam.storage.entities.RoleEntity
-
 import spock.lang.Specification
 
 class RoleConverterSpec extends Specification {
@@ -35,7 +34,7 @@ class RoleConverterSpec extends Specification {
     MultiValuedAttribute attribute
     RoleConverter converter
 
-    def setup(){
+    def setup() {
         def value = 'student'
 
         entity = new RoleEntity()

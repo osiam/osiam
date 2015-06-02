@@ -54,7 +54,8 @@ public class JsonInputValidator {
     public JsonInputValidator() {
 
         ObjectMapper mapper = new ObjectMapper();
-        SimpleModule testModule = new SimpleModule("userDeserializerModule", new Version(1, 0, 0, null, "org.osiam", "scim-schema"))
+        SimpleModule testModule = new SimpleModule("userDeserializerModule", new Version(1, 0, 0, null, "org.osiam",
+                "scim-schema"))
                 .addDeserializer(User.class, new UserDeserializer(User.class));
         mapper.registerModule(testModule);
 
@@ -73,7 +74,8 @@ public class JsonInputValidator {
         } catch (JsonParseException ex) {
             throw new IllegalArgumentException("The JSON structure is invalid", ex);
         }
-        if (user.getSchemas() == null || user.getSchemas().isEmpty() || !user.getSchemas().contains(Constants.USER_CORE_SCHEMA)) {
+        if (user.getSchemas() == null || user.getSchemas().isEmpty()
+                || !user.getSchemas().contains(Constants.USER_CORE_SCHEMA)) {
             throw new SchemaUnknownException();
         }
         if (user.getId() != null && !user.getId().isEmpty()) {
@@ -91,7 +93,8 @@ public class JsonInputValidator {
         } catch (JsonParseException ex) {
             throw new IllegalArgumentException("The JSON structure is invalid", ex);
         }
-        if (group.getSchemas() == null || group.getSchemas().isEmpty() || !group.getSchemas().contains(Constants.GROUP_CORE_SCHEMA)) {
+        if (group.getSchemas() == null || group.getSchemas().isEmpty()
+                || !group.getSchemas().contains(Constants.GROUP_CORE_SCHEMA)) {
             throw new SchemaUnknownException();
         }
         return group;

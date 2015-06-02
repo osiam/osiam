@@ -23,8 +23,6 @@
 
 package org.osiam.resources.controller
 
-import javax.servlet.http.HttpServletRequest
-
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 import org.osiam.resources.helper.RequestParamHelper
@@ -32,8 +30,9 @@ import org.osiam.resources.provisioning.SCIMUserProvisioning
 import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.SCIMSearchResult
 import org.osiam.resources.scim.User
-
 import spock.lang.Specification
+
+import javax.servlet.http.HttpServletRequest
 
 class ShowComplexAttributeFilterSpec extends Specification {
     def provisioning = Mock(SCIMUserProvisioning)
@@ -56,7 +55,7 @@ class ShowComplexAttributeFilterSpec extends Specification {
         2 * servletRequestMock.getParameter("attributes") >> "meta.created"
         1 * provisioning.search(_, _, _, _, _) >> scimSearchResult
 
-        result.getResources() == [[meta:[created:created], schemas:['urn:scim:schemas:core:2.0:User']]] as List
+        result.getResources() == [[meta: [created: created], schemas: ['urn:scim:schemas:core:2.0:User']]] as List
         result.getItemsPerPage() == 100
         result.getStartIndex() == 0
         result.getTotalResults() == 23
