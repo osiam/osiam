@@ -1,5 +1,19 @@
 # OSIAM auth server
 
+## 2.1.2 - 2015-06-02
+
+### Fixes
+
+- Revert 'Change OAuth JSON error to comply to spec'
+
+    "old style" error messages are back:
+    ```json
+    {
+      "error_code": "...",
+      "description": "..."
+    }
+    ```
+
 ## 2.1.1 - 2015-06-02
 
 ### Other
