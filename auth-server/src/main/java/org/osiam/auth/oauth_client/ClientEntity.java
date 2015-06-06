@@ -53,7 +53,6 @@ public class ClientEntity {
             initialValue = SEQUENCE_INITIAL_VALUE)
     @GeneratedValue(generator = "sequence_osiam_client")
     @JsonIgnore
-    @Column(name = "internal_id")
     private long internalId;
 
     @JsonProperty
@@ -69,11 +68,11 @@ public class ClientEntity {
     @JsonProperty
     @Lob
     @Type(type = "org.hibernate.type.StringClobType")
-    @Column(name = "redirect_uri", nullable = false)
+    @Column(nullable = false)
     private String redirectUri;
 
     @JsonProperty("client_secret")
-    @Column(name = "client_secret", nullable = false)
+    @Column(nullable = false)
     private String clientSecret = generateSecret();
 
     @JsonProperty
