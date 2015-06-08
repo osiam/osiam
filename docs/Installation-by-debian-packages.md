@@ -1,21 +1,14 @@
 # Installation by Debian packages
 
-The debian package sources are integrated in the [distribution repository](https://github.com/osiam/distribution).
-
-For a simple installation we provide `.deb` packages. They should work on all recent debian based distributions and
-are mostly tested with ubuntu 12.04 and debian weezy.
-
-## With OSIAM apt repository
-
-    TODO ...
-    sudo apt-get install osiam
-
-## With downloaded packages
+For a simple installation we provide `.deb` packages. They should work on all
+recent Debian based distributions and are mostly tested with ubuntu 12.04 and
+debian weezy. The debian packages can be found on the official
+[releases page](https://github.com/osiam/osiam/releases). Install with:
 
     sudo dpkg -i osiam-*.deb
     sudo apt-get install -f
 
-###Database configuration
+## Database configuration
 
 While installation you can choose to get the database setup managed by the installation. In this case you just have to provide a database password. The installation then creates a postgresql database called `osiam`, on the same machine and imports the basic database schema.
 If you prefer to do the database configuration by hand, simply choose this option and edit the `/etc/*.properties` files after installation.
