@@ -1,5 +1,11 @@
 # OSIAM resource server
 
+## 2.2 - 2015-06-18
+
+### Changes
+
+- Bump connector to make use of more concurrent HTTP connections
+
 ## 2.1 - 2015-06-02
 
 ### Features
