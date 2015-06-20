@@ -23,13 +23,12 @@
 
 package org.osiam.auth.exception;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -43,11 +42,11 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @ControllerAdvice
 public class OsiamExceptionHandler extends SimpleMappingExceptionResolver {
 
-    private static final Logger LOGGER = Logger.getLogger(OsiamExceptionHandler.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(OsiamExceptionHandler.class.getName());
 
     @ExceptionHandler(value = { Exception.class })
     protected ModelAndView handleConflict(HttpServletRequest request, Exception e) {
-        LOGGER.log(Level.WARNING, "An exception occurred", e);
+        LOGGER.warn("An exception occurred", e);
         return new ModelAndView("oauth_error");
     }
 
@@ -57,7 +56,7 @@ public class OsiamExceptionHandler extends SimpleMappingExceptionResolver {
     protected JsonErrorResult handleResourceNotFound(HttpServletRequest request,
             HttpServletResponse response, ResourceNotFoundException e) {
 
-        LOGGER.log(Level.WARNING, "A ResourceNotFoundException occurred", e);
+        LOGGER.warn("A ResourceNotFoundException occurred", e);
         return new JsonErrorResult(HttpStatus.NOT_FOUND.name(), e.getMessage());
     }
 

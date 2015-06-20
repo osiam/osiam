@@ -23,23 +23,22 @@
 
 package org.osiam.auth.oauth_client;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
 import org.osiam.auth.exception.ResourceNotFoundException;
 import org.osiam.client.oauth.GrantType;
 import org.osiam.client.oauth.Scope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * ClientProvider which created the auth server client on startup
@@ -48,7 +47,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 @Service
 public class OsiamAuthServerClientProvider {
 
-    private static final Logger LOGGER = Logger.getLogger(OsiamAuthServerClientProvider.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(OsiamAuthServerClientProvider.class.getName());
 
     public static final String AUTH_SERVER_CLIENT_ID = "auth-server";
     public static final int CLIENT_VALIDITY = 10;
@@ -75,7 +74,7 @@ public class OsiamAuthServerClientProvider {
                 try {
                     clientEntity = clientDao.getClient(AUTH_SERVER_CLIENT_ID);
                 } catch (ResourceNotFoundException e) {
-                    LOGGER.log(Level.INFO, "No auth server client found, so it will be created.");
+                    LOGGER.info("No auth server client found, so it will be created.");
                 }
 
                 if (clientEntity == null) {
