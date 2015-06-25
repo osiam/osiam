@@ -50,11 +50,16 @@
         </property>
     </bean>
 
-    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="${org.osiam.resource-server.db.driver}"/>
-        <property name="url" value="${org.osiam.resource-server.db.url}"/>
-        <property name="username" value="${org.osiam.resource-server.db.username}"/>
-        <property name="password" value="${org.osiam.resource-server.db.password}"/>
+    <bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
+        <property name="poolName" value="osiam-resource-server-cp" />
+        <property name="jdbcUrl" value="${org.osiam.resource-server.db.url}" />
+        <property name="driverClassName" value="${org.osiam.resource-server.db.driver}" />
+        <property name="username" value="${org.osiam.resource-server.db.username}" />
+        <property name="password" value="${org.osiam.resource-server.db.password}" />
+    </bean>
+
+    <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <constructor-arg ref="hikariConfig" />
     </bean>
 
     <bean id="txManager" class="org.springframework.orm.jpa.JpaTransactionManager">
