@@ -23,6 +23,9 @@
 
 package org.osiam.security.helper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 
 import javax.servlet.Filter;
@@ -32,14 +35,12 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.apache.log4j.Logger;
-
 /**
  * Filter to check if TLS is enabled.
  */
 public class SSLRequestLoggingFilter implements Filter {
 
-    protected Logger logger = Logger.getLogger(SSLRequestLoggingFilter.class.getName());
+    protected Logger logger = LoggerFactory.getLogger(SSLRequestLoggingFilter.class);
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

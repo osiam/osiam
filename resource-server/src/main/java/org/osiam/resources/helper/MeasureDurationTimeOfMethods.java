@@ -23,12 +23,12 @@
 
 package org.osiam.resources.helper;
 
-import java.util.logging.Logger;
-
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 @Aspect
@@ -38,7 +38,7 @@ import org.springframework.beans.factory.annotation.Value;
  */
 public class MeasureDurationTimeOfMethods {
 
-    private static Logger LOGGER = Logger.getLogger(MeasureDurationTimeOfMethods.class.getName());
+    private static Logger LOGGER = LoggerFactory.getLogger(MeasureDurationTimeOfMethods.class);
 
     @Value("${org.osiam.resource-server.profiling:false}")
     private boolean enabled;
