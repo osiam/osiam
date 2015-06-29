@@ -23,9 +23,8 @@
 
 package org.osiam.resources.exceptions;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,10 +35,11 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+
 @ControllerAdvice
 public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
 
-    private static final Logger LOGGER = Logger.getLogger(OsiamExceptionHandler.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(OsiamExceptionHandler.class);
 
     /**
      * Contains all known ErrorMessageTransformer to validate and manipulate error messages
@@ -51,7 +51,7 @@ public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = { Exception.class })
     protected ResponseEntity<Object> handleConflict(Exception ex, WebRequest request) {
-        LOGGER.log(Level.WARNING, "An exception occurred", ex);
+        LOGGER.warn("An exception occurred", ex);
         HttpStatus status = setStatus(ex);
         JsonErrorResult error = new JsonErrorResult(status.name(), constructMessage(ex.getMessage()));
         return handleExceptionInternal(ex, error, new HttpHeaders(), status, request);

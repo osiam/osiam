@@ -26,8 +26,6 @@ package org.osiam.resources.provisioning;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.persistence.NoResultException;
@@ -45,12 +43,14 @@ import org.osiam.storage.dao.GroupDao;
 import org.osiam.storage.dao.SearchResult;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.query.QueryFilterParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
 
-    private static final Logger LOGGER = Logger.getLogger(SCIMGroupProvisioning.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(SCIMGroupProvisioning.class);
 
     @Inject
     private GroupConverter groupConverter;
@@ -126,11 +126,11 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
         try {
             return groupConverter.toScim(groupDao.getById(id));
         } catch (NoResultException nre) {
-            LOGGER.log(Level.INFO, nre.getMessage(), nre);
+            LOGGER.info(nre.getMessage(), nre);
 
             throw new ResourceNotFoundException(String.format("Group with id '%s' not found", id), nre);
         } catch (PersistenceException pe) {
-            LOGGER.log(Level.WARNING, pe.getMessage(), pe);
+            LOGGER.warn(pe.getMessage(), pe);
 
             throw new ResourceNotFoundException(String.format("Group with id '%s' not found", id), pe);
         }
@@ -152,9 +152,7 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
 
         groupEntity.touch();
 
-        Group result = groupConverter.toScim(groupEntity);
-
-        return result;
+        return groupConverter.toScim(groupEntity);
     }
 
     @Override
