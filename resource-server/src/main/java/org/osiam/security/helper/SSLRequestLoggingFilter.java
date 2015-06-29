@@ -40,7 +40,7 @@ import javax.servlet.ServletResponse;
  */
 public class SSLRequestLoggingFilter implements Filter {
 
-    protected Logger logger = LoggerFactory.getLogger(SSLRequestLoggingFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SSLRequestLoggingFilter.class);
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -50,7 +50,7 @@ public class SSLRequestLoggingFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
             ServletException {
         if (request.getScheme().equals("http")) {
-            logger.warn("SSL/TLS should be used");
+            LOGGER.warn("SSL/TLS should be used");
         }
         chain.doFilter(request, response);
     }
