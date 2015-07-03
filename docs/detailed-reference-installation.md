@@ -217,7 +217,7 @@ You also have to create the file `/etc/osiam/auth-server.properties` with conten
 
 ```
 # Database properties
-org.osiam.resource-server.db.vendor=postgresql
+org.osiam.auth-server.db.vendor=postgresql
 org.osiam.auth-server.db.driver=org.postgresql.Driver
 org.osiam.auth-server.db.dialect=org.hibernate.dialect.PostgresPlusDialect
 org.osiam.auth-server.db.url=jdbc:postgresql://localhost:5432/ong
