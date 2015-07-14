@@ -1,0 +1,5 @@
+ALTER TABLE osiam_client RENAME accessTokenValiditySeconds TO access_token_validity_seconds;
+
+ALTER TABLE osiam_client RENAME refreshTokenValiditySeconds TO refresh_token_validity_seconds;
+
+ALTER TABLE osiam_client RENAME validityInSeconds TO validity_in_seconds;
