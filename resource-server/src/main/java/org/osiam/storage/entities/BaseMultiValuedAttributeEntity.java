@@ -41,7 +41,6 @@ public abstract class BaseMultiValuedAttributeEntity {
             allocationSize = SEQUENCE_ALLOCATION_SIZE,
             initialValue = SEQUENCE_INITIAL_VALUE)
     @GeneratedValue(generator = "sequence_scim_multi_valued_attribute")
-    @Column(name = "multi_value_id")
     private long multiValueId;
 
     @Column(name = "is_primary")
@@ -65,5 +64,4 @@ public abstract class BaseMultiValuedAttributeEntity {
     public void setPrimary(boolean primary) {
         this.primary = primary;
     }
-
 }

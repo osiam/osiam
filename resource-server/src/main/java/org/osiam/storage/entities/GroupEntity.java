@@ -28,6 +28,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
@@ -43,6 +44,7 @@ import com.google.common.collect.ImmutableSet;
 public class GroupEntity extends ResourceEntity {
 
     private static final int BATCH_SIZE = 100;
+
     @ManyToMany
     @BatchSize(size = BATCH_SIZE)
     private Set<ResourceEntity> members = new HashSet<>();

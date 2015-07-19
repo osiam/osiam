@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Basic;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -45,7 +44,7 @@ import org.osiam.resources.scim.ExtensionFieldType;
 @Entity
 @Table(name = "scim_extension_field",
         indexes = {
-                @Index(unique = true, columnList = "extension_internal_id, name")
+                @Index(unique = true, columnList = "extension, name")
         })
 public class ExtensionFieldEntity {
 
@@ -82,7 +81,6 @@ public class ExtensionFieldEntity {
             allocationSize = SEQUENCE_ALLOCATION_SIZE,
             initialValue = SEQUENCE_INITIAL_VALUE)
     @GeneratedValue(generator = "sequence_scim_extension_field")
-    @Column(name = "internal_id")
     private long internalId;
     private String name;
     /**
@@ -96,8 +94,9 @@ public class ExtensionFieldEntity {
      */
     @Basic(optional = false)
     private ExtensionFieldType<?> type;
-    @Column(name = "is_required")
+
     private boolean required;
+
     @ManyToOne
     private ExtensionEntity extension;
 

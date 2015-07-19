@@ -54,7 +54,6 @@ public class ExtensionEntity {
             allocationSize = 1,
             initialValue = 100)
     @GeneratedValue(generator = "sequence_scim_extension")
-    @Column(name = "internal_id")
     private long internalId;
 
     @Lob

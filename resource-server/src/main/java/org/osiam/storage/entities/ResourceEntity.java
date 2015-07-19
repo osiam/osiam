@@ -60,10 +60,9 @@ public abstract class ResourceEntity {
             allocationSize = SEQUENCE_ALLOCATION_SIZE,
             initialValue = SEQUENCE_INITIAL_VALUE)
     @GeneratedValue(generator = "sequence_scim_id")
-    @Column(name = "internal_id")
     private long internalId;
 
-    @Column(name = "external_id", unique = true)
+    @Column(unique = true)
     private String externalId;
 
     @OneToOne(cascade = CascadeType.ALL)
