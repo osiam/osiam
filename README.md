@@ -57,5 +57,5 @@ Please report issues, bugs and feature requests via [the issue tracker]
 
 ## Get involved
 
-Help is always appreciated. Read the
-[contributors guide](docs/contributors-guide.md) to learn more.
+Help is very appreciated. Please read the
+[contributors guide](CONTRIBUTING.md) to learn how to get started.
