@@ -1,5 +1,13 @@
 # OSIAM auth server
 
+## Unreleased
+
+### Fixes
+
+- Make sure `access_token`, `refresh_token` and `token_type` are added only
+  once to the returned Access Token (Fixes bug [#42]
+  (https://github.com/osiam/auth-server/issues/42)).
+
 ## 2.2 - 2015-06-18
 
 ### Changes

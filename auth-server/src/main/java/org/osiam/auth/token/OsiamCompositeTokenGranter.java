@@ -43,13 +43,13 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
  * Custom TokenGranter, which add additional information to spring's accesstoken,
  * which the resource server needed. Iterate over all configured token granters and
  * choose the one which needed for the current authentication process.
- * 
+ *
  */
 public class OsiamCompositeTokenGranter extends CompositeTokenGranter {
 
     @Inject
     private DefaultTokenServices tokenServices;
-    
+
     public OsiamCompositeTokenGranter(List<TokenGranter> tokenGranters) {
         super(tokenGranters);
     }
@@ -59,32 +59,29 @@ public class OsiamCompositeTokenGranter extends CompositeTokenGranter {
         if (grant != null) {
             DefaultOAuth2AccessToken token = (DefaultOAuth2AccessToken) grant;
             Map<String, Object>  additionalInformation = new HashMap<String, Object>();
-            additionalInformation.put("access_token", token.getValue());
             additionalInformation.put("expires_at", token.getExpiration());
-            
+
             StringBuilder scopes = new StringBuilder();
             for (String scopeString : token.getScope()) {
                 scopes.append(scopeString).append(" ");
             }
             additionalInformation.put("scopes", scopes);
-            
+
             if(token.getRefreshToken() != null) {
                 DefaultExpiringOAuth2RefreshToken refreshToken = (DefaultExpiringOAuth2RefreshToken) token.getRefreshToken();
-                additionalInformation.put("refresh_token", refreshToken.getValue());
                 additionalInformation.put("refresh_token_expires_at", refreshToken.getExpiration());
             }
-            
-            additionalInformation.put("token_type", token.getTokenType());
+
             additionalInformation.put("client_id", authorizationRequest.getClientId());
-            
+
             OAuth2Authentication auth = tokenServices.loadAuthentication(token.getValue());
-            
+
             if(auth.getUserAuthentication() != null && auth.getPrincipal() instanceof User) {
                 User user = (User) auth.getPrincipal();
                 additionalInformation.put("user_name", user.getUserName());
                 additionalInformation.put("user_id", user.getId());
             }
-            
+
             token.setAdditionalInformation(additionalInformation);
         }
         return grant;
