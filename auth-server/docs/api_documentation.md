@@ -167,7 +167,7 @@ code grant, but the user credentials are provided using the parameter
 * USERNAME and
 * PASSWORD
 
-An example based on OSIAM's default setup]
+An example based on [OSIAM's default setup]
 (https://github.com/osiam/osiam/blob/master/docs/detailed-reference-installation.md#default-setup):
 
 ```sh
