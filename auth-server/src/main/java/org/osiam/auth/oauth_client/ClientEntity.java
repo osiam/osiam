@@ -39,7 +39,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
 @Entity
 @Table(name = "osiam_client")
-@NamedQueries({ @NamedQuery(name = "getClientById", query = "SELECT i FROM ClientEntity i WHERE i.id= :id") })
+@NamedQueries({
+        @NamedQuery(name = "getClientById", query = "SELECT client FROM ClientEntity client WHERE client.id=:id"),
+        @NamedQuery(name = "getClients", query = "SELECT client FROM ClientEntity client")
+})
 public class ClientEntity {
 
     private static final int ID_LENGTH = 32;

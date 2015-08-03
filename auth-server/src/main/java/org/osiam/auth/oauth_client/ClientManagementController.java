@@ -24,6 +24,7 @@
 package org.osiam.auth.oauth_client;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -56,6 +57,12 @@ public class ClientManagementController {
     @ResponseBody
     public ClientEntity getClient(@PathVariable final String id) {
         return clientDao.getClient(id);
+    }
+
+    @RequestMapping(method = RequestMethod.GET)
+    @ResponseBody
+    public List<ClientEntity> getClients() {
+        return clientDao.getClients();
     }
 
     @RequestMapping(method = RequestMethod.POST)

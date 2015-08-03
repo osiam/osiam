@@ -42,6 +42,10 @@ public class ClientDao {
         return getClientById(id);
     }
 
+    public List<ClientEntity> getClients() {
+        return em.createNamedQuery("getClients", ClientEntity.class).getResultList();
+    }
+
     public ClientEntity create(final ClientEntity client) {
         em.persist(client);
         return client;
