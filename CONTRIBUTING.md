@@ -112,5 +112,5 @@ feel save and appreciated.
 
 ## Credits
 Much of this document was taken from and inspired by the `CONTRIBUTING.md`
-document of the excellent [crate](https.//crate.io) project. We use it with
+document of the excellent [crate](https://crate.io) project. We use it with
 a lot of love.
