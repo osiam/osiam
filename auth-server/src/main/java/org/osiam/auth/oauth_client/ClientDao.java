@@ -27,7 +27,6 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
 import org.osiam.auth.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Repository;
@@ -75,12 +74,19 @@ public class ClientDao {
     }
 
     private ClientEntity getClientById(final String id) {
-        final Query query = em.createNamedQuery("getClientById");
-        query.setParameter("id", id);
-        final List<?> result = query.getResultList();
+        final List<ClientEntity> result = getClientResultList(id);
         if (result.isEmpty()) {
             throw new ResourceNotFoundException("Resource " + id + " not found.");
         }
-        return (ClientEntity) result.get(0);
+        return result.get(0);
+    }
+
+    public boolean clientIdAlreadyExists(String id) {
+        final List<ClientEntity> result = getClientResultList(id);
+        return result.size() > 0;
+    }
+
+    private List<ClientEntity> getClientResultList(String id) {
+        return em.createNamedQuery("getClientById", ClientEntity.class).setParameter("id", id).getResultList();
     }
 }
