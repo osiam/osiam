@@ -60,6 +60,14 @@ public class OsiamExceptionHandler extends SimpleMappingExceptionResolver {
         return new JsonErrorResult(HttpStatus.NOT_FOUND.name(), e.getMessage());
     }
 
+    @ExceptionHandler(ClientAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseBody
+    protected JsonErrorResult handleClientAlreadyExists(ClientAlreadyExistsException e) {
+        LOGGER.warn(e.getMessage());
+        return new JsonErrorResult(HttpStatus.CONFLICT.name(), e.getMessage());
+    }
+
     @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
     static class JsonErrorResult {
 

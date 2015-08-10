@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.osiam.auth.exception.ClientAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,7 +70,12 @@ public class ClientManagementController {
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public ClientEntity create(@RequestBody String client) throws IOException {
-        return clientDao.create(getClientEntity(client));
+        final ClientEntity clientEntity = getClientEntity(client);
+        if (clientDao.clientIdAlreadyExists(clientEntity.getId())) {
+            throw new ClientAlreadyExistsException(String.format("The client with the id '%s' already exists",
+                    clientEntity.getId()));
+        }
+        return clientDao.create(clientEntity);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
