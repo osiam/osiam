@@ -39,7 +39,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * TokenProvider which created an accesstoken for the auth server client
- * 
+ *
  */
 @Service
 public class OsiamAccessTokenProvider {
@@ -49,9 +49,7 @@ public class OsiamAccessTokenProvider {
 
     public AccessToken createAccessToken() {
         Set<String> scopes = new HashSet<String>();
-        scopes.add(Scope.GET.toString());
-        scopes.add(Scope.POST.toString());
-        scopes.add(Scope.PATCH.toString());
+        scopes.add(Scope.ADMIN.toString());
         // Random scope, because the token services generates for every scope but same client
         // a different access token. This is only made due to the token expired problem, when the auth server
         // takes his actual access token, but the token is expired during the request to the resource server
@@ -62,7 +60,7 @@ public class OsiamAccessTokenProvider {
         authorizationRequest.setApproved(true);
 
         OAuth2Authentication oAuth2Authentication = new OAuth2Authentication(authorizationRequest, null);
-        
+
         return new AccessToken.Builder(tokenServices.createAccessToken(oAuth2Authentication).getValue()).build();
     }
 }

@@ -2,12 +2,17 @@
 
 ## Unreleased
 
+### Changes
+
+- Update OSIAM connector4java
+- Remove usage of old, method-based OAuth scopes
+
 ### Fixes
 
 - Make sure `access_token`, `refresh_token` and `token_type` are added only
   once to the returned Access Token (Fixes bug [#42]
   (https://github.com/osiam/auth-server/issues/42)).
-  
+
 - Remove `scopes` from the Access Token (Fixes bug [#51]
   (https://github.com/osiam/auth-server/issues/51)).
 
