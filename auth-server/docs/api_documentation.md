@@ -171,7 +171,7 @@ An example based on [OSIAM's default setup]
 (https://github.com/osiam/osiam/blob/master/docs/detailed-reference-installation.md#default-setup):
 
 ```sh
-curl -H "Authorization: Basic ZXhhbXBsZS1jbGllbnQ6c2VjcmV0" -X POST -d "grant_type=password&username=admin&password=koala&scope=GET POST PUT PATCH DELETE" http://localhost:8080/osiam-auth-server/oauth/token
+curl -H "Authorization: Basic ZXhhbXBsZS1jbGllbnQ6c2VjcmV0" -X POST -d "grant_type=password&username=admin&password=koala&scope=ADMIN" http://localhost:8080/osiam-auth-server/oauth/token
 ```
 
 ### Client Credentials Grant
@@ -190,7 +190,7 @@ An example based on [OSIAM's default setup]
 (https://github.com/osiam/osiam/blob/master/docs/detailed-reference-installation.md#default-setup)
 
 ```sh
-curl -H "Authorization: Basic ZXhhbXBsZS1jbGllbnQ6c2VjcmV0" -X POST -d "grant_type=client_credentials&scope=GET POST PUT PATCH DELETE" http://localhost:8080/osiam-auth-server/oauth/token
+curl -H "Authorization: Basic ZXhhbXBsZS1jbGllbnQ6c2VjcmV0" -X POST -d "grant_type=client_credentials&scope=ADMIN" http://localhost:8080/osiam-auth-server/oauth/token
 ```
 
 ## Scopes
@@ -203,17 +203,9 @@ details.
 
 OSIAM knows about the following scopes:
 
-* GET - allows you all get calls it stands for reading
-* POST - allows you all post calls it stands mostly for creating
-* PUT - allows you all put calls it stands for replacing
-* PATCH - allows you all patch calls which means updating
-* DELETE - allows you all delete calls which means deleting
 * ADMIN - allows full access to any resource
 * ME - allows read and write access to the data of the user associated with the
   access token
-
-The first five scopes obviously map to the respective HTTP methods and will be
-removed soon.
 
 ## Client Management
 
@@ -275,7 +267,7 @@ the response will be the created client in json format.
 
 e.g.:
 
-    curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X POST http://localhost:8080/osiam-auth-server/Client -d '{"id": "client_id", "accessTokenValiditySeconds": "1337", "refreshTokenValiditySeconds": "1337", "redirectUri": "http://AUTH_SERVER_HOST:5000/stuff", "scope": ["POST", "PUT", "GET", "DELETE", "PATCH"], "validityInSeconds": "1337", "implicit": "false", "grants": ["authorization_code", "client_credentials", "password", "refresh-token"]}'
+    curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X POST http://localhost:8080/osiam-auth-server/Client -d '{"id": "client_id", "accessTokenValiditySeconds": "1337", "refreshTokenValiditySeconds": "1337", "redirectUri": "http://AUTH_SERVER_HOST:5000/stuff", "scope": ["ADMIN", "ME"], "validityInSeconds": "1337", "implicit": "false", "grants": ["authorization_code", "client_credentials", "password", "refresh-token"]}'
 
 ### Replace an client
 
@@ -289,7 +281,7 @@ e.g.:
 
 ```sh
 curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT http://localhost:8080/osiam-auth-server/Client/$ID
--d '{"id": "client_id", "accessTokenValiditySeconds": "1337", "refreshTokenValiditySeconds": "1337", "redirectUri": "http://localhost:5000/stuff", "scope": ["POST", "PUT", "GET", "DELETE", "PATCH"], "validityInSeconds": "1337", "implicit": "false", "grants": ["authorization_code", "client_credentials", "password", "refresh-token"]}'
+-d '{"id": "client_id", "accessTokenValiditySeconds": "1337", "refreshTokenValiditySeconds": "1337", "redirectUri": "http://localhost:5000/stuff", "scope": ["ADMIN", "ME"], "validityInSeconds": "1337", "implicit": "false", "grants": ["authorization_code", "client_credentials", "password", "refresh-token"]}'
 ```
 
 ### Delete an client

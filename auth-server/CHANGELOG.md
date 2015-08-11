@@ -6,6 +6,7 @@
 
 - Update OSIAM connector4java
 - Remove usage of old, method-based OAuth scopes
+- Remove support for old, method-based OAuth scopes
 
 ### Fixes
 
