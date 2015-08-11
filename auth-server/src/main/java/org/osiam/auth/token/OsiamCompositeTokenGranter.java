@@ -61,11 +61,6 @@ public class OsiamCompositeTokenGranter extends CompositeTokenGranter {
             Map<String, Object>  additionalInformation = new HashMap<String, Object>();
             additionalInformation.put("expires_at", token.getExpiration());
 
-            StringBuilder scopes = new StringBuilder();
-            for (String scopeString : token.getScope()) {
-                scopes.append(scopeString).append(" ");
-            }
-
             if(token.getRefreshToken() != null) {
                 DefaultExpiringOAuth2RefreshToken refreshToken = (DefaultExpiringOAuth2RefreshToken) token.getRefreshToken();
                 additionalInformation.put("refresh_token_expires_at", refreshToken.getExpiration());
