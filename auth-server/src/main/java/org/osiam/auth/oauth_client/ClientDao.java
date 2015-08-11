@@ -28,7 +28,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.osiam.auth.exception.ResourceNotFoundException;
+import org.osiam.auth.exception.ClientNotFoundException;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -76,7 +76,7 @@ public class ClientDao {
     private ClientEntity getClientById(final String id) {
         final List<ClientEntity> result = getClientResultList(id);
         if (result.isEmpty()) {
-            throw new ResourceNotFoundException("Resource " + id + " not found.");
+            throw new ClientNotFoundException("Client with the id '" + id + "' not found.");
         }
         return result.get(0);
     }

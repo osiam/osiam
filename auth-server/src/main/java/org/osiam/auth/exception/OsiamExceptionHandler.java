@@ -23,40 +23,31 @@
 
 package org.osiam.auth.exception;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.slf4j.*;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.*;
+import org.springframework.web.servlet.handler.*;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
-
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.annotation.*;
 
 @ControllerAdvice
 public class OsiamExceptionHandler extends SimpleMappingExceptionResolver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OsiamExceptionHandler.class.getName());
 
-    @ExceptionHandler(value = { Exception.class })
-    protected ModelAndView handleConflict(HttpServletRequest request, Exception e) {
-        LOGGER.warn("An exception occurred", e);
+    @ExceptionHandler(Exception.class)
+    protected ModelAndView handleErrors(Exception e) {
+        LOGGER.error("Showing error page, because of the following exception", e);
         return new ModelAndView("oauth_error");
     }
 
-    @ExceptionHandler(value = { ResourceNotFoundException.class })
+    @ExceptionHandler(ClientNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-    protected JsonErrorResult handleResourceNotFound(HttpServletRequest request,
-            HttpServletResponse response, ResourceNotFoundException e) {
-
-        LOGGER.warn("A ResourceNotFoundException occurred", e);
+    protected JsonErrorResult handleClientNotFound(ClientNotFoundException e) {
+        LOGGER.warn(e.getMessage());
         return new JsonErrorResult(HttpStatus.NOT_FOUND.name(), e.getMessage());
     }
 

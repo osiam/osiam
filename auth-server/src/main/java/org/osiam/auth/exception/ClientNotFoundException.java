@@ -23,18 +23,9 @@
 
 package org.osiam.auth.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+public class ClientNotFoundException extends OsiamException {
 
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
-public class ResourceNotFoundException extends OsiamException {
-    private static final long serialVersionUID = -690283630029161964L;
-
-    public ResourceNotFoundException(String s) {
+    public ClientNotFoundException(String s) {
         super(s);
-    }
-
-    public ResourceNotFoundException(String s, Throwable cause) {
-        super(s, cause);
     }
 }
