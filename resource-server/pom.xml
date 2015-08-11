@@ -96,7 +96,7 @@
         <dependency>
             <groupId>org.osiam</groupId>
             <artifactId>connector4java</artifactId>
-            <version>1.6</version>
+            <version>1.7-SNAPSHOT</version>
         </dependency>
 
         <dependency>

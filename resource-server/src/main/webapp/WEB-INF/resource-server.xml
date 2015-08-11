@@ -111,9 +111,6 @@
                 <bean class="org.osiam.security.authorization.MeScopeAccessDecisionVoter">
                     <constructor-arg ref="scopeVoter"/>
                 </bean>
-                <bean class="org.osiam.security.authorization.DynamicHTTPMethodScopeEnhancer">
-                    <constructor-arg ref="scopeVoter"/>
-                </bean>
             </list>
         </constructor-arg>
     </bean>

@@ -133,8 +133,7 @@ public class AttributesRemovalHelper {
         for (User resource : resourceList) {
             User user = resource;
             for (String schema : user.getSchemas()) {
-                if (schema.equals(Constants.USER_CORE_SCHEMA)
-                        || returnFields.contains(schema)) {
+                if (schema.equals(Constants.USER_CORE_SCHEMA) || returnFields.contains(schema)) {
                     newSchema.add(schema);
                 }
             }

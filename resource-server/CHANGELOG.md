@@ -1,5 +1,12 @@
 # OSIAM resource server
 
+## Unreleased
+
+### Changes
+
+- Update OSIAM connector4java
+- Remove support for old, method-based OAuth scopes
+
 ## 2.2 - 2015-06-18
 
 ### Changes
