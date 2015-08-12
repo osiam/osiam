@@ -107,14 +107,14 @@ To get a basic overview of OSIAMs API the following section shows lists of the H
 
 #### Functional endpoints (resources)
 <table>
-<tr><td> /Users                  </td><td> SCIMv2    </td><td> GET PUT POST DELETE UPDATE </td><td>                     </td></tr>
-<tr><td> /Groups                 </td><td> SCIMv2    </td><td> GET PUT POST DELETE UPDATE </td><td>                     </td></tr>
-<tr><td> /Bulk                   </td><td> SCIMv2    </td><td> POST                       </td><td> not yet implemented </td></tr>
-<tr><td> /.search                </td><td> SCIMv2    </td><td> GET POST                   </td><td> not yet implemented </td></tr>
+<tr><td> /Users                  </td><td> SCIMv2    </td><td> ADMIN ME </td><td>                     </td></tr>
+<tr><td> /Groups                 </td><td> SCIMv2    </td><td> ADMIN </td><td>                     </td></tr>
+<tr><td> /Bulk                   </td><td> SCIMv2    </td><td> ADMIN                       </td><td> not yet implemented </td></tr>
+<tr><td> /.search                </td><td> SCIMv2    </td><td> ADMIN ME                   </td><td> not yet implemented </td></tr>
 <tr><td> /ServiceProviderConfigs </td><td> SCIMv2    </td><td> public                     </td><td>                     </td></tr>
 <tr><td> /Schemas                </td><td> SCIMv2    </td><td> public                     </td><td> not yet implemented </td></tr>
-<tr><td> /Clients                </td><td> OSIAM     </td><td> GET PUT POST DELETE UPDATE </td><td> SCIM based implementation as soon as the standard is defined</td></tr>
-<tr><td> /me                     </td><td> Facebook  </td><td> EMAIL                      </td><td>                     </td></tr>
+<tr><td> /Clients                </td><td> OSIAM     </td><td> ADMIN </td><td> SCIM based implementation as soon as the standard is defined</td></tr>
+<tr><td> /me                     </td><td> Facebook  </td><td> ADMIN ME                      </td><td>                     </td></tr>
 </table>
 
 ## Community resources overview
