@@ -1,3 +1,23 @@
+# Migration Notes
+
+## from 2.2 to 3.0
+
+This release removes the old, HTTP method-based scopes and replaces them with
+the new, functional-motivated scopes `ADMIN` and `ME`. The auth-server will
+automatically migrate all clients to the new scopes in the following way:
+
+1. Remove the old scopes (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`)
+2. Add the new scopes (`ADMIN`, `ME`)
+
+It will not touch self-defined scopes! Please check the scopes of your clients
+after the migration to ensure that everything is like you would expect. You
+maybe have to remove the new scopes from your clients if they don't use them.
+
+**Beware:** having a scope like `ADMIN` defined for your client can lead to
+security issues if you allow untrusted entities to request access tokens with
+whatever scopes they want. Please double check, that after the migration your
+clients don't define more scopes than they should.
+
 ## from 1.3.x to 2.0
 
 Flyway was added to support schema upgrades for the next versions. To
