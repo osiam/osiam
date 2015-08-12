@@ -72,9 +72,7 @@ public class OsiamAuthServerClientProvider {
 
                     clientEntity = new ClientEntity();
                     Set<String> scopes = new HashSet<>();
-                    scopes.add(Scope.GET.toString());
-                    scopes.add(Scope.POST.toString());
-                    scopes.add(Scope.PATCH.toString());
+                    scopes.add(Scope.ADMIN.toString());
 
                     Set<String> grants = new HashSet<>();
                     grants.add(GrantType.CLIENT_CREDENTIALS.toString());
