@@ -67,15 +67,4 @@ class MeasureDurationTimeOfMethodsSpec extends Specification {
         then:
         annotation.value() == "within(org.osiam..*)"
     }
-
-    def "should exclude org.osiam.security.authorization.DynamicHTTPMethodScopeEnhancer due to an error"() {
-        given:
-        def method = underTest.class.getMethod("excludeDynamicHTTPMethodScopeEnhancer")
-
-        when:
-        def annotation = method.getAnnotation(Pointcut)
-        underTest.excludeDynamicHTTPMethodScopeEnhancer()
-        then:
-        annotation.value() == "!execution(* org.osiam.security.authorization.DynamicHTTPMethodScopeEnhancer.*(..))"
-    }
 }

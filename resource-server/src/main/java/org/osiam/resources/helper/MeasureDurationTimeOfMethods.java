@@ -43,7 +43,7 @@ public class MeasureDurationTimeOfMethods {
     @Value("${org.osiam.resource-server.profiling:false}")
     private boolean enabled;
 
-    @Around("excludeDynamicHTTPMethodScopeEnhancer() && includeOrgOsiam()")
+    @Around("includeOrgOsiam()")
     public Object measureTime(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = 0, end;
         if (enabled) {
@@ -68,18 +68,6 @@ public class MeasureDurationTimeOfMethods {
 
     @Pointcut("within(org.osiam..*)")
     public void includeOrgOsiam() {
-    }
-
-    /**
-     * must exclude due to:
-     * <p/>
-     * nested exception is org.springframework.aop.framework.AopConfigException: Could not generate CGLIB subclass of
-     * class [class org.osiam.security.authorization.DynamicHTTPMethodScopeEnhancer]
-     * <p/>
-     * error
-     */
-    @Pointcut("!execution(* org.osiam.security.authorization.DynamicHTTPMethodScopeEnhancer.*(..))")
-    public void excludeDynamicHTTPMethodScopeEnhancer() {
     }
 
 }
