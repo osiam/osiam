@@ -153,6 +153,19 @@ class UserConverterSpec extends Specification {
         userConverter.toScim(null) == null
     }
 
+    def 'SCIM User without active field set results in entity with active set to false'() {
+        given:
+        extensionConverter.fromScim(_) >> ([] as Set)
+        User user = new User.Builder('irrelevant')
+                .build()
+
+        when:
+        UserEntity userEntity = userConverter.fromScim(user)
+
+        then:
+        userEntity.getActive() == false
+    }
+
     def User getFilledUser(UUID internalId) {
         User.Builder userBuilder = new User.Builder(fixtures)
         userBuilder.setId(internalId.toString())
