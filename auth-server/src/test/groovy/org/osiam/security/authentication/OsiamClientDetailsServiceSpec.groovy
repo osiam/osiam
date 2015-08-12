@@ -63,7 +63,7 @@ class OsiamClientDetailsServiceSpec extends Specification {
         ClientEntity result = new ClientEntity()
         result.setId(clientId)
         result.setClientSecret('secret')
-        result.setScope([Scope.ALL] as Set)
+        result.setScope([Scope.ADMIN] as Set)
         result.setGrants(['grant'] as Set)
         result.setRedirectUri('redirect-uri')
         result.setAccessTokenValiditySeconds(10000)
