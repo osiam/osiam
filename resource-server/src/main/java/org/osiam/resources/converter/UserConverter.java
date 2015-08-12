@@ -93,7 +93,10 @@ public class UserConverter implements Converter<User, UserEntity> {
             userEntity.setPassword(user.getPassword());
         }
 
-        userEntity.setActive(user.isActive());
+        if(user.isActive() != null) {
+            userEntity.setActive(user.isActive());
+        }
+
         userEntity.setDisplayName(user.getDisplayName());
         userEntity.setNickName(user.getNickName());
         userEntity.setExternalId(user.getExternalId() == null ? null : user.getExternalId().isEmpty() ? null : user
