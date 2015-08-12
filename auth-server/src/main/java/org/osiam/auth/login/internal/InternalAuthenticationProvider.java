@@ -91,7 +91,7 @@ public class InternalAuthenticationProvider implements AuthenticationProvider,
             throw new BadCredentialsException("The user with the username '" + username + "' doesn't exist!");
         }
 
-        if (!user.isActive()) {
+        if (user.isActive() != Boolean.TRUE) {
             throw new DisabledException("The user with the username '" + username + "' is disabled!");
         }
 
