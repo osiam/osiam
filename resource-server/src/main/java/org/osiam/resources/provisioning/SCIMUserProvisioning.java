@@ -158,7 +158,7 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
             users.add(getUserWithoutPassword(scimResultUser));
         }
 
-        return new SCIMSearchResult<>(users, result.totalResults, count, startIndex, Constants.USER_CORE_SCHEMA);
+        return new SCIMSearchResult<>(users, result.totalResults, count, startIndex, Constants.LIST_RESPONSE_CORE_SCHEMA);
     }
 
     private boolean searchedForPasswordAndNoResult(SearchResult<UserEntity> result, String filter) {
