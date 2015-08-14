@@ -27,6 +27,7 @@ import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 import org.osiam.resources.controller.UserController
 import org.osiam.resources.provisioning.SCIMUserProvisioning
+import org.osiam.resources.scim.Constants
 import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.SCIMSearchResult
 import org.osiam.resources.scim.User
@@ -48,7 +49,7 @@ class IsoDateFormatSpec extends Specification {
         def created = dateTimeFormatter.print(date)
 
         def user = new User.Builder("username").setMeta(new Meta.Builder(actualDate, null).build()).build()
-        def scimSearchResult = new SCIMSearchResult([user] as List, 23, 100, 0, ["urn:scim:schemas:core:1.0"] as Set)
+        def scimSearchResult = new SCIMSearchResult([user] as List, 23, 100, 0, ["urn:ietf:params:scim:schemas:core:2.0"] as Set)
 
         when:
         def result = userController.searchWithGet(servletRequestMock)
@@ -57,10 +58,10 @@ class IsoDateFormatSpec extends Specification {
         2 * servletRequestMock.getParameter("attributes") >> "meta.created"
         1 * provisioning.search(_, _, _, _, _) >> scimSearchResult
 
-        result.getResources() == [[meta: [created: created], schemas: ['urn:scim:schemas:core:2.0:User']]] as List
+        result.getResources() == [[meta: [created: created], schemas: [Constants.USER_CORE_SCHEMA]]] as List
         result.getItemsPerPage() == 100
         result.getStartIndex() == 0
         result.getTotalResults() == 23
-        result.getSchemas() == ["urn:scim:schemas:core:1.0"] as Set
+        result.getSchemas() == ["urn:ietf:params:scim:schemas:core:2.0"] as Set
     }
 }
