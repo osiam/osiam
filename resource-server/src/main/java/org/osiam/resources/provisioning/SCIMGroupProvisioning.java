@@ -118,7 +118,7 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
             groups.add(groupConverter.toScim(group));
         }
 
-        return new SCIMSearchResult<>(groups, result.totalResults, count, startIndex, Constants.GROUP_CORE_SCHEMA);
+        return new SCIMSearchResult<>(groups, result.totalResults, count, startIndex, Constants.LIST_RESPONSE_CORE_SCHEMA);
     }
 
     @Override
