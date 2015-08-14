@@ -26,23 +26,22 @@ package org.osiam.metrics.controller;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
-
+import com.codahale.metrics.json.MetricsModule;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.json.MetricsModule;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * {@link MetricsController} with just one action to get metrics data
- * 
+ *
  */
 @Controller
 @RequestMapping(value = "/Metrics")
@@ -51,10 +50,11 @@ public class MetricsController {
     private static final String RATE_UNIT = MetricsController.class.getCanonicalName() + ".rateUnit";
     private static final String DURATION_UNIT = MetricsController.class.getCanonicalName() + ".durationUnit";
 
-    @Inject
+    @Autowired
     private MetricRegistry registry;
 
-    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.GET)
+    @ResponseBody
     public ResponseEntity<String> getMetrics() throws JsonProcessingException {
         String jsonResponse = createMetricsJSONMapper().writerWithDefaultPrettyPrinter().writeValueAsString(registry);
 

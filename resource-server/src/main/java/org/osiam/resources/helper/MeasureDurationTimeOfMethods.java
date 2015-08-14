@@ -23,14 +23,13 @@
 
 package org.osiam.resources.helper;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.aspectj.lang.*;
+import org.aspectj.lang.annotation.*;
+import org.slf4j.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.stereotype.*;
 
+@Component
 @Aspect
 /**
  * This interceptor has the purpose to print out the duration time of all called methods in the package org.osiam.
@@ -69,5 +68,4 @@ public class MeasureDurationTimeOfMethods {
     @Pointcut("within(org.osiam..*)")
     public void includeOrgOsiam() {
     }
-
 }

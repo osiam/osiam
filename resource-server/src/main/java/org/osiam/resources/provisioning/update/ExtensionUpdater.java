@@ -27,8 +27,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.inject.Inject;
-
 import org.osiam.resources.exceptions.NoSuchElementException;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.ExtensionFieldType;
@@ -38,6 +36,7 @@ import org.osiam.storage.entities.ExtensionFieldEntity;
 import org.osiam.storage.entities.ExtensionFieldValueEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.helper.NumberPadder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Optional;
@@ -50,10 +49,10 @@ import com.google.common.collect.ImmutableSet;
 @Service
 class ExtensionUpdater {
 
-    @Inject
+    @Autowired
     private ExtensionDao extensionDao;
 
-    @Inject
+    @Autowired
     private NumberPadder numberPadder;
 
     /**

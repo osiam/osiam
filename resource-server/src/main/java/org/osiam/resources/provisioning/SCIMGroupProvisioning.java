@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.inject.Inject;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceException;
 
@@ -45,6 +44,7 @@ import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.query.QueryFilterParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -52,16 +52,16 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SCIMGroupProvisioning.class);
 
-    @Inject
+    @Autowired
     private GroupConverter groupConverter;
 
-    @Inject
+    @Autowired
     private GroupDao groupDao;
 
-    @Inject
+    @Autowired
     private GroupUpdater groupUpdater;
 
-    @Inject
+    @Autowired
     private QueryFilterParser queryFilterParser;
 
     @Override
@@ -163,5 +163,4 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
             throw new ResourceNotFoundException(String.format("Group with id '%s' not found", id), nre);
         }
     }
-
 }

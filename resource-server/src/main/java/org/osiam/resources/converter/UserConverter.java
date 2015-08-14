@@ -28,8 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Inject;
-
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.GroupRef;
 import org.osiam.resources.scim.User;
@@ -44,42 +42,43 @@ import org.osiam.storage.entities.PhotoEntity;
 import org.osiam.storage.entities.RoleEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.entities.X509CertificateEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserConverter implements Converter<User, UserEntity> {
 
-    @Inject
+    @Autowired
     private X509CertificateConverter x509CertificateConverter;
 
-    @Inject
+    @Autowired
     private RoleConverter roleConverter;
 
-    @Inject
+    @Autowired
     private PhotoConverter photoConverter;
 
-    @Inject
+    @Autowired
     private PhoneNumberConverter phoneNumberConverter;
 
-    @Inject
+    @Autowired
     private ImConverter imConverter;
 
-    @Inject
+    @Autowired
     private EntitlementConverter entitlementConverter;
 
-    @Inject
+    @Autowired
     private EmailConverter emailConverter;
 
-    @Inject
+    @Autowired
     private AddressConverter addressConverter;
 
-    @Inject
+    @Autowired
     private NameConverter nameConverter;
 
-    @Inject
+    @Autowired
     private ExtensionConverter extensionConverter;
 
-    @Inject
+    @Autowired
     private MetaConverter metaConverter;
 
     @Override

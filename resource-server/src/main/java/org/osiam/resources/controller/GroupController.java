@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -37,14 +36,11 @@ import org.osiam.resources.helper.RequestParamHelper;
 import org.osiam.resources.provisioning.SCIMGroupProvisioning;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.SCIMSearchResult;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriTemplate;
 
 /**
@@ -55,10 +51,10 @@ import org.springframework.web.util.UriTemplate;
 @Transactional
 public class GroupController {
 
-    @Inject
+    @Autowired
     private SCIMGroupProvisioning scimGroupProvisioning;
 
-    @Inject
+    @Autowired
     private JsonInputValidator jsonInputValidator;
 
     private RequestParamHelper requestParamHelper = new RequestParamHelper();

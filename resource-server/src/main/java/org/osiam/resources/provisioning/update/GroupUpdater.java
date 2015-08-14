@@ -26,8 +26,6 @@ package org.osiam.resources.provisioning.update;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.inject.Inject;
-
 import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.MemberRef;
@@ -35,6 +33,7 @@ import org.osiam.storage.dao.GroupDao;
 import org.osiam.storage.dao.ResourceDao;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.ResourceEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
@@ -45,13 +44,13 @@ import com.google.common.base.Strings;
 @Service
 public class GroupUpdater {
 
-    @Inject
+    @Autowired
     private GroupDao groupDao;
 
-    @Inject
+    @Autowired
     private ResourceUpdater resourceUpdater;
 
-    @Inject
+    @Autowired
     private ResourceDao resourceDao;
 
     /**

@@ -30,7 +30,8 @@ import org.springframework.web.context.request.WebRequest
 import spock.lang.Specification
 
 class OsiamExceptionHandlerSpec extends Specification {
-    def exceptionHandler = new OsiamExceptionHandler()
+
+    OsiamExceptionHandler exceptionHandler = new OsiamExceptionHandler()
     def static IRRELEVANT = 'irrelevant'
     WebRequest request = Mock()
 

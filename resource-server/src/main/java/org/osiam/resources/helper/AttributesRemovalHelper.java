@@ -24,12 +24,7 @@
 package org.osiam.resources.helper;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.osiam.resources.scim.Constants;
 import org.osiam.resources.scim.Resource;
@@ -127,17 +122,16 @@ public class AttributesRemovalHelper {
         if (resourceList.size() == 0) {
             return resourceList;
         }
-        List<User> modifiedResourceList = new ArrayList<User>();
-        Set<String> newSchema = new HashSet<String>();
+        List<User> modifiedResourceList = new ArrayList<>();
+        Set<String> newSchema = new HashSet<>();
         List<String> returnFields = Arrays.asList(fieldsToReturn);
         for (User resource : resourceList) {
-            User user = resource;
-            for (String schema : user.getSchemas()) {
+            for (String schema : resource.getSchemas()) {
                 if (schema.equals(Constants.USER_CORE_SCHEMA) || returnFields.contains(schema)) {
                     newSchema.add(schema);
                 }
             }
-            User modifiedUser = new User.Builder(user).setSchemas(newSchema).build();
+            User modifiedUser = new User.Builder(resource).setSchemas(newSchema).build();
             modifiedResourceList.add(modifiedUser);
         }
         return modifiedResourceList;
@@ -149,11 +143,9 @@ public class AttributesRemovalHelper {
             mapper.addMixInAnnotations(
                     Object.class, PropertyFilterMixIn.class);
 
-            HashSet<String> givenFields = new HashSet<String>();
+            HashSet<String> givenFields = new HashSet<>();
             givenFields.add("schemas");
-            for (String field : fieldsToReturn) {
-                givenFields.add(field);
-            }
+            Collections.addAll(givenFields, fieldsToReturn);
             String[] finalFieldsToReturn = givenFields.toArray(new String[givenFields.size()]);
 
             FilterProvider filters = new SimpleFilterProvider()

@@ -10,8 +10,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
 
-import javax.inject.Inject;
-
 import org.osiam.resources.provisioning.model.ExtensionDefinition;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.Extension.Field;
@@ -19,6 +17,7 @@ import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.storage.dao.ExtensionDao;
 import org.osiam.storage.entities.ExtensionEntity;
 import org.osiam.storage.entities.ExtensionFieldEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class SCIMExtensionProvisioning {
 
-    @Inject
+    @Autowired
     private ExtensionDao dao;
 
     /**

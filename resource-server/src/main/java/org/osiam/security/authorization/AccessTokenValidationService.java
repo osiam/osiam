@@ -23,25 +23,19 @@
 
 package org.osiam.security.authorization;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
-import org.osiam.client.OsiamConnector;
-import org.osiam.client.oauth.AccessToken;
-import org.osiam.client.oauth.Scope;
-import org.osiam.resources.scim.User;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
-import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
-import org.springframework.stereotype.Service;
+import org.osiam.client.*;
+import org.osiam.client.oauth.*;
+import org.osiam.resources.scim.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.security.authentication.*;
+import org.springframework.security.core.*;
+import org.springframework.security.oauth2.common.*;
+import org.springframework.security.oauth2.common.exceptions.*;
+import org.springframework.security.oauth2.provider.*;
+import org.springframework.security.oauth2.provider.token.*;
+import org.springframework.stereotype.*;
 
 @Service
 public class AccessTokenValidationService implements ResourceServerTokenServices {
@@ -53,16 +47,17 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
     public OAuth2Authentication loadAuthentication(String token) {
         AccessToken accessToken = validateAccessToken(token);
 
-        Set<String> scopes = new HashSet<String>();
+        Set<String> scopes = new HashSet<>();
         if (accessToken.getScopes() != null) {
             for (Scope scope : accessToken.getScopes()) {
                 scopes.add(scope.toString());
             }
         }
 
-        DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest(accessToken.getClientId(),
-                scopes);
-        authorizationRequest.setApproved(true);
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put(AccessTokenConverter.CLIENT_ID, accessToken.getClientId());
+        OAuth2Request authRequest = new OAuth2Request(parameters, accessToken.getClientId(), null, true, scopes, null, null,
+                null, null);
 
         Authentication auth = null;
 
@@ -72,7 +67,7 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
             auth = new UsernamePasswordAuthenticationToken(authUser, null, new ArrayList<GrantedAuthority>());
         }
 
-        return new OAuth2Authentication(authorizationRequest, auth);
+        return new OAuth2Authentication(authRequest, auth);
     }
 
     @Override
@@ -87,14 +82,14 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
         DefaultOAuth2AccessToken oAuth2AccessToken = new DefaultOAuth2AccessToken(token);
         oAuth2AccessToken.setScope(scopes);
         oAuth2AccessToken.setExpiration(accessToken.getExpiresAt());
-        oAuth2AccessToken.setTokenType("BEARER");
+        oAuth2AccessToken.setTokenType(DefaultOAuth2AccessToken.BEARER_TYPE);
 
         return oAuth2AccessToken;
     }
 
     /**
      * Revokes the access tokens of the user with the given ID.
-     * 
+     *
      * @param id
      *            the user ID
      * @param token

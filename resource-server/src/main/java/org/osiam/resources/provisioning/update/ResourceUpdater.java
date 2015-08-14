@@ -23,12 +23,11 @@
 
 package org.osiam.resources.provisioning.update;
 
-import javax.inject.Inject;
-
 import org.osiam.resources.exceptions.ResourceExistsException;
 import org.osiam.resources.scim.Resource;
 import org.osiam.storage.dao.ResourceDao;
 import org.osiam.storage.entities.ResourceEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -37,7 +36,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ResourceUpdater {
 
-    @Inject
+    @Autowired
     private ResourceDao resourceDao;
 
     /**
@@ -69,5 +68,4 @@ public class ResourceUpdater {
             resourceEntity.setExternalId(externalId);
         }
     }
-
 }
