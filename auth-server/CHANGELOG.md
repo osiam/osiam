@@ -11,9 +11,9 @@
 - Remove support for old, method-based OAuth scopes
 - Add Flyway migration to replace method-based scopes
 
-    The migration will remove all old, method-based scopes from every client and
-    then add the new scopes `ADMIN` and `ME`. See the [migration notes]
-    (docs/Migration.md#from-22-to-30) for further details.
+    The migration will remove all old, method-based scopes from all well-known
+    clients and then add the new scopes `ADMIN` and `ME`. See the
+    [migration notes] (docs/Migration.md#from-22-to-30) for further details.
 
 ### Fixes
 

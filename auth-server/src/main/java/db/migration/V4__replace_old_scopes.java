@@ -1,39 +1,83 @@
 package db.migration;
 
-import java.util.List;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.flywaydb.core.api.migration.spring.SpringJdbcMigration;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.flywaydb.core.api.migration.MigrationChecksumProvider;
+import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
 
-public class V4__replace_old_scopes implements SpringJdbcMigration {
+public class V4__replace_old_scopes implements JdbcMigration, MigrationChecksumProvider {
+
+    private final Map<String, Long> internalIds = new HashMap<>();
+    private Connection connection;
 
     @Override
-    public void migrate(JdbcTemplate jdbcTemplate) throws Exception {
-        List<Long> clientIds = jdbcTemplate.queryForList("select internal_id from osiam_client", Long.class);
-        for (Long clientId : clientIds) {
-            jdbcTemplate.update("DELETE FROM osiam_client_scopes WHERE id = ? and scope = ?", clientId, "GET");
-            jdbcTemplate.update("DELETE FROM osiam_client_scopes WHERE id = ? and scope = ?", clientId, "POST");
-            jdbcTemplate.update("DELETE FROM osiam_client_scopes WHERE id = ? and scope = ?", clientId, "PUT");
-            jdbcTemplate.update("DELETE FROM osiam_client_scopes WHERE id = ? and scope = ?", clientId, "PATCH");
-            jdbcTemplate.update("DELETE FROM osiam_client_scopes WHERE id = ? and scope = ?", clientId, "DELETE");
-
-            jdbcTemplate.update("INSERT INTO osiam_client_scopes (id, scope) VALUES (?, ?)", clientId, "ADMIN");
-            jdbcTemplate.update("INSERT INTO osiam_client_scopes (id, scope) VALUES (?, ?)", clientId, "ME");
-        }
-
-        updateKnownClient("auth-server", jdbcTemplate);
-        updateKnownClient("addon-administration-client", jdbcTemplate);
-        updateKnownClient("addon-self-administration-client", jdbcTemplate);
+    public Integer getChecksum() {
+        return 1546262391;
     }
 
-    private void updateKnownClient(String clientId, JdbcTemplate jdbcTemplate) {
-        List<Long> ids = jdbcTemplate.queryForList(
-                "select internal_id from osiam_client where id = ?",
-                new Object[] { clientId },
-                Long.class
-        );
-        for (Long id : ids) {
-            jdbcTemplate.update("DELETE FROM osiam_client_scopes WHERE id = ? and scope = ?", id, "ME");
+    @Override
+    public void migrate(Connection connection) throws Exception {
+        this.connection = connection;
+        removeScopesFromClient("example-client", "GET", "POST", "PUT", "PATCH", "DELETE");
+        addScopesToClient("example-client", "ADMIN", "ME");
+        removeScopesFromClient("auth-server", "GET", "POST", "PUT", "PATCH", "DELETE");
+        addScopesToClient("auth-server", "ADMIN");
+        removeScopesFromClient("addon-self-administration-client", "GET", "POST", "PUT", "PATCH", "DELETE");
+        addScopesToClient("addon-self-administration-client", "ADMIN");
+        removeScopesFromClient("addon-administration-client", "GET", "POST", "PUT", "PATCH", "DELETE");
+        addScopesToClient("addon-administration-client", "ADMIN");
+    }
+
+    private void removeScopesFromClient(String clientId, String... scopes) throws SQLException {
+        long internalId = toInternalId(clientId);
+        if (internalId < 0) {
+            return;
         }
+        for (String scope : scopes) {
+            try (PreparedStatement statement = connection
+                    .prepareStatement("delete from osiam_client_scopes where id = ? and scope = ?")) {
+                statement.setLong(1, internalId);
+                statement.setString(2, scope);
+                statement.execute();
+            }
+        }
+    }
+
+    private void addScopesToClient(String clientId, String... scopes) throws SQLException {
+        long internalId = toInternalId(clientId);
+        if (internalId < 0) {
+            return;
+        }
+        for (String scope : scopes) {
+            try (PreparedStatement statement = connection
+                    .prepareStatement("insert into osiam_client_scopes (id, scope) values (?, ?)")) {
+                statement.setLong(1, internalId);
+                statement.setString(2, scope);
+                statement.execute();
+            }
+        }
+    }
+
+    private long toInternalId(String clientId) {
+        if (!internalIds.containsKey(clientId)) {
+            try (PreparedStatement statement = connection
+                    .prepareStatement("select internal_id from osiam_client where id = ?")) {
+                statement.setString(1, clientId);
+                ResultSet resultSet = statement.executeQuery();
+                if (resultSet.next()) {
+                    internalIds.put(clientId, resultSet.getLong(1));
+                } else {
+                    internalIds.put(clientId, -1L);
+                }
+            } catch (SQLException e) {
+                internalIds.put(clientId, -1L);
+            }
+        }
+        return internalIds.get(clientId);
     }
 }
