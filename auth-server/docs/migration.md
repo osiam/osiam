@@ -29,7 +29,7 @@ migration) update your existing clients:
 4. Remove the old scopes (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`)
 5. Deploy the auth-server
 
-**Note:** The new scopes ADMIN and ME have been supported since the last
+**Note:** The new scopes `ADMIN` and `ME` have been supported since the last
 release, to make it possible to just switch to them without upgrading OSIAM and
 still have everything work as expected. This way you can schedule an upgrade at
 your own convenience and minimize downtime.
