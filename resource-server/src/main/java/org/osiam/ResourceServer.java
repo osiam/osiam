@@ -62,9 +62,9 @@ public class ResourceServer extends SpringBootServletInitializer {
     private String databaseVendor;
 
     public static void main(String[] args) {
-        SpringApplication application = new SpringApplication(ResourceServer.class, args);
+        SpringApplication application = new SpringApplication(ResourceServer.class);
         application.setDefaultProperties(NAMING_STRATEGY);
-        application.run();
+        application.run(args);
     }
 
     @Override
