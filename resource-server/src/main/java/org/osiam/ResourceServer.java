@@ -40,7 +40,7 @@ import com.zaxxer.hikari.*;
 @EnableTransactionManagement
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableMetrics
-@PropertySource("classpath:resource-server.properties")
+@PropertySource("classpath:/resource-server.properties")
 public class ResourceServer extends SpringBootServletInitializer {
 
     private static final Map<String, Object> NAMING_STRATEGY = ImmutableMap.<String, Object> of(
