@@ -194,7 +194,6 @@ OSIAM needs to be instructed on how to connect to the database and some addition
 # Database properties
 org.osiam.resource-server.db.vendor=postgresql
 org.osiam.resource-server.db.driver=org.postgresql.Driver
-org.osiam.resource-server.db.dialect=org.hibernate.dialect.PostgresPlusDialect
 org.osiam.resource-server.db.url=jdbc:postgresql://localhost:5432/ong
 org.osiam.resource-server.db.username=ong
 org.osiam.resource-server.db.password=<YOUR_PASSWORD>
