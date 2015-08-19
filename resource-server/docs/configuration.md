@@ -4,9 +4,6 @@ OSIAM needs to be configured correctly to work. Create the file
 `/etc/osiam/resource-server.properties` with content based on this example:
 
 ```
-# OSIAM resource server configuration
-org.osiam.resource-server.profiling=false
-
 # Home URL (needed for self reference)
 org.osiam.resource-server.home=http://localhost:8080/osiam-resource-server
 # ATTENTION: you have to set a random secret for the resource server client!

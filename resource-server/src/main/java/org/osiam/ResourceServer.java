@@ -38,7 +38,6 @@ import com.zaxxer.hikari.*;
 @EnableWebMvc
 @EnableWebSecurity
 @EnableTransactionManagement
-@EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableMetrics
 @PropertySource("classpath:/resource-server.properties")
 public class ResourceServer extends SpringBootServletInitializer {
