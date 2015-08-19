@@ -29,7 +29,6 @@ Here is an example, how the connection properties should look like for PostgreSQ
 ```
 org.osiam.resource-server.db.vendor=postgresql
 org.osiam.resource-server.db.driver=org.postgresql.Driver
-org.osiam.resource-server.db.dialect=org.hibernate.dialect.PostgresPlusDialect
 org.osiam.resource-server.db.url=jdbc:postgresql://localhost:5432/osiam
 org.osiam.resource-server.db.username=osiam
 org.osiam.resource-server.db.password=<YOUR_PASSWORD>
@@ -42,7 +41,6 @@ Here is an example, how the connection properties should look like for MySQL:
 ```
 org.osiam.auth-server.db.vendor=mysql
 org.osiam.auth-server.db.driver=com.mysql.jdbc.Driver
-org.osiam.auth-server.db.dialect=org.hibernate.dialect.MySQLInnoDBDialect
 org.osiam.auth-server.db.url=jdbc:mysql://localhost:3306/osiam
 org.osiam.auth-server.db.username=osiam
 org.osiam.auth-server.db.password=<YOUR_PASSWORD>
