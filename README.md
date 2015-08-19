@@ -29,8 +29,7 @@ like Docker? No problem! Take the
 ## Documentation
 
 Learn how to install and configure OSIAM for production in the
-[documentation](docs/README.md). For additional information visit our official
-website https://www.osiam.org.
+[documentation](docs/README.md).
 
 ## Components
 
