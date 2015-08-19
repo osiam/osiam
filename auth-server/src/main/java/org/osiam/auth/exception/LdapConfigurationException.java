@@ -27,8 +27,6 @@ import org.springframework.security.core.AuthenticationException;
 
 public class LdapConfigurationException extends AuthenticationException {
     
-    private static final long serialVersionUID = 6005039154271572847L;
-
     public LdapConfigurationException(String s) {
         super(s);
     }

@@ -23,17 +23,11 @@
 
 package org.osiam.auth.exception;
 
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.*;
 
 public class LdapAuthenticationProcessException extends AuthenticationException {
     
-    private static final long serialVersionUID = 6005039154271572847L;
-
     public LdapAuthenticationProcessException(String s) {
         super(s);
-    }
-
-    public LdapAuthenticationProcessException(String s, Throwable cause) {
-        super(s, cause);
     }
 }
