@@ -24,7 +24,7 @@
 package org.osiam.storage.dao;
 
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.osiam.resources.exceptions.ResourceNotFoundException;
+import org.osiam.resources.exception.ResourceNotFoundException;
 import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.entities.UserEntity_;
 import org.osiam.storage.query.UserFilterParser;
@@ -64,7 +64,7 @@ public class UserDao implements GenericDao<UserEntity> {
 
     /**
      * Checks if a userName is already taken by another user.
-     * 
+     *
      * @param userName
      *            the userName to check
      * @return true if the userName is taken, otherwise false
@@ -75,7 +75,7 @@ public class UserDao implements GenericDao<UserEntity> {
 
     /**
      * Checks if a userName is already taken by another user. Ignores the user with the given id.
-     * 
+     *
      * @param userName
      *            the userName to check
      * @param id
@@ -88,7 +88,7 @@ public class UserDao implements GenericDao<UserEntity> {
 
     /**
      * Checks if a externalId is already taken by another user.
-     * 
+     *
      * @param externalId
      *            the userName to check
      * @return true if the externalId is taken, otherwise false
@@ -99,7 +99,7 @@ public class UserDao implements GenericDao<UserEntity> {
 
     /**
      * Checks if a externalId is already taken by another user. Ignores the user with the given id.
-     * 
+     *
      * @param externalId
      *            the externalId to check
      * @param id

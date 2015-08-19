@@ -23,21 +23,12 @@
 
 package org.osiam.storage.entities;
 
+import org.hibernate.annotations.Type;
+import org.osiam.resources.exception.InvalidConstraintException;
+
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.Lob;
-import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.Type;
-import org.osiam.resources.exceptions.NoSuchElementException;
 
 /**
  * Defines a SCIM-Extension.
@@ -45,7 +36,7 @@ import org.osiam.resources.exceptions.NoSuchElementException;
 @Entity
 @Table(name = "scim_extension",
         indexes = {
-                @Index(unique = true, columnList = "urn") })
+                @Index(unique = true, columnList = "urn")})
 public class ExtensionEntity {
 
     @Id
@@ -109,7 +100,8 @@ public class ExtensionEntity {
             }
         }
 
-        throw new NoSuchElementException("Field " + fieldName + " not available in extension with URN " + urn);
+        throw new InvalidConstraintException(String.format("Field '%s' not available in extension with urn '%s'",
+                fieldName, urn));
     }
 
     public ExtensionFieldEntity getFieldForName(String fieldName) {

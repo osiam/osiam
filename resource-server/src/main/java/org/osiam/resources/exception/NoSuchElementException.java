@@ -21,19 +21,11 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.resources.exceptions
+package org.osiam.resources.exception;
 
-import spock.lang.Specification
+public class NoSuchElementException extends OsiamException {
 
-class JsonMappingMessageTransformerSpec extends Specification {
-
-    def jsonMappingMessageTransformer = new JsonMappingMessageTransformer()
-
-    def "should return null if message to transform is null"() {
-        when:
-        def result = jsonMappingMessageTransformer.transform(null)
-
-        then:
-        result == null
+    public NoSuchElementException(String message) {
+        super(message);
     }
 }

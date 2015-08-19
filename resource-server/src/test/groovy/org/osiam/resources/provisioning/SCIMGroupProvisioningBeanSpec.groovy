@@ -24,8 +24,8 @@
 package org.osiam.resources.provisioning
 
 import org.osiam.resources.converter.GroupConverter
-import org.osiam.resources.exceptions.ResourceExistsException
-import org.osiam.resources.exceptions.ResourceNotFoundException
+import org.osiam.resources.exception.ResourceExistsException
+import org.osiam.resources.exception.ResourceNotFoundException
 import org.osiam.resources.provisioning.update.GroupUpdater
 import org.osiam.resources.scim.Group
 import org.osiam.resources.scim.MemberRef

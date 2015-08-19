@@ -47,8 +47,8 @@ public class GroupSimpleFilterChain implements FilterChain<GroupEntity> {
     @Override
     public Predicate createPredicateAndJoin(Root<GroupEntity> root) {
         if (filterField == null) {
-            throw new IllegalArgumentException("Filtering not possible. Field '" + scimExpression.getField()
-                    + "' not available.");
+            throw new IllegalArgumentException(String.format("Unable to filter. Field '%s' not available.",
+                    scimExpression.getField()));
         }
 
         return filterField.addFilter(root, scimExpression.getConstraint(), scimExpression.getValue(), criteriaBuilder);

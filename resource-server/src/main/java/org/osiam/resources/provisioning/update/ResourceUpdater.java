@@ -23,7 +23,7 @@
 
 package org.osiam.resources.provisioning.update;
 
-import org.osiam.resources.exceptions.ResourceExistsException;
+import org.osiam.resources.exception.ResourceExistsException;
 import org.osiam.resources.scim.Resource;
 import org.osiam.storage.dao.ResourceDao;
 import org.osiam.storage.entities.ResourceEntity;

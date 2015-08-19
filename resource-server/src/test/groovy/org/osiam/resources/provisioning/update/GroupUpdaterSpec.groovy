@@ -23,7 +23,7 @@
 
 package org.osiam.resources.provisioning.update
 
-import org.osiam.resources.exceptions.ResourceExistsException
+import org.osiam.resources.exception.ResourceExistsException
 import org.osiam.resources.scim.Group
 import org.osiam.resources.scim.MemberRef
 import org.osiam.resources.scim.Meta

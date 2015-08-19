@@ -29,7 +29,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.osiam.resources.exceptions.OsiamException;
+import org.osiam.resources.exception.OsiamException;
 import org.osiam.storage.dao.ExtensionDao;
 import org.osiam.storage.entities.ExtensionEntity;
 import org.osiam.storage.entities.ExtensionFieldEntity;
@@ -62,7 +62,7 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
         if (userFilterField == null) {
             extensionFilterField = getExtensionFilterField(field.toLowerCase(Locale.ENGLISH));
             if (extensionFilterField == null) {
-                throw new IllegalArgumentException("Filtering not possible: '" + field + "' not available");
+                throw new IllegalArgumentException(String.format("Filtering not possible: '%s' not available", field));
             }
         }
     }
@@ -94,9 +94,8 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
             return extensionFilterField.addFilter(root, scimExpression.getConstraint(), scimExpression.getValue(),
                     criteriaBuilder);
         } else {
-            throw new IllegalArgumentException("Filtering not possible. Field '" + scimExpression.getField()
-                    + "' not available.");
+            throw new IllegalArgumentException(String.format("Filtering not possible. Field '%s' not available.",
+                    scimExpression.getField()));
         }
     }
-
 }

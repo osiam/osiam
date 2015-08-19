@@ -21,7 +21,20 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/**
- *  org.osiam.resources.exception is a group of classes which either are exceptions or do handle exceptions,
- */
-package org.osiam.resources.exceptions;
+package org.osiam.resources.exception;
+
+public class OsiamException extends RuntimeException {
+
+    public OsiamException() {
+        super();
+    }
+
+    public OsiamException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public OsiamException(String message) {
+        super(message);
+    }
+
+}

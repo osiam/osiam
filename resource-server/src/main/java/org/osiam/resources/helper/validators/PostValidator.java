@@ -44,7 +44,7 @@ public class PostValidator implements Validator {
         User user = mapper.readValue(json, User.class);
 
         if (user.getUserName() == null || user.getUserName().isEmpty()) {
-            throw new IllegalArgumentException("The attribute userName is mandatory and MUST NOT be null");
+            throw new IllegalArgumentException("The attribute 'userName' is mandatory and MUST NOT be null");
         }
 
         return user;
@@ -56,7 +56,7 @@ public class PostValidator implements Validator {
         Group group = mapper.readValue(json, Group.class);
 
         if (group.getDisplayName() == null || group.getDisplayName().isEmpty()) {
-            throw new IllegalArgumentException("The attribute displayName is mandatory and MUST NOT be null");
+            throw new IllegalArgumentException("The attribute 'displayName' is mandatory and MUST NOT be null");
         }
         return group;
     }

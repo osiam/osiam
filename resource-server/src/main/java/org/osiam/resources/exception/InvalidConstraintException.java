@@ -21,29 +21,20 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.resources.exceptions
+package org.osiam.resources.exception;
 
-import spock.lang.Specification
+public class InvalidConstraintException extends OsiamException {
 
-class ResourceExistsExceptionSpec extends Specification {
+    private static final long serialVersionUID = -3458413407035304091L;
 
-    def "should contain given message"() {
-        when:
-        def result = new ResourceExistsException("danger")
+    private final String constraint;
 
-        then:
-        result.message == "danger"
+    public InvalidConstraintException(String constraint) {
+        this.constraint = constraint;
     }
 
-    def "should contain constructor with message and cause"() {
-        given:
-        def cause = Mock(Throwable)
-
-        when:
-        def result = new ResourceExistsException("danger", cause)
-
-        then:
-        result.message == "danger"
-        result.getCause() == cause
+    @Override
+    public String getMessage() {
+        return String.format("Constraint %s is invalid", constraint);
     }
 }

@@ -23,7 +23,7 @@
 
 package org.osiam.resources.provisioning
 
-import org.osiam.resources.exceptions.ResourceNotFoundException
+import org.osiam.resources.exception.ResourceNotFoundException
 import org.osiam.storage.dao.UserDao
 import spock.lang.Specification
 

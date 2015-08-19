@@ -21,20 +21,7 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.resources.exceptions;
-
-public class InvalidConstraintException extends OsiamException {
-
-    private static final long serialVersionUID = -3458413407035304091L;
-
-    private final String constraint;
-
-    public InvalidConstraintException(String constraint) {
-        this.constraint = constraint;
-    }
-
-    @Override
-    public String getMessage() {
-        return String.format("Constraint %s is invalid", constraint);
-    }
-}
+/**
+ *  org.osiam.resources.exception is a group of classes which either are exceptions or do handle exceptions,
+ */
+package org.osiam.resources.exception;

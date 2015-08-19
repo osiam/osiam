@@ -4,6 +4,8 @@
 
 ### Changes
 
+- All invalid search queries now respond with a `400 BAD REQUEST` instead of
+  `409 CONFLICT` status code.
 - Update OSIAM connector4java
 - Remove support for old, method-based OAuth scopes
 - Remove configuration property `org.osiam.resource-server.db.dialect`

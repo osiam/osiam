@@ -158,7 +158,7 @@ class RequestParamHelperSpec extends Specification {
 
         then:
         def e = thrown(RuntimeException)
-        e.getMessage() == "Negative count values are not allowed"
+        e.getMessage() == "Negative values for 'count' are not allowed"
     }
 
     def "should exist default value if attributes are null"() {

@@ -62,7 +62,7 @@ public class RequestParamHelper {
             count = Integer.parseInt(request.getParameter("count"));
         }
         if (count <= 0) {
-            throw new IllegalArgumentException("Negative count values are not allowed");
+            throw new IllegalArgumentException("Negative values for 'count' are not allowed");
         }
         parameterMap.put("count", count);
     }
