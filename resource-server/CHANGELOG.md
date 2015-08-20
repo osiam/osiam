@@ -7,6 +7,8 @@
 - Update OSIAM connector4java
 - Remove support for old, method-based OAuth scopes
 - Remove configuration property `org.osiam.resource-server.db.dialect`
+- Remove self written profiling solution since we now use the [Metrics](https://github.com/dropwizard/metrics) 
+  framework. This removes the configuration property `org.osiam.resource-server.profiling` 
 
 ## 2.2 - 2015-06-18
 
