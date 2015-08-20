@@ -1,7 +1,6 @@
 package org.osiam;
 
 import java.util.*;
-import java.util.concurrent.*;
 
 import javax.servlet.*;
 import javax.sql.*;
@@ -29,7 +28,6 @@ import org.springframework.web.servlet.config.annotation.*;
 
 import com.codahale.metrics.*;
 import com.codahale.metrics.jvm.*;
-import com.fasterxml.jackson.databind.*;
 import com.google.common.collect.*;
 import com.ryantenney.metrics.spring.config.annotation.*;
 import com.zaxxer.hikari.*;
@@ -83,14 +81,6 @@ public class ResourceServer extends SpringBootServletInitializer {
     @Bean
     public Filter sslRequestLoggingFilter() {
         return new SSLRequestLoggingFilter();
-    }
-
-    @Bean
-    @Primary
-    public ObjectMapper objectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return objectMapper;
     }
 
     @Primary
