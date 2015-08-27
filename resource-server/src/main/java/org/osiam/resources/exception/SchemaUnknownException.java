@@ -21,14 +21,9 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.resources.exceptions;
+package org.osiam.resources.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-@ResponseStatus(value = HttpStatus.I_AM_A_TEAPOT)
 public class SchemaUnknownException extends OsiamException {
-    private static final long serialVersionUID = 8136231295498687655L;
 
     public SchemaUnknownException() {
         super("Schema provided by consumer is unknown.");

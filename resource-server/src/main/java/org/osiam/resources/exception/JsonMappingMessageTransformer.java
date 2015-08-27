@@ -21,22 +21,31 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.resources.exceptions;
+package org.osiam.resources.exception;
 
-public class OsiamException extends RuntimeException {
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-    private static final long serialVersionUID = -292158452140136468L;
+public class JsonMappingMessageTransformer implements ErrorMessageTransformer {
 
-    public OsiamException() {
-        super();
+    // Can not deserialize instance of java.util.ArrayList out of VALUE_STRING token
+    // at [Source: java.io.StringReader@5c96bfda; line: 1, column: 2] (through reference chain:
+    // org.osiam.resources.scim.User["ims"])
+    // will be transformed to
+    // Can not deserialize instance of java.util.ArrayList out of VALUE_STRING
+    private static final Pattern PATTERN = Pattern.compile(
+            "(Can not deserialize instance of [\\w\\.]+ out of \\w+) token.*",
+            Pattern.CASE_INSENSITIVE | Pattern.DOTALL | Pattern.MULTILINE);
+
+    @Override
+    public String transform(String message) {
+        if (message == null) {
+            return null;
+        }
+        Matcher matcher = PATTERN.matcher(message);
+        if (matcher.matches()) {
+            return matcher.group(1);
+        }
+        return message;
     }
-
-    public OsiamException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public OsiamException(String message) {
-        super(message);
-    }
-
 }

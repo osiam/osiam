@@ -23,7 +23,7 @@
 
 package org.osiam.resources.converter
 
-import org.osiam.resources.exceptions.ResourceNotFoundException
+import org.osiam.resources.exception.ResourceNotFoundException
 import org.osiam.resources.scim.Group
 import org.osiam.resources.scim.MemberRef
 import org.osiam.storage.dao.ResourceDao

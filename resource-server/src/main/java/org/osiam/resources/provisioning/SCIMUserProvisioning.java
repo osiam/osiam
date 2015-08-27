@@ -32,8 +32,8 @@ import javax.persistence.PersistenceException;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.osiam.resources.converter.UserConverter;
-import org.osiam.resources.exceptions.ResourceExistsException;
-import org.osiam.resources.exceptions.ResourceNotFoundException;
+import org.osiam.resources.exception.ResourceExistsException;
+import org.osiam.resources.exception.ResourceNotFoundException;
 import org.osiam.resources.provisioning.update.UserUpdater;
 import org.osiam.resources.scim.Constants;
 import org.osiam.resources.scim.SCIMSearchResult;

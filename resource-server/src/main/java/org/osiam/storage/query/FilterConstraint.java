@@ -32,7 +32,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
-import org.osiam.resources.exceptions.InvalidConstraintException;
+import org.osiam.resources.exception.InvalidConstraintException;
 import org.osiam.resources.scim.MultiValuedAttributeType;
 import org.osiam.storage.entities.ExtensionFieldEntity;
 

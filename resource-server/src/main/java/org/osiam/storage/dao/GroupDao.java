@@ -24,7 +24,7 @@
 package org.osiam.storage.dao;
 
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.osiam.resources.exceptions.ResourceNotFoundException;
+import org.osiam.resources.exception.ResourceNotFoundException;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.GroupEntity_;
 import org.osiam.storage.query.GroupFilterParser;

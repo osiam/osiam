@@ -24,8 +24,8 @@
 package org.osiam.resources.provisioning.update
 
 import org.osiam.resources.converter.ExtensionConverter
-import org.osiam.resources.exceptions.NoSuchElementException
-import org.osiam.resources.exceptions.OsiamException
+import org.osiam.resources.exception.InvalidConstraintException
+import org.osiam.resources.exception.OsiamException
 import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.ExtensionFieldType
 import org.osiam.storage.dao.ExtensionDao
@@ -92,7 +92,7 @@ class ExtensionUpdaterSpec extends Specification {
 
         then:
         1 * extensionDao.getExtensionByUrn(URN) >> extensionEntity
-        thrown(NoSuchElementException)
+        thrown(InvalidConstraintException)
     }
 
     def 'updating an exisitng extension field is possible'() {

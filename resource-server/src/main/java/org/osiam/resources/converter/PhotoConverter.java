@@ -26,7 +26,7 @@ package org.osiam.resources.converter;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.osiam.resources.exceptions.OsiamException;
+import org.osiam.resources.exception.OsiamException;
 import org.osiam.resources.scim.Photo;
 import org.osiam.storage.entities.PhotoEntity;
 import org.springframework.stereotype.Service;

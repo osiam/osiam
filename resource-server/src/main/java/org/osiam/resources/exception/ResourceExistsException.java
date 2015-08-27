@@ -21,20 +21,15 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.resources.exceptions;
+package org.osiam.resources.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+public class ResourceExistsException extends OsiamException {
 
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
-public class NoSuchElementException extends OsiamException {
-    private static final long serialVersionUID = -690283630029161964L;
-
-    public NoSuchElementException(String s) {
+    public ResourceExistsException(String s) {
         super(s);
     }
 
-    public NoSuchElementException(String s, Throwable cause) {
+    public ResourceExistsException(String s, Throwable cause) {
         super(s, cause);
     }
 }

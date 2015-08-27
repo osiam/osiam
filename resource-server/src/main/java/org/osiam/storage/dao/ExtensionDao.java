@@ -23,8 +23,12 @@
 
 package org.osiam.storage.dao;
 
-import java.util.List;
-import java.util.Locale;
+import org.osiam.resources.exception.NoSuchElementException;
+import org.osiam.storage.entities.ExtensionEntity;
+import org.osiam.storage.entities.ExtensionEntity_;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -34,14 +38,13 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
-import org.osiam.resources.exceptions.OsiamException;
-import org.osiam.storage.entities.ExtensionEntity;
-import org.osiam.storage.entities.ExtensionEntity_;
-import org.springframework.stereotype.Repository;
+import java.util.List;
+import java.util.Locale;
 
 @Repository
 public class ExtensionDao {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionDao.class);
 
     @PersistenceContext
     private EntityManager em;
@@ -49,8 +52,7 @@ public class ExtensionDao {
     /**
      * Retrieves the extension with the given URN from the database. The URN is case-sensitive.
      *
-     * @param urn
-     *            The URN of the extension to look up
+     * @param urn The URN of the extension to look up
      * @return the extension entity
      */
     public ExtensionEntity getExtensionByUrn(String urn) {
@@ -60,10 +62,8 @@ public class ExtensionDao {
     /**
      * Retrieves the extension with the given URN from the database
      *
-     * @param urn
-     *            the URN of the extension to look up
-     * @param caseInsensitive
-     *            should the case of the URN be ignored
+     * @param urn             the URN of the extension to look up
+     * @param caseInsensitive should the case of the URN be ignored
      * @return the extension entity
      */
     public ExtensionEntity getExtensionByUrn(String urn, boolean caseInsensitive) {
@@ -87,7 +87,9 @@ public class ExtensionDao {
         try {
             singleExtension = query.getSingleResult();
         } catch (NoResultException e) {
-            throw new OsiamException("Could not find the Extension '" + urn + "'.", e);
+            String message = String.format("Extension with urn '%s' not found", urn);
+            LOGGER.warn(message);
+            throw new NoSuchElementException(message);
         }
 
         return singleExtension;

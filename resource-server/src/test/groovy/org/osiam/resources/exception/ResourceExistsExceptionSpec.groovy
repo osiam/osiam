@@ -21,20 +21,29 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.resources.exceptions;
+package org.osiam.resources.exception
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import spock.lang.Specification
 
-@ResponseStatus(value = HttpStatus.CONFLICT)
-public class ResourceExistsException extends OsiamException {
-    private static final long serialVersionUID = 6005039154271572847L;
+class ResourceExistsExceptionSpec extends Specification {
 
-    public ResourceExistsException(String s) {
-        super(s);
+    def "should contain given message"() {
+        when:
+        def result = new ResourceExistsException("danger")
+
+        then:
+        result.message == "danger"
     }
 
-    public ResourceExistsException(String s, Throwable cause) {
-        super(s, cause);
+    def "should contain constructor with message and cause"() {
+        given:
+        def cause = Mock(Throwable)
+
+        when:
+        def result = new ResourceExistsException("danger", cause)
+
+        then:
+        result.message == "danger"
+        result.getCause() == cause
     }
 }

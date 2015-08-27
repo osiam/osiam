@@ -23,14 +23,6 @@
 
 package org.osiam.resources.helper;
 
-import java.io.IOException;
-import java.util.*;
-
-import org.osiam.resources.scim.Constants;
-import org.osiam.resources.scim.Resource;
-import org.osiam.resources.scim.SCIMSearchResult;
-import org.osiam.resources.scim.User;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -38,16 +30,28 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import org.osiam.resources.exception.OsiamBackendFailureException;
+import org.osiam.resources.scim.Constants;
+import org.osiam.resources.scim.Resource;
+import org.osiam.resources.scim.SCIMSearchResult;
+import org.osiam.resources.scim.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.*;
 
 public class AttributesRemovalHelper {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AttributesRemovalHelper.class);
+
     public <T extends Resource> SCIMSearchResult<T> removeSpecifiedAttributes(SCIMSearchResult<T> resultList,
-            Map<String, Object> parameterMap) {
+                                                                              Map<String, Object> parameterMap) {
         return getJsonResponseWithAdditionalFields(resultList, parameterMap);
     }
 
     public SCIMSearchResult<User> removeSpecifiedUserAttributes(SCIMSearchResult<User> resultList,
-            Map<String, Object> parameterMap) {
+                                                                Map<String, Object> parameterMap) {
         return getUserJsonResponseWithAdditionalFields(resultList, parameterMap);
     }
 
@@ -85,7 +89,8 @@ public class AttributesRemovalHelper {
 
             return mapper.readValue(rootNode.toString(), SCIMSearchResult.class);
         } catch (IOException e) {
-            throw new IllegalArgumentException(e);
+            LOGGER.warn("Unable to serialize search result", e);
+            throw new OsiamBackendFailureException();
         }
     }
 
@@ -113,7 +118,8 @@ public class AttributesRemovalHelper {
 
             return mapper.readValue(rootNode.toString(), SCIMSearchResult.class);
         } catch (IOException e) {
-            throw new IllegalArgumentException(e);
+            LOGGER.warn("Unable to serialize search result", e);
+            throw new OsiamBackendFailureException();
         }
     }
 

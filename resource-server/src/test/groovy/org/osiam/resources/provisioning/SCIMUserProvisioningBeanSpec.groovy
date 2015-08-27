@@ -24,7 +24,7 @@
 package org.osiam.resources.provisioning
 
 import org.osiam.resources.converter.UserConverter
-import org.osiam.resources.exceptions.ResourceExistsException
+import org.osiam.resources.exception.ResourceExistsException
 import org.osiam.resources.scim.User
 import org.osiam.storage.dao.SearchResult
 import org.osiam.storage.dao.UserDao

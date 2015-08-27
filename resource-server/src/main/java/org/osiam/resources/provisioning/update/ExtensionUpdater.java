@@ -23,11 +23,10 @@
 
 package org.osiam.resources.provisioning.update;
 
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.osiam.resources.exceptions.NoSuchElementException;
+import com.google.common.base.Optional;
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableSet;
+import org.osiam.resources.exception.NoSuchElementException;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.storage.dao.ExtensionDao;
@@ -36,18 +35,22 @@ import org.osiam.storage.entities.ExtensionFieldEntity;
 import org.osiam.storage.entities.ExtensionFieldValueEntity;
 import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.helper.NumberPadder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * The ExtensionUpdater provides the functionality to update the {@link ExtensionFieldValueEntity} of a UserEntity
  */
 @Service
 class ExtensionUpdater {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionUpdater.class);
 
     @Autowired
     private ExtensionDao extensionDao;
@@ -58,14 +61,11 @@ class ExtensionUpdater {
     /**
      * updates (remove, updates) the {@link ExtensionEntity}'s of the given {@link UserEntity} based on the given List
      * of Email's
-     * 
-     * @param extensions
-     *            map of {@link Extension} to be removed or updated
-     * @param userEntity
-     *            user who needs to be updated
-     * @param attributes
-     *            all {@link Extension}'s field values of the user will be removed if this Set contains an existing urn
-     *            and field name
+     *
+     * @param extensions map of {@link Extension} to be removed or updated
+     * @param userEntity user who needs to be updated
+     * @param attributes all {@link Extension}'s field values of the user will be removed if this Set contains an existing urn
+     *                   and field name
      */
     void update(Map<String, Extension> extensions, UserEntity userEntity, Set<String> attributes) {
 
@@ -113,7 +113,8 @@ class ExtensionUpdater {
             try {
                 extensionEntitiyField = extensionEntity.getFieldForName(fieldName, true);
             } catch (NoSuchElementException e) {
-                throw new NoSuchElementException("Could not update the extension \"" + urn + "\".", e);
+                LOGGER.warn("Update Extension failed: ", e.getMessage());
+                throw e;
             }
             ExtensionFieldValueEntity extensionFieldValue = findExtensionFieldValue(extensionEntitiyField,
                     userEntity);
@@ -131,11 +132,11 @@ class ExtensionUpdater {
     }
 
     private String getNewExtensionValue(ExtensionFieldEntity extensionField, Extension updatedExtension,
-            String fieldName) {
+                                        String fieldName) {
         String newValue = updatedExtension.getField(fieldName, ExtensionFieldType.STRING);
         if (newValue != null &&
                 (extensionField.getType() == ExtensionFieldType.INTEGER
-                || extensionField.getType() == ExtensionFieldType.DECIMAL)) {
+                        || extensionField.getType() == ExtensionFieldType.DECIMAL)) {
             newValue = numberPadder.pad(newValue);
         }
         return newValue;

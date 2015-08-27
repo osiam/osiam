@@ -23,7 +23,7 @@
 
 package org.osiam.storage.entities.extension
 
-import org.osiam.resources.exceptions.NoSuchElementException
+import org.osiam.resources.exception.InvalidConstraintException
 import org.osiam.storage.entities.ExtensionEntity
 import org.osiam.storage.entities.ExtensionFieldEntity
 import spock.lang.Specification
@@ -68,7 +68,7 @@ class ExtensionEntitySpec extends Specification {
         extension.getFieldForName(fieldName)
 
         then:
-        thrown(NoSuchElementException)
+        thrown(InvalidConstraintException)
     }
 
 }

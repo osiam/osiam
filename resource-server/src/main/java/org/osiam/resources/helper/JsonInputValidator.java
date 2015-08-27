@@ -30,7 +30,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.osiam.resources.exceptions.SchemaUnknownException;
+import org.osiam.resources.exception.SchemaUnknownException;
 import org.osiam.resources.helper.validators.PatchValidator;
 import org.osiam.resources.helper.validators.PostValidator;
 import org.osiam.resources.helper.validators.PutValidator;

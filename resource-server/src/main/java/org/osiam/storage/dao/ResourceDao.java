@@ -41,8 +41,8 @@ import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.SingularAttribute;
 
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.osiam.resources.exceptions.OsiamException;
-import org.osiam.resources.exceptions.ResourceNotFoundException;
+import org.osiam.resources.exception.OsiamException;
+import org.osiam.resources.exception.ResourceNotFoundException;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.entities.ResourceEntity;
 import org.osiam.storage.entities.ResourceEntity_;
@@ -119,7 +119,7 @@ public class ResourceDao {
 
     /**
      * Retrieves a single {@link ResourceEntity} by the given id.
-     * 
+     *
      * @param id
      *            the id of the resource to retrieve it by
      * @param clazz
@@ -134,7 +134,7 @@ public class ResourceDao {
 
     /**
      * Retrieves a single {@link ResourceEntity} by the given attribute and value.
-     * 
+     *
      * @param attribute
      *            The attribute of the resource entity to retrieve it by
      * @param value
@@ -199,7 +199,7 @@ public class ResourceDao {
 
     /**
      * Removes a {@link ResourceEntity} from the database by its id
-     * 
+     *
      * @param id
      *            id of the {@link ResourceEntity}
      * @throws ResourceNotFoundException

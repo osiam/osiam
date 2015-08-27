@@ -26,7 +26,7 @@ package org.osiam.resources.provisioning.update;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.osiam.resources.exceptions.ResourceExistsException;
+import org.osiam.resources.exception.ResourceExistsException;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.MemberRef;
 import org.osiam.storage.dao.GroupDao;

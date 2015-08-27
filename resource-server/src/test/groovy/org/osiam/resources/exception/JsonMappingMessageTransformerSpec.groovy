@@ -21,28 +21,19 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.resources.exceptions
+package org.osiam.resources.exception
 
 import spock.lang.Specification
 
-class ResourceNotFoundExceptionSpec extends Specification {
+class JsonMappingMessageTransformerSpec extends Specification {
 
-    def "should contain given message"() {
+    def jsonMappingMessageTransformer = new JsonMappingMessageTransformer()
+
+    def "should return null if message to transform is null"() {
         when:
-        def rnfe = new ResourceNotFoundException("haha")
-        then:
-        rnfe.message == "haha"
-    }
-
-    def "should contain constructor with message and cause"() {
-        given:
-        def cause = Mock(Throwable)
-
-        when:
-        def rnfe = new ResourceNotFoundException("haha", cause)
+        def result = jsonMappingMessageTransformer.transform(null)
 
         then:
-        rnfe.message == "haha"
-        rnfe.getCause() == cause
+        result == null
     }
 }
