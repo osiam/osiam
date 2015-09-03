@@ -37,6 +37,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Type;
+import org.osiam.resources.scim.MemberRef;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -636,5 +637,10 @@ public class UserEntity extends ResourceEntity {
         StringBuilder builder = new StringBuilder();
         builder.append("UserEntity [userName=").append(userName).append(", getId()=").append(getId()).append("]");
         return builder.toString();
+    }
+
+    @Override
+    public MemberRef.Type getType() {
+        return MemberRef.Type.USER;
     }
 }

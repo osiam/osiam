@@ -32,6 +32,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.BatchSize;
+import org.osiam.resources.scim.MemberRef.Type;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -101,6 +102,11 @@ public class GroupEntity extends ResourceEntity {
         builder.append("GroupEntity [displayName=").append(displayName).append(", getId()=").append(getId())
                 .append("]");
         return builder.toString();
+    }
+
+    @Override
+    public Type getType() {
+        return Type.GROUP;
     }
 
 }
