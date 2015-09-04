@@ -85,6 +85,7 @@ public class GroupConverter implements Converter<Group, GroupEntity> {
                     .setValue(member.getId().toString())
                     .setReference(member.getMeta().getLocation())
                     .setDisplay(member.getDisplayName() != null ? member.getDisplayName() : null)
+                    .setType(member.getType())
                     .build();
 
             members.add(memberRef);
