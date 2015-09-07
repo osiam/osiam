@@ -26,7 +26,6 @@ package org.osiam.resources.exception;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-import org.osiam.resources.exception.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -116,25 +115,31 @@ public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
         if (transformer != null) {
             message = transformer.transform(message);
         }
-        return new JsonErrorResult(status.name(), message);
+        return new JsonErrorResult(status, message);
     }
 
     @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
     static class JsonErrorResult {
-        private String error_code;
-        private String description;
+        public static final String ERROR_URN = "urn:ietf:params:scim:api:messages:2.0:Error";
+        private String[] schemas = {ERROR_URN};
+        private String status;
+        private String detail;
 
-        public JsonErrorResult(String name, String message) {
-            error_code = name;
-            description = message;
+        public JsonErrorResult(HttpStatus name, String message) {
+            status = name.toString();
+            detail = message;
         }
 
-        public String getError_code() {
-            return error_code;
+        public String[] getSchemas() {
+            return schemas;
         }
 
-        public String getDescription() {
-            return description;
+        public String getStatus() {
+            return status;
+        }
+
+        public String getDetail() {
+            return detail;
         }
     }
 }
