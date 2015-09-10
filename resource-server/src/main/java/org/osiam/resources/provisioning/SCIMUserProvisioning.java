@@ -35,7 +35,6 @@ import org.osiam.resources.converter.UserConverter;
 import org.osiam.resources.exception.ResourceExistsException;
 import org.osiam.resources.exception.ResourceNotFoundException;
 import org.osiam.resources.provisioning.update.UserUpdater;
-import org.osiam.resources.scim.Constants;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.resources.scim.User;
 import org.osiam.storage.dao.SearchResult;
@@ -158,7 +157,7 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
             users.add(getUserWithoutPassword(scimResultUser));
         }
 
-        return new SCIMSearchResult<>(users, result.totalResults, count, startIndex, Constants.LIST_RESPONSE_CORE_SCHEMA);
+        return new SCIMSearchResult<>(users, result.totalResults, count, startIndex);
     }
 
     private boolean searchedForPasswordAndNoResult(SearchResult<UserEntity> result, String filter) {

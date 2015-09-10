@@ -28,9 +28,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.osiam.resources.scim.Constants;
-
 public class RequestParamHelper {
+
+    public static final int MAX_RESULT = 100;
 
     public Map<String, Object> getRequestParameterValues(HttpServletRequest request) {
 
@@ -57,7 +57,7 @@ public class RequestParamHelper {
     }
 
     private void validateCount(HttpServletRequest request, Map<String, Object> parameterMap) {
-        int count = Constants.MAX_RESULT;
+        int count = MAX_RESULT;
         if (request.getParameter("count") != null) {
             count = Integer.parseInt(request.getParameter("count"));
         }
