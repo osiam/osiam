@@ -23,27 +23,36 @@
 
 package org.osiam.auth.oauth_client;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
-import javax.persistence.*;
-
-import org.hibernate.annotations.Type;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.collect.Sets;
+import org.hibernate.annotations.Type;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.provider.ClientDetails;
+
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
 @Entity
 @Table(name = "osiam_client")
-@NamedQueries({
-        @NamedQuery(name = "getClientById", query = "SELECT client FROM ClientEntity client WHERE client.id=:id"),
-        @NamedQuery(name = "getClients", query = "SELECT client FROM ClientEntity client")
-})
-public class ClientEntity {
+public class ClientEntity implements ClientDetails {
 
     private static final int ID_LENGTH = 32;
     private static final int SEQUENCE_INITIAL_VALUE = 100;
@@ -76,7 +85,7 @@ public class ClientEntity {
 
     @JsonProperty("client_secret")
     @Column(nullable = false)
-    private String clientSecret = generateSecret();
+    private String clientSecret = UUID.randomUUID().toString();
 
     @JsonProperty
     @ElementCollection(fetch = FetchType.EAGER)
@@ -86,7 +95,7 @@ public class ClientEntity {
     @JsonProperty
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "osiam_client_grants", joinColumns = @JoinColumn(name = "id"))
-    private Set<String> grants = generateGrants();
+    private Set<String> grants = Sets.newHashSet("authorization_code", "refresh_token");
 
     @JsonProperty
     @Column(name = "implicit_approval", nullable = false)
@@ -96,96 +105,102 @@ public class ClientEntity {
     @Column(nullable = false)
     private long validityInSeconds;
 
-    public ClientEntity() {
+    public long getInternalId() {
+        return internalId;
     }
 
-    /**
-     * Used to Map Json to ClientEntity, because some Fields are generated.
-     *
-     */
-    public ClientEntity(ClientEntity entity) {
-        if (entity.getId() != null) {
-            id = entity.getId();
-        }
-
-        if (entity.getClientSecret() != null) {
-            clientSecret = entity.getClientSecret();
-
-        }
-
-        accessTokenValiditySeconds = entity.getAccessTokenValiditySeconds();
-        refreshTokenValiditySeconds = entity.getRefreshTokenValiditySeconds();
-        redirectUri = entity.getRedirectUri();
-        scope = entity.getScope();
-        implicit = entity.isImplicit();
-        validityInSeconds = entity.getValidityInSeconds();
-        grants = !entity.getGrants().isEmpty() ? entity.getGrants() : generateGrants();
-    }
-
-    public int getAccessTokenValiditySeconds() {
+    @Override
+    public Integer getAccessTokenValiditySeconds() {
         return accessTokenValiditySeconds;
     }
 
-    public int getRefreshTokenValiditySeconds() {
+    @Override
+    public Integer getRefreshTokenValiditySeconds() {
         return refreshTokenValiditySeconds;
     }
 
+    @Override
+    @JsonIgnore
+    public boolean isAutoApprove(final String scope) {
+        return implicit;
+    }
+
+    @Override
+    @JsonIgnore
+    public Map<String, Object> getAdditionalInformation() {
+        return Collections.singletonMap("validityInSeconds", (Object) validityInSeconds);
+    }
+
+    @Override
+    @JsonIgnore
+    public String getClientId() {
+        return id;
+    }
+
+    @Override
+    @JsonIgnore
+    public Set<String> getResourceIds() {
+        return Collections.emptySet();
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isSecretRequired() {
+        return true;
+    }
+
+    @Override
     public String getClientSecret() {
         return clientSecret;
     }
 
+    @Override
+    @JsonIgnore
+    public boolean isScoped() {
+        return true;
+    }
+
+    @Override
     public Set<String> getScope() {
-        return scope;
+        return Collections.unmodifiableSet(scope);
     }
 
-    public Set<String> getGrants() {
-        return grants;
+    @Override
+    @JsonIgnore
+    public Set<String> getAuthorizedGrantTypes() {
+        return Collections.unmodifiableSet(grants);
     }
 
-    private Set<String> generateGrants() {
-        Set<String> result = new HashSet<>();
-        Collections.addAll(result, "authorization_code", "refresh-token");
-        return result;
+    @Override
+    @JsonIgnore
+    public Set<String> getRegisteredRedirectUri() {
+        return Collections.singleton(redirectUri);
     }
 
-    private String generateSecret() {
-        return UUID.randomUUID().toString();
-    }
-
-    public void setGrants(Set<String> grants) {
-        this.grants = grants;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setRedirectUri(String redirectUri) {
-        this.redirectUri = redirectUri;
-    }
-
-    public void setClientSecret(String clientSecret) {
-        this.clientSecret = clientSecret;
-    }
-
-    public void setScope(Set<String> scope) {
-        this.scope = scope;
-    }
-
-    public long getInternalId() {
-        return internalId;
+    @Override
+    @JsonIgnore
+    public Collection<GrantedAuthority> getAuthorities() {
+        return Collections.emptySet();
     }
 
     public void setInternalId(long internalId) {
         this.internalId = internalId;
     }
 
-    public String getRedirectUri() {
-        return redirectUri;
+    public void setClientId(String clientId) {
+        this.id = clientId;
+    }
+
+    public void setRedirectUri(String redirectUri) {
+        this.redirectUri = redirectUri;
+    }
+
+    public void setGrants(Collection<String> grants) {
+        this.grants = new LinkedHashSet<>(grants);
+    }
+
+    public void setScope(Collection<String> scope) {
+        this.scope = new LinkedHashSet<>(scope);
     }
 
     public void setAccessTokenValiditySeconds(int accessTokenValiditySeconds) {
@@ -196,16 +211,8 @@ public class ClientEntity {
         this.refreshTokenValiditySeconds = refreshTokenValiditySeconds;
     }
 
-    public boolean isImplicit() {
-        return implicit;
-    }
-
     public void setImplicit(boolean implicit) {
         this.implicit = implicit;
-    }
-
-    public long getValidityInSeconds() {
-        return validityInSeconds;
     }
 
     public void setValidityInSeconds(long validity) {

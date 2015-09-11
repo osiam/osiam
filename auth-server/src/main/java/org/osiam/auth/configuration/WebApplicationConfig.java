@@ -21,28 +21,18 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package org.osiam.auth.template.resolvers;
+package org.osiam.auth.configuration;
 
-import org.thymeleaf.exceptions.ConfigurationException;
-import org.thymeleaf.resourceresolver.IResourceResolver;
-import org.thymeleaf.templateresolver.TemplateResolver;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-/**
- * Osiam web context template resolver for thymeleaf template engine
- * 
- */
-public class OsiamWebContextTemplateResolver extends TemplateResolver {
-
-    public OsiamWebContextTemplateResolver() {
-        super();
-        super.setResourceResolver(new OsiamWebContextResourceResolver());
-    }
+@Configuration
+public class WebApplicationConfig extends WebMvcConfigurerAdapter {
 
     @Override
-    public void setResourceResolver(final IResourceResolver resourceResolver) {
-        throw new ConfigurationException(
-                "Cannot set a resource resolver on " + this.getClass().getName() + ". If " +
-                        "you want to set your own resource resolver, use " + TemplateResolver.class.getName() +
-                        "instead");
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/css/**").addResourceLocations("classpath:/auth-server/resources/css/");
+        registry.addResourceHandler("/js/**").addResourceLocations("classpath:/auth-server/resources/js/");
     }
 }

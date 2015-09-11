@@ -23,75 +23,62 @@
 
 package org.osiam.auth.oauth_client;
 
-import java.io.IOException;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
-import javax.inject.Inject;
-
-import org.osiam.auth.exception.ClientAlreadyExistsException;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.osiam.auth.exception.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
 
 /**
- * Is the http api for clients. You can get, create and delete a client.
+ * ClientManagementController realizes the REST API for managing OAuth 2 clients.
+ *
+ * You can list, get, create, update and delete clients.
  */
-@Controller
+@RestController
 @RequestMapping(value = "/Client")
-@Transactional
 public class ClientManagementController {
 
-    @Inject
-    private ClientDao clientDao;
-
-    private ObjectMapper mapper = new ObjectMapper();
+    @Autowired
+    private ClientRepository clientRepository;
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    @ResponseBody
     public ClientEntity getClient(@PathVariable final String id) {
-        return clientDao.getClient(id);
+        return findClientOrThrow(id);
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    @ResponseBody
     public List<ClientEntity> getClients() {
-        return clientDao.getClients();
+        return clientRepository.findAll();
     }
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody
-    public ClientEntity create(@RequestBody String client) throws IOException {
-        final ClientEntity clientEntity = getClientEntity(client);
-        if (clientDao.clientIdAlreadyExists(clientEntity.getId())) {
-            throw new ClientAlreadyExistsException(String.format("The client with the id '%s' already exists",
-                    clientEntity.getId()));
+    public ClientEntity create(@RequestBody ClientEntity client) throws IOException {
+        if (clientRepository.existsById(client.getClientId())) {
+            throw new ClientAlreadyExistsException(
+                    String.format("The client with the id '%s' already exists", client.getClientId()));
         }
-        return clientDao.create(clientEntity);
+        return clientRepository.save(client);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable final String id) {
-        clientDao.delete(id);
+        clientRepository.deleteById(id);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public ClientEntity update(@PathVariable final String id, @RequestBody String client) throws IOException {
-        return clientDao.update(getClientEntity(client), id);
+    public ClientEntity update(@PathVariable final String id, @RequestBody ClientEntity client) throws IOException {
+        client.setInternalId(findClientOrThrow(id).getInternalId());
+        return clientRepository.save(client);
     }
 
-    private ClientEntity getClientEntity(String client) throws IOException {
-        return new ClientEntity(mapper.readValue(client, ClientEntity.class));
+    private ClientEntity findClientOrThrow(@PathVariable String id) {
+        ClientEntity client = clientRepository.findById(id);
+        if (client == null) {
+            throw new ClientNotFoundException("Client with the id '" + id + "' not found.");
+        }
+        return client;
     }
 }

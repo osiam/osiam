@@ -23,52 +23,37 @@
 
 package org.osiam.security.authentication
 
-import org.osiam.auth.oauth_client.ClientDao
 import org.osiam.auth.oauth_client.ClientEntity
-import org.osiam.client.oauth.Scope
-
+import org.osiam.auth.oauth_client.ClientRepository
+import org.springframework.security.oauth2.provider.ClientDetails
 import spock.lang.Specification
 
 class OsiamClientDetailsServiceSpec extends Specification {
 
-    ClientDao clientDao = Mock()
-    OsiamClientDetailsService osiamClientDetailsService = new OsiamClientDetailsService(clientDao: clientDao)
-    def clientId = 'client-id'
+    ClientRepository clientRepository = Mock()
+    OsiamClientDetailsService osiamClientDetailsService =
+            new OsiamClientDetailsService(clientRepository: clientRepository)
 
-    def 'loading client details returns a correct converted OsiamClientDetails instance'() {
+    def 'loading client details returns a ClientDetails view of a ClientEntity'() {
         given:
-        ClientEntity clientEntity = createFullClientEntity(clientId)
+        ClientEntity clientEntity = createFullClientEntity('client-id')
 
         when:
-        OsiamClientDetails result = osiamClientDetailsService.loadClientByClientId(clientId)
+        ClientDetails clientDetails = osiamClientDetailsService.loadClientByClientId('client-id')
 
         then:
-        1 * clientDao.getClient(clientId) >> clientEntity
-        isEqual(result, clientEntity)
+        1 * clientRepository.findById('client-id') >> clientEntity
+        clientDetails == clientEntity
     }
 
-    void isEqual(OsiamClientDetails result, ClientEntity clientEntity) {
-        assert result.getId() == clientEntity.getId()
-        assert result.getClientSecret() == clientEntity.getClientSecret()
-        assert result.getScope() == clientEntity.getScope()
-        assert result.getGrants() == clientEntity.getGrants()
-        assert result.getRedirectUri() == clientEntity.getRedirectUri()
-        assert result.getAccessTokenValiditySeconds() == clientEntity.getAccessTokenValiditySeconds()
-        assert result.getRefreshTokenValiditySeconds() == clientEntity.getRefreshTokenValiditySeconds()
-        assert result.isImplicit() == clientEntity.isImplicit()
-        assert result.getValidityInSeconds() == clientEntity.getValidityInSeconds()
-    }
-
-    ClientEntity createFullClientEntity(clientId){
+    ClientEntity createFullClientEntity(String clientId) {
         ClientEntity result = new ClientEntity()
-        result.setId(clientId)
-        result.setClientSecret('secret')
-        result.setScope([Scope.ADMIN] as Set)
-        result.setGrants(['grant'] as Set)
+        result.setClientId(clientId)
+        result.setScope(['scope'])
+        result.setGrants(['grant'])
         result.setRedirectUri('redirect-uri')
         result.setAccessTokenValiditySeconds(10000)
         result.setRefreshTokenValiditySeconds(100000)
-        result.setImplicit(false)
         result.setValidityInSeconds(1000)
         return result
     }

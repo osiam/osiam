@@ -26,17 +26,15 @@ package org.osiam.security.controller;
 import java.security.Principal;
 import java.util.Map;
 
-import javax.inject.Inject;
-
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.provider.AuthorizationRequestManager;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.TokenGranter;
 import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.security.oauth2.provider.error.DefaultWebResponseExceptionTranslator;
 import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -52,12 +50,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class FbTokenEndpoint {
 
     private WebResponseExceptionTranslator providerExceptionHandler = new DefaultWebResponseExceptionTranslator();
-    @Inject
+
+    @Autowired
     private TokenGranter tokenGranter;
-    @Inject
+
+    @Autowired
     private ClientDetailsService clientDetailsService;
-    @Inject
-    private AuthorizationRequestManager authorizationRequestManager;
 
     private TokenEndpoint tokenEndpoint = new TokenEndpoint();
 
@@ -65,15 +63,14 @@ public class FbTokenEndpoint {
     @ResponseBody
     public String accessToken(Principal principal,
             @RequestParam(value = "grant_type", defaultValue = "authorization_code") String grantType,
-            @RequestParam Map<String, String> parameters) {
+            @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
 
-        tokenEndpoint.setAuthorizationRequestManager(authorizationRequestManager);
         tokenEndpoint.setClientDetailsService(clientDetailsService);
         tokenEndpoint.setProviderExceptionHandler(providerExceptionHandler);
         tokenEndpoint.setTokenGranter(tokenGranter);
 
-        ResponseEntity<OAuth2AccessToken> accessToken = tokenEndpoint.getAccessToken(principal, grantType, parameters);
-        return "access_token=" + accessToken.getBody().getValue() + "&expires=" + accessToken.getBody().getExpiresIn();
+        OAuth2AccessToken accessToken = tokenEndpoint.getAccessToken(principal, parameters).getBody();
+        return "access_token=" + accessToken.getValue() + "&expires=" + accessToken.getExpiresIn();
 
     }
 }

@@ -3,7 +3,7 @@
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
+ * 'Software'), to deal in the Software without restriction, including
  * without limitation the rights to use, copy, modify, merge, publish,
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to
@@ -12,7 +12,7 @@
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
  * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
@@ -23,124 +23,211 @@
 
 package org.osiam.security.helper
 
+import org.osiam.auth.oauth_client.ClientEntity
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception
 import org.springframework.security.oauth2.common.exceptions.RedirectMismatchException
-import org.springframework.security.oauth2.provider.AuthorizationRequest
-import org.springframework.security.oauth2.provider.ClientDetailsService
+import org.springframework.security.oauth2.provider.*
 import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices
-import org.springframework.security.oauth2.provider.code.AuthorizationRequestHolder
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices
 import spock.lang.Specification
 
 class LessStrictRedirectUriAuthorizationCodeTokenGranterSpec extends Specification {
-    def tokenService = Mock(AuthorizationServerTokenServices)
-    def clientDetailsService = Mock(ClientDetailsService)
-    def authzCodeServices = Mock(AuthorizationCodeServices)
-    def underTest = new LessStrictRedirectUriAuthorizationCodeTokenGranter(tokenService, clientDetailsService)
-    AuthorizationRequest authzRequest = Mock(AuthorizationRequest)
-    AuthorizationRequestHolder storedAuth = Mock(AuthorizationRequestHolder)
-    AuthorizationRequest authNRequest = Mock(AuthorizationRequest)
-    def pendingRedirectUri = "localhost:unso"
+    AuthorizationServerTokenServices tokenServices = Mock(AuthorizationServerTokenServices)
+    ClientDetailsService clientDetailsService = Mock(ClientDetailsService)
+    AuthorizationCodeServices authorizationCodeServices = Mock(AuthorizationCodeServices)
+    OAuth2RequestFactory requestFactory = Mock(OAuth2RequestFactory)
 
-    def setup(){
+    LessStrictRedirectUriAuthorizationCodeTokenGranter lessStrictRedirectUriAuthorizationCodeTokenGranter =
+            new LessStrictRedirectUriAuthorizationCodeTokenGranter(
+                    tokenServices,
+                    authorizationCodeServices,
+                    clientDetailsService,
+                    requestFactory
+            )
 
-        authzCodeServices.consumeAuthorizationCode("12345") >> storedAuth
-        storedAuth.getAuthenticationRequest() >> authNRequest
-        authNRequest.getAuthorizationParameters() >> [redirect_uri: pendingRedirectUri]
-        underTest.authorizationCodeServices = authzCodeServices
-        authNRequest.getRedirectUri() >> pendingRedirectUri
-
-    }
-    def set_redirect_uri(redirect_uri){
-        authzRequest.getAuthorizationParameters() >> [code:"12345", redirect_uri: redirect_uri]
-    }
-
-    def "should continue if the pending redirect uri is equal to the send redirect uri"(){
+    def 'continues if the pending redirect uri is equal to the send redirect uri'() {
         given:
-          set_redirect_uri(pendingRedirectUri)
+        TokenRequest tokenRequest = new TokenRequest([code: '12345', redirect_uri: 'localhost:5000/oauth'], 'clientId',
+                [], 'authorization_code')
+        OAuth2Authentication storedAuth = Mock(OAuth2Authentication)
+        authorizationCodeServices.consumeAuthorizationCode('12345') >> storedAuth
+        OAuth2Request pendingOAuth2Request = new OAuth2Request(
+                [redirect_uri: 'localhost:5000/oauth'],
+                'clientId',
+                null,
+                true,
+                ['GET'] as Set,
+                null,
+                'localhost:5000/oauth',
+                null,
+                null)
+        storedAuth.getOAuth2Request() >> pendingOAuth2Request
 
         when:
-          def result = underTest.getOAuth2Authentication(authzRequest)
+        def result = lessStrictRedirectUriAuthorizationCodeTokenGranter
+                .getOAuth2Authentication(new ClientEntity(), tokenRequest)
+
         then:
         result
     }
 
-    def "should continue if the pending redirect uri starts with the send redirect uri"(){
+    def 'continues if the pending redirect uri starts with the send redirect uri'() {
         given:
-        set_redirect_uri("localhost")
+        TokenRequest tokenRequest = new TokenRequest([code: '12345', redirect_uri: 'localhost'], 'clientId',
+                [], 'authorization_code')
+        OAuth2Authentication storedAuth = Mock(OAuth2Authentication)
+        authorizationCodeServices.consumeAuthorizationCode('12345') >> storedAuth
+        OAuth2Request pendingOAuth2Request = new OAuth2Request(
+                [redirect_uri: 'localhost:5000/oauth'],
+                'clientId',
+                null,
+                true,
+                ['GET'] as Set,
+                null,
+                'localhost:5000/oauth',
+                null,
+                null)
+        storedAuth.getOAuth2Request() >> pendingOAuth2Request
 
         when:
-        def result = underTest.getOAuth2Authentication(authzRequest)
+        def result = lessStrictRedirectUriAuthorizationCodeTokenGranter
+                .getOAuth2Authentication(new ClientEntity(), tokenRequest)
+
         then:
         result
     }
 
-    def "should continue if the pending redirect uri is null"(){
+    def 'continues if the pending redirect uri is null'() {
         given:
-        authNRequest.getAuthorizationParameters() >> [redirect_uri: null]
-        set_redirect_uri("localhost")
-        when:
-        def result = underTest.getOAuth2Authentication(authzRequest)
-        then:
+        TokenRequest tokenRequest = new TokenRequest([code: '12345', redirect_uri: 'localhost:5000/oauth'], 'clientId',
+                [], 'authorization_code')
+        OAuth2Authentication storedAuth = Mock(OAuth2Authentication)
+        authorizationCodeServices.consumeAuthorizationCode('12345') >> storedAuth
+        OAuth2Request pendingOAuth2Request = new OAuth2Request(
+                [redirect_uri: null],
+                'clientId',
+                null,
+                true,
+                ['GET'] as Set,
+                null,
+                null,
+                null,
+                null)
+        storedAuth.getOAuth2Request() >> pendingOAuth2Request
 
+        when:
+        def result = lessStrictRedirectUriAuthorizationCodeTokenGranter
+                .getOAuth2Authentication(new ClientEntity(), tokenRequest)
+
+        then:
         result
     }
 
-    def "should abort if the send redirect uri is null but the pending is not"(){
+    def 'aborts if the send redirect uri is null but the pending is not'() {
         given:
-        set_redirect_uri(null)
+        TokenRequest tokenRequest = new TokenRequest([code: '12345', redirect_uri: null], 'clientId',
+                [], 'authorization_code')
+        OAuth2Authentication storedAuth = Mock(OAuth2Authentication)
+        authorizationCodeServices.consumeAuthorizationCode('12345') >> storedAuth
+        OAuth2Request pendingOAuth2Request = new OAuth2Request(
+                [redirect_uri: 'localhost:5000/oauth'],
+                'clientId',
+                null,
+                true,
+                ['GET'] as Set,
+                null,
+                'localhost:5000/oauth',
+                null,
+                null)
+        storedAuth.getOAuth2Request() >> pendingOAuth2Request
+
         when:
-        underTest.getOAuth2Authentication(authzRequest)
+        lessStrictRedirectUriAuthorizationCodeTokenGranter.getOAuth2Authentication(new ClientEntity(), tokenRequest)
+
         then:
         def e = thrown(RedirectMismatchException)
-        e.message == "Redirect URI mismatch."
+        e.message == 'Redirect URI mismatch.'
     }
 
-    def "should abort if the pending redirect uri doesn't starts with the send redirect uri"(){
+    def 'aborts if the pending redirect uri does not starts with the send redirect uri'() {
         given:
-        set_redirect_uri("localhorst")
+        TokenRequest tokenRequest = new TokenRequest([code: '12345', redirect_uri: 'example.com'], 'clientId',
+                [], 'authorization_code')
+        OAuth2Authentication storedAuth = Mock(OAuth2Authentication)
+        authorizationCodeServices.consumeAuthorizationCode('12345') >> storedAuth
+        OAuth2Request pendingOAuth2Request = new OAuth2Request(
+                [redirect_uri: 'localhost:5000/oauth'],
+                'clientId',
+                null,
+                true,
+                ['GET'] as Set,
+                null,
+                'localhost:5000/oauth',
+                null,
+                null)
+        storedAuth.getOAuth2Request() >> pendingOAuth2Request
 
         when:
-        underTest.getOAuth2Authentication(authzRequest)
+        lessStrictRedirectUriAuthorizationCodeTokenGranter.getOAuth2Authentication(new ClientEntity(), tokenRequest)
+
         then:
         def e = thrown(RedirectMismatchException)
-        e.message == "Redirect URI mismatch."
+        e.message == 'Redirect URI mismatch.'
     }
 
-    def "should abort if client_id miss matches"(){
+    def 'aborts if client_id miss matches'() {
         given:
-        set_redirect_uri("localhost")
-        authNRequest.getClientId() >> "client_id"
-        authzRequest.getClientId() >> "clientid"
+        TokenRequest tokenRequest = new TokenRequest([code: '12345', redirect_uri: 'localhost:5000/oauth'], 'clientId',
+                [], 'authorization_code')
+        OAuth2Authentication storedAuth = Mock(OAuth2Authentication)
+        authorizationCodeServices.consumeAuthorizationCode('12345') >> storedAuth
+        OAuth2Request pendingOAuth2Request = new OAuth2Request(
+                [redirect_uri: 'localhost:5000/oauth'],
+                'otherClientId',
+                null,
+                true,
+                ['GET'] as Set,
+                null,
+                'localhost:5000/oauth',
+                null,
+                null)
+        storedAuth.getOAuth2Request() >> pendingOAuth2Request
 
         when:
-        underTest.getOAuth2Authentication(authzRequest)
+        lessStrictRedirectUriAuthorizationCodeTokenGranter.getOAuth2Authentication(new ClientEntity(), tokenRequest)
+
         then:
         def e = thrown(InvalidClientException)
-        e.message == "Client ID mismatch"
+        e.message == 'Client ID mismatch'
     }
 
-    def "should abort if no authorization code got submitted"(){
+    def 'aborts if no authorization code got submitted'() {
         given:
-        authzRequest.getAuthorizationParameters() >> [code:null]
+        TokenRequest tokenRequest = new TokenRequest([redirect_uri: 'localhost:5000/oauth'], 'clientId',
+                [], 'authorization_code')
 
         when:
-        underTest.getOAuth2Authentication(authzRequest)
+        lessStrictRedirectUriAuthorizationCodeTokenGranter.getOAuth2Authentication(new ClientEntity(), tokenRequest)
+
         then:
         def e = thrown(OAuth2Exception)
-        e.message == "An authorization code must be supplied."
+        e.message == 'An authorization code must be supplied.'
     }
 
-    def "should abort if no storedAuth got found"(){
+    def 'aborts if no storedAuth has been found'() {
         given:
-        authzRequest.getAuthorizationParameters() >> [code:"123456"]
+        TokenRequest tokenRequest = new TokenRequest([code: '12345', redirect_uri: 'localhost:5000/oauth'], 'clientId',
+                [], 'authorization_code')
+        authorizationCodeServices.consumeAuthorizationCode('12345') >> null
 
         when:
-        underTest.getOAuth2Authentication(authzRequest)
+        lessStrictRedirectUriAuthorizationCodeTokenGranter.getOAuth2Authentication(new ClientEntity(), tokenRequest)
+
         then:
         def e = thrown(InvalidGrantException)
-        e.message == "Invalid authorization code: 123456"
+        e.message == 'Invalid authorization code: 12345'
     }
+
 }

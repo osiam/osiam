@@ -23,9 +23,9 @@
 
 package org.osiam.security.controller;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/login")
 public class LoginController {
 
-    @Inject
+    @Autowired
     private HttpSession session;
 
     @Value("${org.osiam.auth-server.ldap.enabled:false}")

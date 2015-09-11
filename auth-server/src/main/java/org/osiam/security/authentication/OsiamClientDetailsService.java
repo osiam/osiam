@@ -23,40 +23,23 @@
 
 package org.osiam.security.authentication;
 
-import javax.inject.Inject;
-
-import org.osiam.auth.oauth_client.ClientDao;
-import org.osiam.auth.oauth_client.ClientEntity;
+import org.osiam.auth.oauth_client.ClientRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.stereotype.Service;
 
 /**
  * OSIAM {@link ClientDetailsService} implementation.
  */
-@Service("osiamClientDetailsService")
+@Service
 public class OsiamClientDetailsService implements ClientDetailsService {
 
-    @Inject
-    private ClientDao clientDao;
+    @Autowired
+    private ClientRepository clientRepository;
 
     @Override
-    public OsiamClientDetails loadClientByClientId(final String clientId) {
-        return toOsiamClientDetails(clientDao.getClient(clientId));
-    }
-
-    private OsiamClientDetails toOsiamClientDetails(final ClientEntity client) {
-        final OsiamClientDetails clientDetails = new OsiamClientDetails();
-
-        clientDetails.setId(client.getId());
-        clientDetails.setClientSecret(client.getClientSecret());
-        clientDetails.setScope(client.getScope());
-        clientDetails.setGrants(client.getGrants());
-        clientDetails.setRedirectUri(client.getRedirectUri());
-        clientDetails.setAccessTokenValiditySeconds(client.getAccessTokenValiditySeconds());
-        clientDetails.setRefreshTokenValiditySeconds(client.getRefreshTokenValiditySeconds());
-        clientDetails.setImplicit(client.isImplicit());
-        clientDetails.setValidityInSeconds(client.getValidityInSeconds());
-
-        return clientDetails;
+    public ClientDetails loadClientByClientId(final String clientId) {
+        return clientRepository.findById(clientId);
     }
 }

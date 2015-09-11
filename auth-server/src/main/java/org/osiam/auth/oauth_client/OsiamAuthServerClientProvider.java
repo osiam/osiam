@@ -23,18 +23,21 @@
 
 package org.osiam.auth.oauth_client;
 
-import java.util.*;
-
-import javax.annotation.*;
-import javax.inject.*;
-
-import org.osiam.client.oauth.*;
+import org.osiam.client.oauth.GrantType;
 import org.osiam.client.oauth.Scope;
-import org.slf4j.*;
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.stereotype.*;
-import org.springframework.transaction.*;
-import org.springframework.transaction.support.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import javax.annotation.PostConstruct;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * ClientProvider which created the auth server client on startup
@@ -48,11 +51,11 @@ public class OsiamAuthServerClientProvider {
     public static final String AUTH_SERVER_CLIENT_ID = "auth-server";
     public static final int CLIENT_VALIDITY = 10;
 
-    @Inject
+    @Autowired
     private PlatformTransactionManager txManager;
 
-    @Inject
-    private ClientDao clientDao;
+    @Autowired
+    private ClientRepository clientRepository;
 
     @Value("${org.osiam.auth-server.home}")
     private String authServerHome;
@@ -65,19 +68,18 @@ public class OsiamAuthServerClientProvider {
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                if (!clientDao.clientIdAlreadyExists(AUTH_SERVER_CLIENT_ID)) {
-                    ClientEntity clientEntity;
+                if (!clientRepository.existsById(AUTH_SERVER_CLIENT_ID)) {
                     LOGGER.info("No auth server client found, so it will be created.");
                     int validity = CLIENT_VALIDITY;
 
-                    clientEntity = new ClientEntity();
+                    ClientEntity clientEntity = new ClientEntity();
                     Set<String> scopes = new HashSet<>();
                     scopes.add(Scope.ADMIN.toString());
 
                     Set<String> grants = new HashSet<>();
                     grants.add(GrantType.CLIENT_CREDENTIALS.toString());
 
-                    clientEntity.setId(AUTH_SERVER_CLIENT_ID);
+                    clientEntity.setClientId(AUTH_SERVER_CLIENT_ID);
                     clientEntity.setRefreshTokenValiditySeconds(validity);
                     clientEntity.setAccessTokenValiditySeconds(validity);
                     clientEntity.setRedirectUri(authServerHome);
@@ -86,8 +88,7 @@ public class OsiamAuthServerClientProvider {
                     clientEntity.setValidityInSeconds(validity);
                     clientEntity.setGrants(grants);
 
-                    clientEntity = clientDao.create(clientEntity);
-
+                    clientEntity = clientRepository.save(clientEntity);
                     authServerClientSecret = clientEntity.getClientSecret();
                 }
             }

@@ -28,10 +28,6 @@ public class AuthenticationError {
     private String error;
     private String message;
 
-    public AuthenticationError() {
-        // needed
-    }
-
     public AuthenticationError(String error, String message) {
         this.error = error;
         this.message = message;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 tarent AG
+ * Copyright (C) 2013 tarent AG
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -23,66 +23,83 @@
 
 package org.osiam.security.authorization;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.servlet.http.HttpSession;
-
-import org.osiam.security.authentication.OsiamClientDetails;
 import org.osiam.security.authentication.OsiamClientDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
+import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.approval.DefaultUserApprovalHandler;
+import org.springframework.stereotype.Component;
 
-@Named("userApprovalHandler")
+import javax.servlet.http.HttpSession;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * A default user approval handler that doesn't remember any decisions.
+ *
+ * @author Dave Syer
+ */
+@Component
 public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
 
-    @Inject
+    private static final String APPROVALS_SESSION_KEY = "osiam_oauth_approvals";
+    private static final String IS_PRE_APPROVED_PARAMETER = "osiam_is_pre_approved";
+
+    @Autowired
     private HttpSession httpSession;
 
-    @Inject
+    @Autowired
     private OsiamClientDetailsService osiamClientDetailsService;
 
     @Override
-    public AuthorizationRequest updateBeforeApproval(final AuthorizationRequest authorizationRequest,
-            final Authentication userAuthentication) {
-
-        if (super.isApproved(authorizationRequest, userAuthentication)) {
-
-            @SuppressWarnings("unchecked")
-            Map<String, Long> approvals = (Map<String, Long>) httpSession.getAttribute("approvals");
-            if (approvals == null) {
-                approvals = new HashMap<>();
-                httpSession.setAttribute("approvals", approvals);
-            }
-            approvals.put(authorizationRequest.getClientId(), System.currentTimeMillis());
+    public AuthorizationRequest checkForPreApproval(AuthorizationRequest authorizationRequest,
+            Authentication userAuthentication) {
+        ClientDetails client = osiamClientDetailsService.loadClientByClientId(authorizationRequest.getClientId());
+        if (client.isAutoApprove("") || hasRememberedApprovalForClient(authorizationRequest, client)) {
+            authorizationRequest.setApproved(true);
+            HashMap<String, String> newApprovalParameters = new HashMap<>(authorizationRequest.getApprovalParameters());
+            newApprovalParameters.put(IS_PRE_APPROVED_PARAMETER, "true");
+            authorizationRequest.setApprovalParameters(Collections.unmodifiableMap(newApprovalParameters));
         }
         return authorizationRequest;
     }
 
     @Override
-    public boolean isApproved(final AuthorizationRequest authorizationRequest, final Authentication userAuthentication) {
+    public boolean isApproved(
+            AuthorizationRequest authorizationRequest, Authentication userAuthentication
+    ) {
+        boolean approved = super.isApproved(authorizationRequest, userAuthentication);
 
-        if (!userAuthentication.isAuthenticated()) {
+        if (!approved) {
             return false;
         }
 
-        if (super.isApproved(authorizationRequest, userAuthentication)) {
-            return true;
-        }
-
-        final OsiamClientDetails client = osiamClientDetailsService.loadClientByClientId(authorizationRequest
-                .getClientId());
-
-        if (client.isImplicit()) {
+        if ("true".equals(authorizationRequest.getApprovalParameters().get(IS_PRE_APPROVED_PARAMETER))) {
             return true;
         }
 
         @SuppressWarnings("unchecked")
-        Map<String, Long> approvals = (Map<String, Long>) httpSession.getAttribute("approvals");
+        Map<String, Long> approvals = (Map<String, Long>) httpSession.getAttribute(APPROVALS_SESSION_KEY);
+        if (approvals == null) {
+            approvals = new ConcurrentHashMap<>();
+            httpSession.setAttribute(APPROVALS_SESSION_KEY, approvals);
+        }
+
+        if (!approvals.containsKey(authorizationRequest.getClientId())) {
+            approvals.put(authorizationRequest.getClientId(), System.currentTimeMillis());
+        }
+
+        return true;
+    }
+
+    private boolean hasRememberedApprovalForClient(AuthorizationRequest authorizationRequest, ClientDetails client) {
+        @SuppressWarnings("unchecked")
+        Map<String, Long> approvals = (Map<String, Long>) httpSession.getAttribute(APPROVALS_SESSION_KEY);
+
         if (approvals == null) {
             return false;
         }
@@ -93,7 +110,7 @@ public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
             return false;
         }
 
-        final long validityInSeconds = client.getValidityInSeconds();
+        final long validityInSeconds = (Long) client.getAdditionalInformation().get("validityInSeconds");
 
         if (System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(validityInSeconds) > approvalTime) {
             approvals.remove(authorizationRequest.getClientId());

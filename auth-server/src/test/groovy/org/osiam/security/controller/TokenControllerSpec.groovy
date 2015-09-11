@@ -3,7 +3,7 @@
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
+ * 'Software'), to deal in the Software without restriction, including
  * without limitation the rights to use, copy, modify, merge, publish,
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to
@@ -12,7 +12,7 @@
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
  * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
@@ -24,30 +24,36 @@
 package org.osiam.security.controller
 
 import org.osiam.auth.login.ResourceServerConnector
-import org.osiam.client.oauth.AccessToken;
-import org.osiam.client.oauth.Scope;
-import org.osiam.resources.scim.User;
+import org.osiam.auth.oauth_client.ClientRepository
+import org.osiam.client.oauth.AccessToken
+import org.osiam.client.oauth.Scope
+import org.osiam.resources.scim.User
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken
 import org.springframework.security.oauth2.common.OAuth2AccessToken
-import org.springframework.security.oauth2.provider.AuthorizationRequest
 import org.springframework.security.oauth2.provider.OAuth2Authentication
-import org.springframework.security.oauth2.provider.token.DefaultTokenServices
+import org.springframework.security.oauth2.provider.OAuth2Request
+import org.springframework.security.oauth2.provider.token.TokenStore
 import spock.lang.Specification
 
 class TokenControllerSpec extends Specification {
 
-    DefaultTokenServices defaultTokenServicesMock = Mock()
-    ResourceServerConnector resourceServerConnectorMock = Mock()
-    TokenController tokenController = new TokenController(tokenServices: defaultTokenServicesMock,
-        resourceServerConnector: resourceServerConnectorMock)
+    TokenStore tokenStore = Mock(TokenStore)
+    ResourceServerConnector resourceServerConnector = Mock(ResourceServerConnector)
+    ClientRepository clientRepository = Mock(ClientRepository)
 
-    def 'The TokenController should return an accesstoken with all attributes set'() {
+    TokenController tokenController = new TokenController(
+            tokenStore: tokenStore,
+            resourceServerConnector: resourceServerConnector,
+            clientRepository: clientRepository
+    )
+
+    def 'The TokenController should return an access token with all attributes set'() {
         given:
-        OAuth2Authentication auth = Mock()
-        OAuth2AccessToken accessToken = Mock()
-        AuthorizationRequest authReq = Mock()
-        Authentication authentication = Mock()
+        OAuth2Authentication auth = Mock(OAuth2Authentication)
+        OAuth2AccessToken accessToken = Mock(OAuth2AccessToken)
+        OAuth2Request authReq = new OAuth2Request(null, 'clientId', null, true, ['GET'] as Set, null, null, null, null)
+        Authentication authentication = Mock(Authentication)
         User user = new User.Builder('username').setId('userId').build()
         Date date = new Date()
 
@@ -55,14 +61,13 @@ class TokenControllerSpec extends Specification {
         AccessToken result = tokenController.validateToken('accessToken')
 
         then:
-        1 * defaultTokenServicesMock.loadAuthentication('accessToken') >> auth
-        1 * defaultTokenServicesMock.getAccessToken(auth) >> accessToken
-        1 * auth.authorizationRequest >> authReq
-        1 * authReq.clientId >> 'clientId'
-        1 * auth.userAuthentication >> authentication
-        2 * auth.principal >> user
-        1 * authReq.scope >> ['GET']
-        1 * accessToken.expiration >> date
+        1 * auth.getOAuth2Request() >> authReq
+        1 * auth.getUserAuthentication() >> authentication
+        2 * auth.getPrincipal() >> user
+        1 * tokenStore.readAuthentication('accessToken') >> auth
+        1 * accessToken.getExpiration() >> date
+        1 * tokenStore.getAccessToken(auth) >> accessToken
+
         result.clientId == 'clientId'
         result.userId == 'userId'
         result.userName == 'username'
@@ -70,18 +75,18 @@ class TokenControllerSpec extends Specification {
         result.expiresAt == date
     }
 
-    def 'OSNG-444: A request to revoke a token should be delegated to the TokenService'() {
+    def 'A request to revoke a token should be delegated to the TokenService'() {
         when:
         tokenController.revokeToken('prefix accessToken')
 
         then:
-        1 * defaultTokenServicesMock.revokeToken('accessToken')
+        1 * tokenStore.removeAccessToken(new DefaultOAuth2AccessToken('accessToken'));
     }
 
-    def 'OSNG-444/OSNG-467: A request to revoke tokens for a given user should revoke all tokens of the user'() {
+    def 'A request to revoke tokens for a given user should revoke all tokens of the user'() {
         given:
-        def userId = "User Id"
-        def userName = "User name"
+        def userId = 'User Id'
+        def userName = 'User name'
         User user = new User.Builder(userName).setId(userId).build()
         OAuth2AccessToken token1 = new DefaultOAuth2AccessToken('token1')
         OAuth2AccessToken token2 = new DefaultOAuth2AccessToken('token2')
@@ -91,26 +96,27 @@ class TokenControllerSpec extends Specification {
         tokenController.revokeAllTokensOfUser(userId)
 
         then:
-        1 * resourceServerConnectorMock.getUserById(userId) >> user
-        1 * defaultTokenServicesMock.findTokensByUserName(user.toString()) >> [token1, token2, token3]
-        1 * defaultTokenServicesMock.revokeToken(token1.getValue())
-        1 * defaultTokenServicesMock.revokeToken(token2.getValue())
-        1 * defaultTokenServicesMock.revokeToken(token3.getValue())
+        1 * resourceServerConnector.getUserById(userId) >> user
+        1 * clientRepository.findAllClientIds() >> ['clientId']
+        1 * tokenStore.findTokensByClientIdAndUserName('clientId', user.toString()) >> [token1, token2, token3]
+        1 * tokenStore.removeAccessToken(token1.getValue())
+        1 * tokenStore.removeAccessToken(token2.getValue())
+        1 * tokenStore.removeAccessToken(token3.getValue())
     }
 
-
-    def "OSNG-444/OSNG-467: A request to revoke tokens of a user that doesn't have any tokens shouldn't have any effect"() {
+    def 'A request to revoke tokens of a user that does not have any tokens should not have any effect'() {
         given:
-        def userId = "User Id"
-        def userName = "User name"
+        def userId = 'User Id'
+        def userName = 'User name'
         User user = new User.Builder(userName).setId(userId).build()
 
         when:
         tokenController.revokeAllTokensOfUser(userId)
 
         then:
-        1 * resourceServerConnectorMock.getUserById(userId) >> user
-        1 * defaultTokenServicesMock.findTokensByUserName(user.toString()) >> []
-        0 * defaultTokenServicesMock.revokeToken(_)
+        1 * resourceServerConnector.getUserById(userId) >> user
+        1 * clientRepository.findAllClientIds() >> ['clientId']
+        1 * tokenStore.findTokensByClientIdAndUserName('clientId', user.toString()) >> []
+        0 * tokenStore.removeAccessToken(_)
     }
 }

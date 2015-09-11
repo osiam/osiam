@@ -29,26 +29,24 @@ import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint
 import spock.lang.Specification
 
 class FbTokenEndpointSpec extends Specification {
-    TokenEndpoint tokenEndpoint = Mock(TokenEndpoint)
+
     ResponseEntity tokenEndpointResult = Mock(ResponseEntity)
-    def underTest = new FbTokenEndpoint(tokenEndpoint: tokenEndpoint)
-    def body = Mock(OAuth2AccessToken)
-    def access_token = UUID.randomUUID().toString()
+    OAuth2AccessToken accessToken = Mock(OAuth2AccessToken)
+    TokenEndpoint tokenEndpoint = Mock(TokenEndpoint)
+    FbTokenEndpoint fbTokenEndpoint = new FbTokenEndpoint(tokenEndpoint: tokenEndpoint)
 
-    def setup(){
-        tokenEndpointResult.getBody() >> body
-    }
-
-    def "should manipulate the result of tokenendpoint to be facebook like"(){
+    def "Manipulates the result of TokenEndpoint to be like Facebook's one"() {
+        given:
+        def accessTokenValue = UUID.randomUUID().toString()
+        tokenEndpointResult.getBody() >> accessToken
 
         when:
-        def result = underTest.accessToken(null, "authorization-code", null)
+        def result = fbTokenEndpoint.accessToken(null, "authorization-code", null)
+
         then:
-        1 * tokenEndpoint.getAccessToken(null, "authorization-code", null) >> tokenEndpointResult
-        1 * body.getValue() >> access_token
-        1 * body.expiresIn >> 23
-        result == 'access_token='+access_token+'&expires=23'
-
+        1 * tokenEndpoint.getAccessToken(null, null) >> tokenEndpointResult
+        1 * accessToken.getValue() >> accessTokenValue
+        1 * accessToken.getExpiresIn() >> 23
+        result == "access_token=${accessTokenValue}&expires=23"
     }
-
 }
