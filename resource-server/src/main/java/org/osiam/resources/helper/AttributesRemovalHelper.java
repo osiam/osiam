@@ -31,7 +31,6 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import org.osiam.resources.exception.OsiamBackendFailureException;
-import org.osiam.resources.scim.Constants;
 import org.osiam.resources.scim.Resource;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.resources.scim.User;
@@ -133,7 +132,7 @@ public class AttributesRemovalHelper {
         List<String> returnFields = Arrays.asList(fieldsToReturn);
         for (User resource : resourceList) {
             for (String schema : resource.getSchemas()) {
-                if (schema.equals(Constants.USER_CORE_SCHEMA) || returnFields.contains(schema)) {
+                if (schema.equals(User.SCHEMA) || returnFields.contains(schema)) {
                     newSchema.add(schema);
                 }
             }

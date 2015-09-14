@@ -24,7 +24,8 @@
 package org.osiam.resources.helper
 
 import com.fasterxml.jackson.databind.JsonMappingException
-import org.osiam.resources.scim.Constants
+import org.osiam.resources.scim.Group
+import org.osiam.resources.scim.User
 import spock.lang.Specification
 
 import javax.servlet.http.HttpServletRequest
@@ -41,7 +42,7 @@ class JsonInputValidatorSpec extends Specification {
 
     def 'validating user if JSON is valid works'() {
         given:
-        def userJson = """{"userName":"irrelevant","password": "123","schemas" : ["$Constants.USER_CORE_SCHEMA"]}"""
+        def userJson = """{"userName":"irrelevant","password": "123","schemas" : ["$User.SCHEMA"]}"""
         readerMock.readLine() >>> [userJson, null]
 
         when:
@@ -53,7 +54,7 @@ class JsonInputValidatorSpec extends Specification {
 
     def 'missing mandatory userName raises exception'() {
         given:
-        def userJson = """{"schemas" : ["$Constants.USER_CORE_SCHEMA"]}"""
+        def userJson = """{"schemas" : ["$User.SCHEMA"]}"""
         readerMock.readLine() >>> [userJson, null]
 
         when:
@@ -77,7 +78,7 @@ class JsonInputValidatorSpec extends Specification {
 
     def 'using PATCH without userName field works'() {
         given:
-        def userJson = """{"password":"123", "schemas" : ["$Constants.USER_CORE_SCHEMA"]}"""
+        def userJson = """{"password":"123", "schemas" : ["$User.SCHEMA"]}"""
         servletRequestWithMethod 'PATCH'
         readerMock.readLine() >>> [userJson, null]
 
@@ -87,7 +88,7 @@ class JsonInputValidatorSpec extends Specification {
 
     def 'validating invalid JSON structure raises exception'() {
         given:
-        def userJson = """{"schemas":["$Constants.USER_CORE_SCHEMA"],"userName":"irrelevant","password":"123"""
+        def userJson = """{"schemas":["$User.SCHEMA"],"userName":"irrelevant","password":"123"""
         readerMock.readLine() >>> [userJson, null]
 
         when:
@@ -99,7 +100,7 @@ class JsonInputValidatorSpec extends Specification {
 
     def 'removing uuid from user when using POST works'() {
         given:
-        def userJson = """{"id":"irrelevant","schemas":["$Constants.USER_CORE_SCHEMA"],"userName":"irrelevant","password":"123"}"""
+        def userJson = """{"id":"irrelevant","schemas":["$User.SCHEMA"],"userName":"irrelevant","password":"123"}"""
         readerMock.readLine() >>> [userJson, null]
 
         when:
@@ -111,7 +112,7 @@ class JsonInputValidatorSpec extends Specification {
 
     def 'validating group if JSON is valid works'() {
         given:
-        def groupJson = """{"schemas":["$Constants.GROUP_CORE_SCHEMA"],"displayName":"display name"}"""
+        def groupJson = """{"schemas":["$Group.SCHEMA"],"displayName":"display name"}"""
         readerMock.readLine() >>> [groupJson, null]
 
         when:
@@ -123,7 +124,7 @@ class JsonInputValidatorSpec extends Specification {
 
     def 'missing mandatory displayName raises exception'() {
         given:
-        def groupJson = """{"schemas":["$Constants.GROUP_CORE_SCHEMA"],"members": []}"""
+        def groupJson = """{"schemas":["$Group.SCHEMA"],"members": []}"""
         readerMock.readLine() >>> [groupJson, null]
 
         when:
@@ -135,7 +136,7 @@ class JsonInputValidatorSpec extends Specification {
 
     def 'using PATCH without displayName works'() {
         given:
-        def groupJson = """{"schemas":["$Constants.GROUP_CORE_SCHEMA"],"members": []}"""
+        def groupJson = """{"schemas":["$Group.SCHEMA"],"members": []}"""
         servletRequestWithMethod 'PATCH'
         readerMock.readLine() >>> [groupJson, null]
 

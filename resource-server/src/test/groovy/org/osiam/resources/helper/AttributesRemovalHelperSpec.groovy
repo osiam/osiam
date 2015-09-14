@@ -25,7 +25,6 @@ package org.osiam.resources.helper
 
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
-import org.osiam.resources.scim.Constants
 import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.SCIMSearchResult
 import org.osiam.resources.scim.User
@@ -61,7 +60,7 @@ class AttributesRemovalHelperSpec extends Specification {
     def "should return Json string with additional values for searches on users, groups and filtering for userName"() {
         given:
         def user = new User.Builder("username").setSchemas([
-                Constants.USER_CORE_SCHEMA] as Set).build()
+                User.SCHEMA] as Set).build()
         def userList = [user] as List<User>
         def parameterMapMock = Mock(Map)
         def attributes = ["userName"] as String[]
@@ -80,7 +79,7 @@ class AttributesRemovalHelperSpec extends Specification {
         result.startIndex == 0
         result.itemsPerPage == 0
         result.totalResults == 1337
-        result.getResources() == [[schemas: [Constants.USER_CORE_SCHEMA], userName: 'username']]
+        result.getResources() == [[schemas: [User.SCHEMA], userName: 'username']]
     }
 
     def "should not filter the search result if attributes are empty"() {
@@ -113,8 +112,6 @@ class AttributesRemovalHelperSpec extends Specification {
 
     def "should return only data of a complex type"() {
         given:
-        def set = [
-                Constants.USER_CORE_SCHEMA] as Set
         String[] pA = ["meta", "created"]
         def param = ["attributes": pA, "count": 23, "startIndex": 23]
 
@@ -124,7 +121,7 @@ class AttributesRemovalHelperSpec extends Specification {
         def created = dateTimeFormatter.print(date)
 
         def user = new User.Builder("username").setMeta(new Meta.Builder(actualDate, null).build()).build()
-        def scimSearchResult = new SCIMSearchResult([user], 1, 23, 1, set)
+        def scimSearchResult = new SCIMSearchResult([user], 1, 23, 1)
 
         when:
         def result = attributesRemovalHelperTest.removeSpecifiedAttributes(scimSearchResult, param)
@@ -133,8 +130,7 @@ class AttributesRemovalHelperSpec extends Specification {
         result.startIndex == 1
         result.itemsPerPage == 23
         result.totalResults == 1
-        result.getResources() == [[meta: [created: created], schemas: [Constants.USER_CORE_SCHEMA]]] as List
-        result.getSchemas() == [
-                Constants.USER_CORE_SCHEMA] as Set
+        result.getResources() == [[meta: [created: created], schemas: [User.SCHEMA]]] as List
+        result.getSchemas() == [SCIMSearchResult.SCHEMA] as Set
     }
 }

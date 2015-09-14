@@ -23,7 +23,6 @@
 
 package org.osiam.resources.controller
 
-import org.osiam.resources.scim.Constants
 import spock.lang.Specification
 
 class ServiceProviderConfigSpec extends Specification {
@@ -32,7 +31,7 @@ class ServiceProviderConfigSpec extends Specification {
     def "should return a ServiceProviderConfig"() {
         given:
         def schemas = [
-                Constants.SERVICE_PROVIDER_CORE_SCHEMA] as Set
+                ServiceProviderConfigsController.ServiceProviderConfig.SCHEMA] as Set
 
         when:
         def config = underTest.getConfig()

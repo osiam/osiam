@@ -35,7 +35,6 @@ import org.osiam.resources.converter.GroupConverter;
 import org.osiam.resources.exception.ResourceExistsException;
 import org.osiam.resources.exception.ResourceNotFoundException;
 import org.osiam.resources.provisioning.update.GroupUpdater;
-import org.osiam.resources.scim.Constants;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.storage.dao.GroupDao;
@@ -118,7 +117,7 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
             groups.add(groupConverter.toScim(group));
         }
 
-        return new SCIMSearchResult<>(groups, result.totalResults, count, startIndex, Constants.LIST_RESPONSE_CORE_SCHEMA);
+        return new SCIMSearchResult<>(groups, result.totalResults, count, startIndex);
     }
 
     @Override

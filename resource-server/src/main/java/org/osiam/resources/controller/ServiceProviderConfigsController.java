@@ -26,7 +26,7 @@ package org.osiam.resources.controller;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.osiam.resources.scim.Constants;
+import org.osiam.resources.helper.RequestParamHelper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -47,9 +47,10 @@ public class ServiceProviderConfigsController {
     public static final class ServiceProviderConfig {
 
         public static final ServiceProviderConfig INSTANCE = new ServiceProviderConfig();
+        public static final String SCHEMA = "urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig";
         public final Supported patch = new Supported(true);
         public final Supported bulk = new BulkSupported(false);
-        public final Supported filter = new FilterSupported(true, Constants.MAX_RESULT);
+        public final Supported filter = new FilterSupported(true, RequestParamHelper.MAX_RESULT);
         public final Supported changePassword = new Supported(false);
         public final Supported sort = new Supported(true);
         public final Supported etag = new Supported(false);
@@ -61,7 +62,7 @@ public class ServiceProviderConfigsController {
         public Set<String> schemas = new HashSet<>();
 
         private ServiceProviderConfig() {
-            schemas.add(Constants.SERVICE_PROVIDER_CORE_SCHEMA);
+            schemas.add(SCHEMA);
         }
 
         @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
