@@ -24,8 +24,8 @@
 package org.osiam.resources.exception;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import org.osiam.resources.scim.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -43,7 +43,7 @@ public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
-    public JsonErrorResult defaultExceptionHandler(Exception ex) {
+    public ErrorResponse defaultExceptionHandler(Exception ex) {
         LOGGER.warn("An unexpected exception occurred", ex);
         return produceErrorResponse("An unexpected error occurred", HttpStatus.CONFLICT);
     }
@@ -51,49 +51,49 @@ public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({IllegalArgumentException.class, InvalidConstraintException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public JsonErrorResult handleInvalidConstraintException(Exception e) {
+    public ErrorResponse handleInvalidConstraintException(Exception e) {
         return produceErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ResourceExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
-    public JsonErrorResult handleResourceExists(ResourceExistsException e) {
+    public ErrorResponse handleResourceExists(ResourceExistsException e) {
         return produceErrorResponse(e.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(OsiamBackendFailureException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
-    public JsonErrorResult handleBackendFailure(OsiamBackendFailureException e) {
+    public ErrorResponse handleBackendFailure(OsiamBackendFailureException e) {
         return produceErrorResponse("An internal error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler({ResourceNotFoundException.class, NoSuchElementException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-    public JsonErrorResult handleResourceNotFoundException(Exception e) {
+    public ErrorResponse handleResourceNotFoundException(Exception e) {
         return produceErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(SchemaUnknownException.class)
     @ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
     @ResponseBody
-    public JsonErrorResult handleSchemaUnknown(SchemaUnknownException e) {
+    public ErrorResponse handleSchemaUnknown(SchemaUnknownException e) {
         return produceErrorResponse(e.getMessage(), HttpStatus.I_AM_A_TEAPOT);
     }
 
     @ExceptionHandler(UnsupportedOperationException.class)
     @ResponseStatus(HttpStatus.NOT_IMPLEMENTED)
     @ResponseBody
-    public JsonErrorResult handleUnsupportedOperation(UnsupportedOperationException e) {
+    public ErrorResponse handleUnsupportedOperation(UnsupportedOperationException e) {
         return produceErrorResponse(e.getMessage(), HttpStatus.NOT_IMPLEMENTED);
     }
 
     @ExceptionHandler(UnrecognizedPropertyException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
-    public JsonErrorResult handleUnrecognizedProperty(Exception e) {
+    public ErrorResponse handleUnrecognizedProperty(Exception e) {
         LOGGER.error("Unknown property", e);
         return produceErrorResponse(e.getMessage(), HttpStatus.CONFLICT, new JsonPropertyMessageTransformer());
     }
@@ -101,45 +101,21 @@ public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(JsonMappingException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
-    public JsonErrorResult handleJsonMapping(Exception e) {
+    public ErrorResponse handleJsonMapping(Exception e) {
         LOGGER.error("Unable to deserialize", e);
         return produceErrorResponse(e.getMessage(), HttpStatus.CONFLICT, new JsonMappingMessageTransformer());
     }
 
-    private JsonErrorResult produceErrorResponse(String message, HttpStatus status) {
+    private ErrorResponse produceErrorResponse(String message, HttpStatus status) {
         return produceErrorResponse(message, status, null);
     }
 
-    private JsonErrorResult produceErrorResponse(String message, HttpStatus status,
-                                                 ErrorMessageTransformer transformer) {
+    private ErrorResponse produceErrorResponse(String message, HttpStatus status,
+                                               ErrorMessageTransformer transformer) {
         if (transformer != null) {
             message = transformer.transform(message);
         }
-        return new JsonErrorResult(status, message);
+        return new ErrorResponse(status.value(), message);
     }
 
-    @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
-    static class JsonErrorResult {
-        public static final String ERROR_URN = "urn:ietf:params:scim:api:messages:2.0:Error";
-        private String[] schemas = {ERROR_URN};
-        private String status;
-        private String detail;
-
-        public JsonErrorResult(HttpStatus name, String message) {
-            status = name.toString();
-            detail = message;
-        }
-
-        public String[] getSchemas() {
-            return schemas;
-        }
-
-        public String getStatus() {
-            return status;
-        }
-
-        public String getDetail() {
-            return detail;
-        }
-    }
 }
