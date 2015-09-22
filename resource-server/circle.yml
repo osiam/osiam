@@ -1,3 +1,6 @@
+dependencies:
+  override:
+    - mvn -U dependency:resolve dependency:resolve-plugins
 test:
   override:
     - mvn verify
