@@ -34,11 +34,17 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class GroupDao implements GenericDao<GroupEntity> {
 
-    @Autowired
     private GroupFilterParser filterParser;
 
-    @Autowired
     private ResourceDao resourceDao;
+
+    @Autowired
+    public GroupDao(ResourceDao resourceDao, GroupFilterParser filterParser) {
+
+        this.resourceDao = resourceDao;
+
+        this.filterParser = filterParser;
+    }
 
     @Override
     public void create(GroupEntity group) {
@@ -57,8 +63,7 @@ public class GroupDao implements GenericDao<GroupEntity> {
     /**
      * Checks if a displayName is already taken by another group.
      *
-     * @param displayName
-     *            the displayName to check
+     * @param displayName the displayName to check
      * @return true if the displayName is taken, otherwise false
      */
     public boolean isDisplayNameAlreadyTaken(String displayName) {
@@ -68,10 +73,8 @@ public class GroupDao implements GenericDao<GroupEntity> {
     /**
      * Checks if a displayName is already taken by another group. Ignores the group with the given id.
      *
-     * @param displayName
-     *            the displayName to check
-     * @param id
-     *            the id of the group to ignore
+     * @param displayName the displayName to check
+     * @param id          the id of the group to ignore
      * @return true if the displayName is taken, otherwise false
      */
     public boolean isDisplayNameAlreadyTaken(String displayName, String id) {
@@ -81,8 +84,7 @@ public class GroupDao implements GenericDao<GroupEntity> {
     /**
      * Checks if a external id is already taken by another group or user.
      *
-     * @param externalId
-     *            the external id to check
+     * @param externalId the external id to check
      * @return true if the external id is taken, otherwise false
      */
     public boolean isExternalIdAlreadyTaken(String externalId) {
@@ -92,10 +94,8 @@ public class GroupDao implements GenericDao<GroupEntity> {
     /**
      * Checks if a external id is already taken by another group or user. Ignores the group with the given id.
      *
-     * @param externalId
-     *            the external id to check
-     * @param id
-     *            the id of the group to ignore
+     * @param externalId the external id to check
+     * @param id         the id of the group to ignore
      * @return true if the displayName is taken, otherwise false
      */
     public boolean isExternalIdAlreadyTaken(String externalId, String id) {
@@ -118,7 +118,7 @@ public class GroupDao implements GenericDao<GroupEntity> {
 
     @Override
     public SearchResult<GroupEntity> search(ParseTree filterTree, String sortBy, String sortOrder, int count,
-            int startIndex) {
+                                            int startIndex) {
         return resourceDao.search(GroupEntity.class, filterTree, count, startIndex, sortBy, sortOrder, filterParser);
     }
 

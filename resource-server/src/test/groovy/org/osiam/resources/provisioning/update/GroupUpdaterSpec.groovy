@@ -41,7 +41,7 @@ class GroupUpdaterSpec extends Specification {
     ResourceUpdater resourceUpdater = Mock()
     ResourceDao resourceDao = Mock()
     GroupDao groupDao = Mock()
-    GroupUpdater groupUpdater = new GroupUpdater(resourceUpdater: resourceUpdater, resourceDao: resourceDao, groupDao: groupDao)
+    GroupUpdater groupUpdater = new GroupUpdater(groupDao, resourceUpdater, resourceDao)
 
     Group group
     GroupEntity groupEntity = Mock()

@@ -35,9 +35,8 @@ class AddressUpdaterSpec extends Specification {
     static IRRELEVANT_02 = 'irrelevant02'
 
     UserEntity userEntity = Mock()
-    AddressEntity addressEntity = Mock()
     AddressConverter addressConverter = Mock()
-    AddressUpdater addressUpdater = new AddressUpdater(addressConverter: addressConverter)
+    AddressUpdater addressUpdater = new AddressUpdater(addressConverter)
 
     def 'removing all addresses is possible'() {
         when:

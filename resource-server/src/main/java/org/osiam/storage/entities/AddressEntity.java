@@ -47,7 +47,7 @@ public class AddressEntity extends BaseMultiValuedAttributeEntity {
      * <p>
      * The type of this Address.
      * </p>
-     * 
+     *
      * <p>
      * Custom type mapping is provided by {@link org.osiam.storage.entities.jpa_converters.AddressTypeConverter}.
      * </p>
@@ -206,12 +206,9 @@ public class AddressEntity extends BaseMultiValuedAttributeEntity {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("AddressEntity [type=").append(type).append(", formatted=").append(formatted)
-                .append(", streetAddress=").append(streetAddress).append(", locality=").append(locality)
-                .append(", region=").append(region).append(", postalCode=").append(postalCode).append(", country=")
-                .append(country).append(", primary=").append(isPrimary()).append("]");
-        return builder.toString();
+        return "AddressEntity [type=" + type + ", formatted=" + formatted + ", streetAddress=" + streetAddress
+                + ", locality=" + locality + ", region=" + region + ", postalCode=" + postalCode + ", country="
+                + country + ", primary=" + isPrimary() + "]";
     }
 
 }

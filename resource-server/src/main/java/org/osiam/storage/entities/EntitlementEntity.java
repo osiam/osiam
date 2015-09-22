@@ -46,7 +46,7 @@ public class EntitlementEntity extends BaseMultiValuedAttributeEntityWithValue {
      * <p>
      * The type of this Entitlement.
      * </p>
-     * 
+     *
      * <p>
      * Custom type mapping is provided by {@link org.osiam.storage.entities.jpa_converters.EntitlementTypeConverter}.
      * </p>
@@ -94,10 +94,7 @@ public class EntitlementEntity extends BaseMultiValuedAttributeEntityWithValue {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("EntitlementsEntity [type=").append(type).append(", getValue()=").append(getValue())
-                .append(", isPrimary()=").append(isPrimary()).append("]");
-        return builder.toString();
+        return "EntitlementsEntity [type=" + type + ", getValue()=" + getValue() + ", isPrimary()=" + isPrimary() + "]";
     }
 
 }

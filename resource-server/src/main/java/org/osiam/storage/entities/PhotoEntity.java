@@ -46,7 +46,7 @@ public class PhotoEntity extends BaseMultiValuedAttributeEntityWithValue {
      * <p>
      * The type of this Photo.
      * </p>
-     * 
+     *
      * <p>
      * Custom type mapping is provided by {@link org.osiam.storage.entities.jpa_converters.PhotoTypeConverter}.
      * </p>
@@ -99,9 +99,7 @@ public class PhotoEntity extends BaseMultiValuedAttributeEntityWithValue {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("PhotoEntity [type=").append(type).append(", getValue()=").append(getValue()).append("]");
-        return builder.toString();
+        return "PhotoEntity [type=" + type + ", getValue()=" + getValue() + "]";
     }
 
 }

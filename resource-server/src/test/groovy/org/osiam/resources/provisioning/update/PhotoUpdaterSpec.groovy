@@ -35,9 +35,8 @@ class PhotoUpdaterSpec extends Specification {
     static IRRELEVANT_02 = 'x.GIF'
 
     UserEntity userEntity = Mock()
-    PhotoEntity photoEntity = Mock()
     PhotoConverter photoConverter = Mock()
-    PhotoUpdater photoUpdater = new PhotoUpdater(photoConverter: photoConverter)
+    PhotoUpdater photoUpdater = new PhotoUpdater(photoConverter)
 
     def 'removing all photos is possible'() {
         when:

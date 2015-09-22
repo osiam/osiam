@@ -36,9 +36,8 @@ class ImUpdaterSpec extends Specification {
     static IRRELEVANT_02 = 'irrelevant02'
 
     UserEntity userEntity = Mock()
-    ImEntity imEntity = Mock()
     ImConverter imConverter = Mock()
-    ImUpdater imUpdater = new ImUpdater(imConverter: imConverter)
+    ImUpdater imUpdater = new ImUpdater(imConverter)
 
     def 'removing all ims is possible'() {
         when:

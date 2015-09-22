@@ -40,8 +40,12 @@ import org.springframework.stereotype.*;
 @Service
 public class AccessTokenValidationService implements ResourceServerTokenServices {
 
-    @Value("${org.osiam.auth-server.home}")
     private String authServerHome;
+
+    @Autowired
+    public AccessTokenValidationService(@Value("${org.osiam.auth-server.home}") String authServerHome) {
+        this.authServerHome = authServerHome;
+    }
 
     @Override
     public OAuth2Authentication loadAuthentication(String token) {

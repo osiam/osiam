@@ -23,9 +23,7 @@
 
 package org.osiam.resources.provisioning.update;
 
-import java.util.List;
-import java.util.Set;
-
+import com.google.common.base.Strings;
 import org.osiam.resources.converter.AddressConverter;
 import org.osiam.resources.scim.Address;
 import org.osiam.storage.entities.AddressEntity;
@@ -33,7 +31,8 @@ import org.osiam.storage.entities.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Strings;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The AddressUpdater provides the functionality to update the {@link AddressEntity} of a UserEntity
@@ -41,19 +40,20 @@ import com.google.common.base.Strings;
 @Service
 class AddressUpdater {
 
-    @Autowired
     private AddressConverter addressConverter;
+
+    @Autowired
+    public AddressUpdater(AddressConverter addressConverter) {
+        this.addressConverter = addressConverter;
+    }
 
     /**
      * updates (adds new, delete, updates) the addresses of the given {@link UserEntity} based on the given List of
      * {@link Address}
-     * 
-     * @param addresss
-     *            list of {@link Address} to be deleted, updated or added
-     * @param userEntity
-     *            user who needs to be updated
-     * @param attributes
-     *            all {@link AddressEntity}'s will be deleted if this Set contains 'address'
+     *
+     * @param addresss   list of {@link Address} to be deleted, updated or added
+     * @param userEntity user who needs to be updated
+     * @param attributes all {@link AddressEntity}'s will be deleted if this Set contains 'address'
      */
     void update(List<Address> addresss, UserEntity userEntity, Set<String> attributes) {
 
@@ -65,7 +65,7 @@ class AddressUpdater {
             for (Address scimAddress : addresss) {
                 AddressEntity addressEntity = addressConverter.fromScim(scimAddress);
                 userEntity.removeAddress(addressEntity); // we always have to remove the address in case
-                                                         // the primary attribute has changed
+                // the primary attribute has changed
                 if (Strings.isNullOrEmpty(scimAddress.getOperation())
                         || !scimAddress.getOperation().equalsIgnoreCase("delete")) {
 
@@ -79,11 +79,9 @@ class AddressUpdater {
     /**
      * if the given newAddress is set to primary the primary attribute of all existing address's in the
      * {@link UserEntity} will be removed
-     * 
-     * @param newAddress
-     *            to be checked if it is primary
-     * @param addresss
-     *            all existing address's of the {@link UserEntity}
+     *
+     * @param newAddress to be checked if it is primary
+     * @param addresss   all existing address's of the {@link UserEntity}
      */
     private void ensureOnlyOnePrimaryAddressExists(AddressEntity newAddress, Set<AddressEntity> addresss) {
         if (newAddress.isPrimary()) {

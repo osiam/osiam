@@ -65,9 +65,6 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
     @Autowired
     private UserUpdater userUpdater;
 
-    @Autowired
-    private QueryFilterParser queryFilterParser;
-
     @Override
     public User getById(String id) {
         try {
@@ -143,6 +140,7 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
 
     @Override
     public SCIMSearchResult<User> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
+        QueryFilterParser queryFilterParser = new QueryFilterParser();
         List<User> users = new ArrayList<>();
 
         ParseTree filterTree = queryFilterParser.getParseTree(filter);

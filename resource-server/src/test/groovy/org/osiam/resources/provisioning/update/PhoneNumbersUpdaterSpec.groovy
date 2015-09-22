@@ -36,9 +36,8 @@ class PhoneNumbersUpdaterSpec extends Specification {
     static IRRELEVANT_02 = 'irrelevant02'
 
     UserEntity userEntity = Mock()
-    PhoneNumberEntity phoneNumberEntity = Mock()
     PhoneNumberConverter phoneNumberConverter = Mock()
-    PhoneNumberUpdater phoneNumberUpdater = new PhoneNumberUpdater(phoneNumberConverter: phoneNumberConverter)
+    PhoneNumberUpdater phoneNumberUpdater = new PhoneNumberUpdater(phoneNumberConverter)
 
     def 'removing all phoneNumbers is possible'() {
         when:

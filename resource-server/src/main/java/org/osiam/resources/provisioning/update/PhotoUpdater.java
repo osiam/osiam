@@ -23,17 +23,16 @@
 
 package org.osiam.resources.provisioning.update;
 
-import java.util.List;
-import java.util.Set;
-
+import com.google.common.base.Strings;
 import org.osiam.resources.converter.PhotoConverter;
+import org.osiam.resources.scim.Photo;
 import org.osiam.storage.entities.PhotoEntity;
 import org.osiam.storage.entities.UserEntity;
-import org.osiam.resources.scim.Photo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Strings;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The PhotoUpdater provides the functionality to update the {@link PhotoEntity} of a UserEntity
@@ -41,19 +40,20 @@ import com.google.common.base.Strings;
 @Service
 class PhotoUpdater {
 
-    @Autowired
     private PhotoConverter photoConverter;
+
+    @Autowired
+    public PhotoUpdater(PhotoConverter photoConverter) {
+        this.photoConverter = photoConverter;
+    }
 
     /**
      * updates (adds new, delete, updates) the {@link PhotoEntity}'s of the given {@link UserEntity} based on the given
      * List of Photo's
-     * 
-     * @param photos
-     *            list of Photo's to be deleted, updated or added
-     * @param userEntity
-     *            user who needs to be updated
-     * @param attributes
-     *            all {@link PhotoEntity}'s will be deleted if this Set contains 'photos'
+     *
+     * @param photos     list of Photo's to be deleted, updated or added
+     * @param userEntity user who needs to be updated
+     * @param attributes all {@link PhotoEntity}'s will be deleted if this Set contains 'photos'
      */
     void update(List<Photo> photos, UserEntity userEntity, Set<String> attributes) {
 
@@ -65,7 +65,7 @@ class PhotoUpdater {
             for (Photo scimPhoto : photos) {
                 PhotoEntity photoEntity = photoConverter.fromScim(scimPhoto);
                 userEntity.removePhoto(photoEntity); // we always have to remove the photo in case
-                                                     // the primary attribute has changed
+                // the primary attribute has changed
                 if (Strings.isNullOrEmpty(scimPhoto.getOperation())
                         || !scimPhoto.getOperation().equalsIgnoreCase("delete")) {
 
@@ -79,11 +79,9 @@ class PhotoUpdater {
     /**
      * if the given newPhoto is set to primary the primary attribute of all existing photo's in the {@link UserEntity}
      * will be removed
-     * 
-     * @param newPhoto
-     *            to be checked if it is primary
-     * @param photos
-     *            all existing photo's of the {@link UserEntity}
+     *
+     * @param newPhoto to be checked if it is primary
+     * @param photos   all existing photo's of the {@link UserEntity}
      */
     private void ensureOnlyOnePrimaryPhotoExists(PhotoEntity newPhoto, Set<PhotoEntity> photos) {
         if (newPhoto.isPrimary()) {

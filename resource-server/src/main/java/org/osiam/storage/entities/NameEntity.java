@@ -193,12 +193,9 @@ public class NameEntity {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("NameEntity [formatted=").append(formatted).append(", familyName=").append(familyName)
-                .append(", givenName=").append(givenName).append(", middleName=").append(middleName)
-                .append(", honorificPrefix=").append(honorificPrefix).append(", honorificSuffix=")
-                .append(honorificSuffix).append("]");
-        return builder.toString();
+        return "NameEntity [formatted=" + formatted + ", familyName=" + familyName + ", givenName=" + givenName
+                + ", middleName=" + middleName + ", honorificPrefix=" + honorificPrefix + ", honorificSuffix="
+                + honorificSuffix + "]";
     }
 
 }

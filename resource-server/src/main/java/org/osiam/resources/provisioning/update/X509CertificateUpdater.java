@@ -23,9 +23,7 @@
 
 package org.osiam.resources.provisioning.update;
 
-import java.util.List;
-import java.util.Set;
-
+import com.google.common.base.Strings;
 import org.osiam.resources.converter.X509CertificateConverter;
 import org.osiam.resources.scim.X509Certificate;
 import org.osiam.storage.entities.UserEntity;
@@ -33,7 +31,8 @@ import org.osiam.storage.entities.X509CertificateEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Strings;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The X509CertificateUpdater provides the functionality to update the {@link X509CertificateEntity} of a UserEntity
@@ -41,19 +40,20 @@ import com.google.common.base.Strings;
 @Service
 class X509CertificateUpdater {
 
-    @Autowired
     private X509CertificateConverter x509CertificateConverter;
+
+    @Autowired
+    public X509CertificateUpdater(X509CertificateConverter x509CertificateConverter) {
+        this.x509CertificateConverter = x509CertificateConverter;
+    }
 
     /**
      * updates (adds new, delete, updates) the {@link X509CertificateEntity}'s of the given {@link UserEntity} based on
      * the given List of X509Certificate's
-     * 
-     * @param x509Certificates
-     *            list of X509Certificate's to be deleted, updated or added
-     * @param userEntity
-     *            user who needs to be updated
-     * @param attributes
-     *            all {@link X509CertificateEntity}'s will be deleted if this Set contains 'x509Certificates'
+     *
+     * @param x509Certificates list of X509Certificate's to be deleted, updated or added
+     * @param userEntity       user who needs to be updated
+     * @param attributes       all {@link X509CertificateEntity}'s will be deleted if this Set contains 'x509Certificates'
      */
     void update(List<X509Certificate> x509Certificates, UserEntity userEntity, Set<String> attributes) {
 
@@ -65,7 +65,7 @@ class X509CertificateUpdater {
             for (X509Certificate scimX509Certificate : x509Certificates) {
                 X509CertificateEntity x509CertificateEntity = x509CertificateConverter.fromScim(scimX509Certificate);
                 userEntity.removeX509Certificate(x509CertificateEntity); // we always have to remove the x509Certificate
-                                                                         // the primary attribute has changed
+                // the primary attribute has changed
                 if (Strings.isNullOrEmpty(scimX509Certificate.getOperation())
                         || !scimX509Certificate.getOperation().equalsIgnoreCase("delete")) {
 
@@ -79,14 +79,12 @@ class X509CertificateUpdater {
     /**
      * if the given newX509Certificate is set to primary the primary attribute of all existing x509Certificate's in the
      * {@link UserEntity} will be removed
-     * 
-     * @param newX509Certificate
-     *            to be checked if it is primary
-     * @param x509Certificates
-     *            all existing x509Certificate's of the {@link UserEntity}
+     *
+     * @param newX509Certificate to be checked if it is primary
+     * @param x509Certificates   all existing x509Certificate's of the {@link UserEntity}
      */
     private void ensureOnlyOnePrimaryX509CertificateExists(X509CertificateEntity newX509Certificate,
-            Set<X509CertificateEntity> x509Certificates) {
+                                                           Set<X509CertificateEntity> x509Certificates) {
         if (newX509Certificate.isPrimary()) {
             for (X509CertificateEntity exisitngX509CertificateEntity : x509Certificates) {
                 if (exisitngX509CertificateEntity.isPrimary()) {

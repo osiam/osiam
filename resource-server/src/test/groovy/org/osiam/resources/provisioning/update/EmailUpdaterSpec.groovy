@@ -35,9 +35,8 @@ class EmailUpdaterSpec extends Specification {
     static IRRELEVANT_02 = 'irrelevant02@tarent.de'
 
     UserEntity userEntity = Mock()
-    EmailEntity emailEntity = Mock()
     EmailConverter emailConverter = Mock()
-    EmailUpdater emailUpdater = new EmailUpdater(emailConverter: emailConverter)
+    EmailUpdater emailUpdater = new EmailUpdater(emailConverter)
 
     def 'removing all emails is possible'() {
         when:

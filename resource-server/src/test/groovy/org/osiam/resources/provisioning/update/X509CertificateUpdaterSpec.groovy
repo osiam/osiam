@@ -36,9 +36,8 @@ class X509CertificateUpdaterSpec extends Specification {
     static IRRELEVANT_02 = 'irrelevant02'
 
     UserEntity userEntity = Mock()
-    X509CertificateEntity x509CertificateEntity = Mock()
     X509CertificateConverter x509CertificateConverter = Mock()
-    X509CertificateUpdater x509CertificateUpdater = new X509CertificateUpdater(x509CertificateConverter: x509CertificateConverter)
+    X509CertificateUpdater x509CertificateUpdater = new X509CertificateUpdater(x509CertificateConverter)
 
     def 'removing all x509Certificate is possible'() {
         when:
