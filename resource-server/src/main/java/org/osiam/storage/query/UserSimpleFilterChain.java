@@ -23,18 +23,16 @@
 
 package org.osiam.storage.query;
 
-import java.util.Locale;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
 import org.osiam.resources.exception.OsiamException;
 import org.osiam.storage.dao.ExtensionDao;
 import org.osiam.storage.entities.ExtensionEntity;
 import org.osiam.storage.entities.ExtensionFieldEntity;
 import org.osiam.storage.entities.UserEntity;
-import org.osiam.storage.helper.NumberPadder;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.Locale;
 
 public class UserSimpleFilterChain implements FilterChain<UserEntity> {
 
@@ -43,15 +41,12 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
     private final QueryField<UserEntity> userFilterField;
     private final ExtensionDao extensionDao;
     private final CriteriaBuilder criteriaBuilder;
-    private final NumberPadder numberPadder;
     private ExtensionQueryField extensionFilterField;
 
     public UserSimpleFilterChain(CriteriaBuilder criteriaBuilder, ExtensionDao extensionDao,
-            ScimExpression scimExpression,
-            NumberPadder numberPadder) {
+                                 ScimExpression scimExpression) {
         this.criteriaBuilder = criteriaBuilder;
         this.extensionDao = extensionDao;
-        this.numberPadder = numberPadder;
         this.scimExpression = scimExpression;
 
         String field = scimExpression.getField();
@@ -82,7 +77,7 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
             return null;
         }
         final ExtensionFieldEntity fieldEntity = extension.getFieldForName(fieldName, true);
-        return new ExtensionQueryField(urn, fieldEntity, numberPadder);
+        return new ExtensionQueryField(urn, fieldEntity);
     }
 
     @Override

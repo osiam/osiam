@@ -23,9 +23,7 @@
 
 package org.osiam.resources.provisioning.update;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import com.google.common.base.Strings;
 import org.osiam.resources.exception.ResourceExistsException;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.MemberRef;
@@ -36,7 +34,8 @@ import org.osiam.storage.entities.ResourceEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Strings;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The GroupUpdater provides the functionality to update (patch) a {@link GroupEntity}
@@ -44,22 +43,24 @@ import com.google.common.base.Strings;
 @Service
 public class GroupUpdater {
 
-    @Autowired
     private GroupDao groupDao;
 
-    @Autowired
     private ResourceUpdater resourceUpdater;
 
-    @Autowired
     private ResourceDao resourceDao;
+
+    @Autowired
+    public GroupUpdater(GroupDao groupDao, ResourceUpdater resourceUpdater, ResourceDao resourceDao) {
+        this.groupDao = groupDao;
+        this.resourceUpdater = resourceUpdater;
+        this.resourceDao = resourceDao;
+    }
 
     /**
      * updates the {@link GroupEntity} based on the given {@link Group}
      *
-     * @param group
-     *            group with all fields that needs to be updated
-     * @param groupEntity
-     *            entity that needs to be updated
+     * @param group       group with all fields that needs to be updated
+     * @param groupEntity entity that needs to be updated
      */
     public void update(Group group, GroupEntity groupEntity) {
         resourceUpdater.update(group, groupEntity);

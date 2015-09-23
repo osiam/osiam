@@ -52,11 +52,15 @@ class ExtensionUpdater {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionUpdater.class);
 
-    @Autowired
     private ExtensionDao extensionDao;
 
-    @Autowired
     private NumberPadder numberPadder;
+
+    @Autowired
+    public ExtensionUpdater(ExtensionDao extensionDao) {
+        this.extensionDao = extensionDao;
+        this.numberPadder = new NumberPadder();
+    }
 
     /**
      * updates (remove, updates) the {@link ExtensionEntity}'s of the given {@link UserEntity} based on the given List
@@ -109,7 +113,7 @@ class ExtensionUpdater {
         ExtensionEntity extensionEntity = extensionDao.getExtensionByUrn(urn);
 
         for (String fieldName : updatedScimExtension.getFields().keySet()) {
-            ExtensionFieldEntity extensionEntitiyField = null;
+            ExtensionFieldEntity extensionEntitiyField;
             try {
                 extensionEntitiyField = extensionEntity.getFieldForName(fieldName, true);
             } catch (NoSuchElementException e) {

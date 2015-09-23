@@ -32,7 +32,6 @@ import org.osiam.resources.scim.MemberRef
 import org.osiam.storage.dao.GroupDao
 import org.osiam.storage.dao.SearchResult
 import org.osiam.storage.entities.GroupEntity
-import org.osiam.storage.query.QueryFilterParser
 import spock.lang.Specification
 
 import javax.persistence.NoResultException
@@ -42,10 +41,9 @@ class SCIMGroupProvisioningBeanSpec extends Specification {
     GroupDao groupDao = Mock()
     GroupConverter groupConverter = Mock()
     GroupUpdater groupUpdater = Mock()
-    QueryFilterParser queryFilterParser = new QueryFilterParser()
 
     SCIMGroupProvisioning scimGroupProvisioning = new SCIMGroupProvisioning(groupDao: groupDao, groupConverter: groupConverter,
-            groupUpdater: groupUpdater, queryFilterParser: queryFilterParser)
+            groupUpdater: groupUpdater)
 
     Group group = Mock()
     GroupEntity groupEntity = Mock()

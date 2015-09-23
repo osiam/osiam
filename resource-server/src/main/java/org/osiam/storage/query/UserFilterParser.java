@@ -23,26 +23,26 @@
 
 package org.osiam.storage.query;
 
-import java.util.Locale;
-
 import org.osiam.storage.dao.ExtensionDao;
 import org.osiam.storage.entities.UserEntity;
-import org.osiam.storage.helper.NumberPadder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Locale;
 
 @Service
 public class UserFilterParser extends FilterParser<UserEntity> {
 
-    @Autowired
     private ExtensionDao extensionDao;
 
     @Autowired
-    private NumberPadder numberPadder;
+    public UserFilterParser(ExtensionDao extensionDao) {
+        this.extensionDao = extensionDao;
+    }
 
     @Override
     protected FilterChain<UserEntity> createFilterChain(ScimExpression filter) {
-        return new UserSimpleFilterChain(entityManager.getCriteriaBuilder(), extensionDao, filter, numberPadder);
+        return new UserSimpleFilterChain(entityManager.getCriteriaBuilder(), extensionDao, filter);
     }
 
     @Override

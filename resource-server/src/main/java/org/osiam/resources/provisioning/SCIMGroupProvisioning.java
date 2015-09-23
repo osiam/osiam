@@ -23,13 +23,6 @@
 
 package org.osiam.resources.provisioning;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceException;
-
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.osiam.resources.converter.GroupConverter;
 import org.osiam.resources.exception.ResourceExistsException;
@@ -46,6 +39,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 @Service
 public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
 
@@ -59,9 +58,6 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
 
     @Autowired
     private GroupUpdater groupUpdater;
-
-    @Autowired
-    private QueryFilterParser queryFilterParser;
 
     @Override
     public Group create(Group group) {
@@ -106,6 +102,7 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
 
     @Override
     public SCIMSearchResult<Group> search(String filter, String sortBy, String sortOrder, int count, int startIndex) {
+        QueryFilterParser queryFilterParser = new QueryFilterParser();
         List<Group> groups = new ArrayList<>();
 
         ParseTree filterTree = queryFilterParser.getParseTree(filter);

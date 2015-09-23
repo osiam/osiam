@@ -36,9 +36,8 @@ class EntitlementUpdaterSpec extends Specification {
     static IRRELEVANT_02 = 'irrelevant02'
 
     UserEntity userEntity = Mock()
-    EntitlementEntity entitlementEntity = Mock()
     EntitlementConverter entitlementConverter = Mock()
-    EntitlementsUpdater entitlementUpdater = new EntitlementsUpdater(entitlementConverter: entitlementConverter)
+    EntitlementsUpdater entitlementUpdater = new EntitlementsUpdater(entitlementConverter)
 
     def 'removing all entitlements is possible'() {
         when:

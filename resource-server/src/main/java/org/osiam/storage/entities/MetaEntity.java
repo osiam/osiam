@@ -188,11 +188,8 @@ public class MetaEntity {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("MetaEntity [created=").append(created).append(", lastModified=").append(lastModified)
-                .append(", location=").append(location).append(", version=").append(version).append(", resourceType=")
-                .append(resourceType).append("]");
-        return builder.toString();
+        return "MetaEntity [created=" + created + ", lastModified=" + lastModified + ", location=" + location
+                + ", version=" + version + ", resourceType=" + resourceType + "]";
     }
 
 }

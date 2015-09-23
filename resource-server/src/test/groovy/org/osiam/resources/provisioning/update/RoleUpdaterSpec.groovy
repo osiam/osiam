@@ -36,9 +36,8 @@ class RoleUpdaterSpec extends Specification {
     static IRRELEVANT_02 = 'irrelevant02'
 
     UserEntity userEntity = Mock()
-    RoleEntity roleEntity = Mock()
     RoleConverter roleConverter = Mock()
-    RoleUpdater roleUpdater = new RoleUpdater(roleConverter: roleConverter)
+    RoleUpdater roleUpdater = new RoleUpdater(roleConverter)
 
     def 'removing all roles is possible'() {
         when:

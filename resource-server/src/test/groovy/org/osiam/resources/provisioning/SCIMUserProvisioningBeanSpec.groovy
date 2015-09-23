@@ -30,7 +30,6 @@ import org.osiam.storage.dao.SearchResult
 import org.osiam.storage.dao.UserDao
 import org.osiam.storage.entities.MetaEntity
 import org.osiam.storage.entities.UserEntity
-import org.osiam.storage.query.QueryFilterParser
 import org.springframework.security.authentication.encoding.PasswordEncoder
 import spock.lang.Specification
 
@@ -39,10 +38,9 @@ class SCIMUserProvisioningBeanSpec extends Specification {
     PasswordEncoder passwordEncoder = Mock()
     UserDao userDao = Mock()
     UserConverter userConverter = Mock()
-    QueryFilterParser queryFilterParser = new QueryFilterParser()
 
     SCIMUserProvisioning scimUserProvisioningBean = new SCIMUserProvisioning(userDao: userDao,
-            userConverter: userConverter, passwordEncoder: passwordEncoder, queryFilterParser: queryFilterParser)
+            userConverter: userConverter, passwordEncoder: passwordEncoder)
 
     def 'should be possible to get a user by his id'() {
         given:

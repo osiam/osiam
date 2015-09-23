@@ -24,6 +24,7 @@
 package org.osiam.storage.dao
 
 import org.osiam.storage.entities.GroupEntity
+import org.osiam.storage.query.GroupFilterParser
 import spock.lang.Specification
 
 class GroupDaoSpec extends Specification {
@@ -31,7 +32,8 @@ class GroupDaoSpec extends Specification {
     static def IRRELEVANT = 'irrelevant'
 
     ResourceDao resourceDao = Mock()
-    GroupDao groupDao = new GroupDao(resourceDao: resourceDao)
+    GroupFilterParser filterParser = Mock()
+    GroupDao groupDao = new GroupDao(resourceDao, filterParser)
 
     def 'retrieving a group by id calls resourceDao.getById()'() {
         when:

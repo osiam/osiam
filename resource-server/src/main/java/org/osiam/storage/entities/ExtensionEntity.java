@@ -140,9 +140,7 @@ public class ExtensionEntity {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("ExtensionEntity [urn=").append(urn).append("]");
-        return builder.toString();
+        return "ExtensionEntity [urn=" + urn + "]";
     }
 
 }

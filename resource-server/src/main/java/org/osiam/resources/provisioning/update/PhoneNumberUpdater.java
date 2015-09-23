@@ -23,17 +23,16 @@
 
 package org.osiam.resources.provisioning.update;
 
-import java.util.List;
-import java.util.Set;
-
+import com.google.common.base.Strings;
 import org.osiam.resources.converter.PhoneNumberConverter;
+import org.osiam.resources.scim.PhoneNumber;
 import org.osiam.storage.entities.PhoneNumberEntity;
 import org.osiam.storage.entities.UserEntity;
-import org.osiam.resources.scim.PhoneNumber;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Strings;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The PhoneNumberUpdater provides the functionality to update the {@link PhoneNumberEntity} of a UserEntity
@@ -41,19 +40,20 @@ import com.google.common.base.Strings;
 @Service
 class PhoneNumberUpdater {
 
-    @Autowired
     private PhoneNumberConverter phoneNumberConverter;
+
+    @Autowired
+    public PhoneNumberUpdater(PhoneNumberConverter phoneNumberConverter) {
+        this.phoneNumberConverter = phoneNumberConverter;
+    }
 
     /**
      * updates (adds new, delete, updates) the {@link PhoneNumberEntity}'s of the given {@link UserEntity} based on the
      * given List of PhoneNumber's
-     * 
-     * @param phoneNumbers
-     *            list of PhoneNumber's to be deleted, updated or added
-     * @param userEntity
-     *            user who needs to be updated
-     * @param attributes
-     *            all {@link PhoneNumberEntity}'s will be deleted if this Set contains 'phoneNumbers'
+     *
+     * @param phoneNumbers list of PhoneNumber's to be deleted, updated or added
+     * @param userEntity   user who needs to be updated
+     * @param attributes   all {@link PhoneNumberEntity}'s will be deleted if this Set contains 'phoneNumbers'
      */
     void update(List<PhoneNumber> phoneNumbers, UserEntity userEntity, Set<String> attributes) {
 
@@ -65,7 +65,7 @@ class PhoneNumberUpdater {
             for (PhoneNumber scimPhoneNumber : phoneNumbers) {
                 PhoneNumberEntity phoneNumberEntity = phoneNumberConverter.fromScim(scimPhoneNumber);
                 userEntity.removePhoneNumber(phoneNumberEntity); // we always have to remove the phoneNumber in case
-                                                                 // the primary attribute has changed
+                // the primary attribute has changed
                 if (Strings.isNullOrEmpty(scimPhoneNumber.getOperation())
                         || !scimPhoneNumber.getOperation().equalsIgnoreCase("delete")) {
 
@@ -79,14 +79,12 @@ class PhoneNumberUpdater {
     /**
      * if the given newPhoneNumber is set to primary the primary attribute of all existing phoneNumber's in the
      * {@link UserEntity} will be removed
-     * 
-     * @param newPhoneNumber
-     *            to be checked if it is primary
-     * @param phoneNumbers
-     *            all existing phoneNumber's of the {@link UserEntity}
+     *
+     * @param newPhoneNumber to be checked if it is primary
+     * @param phoneNumbers   all existing phoneNumber's of the {@link UserEntity}
      */
     private void ensureOnlyOnePrimaryPhoneNumberExists(PhoneNumberEntity newPhoneNumber,
-            Set<PhoneNumberEntity> phoneNumbers) {
+                                                       Set<PhoneNumberEntity> phoneNumbers) {
         if (newPhoneNumber.isPrimary()) {
             for (PhoneNumberEntity exisitngPhoneNumberEntity : phoneNumbers) {
                 if (exisitngPhoneNumberEntity.isPrimary()) {

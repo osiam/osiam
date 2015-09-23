@@ -23,13 +23,7 @@
 
 package org.osiam.resources.converter;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.base.Strings;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.storage.dao.ExtensionDao;
@@ -40,16 +34,25 @@ import org.osiam.storage.helper.NumberPadder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Strings;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 @Service
 public class ExtensionConverter implements Converter<Set<Extension>, Set<ExtensionFieldValueEntity>> {
 
-    @Autowired
     private ExtensionDao extensionDao;
 
-    @Autowired
     private NumberPadder numberPadder;
+
+    @Autowired
+    public ExtensionConverter(ExtensionDao extensionDao) {
+        this.extensionDao = extensionDao;
+        this.numberPadder = new NumberPadder();
+    }
 
     @Override
     public Set<ExtensionFieldValueEntity> fromScim(Set<Extension> extensions) {
@@ -129,7 +132,7 @@ public class ExtensionConverter implements Converter<Set<Extension>, Set<Extensi
     }
 
     private <T> void addField(Extension.Builder extensionBuilder, ExtensionFieldType<T> type, String fieldName,
-            String stringValue) {
+                              String stringValue) {
         extensionBuilder.setField(fieldName, type.fromString(stringValue), type);
     }
 }

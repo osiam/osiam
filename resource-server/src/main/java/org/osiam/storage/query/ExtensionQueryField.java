@@ -23,22 +23,12 @@
 
 package org.osiam.storage.query;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.SetJoin;
-import javax.persistence.metamodel.SetAttribute;
-
 import org.osiam.resources.scim.ExtensionFieldType;
-import org.osiam.storage.entities.ExtensionFieldEntity;
-import org.osiam.storage.entities.ExtensionFieldEntity_;
-import org.osiam.storage.entities.ExtensionFieldValueEntity;
-import org.osiam.storage.entities.ExtensionFieldValueEntity_;
-import org.osiam.storage.entities.UserEntity;
-import org.osiam.storage.entities.UserEntity_;
+import org.osiam.storage.entities.*;
 import org.osiam.storage.helper.NumberPadder;
+
+import javax.persistence.criteria.*;
+import javax.persistence.metamodel.SetAttribute;
 
 public class ExtensionQueryField {
 
@@ -46,14 +36,14 @@ public class ExtensionQueryField {
     private final ExtensionFieldEntity field;
     private final NumberPadder numberPadder;
 
-    public ExtensionQueryField(String urn, ExtensionFieldEntity field, NumberPadder numberPadder) {
+    public ExtensionQueryField(String urn, ExtensionFieldEntity field) {
         this.urn = urn;
         this.field = field;
-        this.numberPadder = numberPadder;
+        this.numberPadder = new NumberPadder();
     }
 
     public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
-            String value, CriteriaBuilder cb) {
+                               String value, CriteriaBuilder cb) {
 
         if (constraint != FilterConstraint.PRESENT && (field.getType() == ExtensionFieldType.INTEGER ||
                 field.getType() == ExtensionFieldType.DECIMAL)) {
@@ -87,7 +77,7 @@ public class ExtensionQueryField {
 
     @SuppressWarnings("unchecked")
     protected SetJoin<UserEntity, ExtensionFieldValueEntity> createOrGetJoin(String alias, Root<UserEntity> root,
-            SetAttribute<UserEntity, ExtensionFieldValueEntity> attribute) {
+                                                                             SetAttribute<UserEntity, ExtensionFieldValueEntity> attribute) {
 
         for (Join<UserEntity, ?> currentJoin : root.getJoins()) {
             if (currentJoin.getAlias() == null) {

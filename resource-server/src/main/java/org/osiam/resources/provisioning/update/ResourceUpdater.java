@@ -36,16 +36,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class ResourceUpdater {
 
-    @Autowired
     private ResourceDao resourceDao;
+
+    @Autowired
+    public ResourceUpdater(ResourceDao resourceDao) {
+        this.resourceDao = resourceDao;
+    }
 
     /**
      * updates (adds new, delete, updates) the given {@link ResourceEntity} based on the given {@link Resource}
      *
-     * @param resource
-     *            {@link Resource} to be deleted, updated or added
-     * @param resourceEntity
-     *            {@link ResourceEntity} which will be updated
+     * @param resource       {@link Resource} to be deleted, updated or added
+     * @param resourceEntity {@link ResourceEntity} which will be updated
      */
     public void update(Resource resource, ResourceEntity resourceEntity) {
 

@@ -24,6 +24,7 @@
 package org.osiam.storage.dao
 
 import org.osiam.storage.entities.UserEntity
+import org.osiam.storage.query.UserFilterParser
 import spock.lang.Specification
 
 class UserDaoSpec extends Specification {
@@ -31,7 +32,8 @@ class UserDaoSpec extends Specification {
     static def IRRELEVANT = 'irrelevant'
 
     ResourceDao resourceDao = Mock()
-    UserDao userDao = new UserDao(resourceDao: resourceDao)
+    UserFilterParser filterParser = Mock()
+    UserDao userDao = new UserDao(filterParser, resourceDao)
 
     def 'retrieving a user by id calls resourceDao.getById()'() {
         when:

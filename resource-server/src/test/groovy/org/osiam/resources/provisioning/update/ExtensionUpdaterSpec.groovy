@@ -42,13 +42,10 @@ class ExtensionUpdaterSpec extends Specification {
     static String URN = 'extension'
 
     static IRRELEVANT = 'irrelevant'
-    static IRRELEVANT_02 = 'irrelevant02'
 
     UserEntity userEntity = Mock()
-    ExtensionEntity extensionEntity = Mock()
-    ExtensionConverter extensionConverter = Mock()
     ExtensionDao extensionDao = Mock()
-    ExtensionUpdater extensionUpdater = new ExtensionUpdater(extensionDao: extensionDao)
+    ExtensionUpdater extensionUpdater = new ExtensionUpdater(extensionDao)
 
     def 'removing an extension is possible'() {
         when:

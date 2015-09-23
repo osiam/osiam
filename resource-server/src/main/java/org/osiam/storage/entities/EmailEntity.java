@@ -94,10 +94,7 @@ public class EmailEntity extends BaseMultiValuedAttributeEntityWithValue {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("EmailEntity [type=").append(type).append(", getValue()=").append(getValue())
-                .append(", isPrimary()=").append(isPrimary()).append("]");
-        return builder.toString();
+        return "EmailEntity [type=" + type + ", getValue()=" + getValue() + ", isPrimary()=" + isPrimary() + "]";
     }
 
 }

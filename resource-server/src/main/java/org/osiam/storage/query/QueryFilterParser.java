@@ -32,7 +32,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
 
-@Service
 public class QueryFilterParser {
 
     public ParseTree getParseTree(String filter) {

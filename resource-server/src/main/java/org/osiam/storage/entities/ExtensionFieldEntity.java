@@ -184,10 +184,7 @@ public class ExtensionFieldEntity {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("ExtensionFieldEntity [name=").append(name).append(", type=").append(type)
-                .append(", isRequired=").append(required).append("]");
-        return builder.toString();
+        return "ExtensionFieldEntity [name=" + name + ", type=" + type + ", isRequired=" + required + "]";
     }
 
     private static class ConstraintAndType {

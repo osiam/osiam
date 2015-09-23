@@ -35,7 +35,7 @@ class ResourceUpdaterSpec extends Specification {
     static String IRRELEVANT = 'irrelevant'
 
     ResourceDao resourceDao = Mock()
-    ResourceUpdater resourceUpdater = new ResourceUpdater(resourceDao: resourceDao)
+    ResourceUpdater resourceUpdater = new ResourceUpdater(resourceDao)
 
     Meta metaWithAttributesToDelete = new Meta(attributes: ['externalId'] as Set)
     // resources are abstract so we use groups here with no loss of generality

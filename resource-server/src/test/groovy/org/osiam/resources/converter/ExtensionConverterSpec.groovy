@@ -23,6 +23,7 @@
 
 package org.osiam.resources.converter
 
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.ExtensionType
 import org.joda.time.format.ISODateTimeFormat
 import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.ExtensionFieldType
@@ -39,9 +40,8 @@ class ExtensionConverterSpec extends Specification {
     private static String URN2 = "urn:org.osiam.extensions:Test02:1.0"
 
     private ExtensionDao extensionDao = Mock()
-    private NumberPadder numberPadder = Mock()
 
-    private ExtensionConverter converter = new ExtensionConverter(extensionDao: extensionDao, numberPadder: numberPadder)
+    private ExtensionConverter converter = new ExtensionConverter(extensionDao)
 
     Map fixtures = [(URN1): [
             [fieldname: 'gender', valueAsString: 'male', value: 'male', type: ExtensionFieldType.STRING],
@@ -64,8 +64,6 @@ class ExtensionConverterSpec extends Specification {
         Set<Extension> extensions = converter.toScim(extensionFieldValueEntitySet)
 
         then:
-        1 * numberPadder.unpad('1.78') >> '1.78'
-        1 * numberPadder.unpad('2') >> '2'
         extensions == scimExtensionSet
     }
 
@@ -81,8 +79,6 @@ class ExtensionConverterSpec extends Specification {
         then:
         1 * extensionDao.getExtensionByUrn(URN1) >> extensionMap[URN1]
         1 * extensionDao.getExtensionByUrn(URN2) >> extensionMap[URN2]
-        1 * numberPadder.pad('1.78') >> '1.78'
-        1 * numberPadder.pad('2') >> '2'
         extensions == extensionFieldValueEntitySet
     }
 
@@ -167,6 +163,10 @@ class ExtensionConverterSpec extends Specification {
         ExtensionFieldEntity fieldEntity = new ExtensionFieldEntity()
         fieldEntity.setName(name)
         fieldEntity.setType(type)
+        if (type == ExtensionFieldType.INTEGER || type == ExtensionFieldType.DECIMAL ){
+            def numberPadder = new NumberPadder();
+            value = numberPadder.pad(value)
+        }
 
         ExtensionFieldValueEntity valueEntity = new ExtensionFieldValueEntity()
         valueEntity.setValue(value)

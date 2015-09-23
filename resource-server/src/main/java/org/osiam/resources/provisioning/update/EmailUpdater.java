@@ -23,9 +23,7 @@
 
 package org.osiam.resources.provisioning.update;
 
-import java.util.List;
-import java.util.Set;
-
+import com.google.common.base.Strings;
 import org.osiam.resources.converter.EmailConverter;
 import org.osiam.resources.scim.Email;
 import org.osiam.storage.entities.EmailEntity;
@@ -33,7 +31,8 @@ import org.osiam.storage.entities.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Strings;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The EmailUpdater provides the functionality to update the {@link EmailEntity} of a UserEntity
@@ -41,19 +40,20 @@ import com.google.common.base.Strings;
 @Service
 class EmailUpdater {
 
-    @Autowired
     private EmailConverter emailConverter;
+
+    @Autowired
+    public EmailUpdater(EmailConverter emailConverter) {
+        this.emailConverter = emailConverter;
+    }
 
     /**
      * updates (adds new, delete, updates) the {@link EmailEntity}'s of the given {@link UserEntity} based on the given
      * List of Email's
-     * 
-     * @param emails
-     *            list of Email's to be deleted, updated or added
-     * @param userEntity
-     *            user who needs to be updated
-     * @param attributes
-     *            all {@link EmailEntity}'s will be deleted if this Set contains 'emails'
+     *
+     * @param emails     list of Email's to be deleted, updated or added
+     * @param userEntity user who needs to be updated
+     * @param attributes all {@link EmailEntity}'s will be deleted if this Set contains 'emails'
      */
     void update(List<Email> emails, UserEntity userEntity, Set<String> attributes) {
 
@@ -65,7 +65,7 @@ class EmailUpdater {
             for (Email scimEmail : emails) {
                 EmailEntity emailEntity = emailConverter.fromScim(scimEmail);
                 userEntity.removeEmail(emailEntity); // we always have to remove the email in case
-                                                     // the primary attribute has changed
+                // the primary attribute has changed
                 if (Strings.isNullOrEmpty(scimEmail.getOperation())
                         || !scimEmail.getOperation().equalsIgnoreCase("delete")) {
 
@@ -79,11 +79,9 @@ class EmailUpdater {
     /**
      * if the given newEmail is set to primary the primary attribute of all existing email's in the {@link UserEntity}
      * will be removed
-     * 
-     * @param newEmail
-     *            to be checked if it is primary
-     * @param emails
-     *            all existing email's of the {@link UserEntity}
+     *
+     * @param newEmail to be checked if it is primary
+     * @param emails   all existing email's of the {@link UserEntity}
      */
     private void ensureOnlyOnePrimaryEmailExists(EmailEntity newEmail, Set<EmailEntity> emails) {
         if (newEmail.isPrimary()) {
