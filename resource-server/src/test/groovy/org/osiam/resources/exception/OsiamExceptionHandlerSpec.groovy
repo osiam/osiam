@@ -24,6 +24,7 @@
 package org.osiam.resources.exception
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.osiam.client.exception.ConnectionInitializationException
 import org.osiam.resources.scim.User
 import org.springframework.http.HttpStatus
 import spock.lang.Specification
@@ -38,7 +39,7 @@ class OsiamExceptionHandlerSpec extends Specification {
         when:
         def result = exceptionHandler.defaultExceptionHandler(new NullPointerException(IRRELEVANT))
         then:
-        result.status == HttpStatus.CONFLICT.toString()
+        result.status == HttpStatus.CONFLICT as String
         result.detail == "An unexpected error occurred"
     }
 
@@ -46,23 +47,31 @@ class OsiamExceptionHandlerSpec extends Specification {
         when:
         def result = exceptionHandler.handleInvalidConstraintException(new InvalidConstraintException(IRRELEVANT))
         then:
-        result.detail == "Constraint ${IRRELEVANT} is invalid"
-        result.status == HttpStatus.BAD_REQUEST.toString()
+        result.detail == "Constraint ${IRRELEVANT} is invalid" as String
+        result.status == HttpStatus.BAD_REQUEST as String
     }
 
-    def 'status is set to INTERNAL_SERVER_ERROR when BackendFailureException occurs'() {
+    def 'status is set to INTERNAL_SERVER_ERROR when OsiamBackendFailureException occurs'() {
         when:
         def result = exceptionHandler.handleBackendFailure(new OsiamBackendFailureException())
         then:
         result.detail == "An internal error occurred"
-        result.status == HttpStatus.INTERNAL_SERVER_ERROR.toString()
+        result.status == HttpStatus.INTERNAL_SERVER_ERROR as String
+    }
+
+    def 'status is set to SERVICE_uNAVAILABLE when ConnectionInitialization occurs'() {
+        when:
+        def result = exceptionHandler.handleBackendUnavailable(new ConnectionInitializationException(IRRELEVANT))
+        then:
+        result.detail == "Service temporarily unavailable."
+        result.status == HttpStatus.SERVICE_UNAVAILABLE as String
     }
 
     def 'status is set to CONFLICT when ResourceExistsException occurs'() {
         when:
         def result = exceptionHandler.handleResourceExists(new ResourceExistsException(IRRELEVANT))
         then:
-        result.status == HttpStatus.CONFLICT.toString()
+        result.status == HttpStatus.CONFLICT as String
         result.detail == IRRELEVANT
     }
 
@@ -70,7 +79,7 @@ class OsiamExceptionHandlerSpec extends Specification {
         when:
         def result = exceptionHandler.handleResourceNotFoundException(new ResourceNotFoundException(IRRELEVANT))
         then:
-        result.status == HttpStatus.NOT_FOUND.toString()
+        result.status == HttpStatus.NOT_FOUND as String
         result.detail == IRRELEVANT
     }
 
@@ -78,7 +87,7 @@ class OsiamExceptionHandlerSpec extends Specification {
         when:
         def result = exceptionHandler.handleUnsupportedOperation(new UnsupportedOperationException(IRRELEVANT))
         then:
-        result.status == HttpStatus.NOT_IMPLEMENTED.toString()
+        result.status == HttpStatus.NOT_IMPLEMENTED as String
         result.detail == IRRELEVANT
     }
 
@@ -86,7 +95,7 @@ class OsiamExceptionHandlerSpec extends Specification {
         when:
         def result = exceptionHandler.handleSchemaUnknown(new SchemaUnknownException())
         then:
-        result.status == HttpStatus.I_AM_A_TEAPOT.toString()
+        result.status == HttpStatus.I_AM_A_TEAPOT as String
     }
 
     def "should transform json property invalid error message to a more readable response"() {
@@ -95,7 +104,7 @@ class OsiamExceptionHandlerSpec extends Specification {
         when:
         def result = exceptionHandler.handleUnrecognizedProperty(e)
         then:
-        result.status == HttpStatus.CONFLICT.toString()
+        result.status == HttpStatus.CONFLICT as String
         result.detail == 'Unrecognized field "extId"'
     }
 
@@ -106,7 +115,7 @@ class OsiamExceptionHandlerSpec extends Specification {
         def result = exceptionHandler.handleJsonMapping(e)
         then:
         result.detail == 'Can not deserialize instance of java.util.ArrayList out of VALUE_STRING'
-        result.status == HttpStatus.CONFLICT.toString()
+        result.status == HttpStatus.CONFLICT as String
     }
 
     Exception generate_wrong_json_exception(String input, Class clazz) {

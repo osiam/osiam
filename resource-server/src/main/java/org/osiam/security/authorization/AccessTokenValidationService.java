@@ -23,28 +23,42 @@
 
 package org.osiam.security.authorization;
 
-import java.util.*;
+import org.osiam.client.OsiamConnector;
+import org.osiam.client.exception.ConnectionInitializationException;
+import org.osiam.client.oauth.AccessToken;
+import org.osiam.client.oauth.Scope;
+import org.osiam.resources.scim.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Request;
+import org.springframework.security.oauth2.provider.token.AccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
+import org.springframework.stereotype.Service;
 
-import org.osiam.client.*;
-import org.osiam.client.oauth.*;
-import org.osiam.resources.scim.*;
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.security.authentication.*;
-import org.springframework.security.core.*;
-import org.springframework.security.oauth2.common.*;
-import org.springframework.security.oauth2.common.exceptions.*;
-import org.springframework.security.oauth2.provider.*;
-import org.springframework.security.oauth2.provider.token.*;
-import org.springframework.stereotype.*;
+import java.util.*;
 
 @Service
 public class AccessTokenValidationService implements ResourceServerTokenServices {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AccessTokenValidationService.class);
+
     private String authServerHome;
+
+    private OsiamConnector connector;
 
     @Autowired
     public AccessTokenValidationService(@Value("${org.osiam.auth-server.home}") String authServerHome) {
         this.authServerHome = authServerHome;
+        this.connector = new OsiamConnector.Builder().setAuthServerEndpoint(authServerHome).build();
     }
 
     @Override
@@ -94,32 +108,32 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
     /**
      * Revokes the access tokens of the user with the given ID.
      *
-     * @param id
-     *            the user ID
-     * @param token
-     *            the token to access the service
+     * @param id    the user ID
+     * @param token the token to access the service
      */
     public void revokeAccessTokens(String id, String token) {
         AccessToken accessToken = new AccessToken.Builder(token).build();
-        OsiamConnector connector = createConnector();
-        connector.revokeAllAccessTokens(id, accessToken);
+        try {
+            connector.revokeAllAccessTokens(id, accessToken);
+        } catch (ConnectionInitializationException e) {
+            LOGGER.warn(String.format("Unable to revoke access token on auth-server %s: %s",
+                    authServerHome, e.getMessage()));
+            throw e;
+        }
     }
 
     private AccessToken validateAccessToken(String token) {
-        OsiamConnector connector = createConnector();
 
         AccessToken accessToken;
         try {
             accessToken = connector.validateAccessToken(new AccessToken.Builder(token).build());
+        } catch (ConnectionInitializationException e) {
+            LOGGER.warn(String.format("Unable to retrieve access token from auth-server %s: %s",
+                    authServerHome, e.getMessage()));
+            throw e;
         } catch (Exception e) {
             throw new InvalidTokenException("Your token is not valid", e);
         }
         return accessToken;
-    }
-
-    private OsiamConnector createConnector() {
-        OsiamConnector.Builder oConBuilder = new OsiamConnector.Builder().
-                setAuthServerEndpoint(authServerHome);
-        return oConBuilder.build();
     }
 }
