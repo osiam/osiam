@@ -55,8 +55,6 @@ There are 2 gateways between the auth-server and the resource-server.
 **resource-server >> auth-server**
 - GET: validates a given access token
 
-![Picture ArchitectureModel](https://dev.tarent.de/plugins/mediawiki/wiki/osiamorgleg/images/7/79/ArchitectureModel.jpg)
-
 ### SCIMv2
 SCIM ([System for Cross-domain Identity Management](http://www.simplecloud.info)) is a standard with it's second incarnation being in draft phase at the IETF.
 SCIMv2 defines a [REST](http://en.wikipedia.org/wiki/Representational_state_transfer) based interface for managing users and groups with a focus on web based scenarios, though it is also a good choice for internal use cases to ensure interoperability and simplicity of the solution.
