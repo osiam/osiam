@@ -4,11 +4,13 @@
 
 ### Changes
 
-- Produce a meanigful log message and respond with `503 TEMPORARILY UNAVAILABLE`
+- Produce a meaningful log message and respond with `503 TEMPORARILY UNAVAILABLE`
   instead of `409 CONFLICT` if the auth-server cannot be reached to validate or
   revoke an access token.
 - All invalid search queries now respond with a `400 BAD REQUEST` instead of
   `409 CONFLICT` status code.
+- Respond with `500 INTERNAL SERVER ERROR` when revoking or validating an
+  access token fails because of lacking permissions or invalid credentials.
 - Remove support for old, method-based OAuth scopes
 - Remove configuration property `org.osiam.resource-server.db.dialect`
 - Remove self written profiling solution since we now use the [Metrics](https://github.com/dropwizard/metrics) 
