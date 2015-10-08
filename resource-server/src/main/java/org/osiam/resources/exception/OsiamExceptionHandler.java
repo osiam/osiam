@@ -25,6 +25,7 @@ package org.osiam.resources.exception;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import org.osiam.client.exception.ConnectionInitializationException;
 import org.osiam.resources.scim.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +68,13 @@ public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseBody
     public ErrorResponse handleBackendFailure(OsiamBackendFailureException e) {
         return produceErrorResponse("An internal error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(ConnectionInitializationException.class)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    @ResponseBody
+    public ErrorResponse handleBackendUnavailable(ConnectionInitializationException e) {
+        return produceErrorResponse("Service temporarily unavailable.", HttpStatus.SERVICE_UNAVAILABLE);
     }
 
     @ExceptionHandler({ResourceNotFoundException.class, NoSuchElementException.class})

@@ -4,6 +4,9 @@
 
 ### Changes
 
+- Produce a meanigful log message and respond with `503 TEMPORARILY UNAVAILABLE`
+  instead of `409 CONFLICT` if the auth-server cannot be reached to validate or
+  revoke an access token.
 - All invalid search queries now respond with a `400 BAD REQUEST` instead of
   `409 CONFLICT` status code.
 - Update OSIAM connector4java
