@@ -50,6 +50,11 @@ public class ResourceServerConnector {
     @Autowired
     private OsiamAuthServerClientProvider authServerClientProvider;
 
+    static {
+        OsiamConnector.setMaxConnections(40);
+        OsiamConnector.setMaxConnectionsPerRoute(40);
+    }
+
     public User getUserByUsername(final String userName) {
         Query query = new QueryBuilder().filter("userName eq \"" + userName + "\"").build();
 
@@ -91,10 +96,13 @@ public class ResourceServerConnector {
     }
 
     private OsiamConnector createOsiamConnector() {
-        return new OsiamConnector.Builder().
-                setAuthServerEndpoint(authServerHome).
-                setResourceServerEndpoint(resourceServerHome).
-                setClientId(OsiamAuthServerClientProvider.AUTH_SERVER_CLIENT_ID).
-                setClientSecret(authServerClientProvider.getClientSecret()).build();
+        return new OsiamConnector.Builder()
+                .setAuthServerEndpoint(authServerHome)
+                .setResourceServerEndpoint(resourceServerHome)
+                .setClientId(OsiamAuthServerClientProvider.AUTH_SERVER_CLIENT_ID)
+                .setClientSecret(authServerClientProvider.getClientSecret())
+                .withReadTimeout(10000)
+                .withConnectTimeout(5000)
+                .build();
     }
 }
