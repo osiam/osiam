@@ -1,12 +1,11 @@
 # OSIAM auth server
 
-## Unreleased
+## 3.0 - Unreleased
 
 **Potentially breaking changes!**
 
 ### Changes
 
-- Update OSIAM connector4java
 - Remove usage of old, method-based OAuth scopes
 - Remove support for old, method-based OAuth scopes
 - Add Flyway migration to replace method-based scopes
@@ -15,14 +14,34 @@
     clients and then add the new scopes `ADMIN` and `ME`. See the
     [migration notes] (docs/Migration.md#from-22-to-30) for further details.
 
+## 2.3 - 2015-10-09
+
+### Features
+
+- JDBC connection pooling
+
+### Changes
+
+- Increase timeouts for connections to resource-server
+- Increase maximum number of parallel connections to resource-server
+
 ### Fixes
 
 - Make sure `access_token`, `refresh_token` and `token_type` are added only
   once to the returned Access Token (Fixes bug [#42]
   (https://github.com/osiam/auth-server/issues/42)).
-
 - Remove `scopes` from the Access Token (Fixes bug [#51]
   (https://github.com/osiam/auth-server/issues/51)).
+- Prevent NPE when `User#active` is null
+
+### Updates
+
+- OSIAM connector4java 1.7
+- MySQL JDBC driver 5.1.36
+- PostgreSQL JDBC driver 9.4-1203
+- Spring 4.1.7.RELEASE
+- AspectJ 1.8.7
+- SLF4J LOG4J-12 Binding 1.7.12
 
 ## 2.2 - 2015-06-18
 
