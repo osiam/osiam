@@ -55,10 +55,19 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
 
     private OsiamConnector connector;
 
+    static {
+        OsiamConnector.setMaxConnections(40);
+        OsiamConnector.setMaxConnectionsPerRoute(40);
+    }
+
     @Autowired
     public AccessTokenValidationService(@Value("${org.osiam.auth-server.home}") String authServerHome) {
         this.authServerHome = authServerHome;
-        this.connector = new OsiamConnector.Builder().setAuthServerEndpoint(authServerHome).build();
+        this.connector = new OsiamConnector.Builder()
+                .setAuthServerEndpoint(authServerHome)
+                .withReadTimeout(10000)
+                .withConnectTimeout(5000)
+                .build();
     }
 
     @Override
