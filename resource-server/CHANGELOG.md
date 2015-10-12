@@ -1,6 +1,6 @@
 # OSIAM resource server
 
-## Unreleased
+## 3.0 - Unreleased
 
 ### Changes
 
@@ -9,11 +9,37 @@
   revoke an access token.
 - All invalid search queries now respond with a `400 BAD REQUEST` instead of
   `409 CONFLICT` status code.
-- Update OSIAM connector4java
 - Remove support for old, method-based OAuth scopes
 - Remove configuration property `org.osiam.resource-server.db.dialect`
 - Remove self written profiling solution since we now use the [Metrics](https://github.com/dropwizard/metrics) 
   framework. This removes the configuration property `org.osiam.resource-server.profiling` 
+
+## 2.3 - 2015-10-09
+
+### Features
+
+- JDBC connection pooling
+- Set MemberRef Type in GroupConverter
+
+### Changes
+
+- Increase timeouts for connections to auth-server
+- Increase maximum number of parallel connections to auth-server
+
+### Fixes
+
+- Only set `UserEntity#active` if value is not null
+- Use correct Schema for SCIMSearchResult
+
+### Updates
+
+- OSIAM connector4java 1.7
+- MySQL JDBC driver 5.1.36
+- PostgreSQL JDBC driver 9.4-1203
+- Spring 4.1.7.RELEASE
+- AspectJ 1.8.7
+- Joda Time 2.8.2
+- Metrics Spring Integration 3.1.2
 
 ## 2.2 - 2015-06-18
 
