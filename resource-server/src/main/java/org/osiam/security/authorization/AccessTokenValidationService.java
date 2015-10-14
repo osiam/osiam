@@ -25,6 +25,7 @@ package org.osiam.security.authorization;
 
 import org.osiam.client.OsiamConnector;
 import org.osiam.client.exception.ConnectionInitializationException;
+import org.osiam.client.exception.OsiamRequestException;
 import org.osiam.client.oauth.AccessToken;
 import org.osiam.client.oauth.Scope;
 import org.osiam.resources.scim.User;
@@ -128,11 +129,13 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
             LOGGER.warn(String.format("Unable to revoke access token on auth-server %s: %s",
                     authServerHome, e.getMessage()));
             throw e;
+        } catch(OsiamRequestException e) {
+            LOGGER.warn("Error revoking all access tokens", e);
+            throw e;
         }
     }
 
     private AccessToken validateAccessToken(String token) {
-
         AccessToken accessToken;
         try {
             accessToken = connector.validateAccessToken(new AccessToken.Builder(token).build());
@@ -140,8 +143,9 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
             LOGGER.warn(String.format("Unable to retrieve access token from auth-server %s: %s",
                     authServerHome, e.getMessage()));
             throw e;
-        } catch (Exception e) {
-            throw new InvalidTokenException("Your token is not valid", e);
+        } catch(OsiamRequestException e) {
+            LOGGER.warn("Error validating access token", e);
+            throw e;
         }
         return accessToken;
     }
