@@ -171,19 +171,16 @@ class GroupConverterSpec extends Specification {
 
     def Group getFilledGroup(UUID uuid) {
 
-        Group.Builder groupBuilder = new Group.Builder(fixtures)
-
-        groupBuilder.setId(uuid.toString())
-        return groupBuilder.build()
+        return new Group.Builder(fixtures)
+                .setId(uuid as String)
+                .build()
     }
 
     def Group getFilledGroupWithMember(def uuid, def memberUuid) {
-        Group group = getFilledGroup(uuid)
 
-        MemberRef member = new MemberRef.Builder(value: memberUuid).build()
-
-        group.members.add(member)
-
-        return group
+        return new Group.Builder(fixtures)
+                .setId(uuid as String)
+                .addMember(new MemberRef.Builder(value: memberUuid).build())
+                .build()
     }
 }
