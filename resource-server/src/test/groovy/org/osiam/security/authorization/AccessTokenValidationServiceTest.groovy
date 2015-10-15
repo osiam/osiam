@@ -59,7 +59,7 @@ class AccessTokenValidationServiceTest extends Specification {
         then:
         1 * connector.validateAccessToken(_) >> { throw new UnauthorizedException(MESSAGE) }
         1 * appender.doAppend({
-            it.message == "Error when validating access token"
+            it.message == "Error validating access token"
         })
         thrown(UnauthorizedException)
     }
@@ -72,7 +72,7 @@ class AccessTokenValidationServiceTest extends Specification {
         then:
         1 * connector.validateAccessToken(_) >> { throw new ForbiddenException(MESSAGE) }
         1 * appender.doAppend({
-            it.message == "Error when validating access token"
+            it.message == "Error validating access token"
         })
         thrown(ForbiddenException)
     }
@@ -84,7 +84,7 @@ class AccessTokenValidationServiceTest extends Specification {
         then:
         1 * connector.revokeAllAccessTokens(_,_) >> { throw new UnauthorizedException(MESSAGE) }
         1 * appender.doAppend({
-            it.message == "Error when revoking all access tokens"
+            it.message == "Error revoking all access tokens"
         })
         thrown(UnauthorizedException)
     }
@@ -96,7 +96,7 @@ class AccessTokenValidationServiceTest extends Specification {
         then:
         1 * connector.revokeAllAccessTokens(_,_) >> { throw new ForbiddenException(MESSAGE) }
         1 * appender.doAppend({
-            it.message == "Error when revoking all access tokens"
+            it.message == "Error revoking all access tokens"
         })
         thrown(ForbiddenException)
     }
