@@ -26,7 +26,6 @@ package org.osiam.resources.exception;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import org.osiam.client.exception.ConnectionInitializationException;
-import org.osiam.client.exception.OsiamRequestException;
 import org.osiam.resources.scim.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,10 +63,10 @@ public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
         return produceErrorResponse(e.getMessage(), HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler({OsiamBackendFailureException.class, OsiamRequestException.class})
+    @ExceptionHandler(OsiamBackendFailureException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
-    public ErrorResponse handleBackendFailure(Exception e) {
+    public ErrorResponse handleBackendFailure(OsiamBackendFailureException e) {
         return produceErrorResponse("An internal error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -102,7 +101,7 @@ public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(UnrecognizedPropertyException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
-    public ErrorResponse handleUnrecognizedProperty(Exception e) {
+    public ErrorResponse handleUnrecognizedProperty(UnrecognizedPropertyException e) {
         LOGGER.error("Unknown property", e);
         return produceErrorResponse(e.getMessage(), HttpStatus.CONFLICT, new JsonPropertyMessageTransformer());
     }
@@ -110,7 +109,7 @@ public class OsiamExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(JsonMappingException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
-    public ErrorResponse handleJsonMapping(Exception e) {
+    public ErrorResponse handleJsonMapping(JsonMappingException e) {
         LOGGER.error("Unable to deserialize", e);
         return produceErrorResponse(e.getMessage(), HttpStatus.CONFLICT, new JsonMappingMessageTransformer());
     }
