@@ -1,0 +1,96 @@
+/*
+ * Copyright (C) 2013 tarent AG
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+package org.osiam.storage.query;
+
+import org.osiam.resources.exception.OsiamException;
+import org.osiam.storage.dao.ExtensionDao;
+import org.osiam.storage.entities.ExtensionEntity;
+import org.osiam.storage.entities.ExtensionFieldEntity;
+import org.osiam.storage.entities.UserEntity;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.Locale;
+
+public class UserSimpleFilterChain implements FilterChain<UserEntity> {
+
+    private final ScimExpression scimExpression;
+
+    private final QueryField<UserEntity> userFilterField;
+    private final ExtensionDao extensionDao;
+    private final CriteriaBuilder criteriaBuilder;
+    private ExtensionQueryField extensionFilterField;
+
+    public UserSimpleFilterChain(CriteriaBuilder criteriaBuilder, ExtensionDao extensionDao,
+                                 ScimExpression scimExpression) {
+        this.criteriaBuilder = criteriaBuilder;
+        this.extensionDao = extensionDao;
+        this.scimExpression = scimExpression;
+
+        String field = scimExpression.getField();
+
+        userFilterField = UserQueryField.fromString(field.toLowerCase(Locale.ENGLISH));
+
+        // It's not a known user field, so try to build a extension filter
+        if (userFilterField == null) {
+            extensionFilterField = getExtensionFilterField(field.toLowerCase(Locale.ENGLISH));
+            if (extensionFilterField == null) {
+                throw new IllegalArgumentException(String.format("Filtering not possible: '%s' not available", field));
+            }
+        }
+    }
+
+    private ExtensionQueryField getExtensionFilterField(String fieldString) {
+        int lastIndexOf = fieldString.lastIndexOf('.');
+        if (lastIndexOf == -1) {
+            return null;
+        }
+
+        String urn = fieldString.substring(0, lastIndexOf);
+        String fieldName = fieldString.substring(lastIndexOf + 1);
+        final ExtensionEntity extension;
+        try {
+            extension = extensionDao.getExtensionByUrn(urn, true);
+        } catch (OsiamException ex) {
+            return null;
+        }
+        final ExtensionFieldEntity fieldEntity = extension.getFieldForName(fieldName, true);
+        return new ExtensionQueryField(urn, fieldEntity);
+    }
+
+    @Override
+    public Predicate createPredicateAndJoin(Root<UserEntity> root) {
+        if (userFilterField != null) {
+            return userFilterField.addFilter(root, scimExpression.getConstraint(), scimExpression.getValue(),
+                    criteriaBuilder);
+        } else if (extensionFilterField != null) {
+            return extensionFilterField.addFilter(root, scimExpression.getConstraint(), scimExpression.getValue(),
+                    criteriaBuilder);
+        } else {
+            throw new IllegalArgumentException(String.format("Filtering not possible. Field '%s' not available.",
+                    scimExpression.getField()));
+        }
+    }
+}
