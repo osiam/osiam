@@ -25,7 +25,7 @@ package org.osiam.security.authorization;
 
 import org.osiam.client.OsiamConnector;
 import org.osiam.client.exception.ConnectionInitializationException;
-import org.osiam.client.exception.OsiamRequestException;
+import org.osiam.client.exception.UnauthorizedException;
 import org.osiam.client.oauth.AccessToken;
 import org.osiam.client.oauth.Scope;
 import org.osiam.resources.scim.User;
@@ -45,7 +45,11 @@ import org.springframework.security.oauth2.provider.token.AccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 public class AccessTokenValidationService implements ResourceServerTokenServices {
@@ -129,9 +133,9 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
             LOGGER.warn(String.format("Unable to revoke access token on auth-server %s: %s",
                     authServerHome, e.getMessage()));
             throw e;
-        } catch(OsiamRequestException e) {
-            LOGGER.warn("Error revoking all access tokens", e);
-            throw e;
+        } catch (UnauthorizedException e) {
+            LOGGER.warn(String.format("Error revoking all access tokens on auth-server: %s", e.getMessage()));
+            throw new InvalidTokenException("The provided access token is not valid", e);
         }
     }
 
@@ -143,9 +147,9 @@ public class AccessTokenValidationService implements ResourceServerTokenServices
             LOGGER.warn(String.format("Unable to retrieve access token from auth-server %s: %s",
                     authServerHome, e.getMessage()));
             throw e;
-        } catch(OsiamRequestException e) {
-            LOGGER.warn("Error validating access token", e);
-            throw e;
+        } catch (UnauthorizedException e) {
+            LOGGER.warn(String.format("Unable to retrieve access token from auth-server: %s", e.getMessage()));
+            throw new InvalidTokenException("The provided access token is not valid", e);
         }
         return accessToken;
     }
