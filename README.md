@@ -33,10 +33,8 @@ Learn how to install and configure OSIAM for production in the
 
 ## Components
 
-* [`auth-server`](https://github.com/osiam/auth-server)
-  handles the authentication and authorization based on OAuth 2.0
-* [`resource-server`](https://github.com/osiam/resource-server)
-  holds the SCIM based user data
+* [`osiam`](https://github.com/osiam/osiam)
+  handles the authentication and authorization based on OAuth 2.0 and holds the SCIM based user data
 * [`addon-self-administration`](https://github.com/osiam/addon-self-administration)
   provides account management self-service as a web application
 * [`addon-administration`](https://github.com/osiam/addon-administration)

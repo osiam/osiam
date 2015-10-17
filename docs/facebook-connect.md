@@ -23,11 +23,11 @@ Application ID is your OSIAM client_id,
 
 Application Secret is your OSIAM client secret,
 
-Graph URL is http://<your:host:to:osiam>/osiam-server/
+Graph URL is http://<your:host:to:osiam>/osiam/
 
-OAuth Authentication URL is http://<your:host:to:osiam>/osiam-server/oauth/authorize?response_type=code
+OAuth Authentication URL is http://<your:host:to:osiam>/osiam/oauth/authorize?response_type=code
 
-OAuth Token URL is http://<your:host:to:osiam>/osiam-server/fb/oauth/access_token?grant_type=authorization_code
+OAuth Token URL is http://<your:host:to:osiam>/osiam/fb/oauth/access_token?grant_type=authorization_code
 
 Redirect URL is your redirect URL (e.q. http://localhost:8181/c/login/Facebook_connect_oauth)
 
@@ -35,10 +35,10 @@ Redirect URL is your redirect URL (e.q. http://localhost:8181/c/login/Facebook_c
 
 To login in OSIAM you need to press Facebook in the login page, you will then be redirected to 
 
-http://localhost:8080/osiam-server/oauth/authorize?response_type=code
+http://localhost:8080/osiam/oauth/authorize?response_type=code
 
 to enter your username and password. if you have entered your credentials you than be redirected to the Liferay server (e.q. http://localhost:8181/c/login/Facebook_connect_oauth) Liferay will than get your information by calling:
 
-http://localhost:8080/osiam-server/me
+http://localhost:8080/osiam/me
 
 and create a Liferay account with those information.
