@@ -35,9 +35,9 @@ import spock.lang.Specification
 
 class SCIMUserProvisioningBeanSpec extends Specification {
 
-    PasswordEncoder passwordEncoder = Mock()
-    UserDao userDao = Mock()
-    UserConverter userConverter = Mock()
+    def passwordEncoder = Mock(PasswordEncoder)
+    def userDao = Mock(UserDao)
+    def userConverter = Mock(UserConverter)
 
     SCIMUserProvisioning scimUserProvisioningBean = new SCIMUserProvisioning(userDao: userDao,
             userConverter: userConverter, passwordEncoder: passwordEncoder)
@@ -52,7 +52,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
 
         then:
         1 * userDao.getById(id) >> userEntity
-        1 * userConverter.toScim(userEntity) >> new User()
+        1 * userConverter.toScim(userEntity) >> new User.Builder().build()
     }
 
     def 'retrieving a user by id should remove its password'() {
@@ -60,7 +60,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         def id = 'irrelevant'
         UserEntity userEntity = new UserEntity()
         userDao.getById(id) >> userEntity
-        userConverter.toScim(userEntity) >> new User(password: 'password')
+        userConverter.toScim(userEntity) >> new User.Builder(password: 'password').build()
 
         when:
         User user = scimUserProvisioningBean.getById(id)
@@ -89,8 +89,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
     def 'should throw exception if user name already exists'() {
         given:
         def userName = 'irrelevant'
-        def userEntity = new UserEntity()
-        def userScim = new User(userName: userName)
+        def userScim = new User.Builder(userName: userName).build()
 
         when:
         scimUserProvisioningBean.create(userScim)
@@ -104,7 +103,6 @@ class SCIMUserProvisioningBeanSpec extends Specification {
     def 'should throw exception if externalId already exists'() {
         given:
         def externalId = 'irrelevant'
-        def userEntity = new UserEntity()
         def userScim = new User.Builder().setExternalId(externalId).build()
 
         when:
@@ -118,11 +116,11 @@ class SCIMUserProvisioningBeanSpec extends Specification {
 
     def 'replacing a user converts it from scim, updates last modified, updates the db and returns the replaced user as scim'() {
         given:
-        def idString = UUID.randomUUID().toString()
-        def userScim = new User()
+        def idString = UUID.randomUUID() as String
+        def userScim = new User.Builder().build()
 
-        UserEntity userEntity = Mock()
-        userDao.getById(idString) >> Mock(UserEntity)
+        def userEntity = Mock(UserEntity)
+        userDao.getById(idString) >> new UserEntity(id: UUID.fromString(idString))
 
         when:
         scimUserProvisioningBean.replace(idString, userScim)
@@ -136,16 +134,16 @@ class SCIMUserProvisioningBeanSpec extends Specification {
 
     def 'replacing a user retrieves the original user from db'() {
         given:
-        def idString = UUID.randomUUID().toString()
-        def userScim = new User()
-        userConverter.fromScim(userScim) >> Mock(UserEntity)
+        def idString = UUID.randomUUID() as String
+        def userScim = new User.Builder().build()
+        userConverter.fromScim(userScim) >> new UserEntity()
         userConverter.toScim(_) >> userScim
 
         when:
         scimUserProvisioningBean.replace(idString, userScim)
 
         then:
-        1 * userDao.getById(idString) >> Mock(UserEntity)
+        1 * userDao.getById(idString) >> new UserEntity(id: UUID.fromString(idString))
     }
 
     def 'replacing a user copies its unmodifiable values, i.e. internalId, meta and UUID'() {
@@ -154,10 +152,10 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         def idString = id.toString()
         def internalId = 1L
         def meta = new MetaEntity()
-        def userScim = new User()
+        def userScim = new User.Builder().build()
 
-        UserEntity existingEntity = Mock()
-        UserEntity userEntity = Mock()
+        def existingEntity = new UserEntity(id: id, meta: meta, internalId: internalId)
+        def userEntity = Mock(UserEntity)
         userDao.getById(idString) >> existingEntity
         userConverter.fromScim(userScim) >> userEntity
         userConverter.toScim(_) >> userScim
@@ -166,10 +164,6 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         scimUserProvisioningBean.replace(idString, userScim)
 
         then:
-
-        1 * existingEntity.getInternalId() >> internalId
-        1 * existingEntity.getMeta() >> meta
-        1 * existingEntity.getId() >> id
         1 * userEntity.setInternalId(internalId)
         1 * userEntity.setMeta(meta)
         1 * userEntity.setId(id)
@@ -181,8 +175,8 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         def password = 'irrelevant'
         def hashedPassword = 'hashed password'
 
-        User userScim = Mock()
-        UserEntity userEntity = Mock()
+        def userScim = new User.Builder().setPassword(password).build()
+        def userEntity = Mock(UserEntity)
         userDao.getById(id.toString()) >> new UserEntity(id: id)
         userConverter.fromScim(userScim) >> userEntity
         userConverter.toScim(_) >> userScim
@@ -191,7 +185,6 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         scimUserProvisioningBean.replace(id.toString(), userScim)
 
         then:
-        3 * userScim.getPassword() >> password
         1 * userEntity.getId() >> id
         1 * passwordEncoder.encodePassword(password, id) >> hashedPassword
         1 * userEntity.setPassword(hashedPassword)
@@ -201,35 +194,32 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         given:
         def id = UUID.randomUUID()
         def password = 'irrelevant'
-        def userScim = new User()
+        def userScim = new User.Builder().build()
 
-        UserEntity existingEntity = Mock()
-        UserEntity userEntity = Mock()
+        def existingEntity = new UserEntity(id: id, password: password)
+        def userEntity = new UserEntity()
         userDao.getById(id.toString()) >> existingEntity
         userConverter.fromScim(userScim) >> userEntity
         userConverter.toScim(_) >> userScim
 
         when:
-        scimUserProvisioningBean.replace(id.toString(), userScim)
+        scimUserProvisioningBean.replace(id as String, userScim)
 
         then:
-        1 * existingEntity.getPassword() >> password
-        1 * userEntity.setPassword(password)
+        userEntity.password == password
     }
 
     def 'replacing a user return the replaced user with its password removed'() {
         given:
         def id = UUID.randomUUID()
         def password = 'irrelevant'
-        def userScim = new User()
+        def userScim = new User.Builder().build()
 
-        UserEntity existingEntity = Mock()
-        UserEntity userEntity = Mock()
+        def existingEntity = new UserEntity(id: id, password: password)
+        def userEntity = new UserEntity(id: id, password: password)
 
         userDao.getById(id.toString()) >> existingEntity
         userConverter.fromScim(userScim) >> userEntity
-        userEntity.getPassword() >> password
-        userEntity.getId() >> id
         userConverter.toScim(userEntity) >> { UserEntity it ->
             new User.Builder(id: it.getId(), password: it.getPassword()).build()
         }
@@ -254,12 +244,12 @@ class SCIMUserProvisioningBeanSpec extends Specification {
     def 'searching for users calls search on dao'() {
         given:
         UserEntity userEntity = new UserEntity()
-        User userScim = new User()
+        User userScim = new User.Builder().build()
         SearchResult searchResult = new SearchResult([userEntity] as List, 1000L)
         userConverter.toScim(userEntity) >> userScim
 
         when:
-        def result = scimUserProvisioningBean.search('userName eq "marissa"', 'userName', 'ascending', 100, 1)
+        scimUserProvisioningBean.search('userName eq "marissa"', 'userName', 'ascending', 100, 1)
 
         then:
         1 * userDao.search(_, 'userName', 'ascending', 100, 0) >> searchResult

@@ -43,19 +43,19 @@ class UserConverterSpec extends Specification {
                     userType         : 'userType',
                     active           : true]
 
-    X509CertificateConverter x509CertificateConverter = Mock()
-    RoleConverter roleConverter = Mock()
-    PhotoConverter photoConverter = Mock()
-    PhoneNumberConverter phoneNumberConverter = Mock()
-    ImConverter imConverter = Mock()
-    EntitlementConverter entitlementConverter = Mock()
-    EmailConverter emailConverter = Mock()
-    AddressConverter addressConverter = Mock()
-    NameConverter nameConverter = Mock()
-    ExtensionConverter extensionConverter = Mock()
-    MetaConverter metaConverter = Mock()
+    def x509CertificateConverter = Mock(X509CertificateConverter)
+    def roleConverter = Mock(RoleConverter)
+    def photoConverter = Mock(PhotoConverter)
+    def phoneNumberConverter = Mock(PhoneNumberConverter)
+    def imConverter = Mock(ImConverter)
+    def entitlementConverter = Mock(EntitlementConverter)
+    def emailConverter = Mock(EmailConverter)
+    def addressConverter = Mock(AddressConverter)
+    def nameConverter = Mock(NameConverter)
+    def extensionConverter = Mock(ExtensionConverter)
+    def metaConverter = Mock(MetaConverter)
 
-    UserDao userDao = Mock()
+    def userDao = Mock(UserDao)
 
     UserConverter userConverter = new UserConverter(
             x509CertificateConverter: x509CertificateConverter,
@@ -82,16 +82,16 @@ class UserConverterSpec extends Specification {
 
         then:
         1 * extensionConverter.toScim(_) >> ([] as Set<Extension>)
-        1 * x509CertificateConverter.toScim(_) >> ([] as Set)
-        1 * roleConverter.toScim(_) >> ([] as Set)
-        1 * photoConverter.toScim(_) >> ([] as Set)
-        1 * phoneNumberConverter.toScim(_) >> ([] as Set)
-        1 * imConverter.toScim(_) >> ([] as Set)
-        1 * entitlementConverter.toScim(_) >> ([] as Set)
-        1 * emailConverter.toScim(_) >> ([] as Set)
-        1 * addressConverter.toScim(_) >> ([] as Set)
-        1 * nameConverter.toScim(_) >> (new Name())
-        1 * metaConverter.toScim(_) >> (new Meta())
+        1 * x509CertificateConverter.toScim(_) >> (new X509Certificate.Builder().build())
+        1 * roleConverter.toScim(_) >> (new Role.Builder().build())
+        1 * photoConverter.toScim(_) >> (new Photo.Builder().build())
+        1 * phoneNumberConverter.toScim(_) >> (new PhoneNumber.Builder().build())
+        1 * imConverter.toScim(_) >> (new Im.Builder().build())
+        1 * entitlementConverter.toScim(_) >> (new Entitlement.Builder().build())
+        1 * emailConverter.toScim(_) >> (new Email.Builder().build())
+        1 * addressConverter.toScim(_) >> (new Address.Builder().build())
+        1 * nameConverter.toScim(_) >> (new Name.Builder().build())
+        1 * metaConverter.toScim(_) >> (new Meta.Builder().build())
 
         user.id == uuid.toString()
         user.isActive()
@@ -129,7 +129,7 @@ class UserConverterSpec extends Specification {
         1 * addressConverter.fromScim(_) >> ([] as Set)
         1 * nameConverter.fromScim(_) >> new NameEntity()
 
-        userEntity.active == true
+        userEntity.active
         userEntity.displayName == fixtures["displayName"]
         userEntity.externalId == fixtures["externalId"]
         userEntity.locale == fixtures["locale"]
@@ -163,21 +163,21 @@ class UserConverterSpec extends Specification {
         UserEntity userEntity = userConverter.fromScim(user)
 
         then:
-        userEntity.getActive() == false
+        !userEntity.getActive()
     }
 
     def User getFilledUser(UUID internalId) {
         User.Builder userBuilder = new User.Builder(fixtures)
         userBuilder.setId(internalId.toString())
 
-        userBuilder.addX509Certificates([Mock(X509Certificate)] as List<X509Certificate>)
-        userBuilder.addRoles([Mock(Role)] as List<Role>)
-        userBuilder.addEmails([Mock(Email)] as List<Email>)
-        userBuilder.addEntitlements([Mock(Entitlement)] as List<Entitlement>)
-        userBuilder.addPhoneNumbers([Mock(PhoneNumber)] as List<PhoneNumber>)
-        userBuilder.addPhotos([Mock(Photo)] as List<Photo>)
-        userBuilder.addIms([Mock(Im)] as List<Im>)
-        userBuilder.addAddresses([Mock(Address)] as List<Address>)
+        userBuilder.addX509Certificates([new X509Certificate.Builder().build()] as List<X509Certificate>)
+        userBuilder.addRoles([new Role.Builder().build()] as List<Role>)
+        userBuilder.addEmails([new Email.Builder().build()] as List<Email>)
+        userBuilder.addEntitlements([new Entitlement.Builder().build()] as List<Entitlement>)
+        userBuilder.addPhoneNumbers([new PhoneNumber.Builder().build()] as List<PhoneNumber>)
+        userBuilder.addPhotos([new Photo.Builder().build()] as List<Photo>)
+        userBuilder.addIms([new Im.Builder().build()] as List<Im>)
+        userBuilder.addAddresses([new Address.Builder().build()] as List<Address>)
 
         return userBuilder.build()
     }

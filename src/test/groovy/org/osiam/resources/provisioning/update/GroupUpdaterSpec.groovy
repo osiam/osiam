@@ -38,13 +38,13 @@ class GroupUpdaterSpec extends Specification {
 
     static IRRELEVANT = 'irrelevant'
 
-    ResourceUpdater resourceUpdater = Mock()
-    ResourceDao resourceDao = Mock()
-    GroupDao groupDao = Mock()
-    GroupUpdater groupUpdater = new GroupUpdater(groupDao, resourceUpdater, resourceDao)
+    def resourceUpdater = Mock(ResourceUpdater)
+    def resourceDao = Mock(ResourceDao)
+    def groupDao = Mock(GroupDao)
+    def groupUpdater = new GroupUpdater(groupDao, resourceUpdater, resourceDao)
 
     Group group
-    GroupEntity groupEntity = Mock()
+    def groupEntity = Mock(GroupEntity)
 
     def 'updating a group triggers resource updater'() {
         given:
@@ -59,7 +59,7 @@ class GroupUpdaterSpec extends Specification {
 
     def 'removing displayName is not possible'() {
         given:
-        Meta meta = new Meta(attributes: ['displayName'] as Set)
+        Meta meta = new Meta.Builder(attributes: ['displayName'] as Set).build()
         group = new Group.Builder(meta: meta).build()
 
         when:
@@ -103,7 +103,7 @@ class GroupUpdaterSpec extends Specification {
 
     def 'removing all members is possible'() {
         given:
-        Meta meta = new Meta(attributes: ['members'] as Set)
+        Meta meta = new Meta.Builder(attributes: ['members'] as Set).build()
         group = new Group.Builder(meta: meta).build()
 
         when:

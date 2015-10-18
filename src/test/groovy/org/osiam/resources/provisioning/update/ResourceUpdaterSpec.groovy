@@ -34,43 +34,43 @@ class ResourceUpdaterSpec extends Specification {
 
     static String IRRELEVANT = 'irrelevant'
 
-    ResourceDao resourceDao = Mock()
+    def resourceDao = Mock(ResourceDao)
     ResourceUpdater resourceUpdater = new ResourceUpdater(resourceDao)
 
-    Meta metaWithAttributesToDelete = new Meta(attributes: ['externalId'] as Set)
+    Meta metaWithAttributesToDelete = new Meta.Builder(attributes: ['externalId'] as Set).build()
     // resources are abstract so we use groups here with no loss of generality
     Group group
-    GroupEntity groupEntity = Mock()
 
     def 'removing externalId works'() {
         given:
         group = new Group.Builder(meta: metaWithAttributesToDelete).build()
+        def groupEntity = new GroupEntity(externalId: IRRELEVANT)
 
         when:
         resourceUpdater.update(group, groupEntity)
 
         then:
-        1 * groupEntity.setExternalId(null)
+        groupEntity.externalId == null
     }
 
     def 'updating externalId works'() {
         given:
         def uuid = UUID.randomUUID()
         group = new Group.Builder(externalId: IRRELEVANT).build()
-        groupEntity.getId() >> uuid
+        def groupEntity = new GroupEntity(id: uuid)
 
         when:
         resourceUpdater.update(group, groupEntity)
 
         then:
-        1 * groupEntity.setExternalId(IRRELEVANT)
+        groupEntity.externalId == IRRELEVANT
     }
 
     def 'updating the externalId checks if the externalId already exists'() {
         given:
         def uuid = UUID.randomUUID()
         Group group = new Group.Builder(externalId: IRRELEVANT).build()
-        groupEntity.getId() >> uuid
+        def groupEntity = new GroupEntity(id: uuid)
 
         when:
         resourceUpdater.update(group, groupEntity)
@@ -83,7 +83,7 @@ class ResourceUpdaterSpec extends Specification {
         given:
         def uuid = UUID.randomUUID()
         Group group = new Group.Builder(externalId: IRRELEVANT).build()
-        groupEntity.getId() >> uuid
+        def groupEntity = new GroupEntity(id: uuid)
 
         when:
         resourceUpdater.update(group, groupEntity)

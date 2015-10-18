@@ -38,14 +38,14 @@ import javax.persistence.NoResultException
 
 class SCIMGroupProvisioningBeanSpec extends Specification {
 
-    GroupDao groupDao = Mock()
-    GroupConverter groupConverter = Mock()
-    GroupUpdater groupUpdater = Mock()
+    def groupDao = Mock(GroupDao)
+    def groupConverter = Mock(GroupConverter)
+    def groupUpdater = Mock(GroupUpdater)
 
-    SCIMGroupProvisioning scimGroupProvisioning = new SCIMGroupProvisioning(groupDao: groupDao, groupConverter: groupConverter,
+    def scimGroupProvisioning = new SCIMGroupProvisioning(groupDao: groupDao, groupConverter: groupConverter,
             groupUpdater: groupUpdater)
 
-    Group group = Mock()
+    Group group = new Group.Builder().build()
     GroupEntity groupEntity = Mock()
 
     def groupUuid = UUID.randomUUID().toString()

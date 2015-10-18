@@ -82,7 +82,7 @@ class UserUpdaterSpec extends Specification {
 
     def 'removing the userName attribute raises exception'() {
         given:
-        Meta meta = new Meta(attributes: ['userName'] as Set)
+        Meta meta = new Meta.Builder(attributes: ['userName'] as Set).build()
         user = new User.Builder(meta: meta).build()
 
         when:
@@ -235,7 +235,7 @@ class UserUpdaterSpec extends Specification {
 
     def 'removing the displayName attribute is possible'() {
         given:
-        Meta meta = new Meta(attributes: ['displayName'] as Set)
+        Meta meta = new Meta.Builder(attributes: ['displayName'] as Set).build()
         user = new User.Builder(meta: meta).build()
 
         when:
@@ -275,7 +275,7 @@ class UserUpdaterSpec extends Specification {
 
     def 'removing the nickName attribute is possible'() {
         given:
-        Meta meta = new Meta(attributes: ['nickName'] as Set)
+        Meta meta = new Meta.Builder(attributes: ['nickName'] as Set).build()
         user = new User.Builder(meta: meta).build()
 
         when:
@@ -315,7 +315,7 @@ class UserUpdaterSpec extends Specification {
 
     def 'removing the profileUrl attribute is possible'() {
         given:
-        Meta meta = new Meta(attributes: ['profileUrl'] as Set)
+        Meta meta = new Meta.Builder(attributes: ['profileUrl'] as Set).build()
         user = new User.Builder(meta: meta).build()
 
         when:
@@ -355,7 +355,7 @@ class UserUpdaterSpec extends Specification {
 
     def 'removing the title attribute is possible'() {
         given:
-        Meta meta = new Meta(attributes: ['title'] as Set)
+        Meta meta = new Meta.Builder(attributes: ['title'] as Set).build()
         user = new User.Builder(meta: meta).build()
 
         when:
@@ -395,7 +395,7 @@ class UserUpdaterSpec extends Specification {
 
     def 'removing the userType attribute is possible'() {
         given:
-        Meta meta = new Meta(attributes: ['userType'] as Set)
+        Meta meta = new Meta.Builder(attributes: ['userType'] as Set).build()
         user = new User.Builder(meta: meta).build()
 
         when:
@@ -435,7 +435,7 @@ class UserUpdaterSpec extends Specification {
 
     def 'removing the preferredLanguage attribute is possible'() {
         given:
-        Meta meta = new Meta(attributes: ['preferredLanguage'] as Set)
+        Meta meta = new Meta.Builder(attributes: ['preferredLanguage'] as Set).build()
         user = new User.Builder(meta: meta).build()
 
         when:
@@ -475,7 +475,7 @@ class UserUpdaterSpec extends Specification {
 
     def 'removing the locale attribute is possible'() {
         given:
-        Meta meta = new Meta(attributes: ['locale'] as Set)
+        Meta meta = new Meta.Builder(attributes: ['locale'] as Set).build()
         user = new User.Builder(meta: meta).build()
 
         when:
@@ -515,7 +515,7 @@ class UserUpdaterSpec extends Specification {
 
     def 'removing the timezone attribute is possible'() {
         given:
-        Meta meta = new Meta(attributes: ['timezone'] as Set)
+        Meta meta = new Meta.Builder(attributes: ['timezone'] as Set).build()
         user = new User.Builder(meta: meta).build()
 
         when:
@@ -555,7 +555,7 @@ class UserUpdaterSpec extends Specification {
 
     def 'removing the active attribute is possible'() {
         given:
-        Meta meta = new Meta(attributes: ['active'] as Set)
+        Meta meta = new Meta.Builder(attributes: ['active'] as Set).build()
         user = new User.Builder(meta: meta).build()
 
         when:
@@ -594,7 +594,7 @@ class UserUpdaterSpec extends Specification {
 
     def 'removing the password attribute raises exception'() {
         given:
-        Meta meta = new Meta(attributes: ['password'] as Set)
+        Meta meta = new Meta.Builder(attributes: ['password'] as Set).build()
         user = new User.Builder(meta: meta).build()
 
         when:
@@ -638,7 +638,7 @@ class UserUpdaterSpec extends Specification {
 
     def 'deleting all groups raises an exception'() {
         given:
-        Meta meta = new Meta(attributes: ['groups'] as Set)
+        Meta meta = new Meta.Builder(attributes: ['groups'] as Set).build()
         user = new User.Builder(meta: meta).build()
 
         when:
@@ -651,7 +651,7 @@ class UserUpdaterSpec extends Specification {
 
     def 'modify a single group raises an exception'() {
         given:
-        user = new User.Builder(groups: [new Group()] as List).build()
+        user = new User.Builder(groups: [new Group.Builder().build()] as List).build()
 
         when:
         userUpdater.update(user, userEntity)
