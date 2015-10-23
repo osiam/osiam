@@ -15,6 +15,7 @@ This is the central place for the OSIAM documentation. We have several types of 
 ## Usage
 * [Installation & Configuration](detailed-reference-installation.md)
 * [Customization guide](customization-guide.md)
+* [API documentation](api_documentation.md)
 
 ## Connector based integration
 * [OSIAM Connector for Java](https://github.com/osiam/connector4java/blob/master/README.md)
@@ -22,11 +23,8 @@ This is the central place for the OSIAM documentation. We have several types of 
 * [Facebook Login for OSIAM](facebook-connect.md)
 * [More about OSIAM Connectors](osiam-connectors.md)
 
-## [Long Time Service Versions](LTS.md)
-
 ## Misc
-* [Frequently Asked Questions/F.A.Q](https://www.osiam.org/pages/viewpage.action?pageId=1016171)
 * [How to develop new OSIAM connectors](osiam-connectors.md#externally-built-osiam-connectors)
 * [Secure Development Lifecycle for OSIAM](secure-dev-lifecycle.md)
 * [Stress testing OSIAM](https://github.com/osiam/test-suites/blob/master/stress-tests/README.md)
-* [Contributors guide](contributors-guide.md)
+* [Contribution guidelines](../CONTRIBUTING.md)
