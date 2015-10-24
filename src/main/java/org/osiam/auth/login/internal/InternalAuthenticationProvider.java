@@ -42,6 +42,7 @@ import org.springframework.security.authentication.event.AuthenticationSuccessEv
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -60,17 +61,20 @@ public class InternalAuthenticationProvider implements AuthenticationProvider,
     private final Map<String, Date> lastFailedLogin = Collections.synchronizedMap(new HashMap<>());
 
     private final SCIMUserProvisioning userProvisioning;
-    private final ShaPasswordEncoder passwordEncoder;
+    private final ShaPasswordEncoder shaPasswordEncoder;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final Integer maxLoginFailures;
     private final Integer lockTimeout;
 
     @Autowired
     public InternalAuthenticationProvider(SCIMUserProvisioning userProvisioning,
-                                          ShaPasswordEncoder passwordEncoder,
+                                          ShaPasswordEncoder shaPasswordEncoder,
+                                          BCryptPasswordEncoder bCryptPasswordEncoder,
                                           @Value("${osiam.tempLock.count:0}") Integer maxLoginFailures,
                                           @Value("${osiam.tempLock.timeout:0}") Integer lockTimeout) {
         this.userProvisioning = userProvisioning;
-        this.passwordEncoder = passwordEncoder;
+        this.shaPasswordEncoder = shaPasswordEncoder;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.maxLoginFailures = maxLoginFailures;
         this.lockTimeout = lockTimeout;
     }
@@ -93,7 +97,6 @@ public class InternalAuthenticationProvider implements AuthenticationProvider,
 
         assertUserNotLocked(username);
 
-        // Determine username
         User user = userProvisioning.getByUsernameWithPassword(username);
 
         if (user == null) {
@@ -104,8 +107,13 @@ public class InternalAuthenticationProvider implements AuthenticationProvider,
             throw new DisabledException("The user with the username '" + username + "' is disabled!");
         }
 
-        if (!passwordEncoder.isPasswordValid(user.getPassword(), password, user.getId())) {
-            throw new BadCredentialsException("Bad credentials");
+        if (!bCryptPasswordEncoder.matches(password, user.getPassword())) {
+            if (shaPasswordEncoder.isPasswordValid(user.getPassword(), password, user.getId())) {
+                User replaceUser = new User.Builder(user).setPassword(password).build();
+                userProvisioning.replace(user.getId(), replaceUser);
+            } else {
+                throw new BadCredentialsException("Bad credentials");
+            }
         }
 
         User authUser = new User.Builder(username).setId(user.getId()).build();

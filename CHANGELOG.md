@@ -6,7 +6,7 @@
 
 ### Changes
 
-- Require a Java runtime enviroment of at least version 8
+- Require a Java runtime environment of at least version 8
 
 - Remove usage of old, method-based OAuth scopes
 - Remove support for old, method-based OAuth scopes
@@ -35,6 +35,10 @@
   database, an initial admin user will be created. The details of the client and
   user will be logged. This removes the creation of initial data during the
   database setup.
+- Migrate to BCrypt hashes
+  When users login, their passwords will be updated to the new BCrypt hashes.
+  Until the Release 4.0 the old sha password hashes will be supported.
+  After OSIAM 4.0 was released the old password hashes are not usable anymore.
 
 ## Old Versions
 
@@ -42,4 +46,3 @@ You can find the changelog of older versions < 3.x here:
 
 - [auth-server](https://github.com/osiam/auth-server/blob/master/CHANGELOG.md)
 - [resource-server](https://github.com/osiam/resource-server/blob/master/CHANGELOG.md)
-
