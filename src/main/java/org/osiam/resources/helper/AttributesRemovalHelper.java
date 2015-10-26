@@ -83,8 +83,8 @@ public class AttributesRemovalHelper {
             rootNode.put("totalResults", scimSearchResult.getTotalResults());
             rootNode.put("itemsPerPage", scimSearchResult.getItemsPerPage());
             rootNode.put("startIndex", scimSearchResult.getStartIndex());
-            rootNode.put("schemas", schemasNode);
-            rootNode.put("Resources", resourcesNode);
+            rootNode.set("schemas", schemasNode);
+            rootNode.set("Resources", resourcesNode);
 
             return mapper.readValue(rootNode.toString(), SCIMSearchResult.class);
         } catch (IOException e) {
@@ -112,8 +112,8 @@ public class AttributesRemovalHelper {
             rootNode.put("totalResults", scimSearchResult.getTotalResults());
             rootNode.put("itemsPerPage", scimSearchResult.getItemsPerPage());
             rootNode.put("startIndex", scimSearchResult.getStartIndex());
-            rootNode.put("schemas", schemasNode);
-            rootNode.put("Resources", resourcesNode);
+            rootNode.set("schemas", schemasNode);
+            rootNode.set("Resources", resourcesNode);
 
             return mapper.readValue(rootNode.toString(), SCIMSearchResult.class);
         } catch (IOException e) {
