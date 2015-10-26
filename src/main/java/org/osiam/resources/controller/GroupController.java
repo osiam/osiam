@@ -51,7 +51,8 @@ public class GroupController {
     @Autowired
     private SCIMGroupProvisioning scimGroupProvisioning;
 
-    private AttributesRemovalHelper attributesRemovalHelper = new AttributesRemovalHelper();
+    @Autowired
+    private AttributesRemovalHelper attributesRemovalHelper;
 
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<Group> create(@RequestBody @Valid Group group, UriComponentsBuilder builder) throws IOException {

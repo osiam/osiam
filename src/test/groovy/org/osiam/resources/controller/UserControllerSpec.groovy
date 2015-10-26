@@ -25,6 +25,7 @@ package org.osiam.resources.controller
 
 import org.osiam.auth.token.TokenService
 import org.osiam.resources.exception.RestExceptionHandler
+import org.osiam.resources.helper.AttributesRemovalHelper
 import org.osiam.resources.provisioning.SCIMUserProvisioning
 import org.osiam.resources.scim.SCIMSearchResult
 import org.osiam.resources.scim.User
@@ -42,7 +43,8 @@ class UserControllerSpec extends Specification {
     def scimUserProvisioning = Mock(SCIMUserProvisioning)
     def tokenService = Mock(TokenService)
 
-    def UserController = new UserController(scimUserProvisioning: scimUserProvisioning, tokenService: tokenService)
+    def UserController = new UserController(scimUserProvisioning: scimUserProvisioning, tokenService: tokenService,
+            attributesRemovalHelper: new AttributesRemovalHelper())
 
     def mockMvc = MockMvcBuilders.standaloneSetup(UserController)
             .setControllerAdvice(new RestExceptionHandler()).build()

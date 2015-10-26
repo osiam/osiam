@@ -32,12 +32,11 @@ import org.osiam.resources.scim.SCIMSearchResult
 import org.osiam.resources.scim.User
 import spock.lang.Specification
 
-import javax.servlet.http.HttpServletRequest
-
 class IsoDateFormatSpec extends Specification {
 
     def provisioning = Mock(SCIMUserProvisioning)
-    def userController = new UserController(scimUserProvisioning: provisioning)
+    def userController = new UserController(scimUserProvisioning: provisioning,
+            attributesRemovalHelper: new AttributesRemovalHelper())
 
     def "should return the date fields in iso format"() {
         given:
@@ -50,7 +49,7 @@ class IsoDateFormatSpec extends Specification {
         def scimSearchResult = new SCIMSearchResult([user] as List, 23, 100, 0)
 
         when:
-        def result = userController.searchWithGet(["attributes":"meta.created"])
+        def result = userController.searchWithGet(["attributes": "meta.created"])
 
         then:
         1 * provisioning.search(_, _, _, _, _) >> scimSearchResult

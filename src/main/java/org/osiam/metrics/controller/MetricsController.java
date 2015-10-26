@@ -23,55 +23,36 @@
 
 package org.osiam.metrics.controller;
 
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
-import com.codahale.metrics.json.MetricsModule;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-
 import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * {@link MetricsController} with just one action to get metrics data
- *
  */
-@Controller
+@RestController
 @RequestMapping(value = "/Metrics")
 public class MetricsController {
 
-    private static final String RATE_UNIT = MetricsController.class.getCanonicalName() + ".rateUnit";
-    private static final String DURATION_UNIT = MetricsController.class.getCanonicalName() + ".durationUnit";
+    private final MetricRegistry registry;
+    private final ObjectMapper mapper;
 
     @Autowired
-    private MetricRegistry registry;
+    public MetricsController(MetricRegistry registry,
+                             ObjectMapper mapper) {
+        this.registry = registry;
+        this.mapper = mapper;
+    }
 
     @RequestMapping(method = RequestMethod.GET)
-    @ResponseBody
     public ResponseEntity<String> getMetrics() throws JsonProcessingException {
-        String jsonResponse = createMetricsJSONMapper().writerWithDefaultPrettyPrinter().writeValueAsString(registry);
-
+        String jsonResponse = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(registry);
         return new ResponseEntity<>(jsonResponse, HttpStatus.OK);
-    }
-
-    private ObjectMapper createMetricsJSONMapper() {
-        final TimeUnit rateUnit = parseTimeUnit(RATE_UNIT, TimeUnit.SECONDS);
-        final TimeUnit durationUnit = parseTimeUnit(DURATION_UNIT, TimeUnit.SECONDS);
-        return new ObjectMapper().registerModule(new MetricsModule(rateUnit, durationUnit, false));
-    }
-
-    private TimeUnit parseTimeUnit(String value, TimeUnit defaultValue) {
-        try {
-            return TimeUnit.valueOf(String.valueOf(value).toUpperCase(Locale.US));
-        } catch (IllegalArgumentException e) {
-            return defaultValue;
-        }
     }
 }

@@ -1,6 +1,7 @@
 package org.osiam.resources.controller
 
 import org.osiam.resources.exception.RestExceptionHandler
+import org.osiam.resources.helper.AttributesRemovalHelper
 import org.osiam.resources.provisioning.SCIMGroupProvisioning
 import org.osiam.resources.scim.Group
 import org.osiam.resources.scim.SCIMSearchResult
@@ -17,7 +18,8 @@ class GroupControllerSpec extends Specification {
 
     def scimGroupProvisioning = Mock(SCIMGroupProvisioning)
 
-    def groupController = new GroupController(scimGroupProvisioning: scimGroupProvisioning)
+    def groupController = new GroupController(scimGroupProvisioning: scimGroupProvisioning,
+            attributesRemovalHelper: new AttributesRemovalHelper())
 
     def mockMvc = MockMvcBuilders.standaloneSetup(groupController)
             .setControllerAdvice(new RestExceptionHandler()).build()
