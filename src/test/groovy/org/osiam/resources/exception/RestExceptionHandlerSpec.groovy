@@ -22,7 +22,10 @@
  */
 
 package org.osiam.resources.exception
+
+import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
 import org.osiam.resources.scim.User
 import org.springframework.http.HttpStatus
 import spock.lang.Specification
@@ -90,9 +93,9 @@ class RestExceptionHandlerSpec extends Specification {
 
     def "should transform json property invalid error message to a more readable response"() {
         given:
-        def e = generate_wrong_json_exception('{"extId":"blubb"}', User)
+        def e = generate_wrong_json_exception('{"schemas":["irrelevant"], "extId":"blubb"}', User)
         when:
-        def result = exceptionHandler.handleUnrecognizedProperty(e)
+        def result = exceptionHandler.handleUnrecognizedProperty(e as UnrecognizedPropertyException)
         then:
         result.status == HttpStatus.CONFLICT as String
         result.detail == 'Unrecognized field "extId"'
@@ -102,7 +105,7 @@ class RestExceptionHandlerSpec extends Specification {
         given:
         def e = generate_wrong_json_exception('{"ims":"blaa"}', User)
         when:
-        def result = exceptionHandler.handleJsonMapping(e)
+        def result = exceptionHandler.handleJsonMapping(e as JsonMappingException)
         then:
         result.detail == 'Can not deserialize instance of java.util.ArrayList out of VALUE_STRING'
         result.status == HttpStatus.CONFLICT as String
