@@ -47,18 +47,17 @@ found here: http://tomcat.apache.org/tomcat-7.0-doc/ssl-howto.html
 
 ## Download OSIAM
 
-We recommend to choose the latest OSIAM release version. You can easily download
-the distribution as .zip or .tar.gz file from the release repository:
-https://github.com/osiam/osiam/releases
+We recommend to choose the latest OSIAM release version.
+You can easily download the distribution from the release page: https://github.com/osiam/osiam/releases
+Available formats are .zip or .tar.gz.
 
-This includes OSIAM, the addon-self-administration and addon-administration,
-every project has it's own folder with the configuration and sql files. If you
-just want the use the core server, then download the core OSIAM distribution
-without the addons from the same location. Both distributions have in common,
-that the included projects are packed as .war files and a configuration folder.
+The distribution includes
 
-After download, please unpack the distribution archive to a location of your
-choice.
+* OSIAM server as a .war file
+* an example configuration file
+* static assets like templates, css and javascript files
+
+After download, please unpack the distribution archive to a location of your choice.
 
 ## Configuration
 
@@ -122,8 +121,9 @@ org.osiam.tempLock.count=10
 org.osiam.tempLock.timeout=30
 ```
 
-To provide the html template, css and message property files, you have to copy
-the folder `osiam` from the distribution to `/etc/osiam/`.
+To provide the HTML templates, static assets and message property files, you have to copy some files.
+First, find the folder `/configuration/osiam` within the distribution archive.
+Then copy the complete folder to `/etc/osiam/` while preserving the directory structure.
 
 ## Starting OSIAM
 
