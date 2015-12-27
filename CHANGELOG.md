@@ -26,6 +26,6 @@
 
 You can find the changelog of older versions < 3.x here:
 
-- [auth-server](docs/CHANGELOG-auth-server.md)
-- [resource-server](docs/CHANGELOG-resource-server.md)
+- [auth-server](https://github.com/osiam/auth-server/blob/master/CHANGELOG.md)
+- [resource-server](https://github.com/osiam/resource-server/blob/master/CHANGELOG.md)
 
