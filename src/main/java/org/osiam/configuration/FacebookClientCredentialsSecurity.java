@@ -26,9 +26,12 @@ package org.osiam.configuration;
 import org.osiam.security.authentication.OsiamClientDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter;
 import org.springframework.security.oauth2.provider.client.ClientDetailsUserDetailsService;
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
@@ -36,7 +39,8 @@ import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEn
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
-public class OAuth2ClientCredentialsSecurity extends WebSecurityConfigurerAdapter {
+@Order(1)
+public class FacebookClientCredentialsSecurity extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private OsiamClientDetailsService osiamClientDetailsService;
@@ -48,39 +52,26 @@ public class OAuth2ClientCredentialsSecurity extends WebSecurityConfigurerAdapte
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.requestMatchers()
-                .antMatchers("/oauth/token", "/fb/oauth/access_token")
+        http.authorizeRequests()
+                .antMatchers("/fb/oauth/access_token").fullyAuthenticated()
                 .and()
-                .authorizeRequests()
-                .anyRequest()
-                .authenticated()
+                .requestMatchers()
+                .antMatchers("/fb/oauth/access_token")
                 .and()
-                .addFilterAfter(clientCredentialsTokenEndpointFilter(), BasicAuthenticationFilter.class)
-                .addFilterAfter(fbClientCredentialsTokenEndpointFilter(), BasicAuthenticationFilter.class)
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
+                .and()
                 .httpBasic()
-                .authenticationEntryPoint(clientAuthenticationEntryPoint())
                 .and()
-                .exceptionHandling()
-                .accessDeniedHandler(new OAuth2AccessDeniedHandler());
+                .addFilterBefore(fbClientCredentialsTokenEndpointFilter(), BasicAuthenticationFilter.class)
+                .exceptionHandling().accessDeniedHandler(new OAuth2AccessDeniedHandler());
     }
 
-    public ClientCredentialsTokenEndpointFilter clientCredentialsTokenEndpointFilter() throws Exception {
-        ClientCredentialsTokenEndpointFilter tokenEndpointFilter = new ClientCredentialsTokenEndpointFilter();
-        tokenEndpointFilter.setAuthenticationManager(authenticationManager());
-        return tokenEndpointFilter;
-    }
-
-    public ClientCredentialsTokenEndpointFilter fbClientCredentialsTokenEndpointFilter() throws Exception {
+    public ClientCredentialsTokenEndpointFilter fbClientCredentialsTokenEndpointFilter( ) throws Exception {
         ClientCredentialsTokenEndpointFilter tokenEndpointFilter =
                 new ClientCredentialsTokenEndpointFilter("/fb/oauth/access_token");
         tokenEndpointFilter.setAuthenticationManager(authenticationManager());
         tokenEndpointFilter.afterPropertiesSet();
         return tokenEndpointFilter;
-    }
-
-    public OAuth2AuthenticationEntryPoint clientAuthenticationEntryPoint() {
-        OAuth2AuthenticationEntryPoint authenticationEntryPoint = new OAuth2AuthenticationEntryPoint();
-        authenticationEntryPoint.setRealmName("authorization-server/client");
-        return authenticationEntryPoint;
     }
 }
