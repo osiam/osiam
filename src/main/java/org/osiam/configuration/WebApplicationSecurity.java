@@ -39,7 +39,6 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -70,26 +69,28 @@ public class WebApplicationSecurity extends WebSecurityConfigurerAdapter {
                 new OsiamCachingAuthenticationFailureHandler("/login/error")
         );
 
+        // @formatter:off
         http.authorizeRequests()
-                .antMatchers("/login", "/error")
-                .permitAll()
-                .anyRequest()
-                .authenticated()
+                .antMatchers("/login", "/error").permitAll()
+                .anyRequest().authenticated()
                 .and()
+            .csrf()
                 // TODO: This is a bad idea! We need CSRF at least for the `/oauth/authorize` endpoint
-                .csrf().disable()
-                .exceptionHandling()
+                // see also: https://github.com/spring-projects/spring-security-oauth/blob/2.0.8.RELEASE/samples/oauth2/sparklr/src/main/java/org/springframework/security/oauth/examples/sparklr/config/SecurityConfiguration.java#L48
+                .disable()
+            .exceptionHandling()
                 .accessDeniedPage("/login/error")
                 .and()
-                .sessionManagement()
+            .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                 .and()
-                .formLogin()
+            .formLogin()
                 .loginProcessingUrl("/login/check")
                 .failureUrl("/login/error")
                 .loginPage("/login")
                 .and()
-                .addFilterBefore(loginDecisionFilter, UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(loginDecisionFilter, UsernamePasswordAuthenticationFilter.class);
+        // @formatter:on
     }
 
     @Override
