@@ -60,6 +60,16 @@ public class WebApplicationSecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        LoginDecisionFilter loginDecisionFilter = new LoginDecisionFilter();
+        loginDecisionFilter.setAuthenticationManager(authenticationManagerBean());
+        SavedRequestAwareAuthenticationSuccessHandler successHandler =
+                new SavedRequestAwareAuthenticationSuccessHandler();
+        successHandler.setAlwaysUseDefaultTargetUrl(false);
+        loginDecisionFilter.setAuthenticationSuccessHandler(successHandler);
+        loginDecisionFilter.setAuthenticationFailureHandler(
+                new OsiamCachingAuthenticationFailureHandler("/login/error")
+        );
+
         http.authorizeRequests()
                 .antMatchers("/login")
                 .permitAll()
@@ -75,7 +85,7 @@ public class WebApplicationSecurity extends WebSecurityConfigurerAdapter {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                 .and()
-                .addFilterBefore(loginDecisionFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(loginDecisionFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override
@@ -100,29 +110,7 @@ public class WebApplicationSecurity extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public SavedRequestAwareAuthenticationSuccessHandler successHandler() {
-        SavedRequestAwareAuthenticationSuccessHandler successHandler =
-                new SavedRequestAwareAuthenticationSuccessHandler();
-        successHandler.setAlwaysUseDefaultTargetUrl(false);
-        return successHandler;
-    }
-
-    @Bean
-    public OsiamCachingAuthenticationFailureHandler failureHandler() throws Exception {
-        return new OsiamCachingAuthenticationFailureHandler("/login/error");
-    }
-
-    @Bean
     public LoginUrlAuthenticationEntryPoint loginUrlAuthenticationEntryPoint() {
         return new LoginUrlAuthenticationEntryPoint("/login");
-    }
-
-    @Bean
-    public LoginDecisionFilter loginDecisionFilter() throws Exception {
-        LoginDecisionFilter loginDecisionFilter = new LoginDecisionFilter();
-        loginDecisionFilter.setAuthenticationManager(authenticationManagerBean());
-        loginDecisionFilter.setAuthenticationSuccessHandler(successHandler());
-        loginDecisionFilter.setAuthenticationFailureHandler(failureHandler());
-        return loginDecisionFilter;
     }
 }
