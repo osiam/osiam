@@ -35,6 +35,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -53,24 +54,42 @@ public class WebApplicationSecurity extends WebSecurityConfigurerAdapter {
     @Autowired(required = false)
     private OsiamLdapAuthenticationProvider osiamLdapAuthenticationProvider;
 
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("/css/**", "/js/**");
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        LoginDecisionFilter loginDecisionFilter = new LoginDecisionFilter();
+        loginDecisionFilter.setAuthenticationManager(authenticationManagerBean());
+        SavedRequestAwareAuthenticationSuccessHandler successHandler =
+                new SavedRequestAwareAuthenticationSuccessHandler();
+        successHandler.setAlwaysUseDefaultTargetUrl(false);
+        loginDecisionFilter.setAuthenticationSuccessHandler(successHandler);
+        loginDecisionFilter.setAuthenticationFailureHandler(
+                new OsiamCachingAuthenticationFailureHandler("/login/error")
+        );
+
         http.authorizeRequests()
-                .antMatchers("/login")
+                .antMatchers("/login", "/error")
                 .permitAll()
-                .antMatchers("/oauth/**")
+                .anyRequest()
                 .authenticated()
                 .and()
                 // TODO: This is a bad idea! We need CSRF at least for the `/oauth/authorize` endpoint
                 .csrf().disable()
                 .exceptionHandling()
-                .authenticationEntryPoint(loginUrlAuthenticationEntryPoint())
                 .accessDeniedPage("/login/error")
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                 .and()
-                .addFilterBefore(loginDecisionFilter(), UsernamePasswordAuthenticationFilter.class);
+                .formLogin()
+                .loginProcessingUrl("/login/check")
+                .failureUrl("/login/error")
+                .loginPage("/login")
+                .and()
+                .addFilterBefore(loginDecisionFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override
@@ -92,32 +111,5 @@ public class WebApplicationSecurity extends WebSecurityConfigurerAdapter {
         ShaPasswordEncoder passwordEncoder = new ShaPasswordEncoder(512);
         passwordEncoder.setIterations(1000);
         return passwordEncoder;
-    }
-
-    @Bean
-    public SavedRequestAwareAuthenticationSuccessHandler successHandler() {
-        SavedRequestAwareAuthenticationSuccessHandler successHandler =
-                new SavedRequestAwareAuthenticationSuccessHandler();
-        successHandler.setAlwaysUseDefaultTargetUrl(false);
-        return successHandler;
-    }
-
-    @Bean
-    public OsiamCachingAuthenticationFailureHandler failureHandler() throws Exception {
-        return new OsiamCachingAuthenticationFailureHandler("/login/error");
-    }
-
-    @Bean
-    public LoginUrlAuthenticationEntryPoint loginUrlAuthenticationEntryPoint() {
-        return new LoginUrlAuthenticationEntryPoint("/login");
-    }
-
-    @Bean
-    public LoginDecisionFilter loginDecisionFilter() throws Exception {
-        LoginDecisionFilter loginDecisionFilter = new LoginDecisionFilter();
-        loginDecisionFilter.setAuthenticationManager(authenticationManagerBean());
-        loginDecisionFilter.setAuthenticationSuccessHandler(successHandler());
-        loginDecisionFilter.setAuthenticationFailureHandler(failureHandler());
-        return loginDecisionFilter;
     }
 }
