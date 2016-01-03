@@ -49,17 +49,12 @@ public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
     public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
         resources.resourceId("oauth2res")
                 .tokenServices(tokenService)
-                .expressionHandler(new OsiamMethodSecurityExpressionHandler())
-                .authenticationEntryPoint(oauthAuthenticationEntryPoint())
-                .accessDeniedHandler(new OAuth2AccessDeniedHandler());
+                .expressionHandler(new OsiamMethodSecurityExpressionHandler());
     }
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.exceptionHandling()
-                .accessDeniedHandler(oauthAccessDeniedHandler())
-                .and()
-                .requestMatchers()
+        http.requestMatchers()
                 .antMatchers(
                         "/",
                         "/.search",
@@ -94,17 +89,5 @@ public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
                         "#oauth2.hasScope('ME') and #osiam.isOwnerOfResource()")
                 .anyRequest()
                 .access("#oauth2.hasScope('ADMIN')");
-    }
-
-    public OAuth2AuthenticationEntryPoint oauthAuthenticationEntryPoint() {
-        OAuth2AuthenticationEntryPoint authenticationEntryPoint = new
-                OAuth2AuthenticationEntryPoint();
-        authenticationEntryPoint.setRealmName("osiam-oauth2");
-        return authenticationEntryPoint;
-    }
-
-    @Bean
-    public OAuth2AccessDeniedHandler oauthAccessDeniedHandler() {
-        return new OAuth2AccessDeniedHandler();
     }
 }
