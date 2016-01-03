@@ -73,7 +73,7 @@ public class WebApplicationSecurity extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/login")
                 .permitAll()
-                .antMatchers("/oauth/**")
+                .anyRequest()
                 .authenticated()
                 .and()
                 // TODO: This is a bad idea! We need CSRF at least for the `/oauth/authorize` endpoint
