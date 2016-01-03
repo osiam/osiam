@@ -79,11 +79,15 @@ public class WebApplicationSecurity extends WebSecurityConfigurerAdapter {
                 // TODO: This is a bad idea! We need CSRF at least for the `/oauth/authorize` endpoint
                 .csrf().disable()
                 .exceptionHandling()
-                .authenticationEntryPoint(loginUrlAuthenticationEntryPoint())
                 .accessDeniedPage("/login/error")
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                .and()
+                .formLogin()
+                .loginProcessingUrl("/login/check")
+                .failureUrl("/login/error")
+                .loginPage("/login")
                 .and()
                 .addFilterBefore(loginDecisionFilter, UsernamePasswordAuthenticationFilter.class);
     }
@@ -107,10 +111,5 @@ public class WebApplicationSecurity extends WebSecurityConfigurerAdapter {
         ShaPasswordEncoder passwordEncoder = new ShaPasswordEncoder(512);
         passwordEncoder.setIterations(1000);
         return passwordEncoder;
-    }
-
-    @Bean
-    public LoginUrlAuthenticationEntryPoint loginUrlAuthenticationEntryPoint() {
-        return new LoginUrlAuthenticationEntryPoint("/login");
     }
 }
