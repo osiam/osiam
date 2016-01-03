@@ -161,7 +161,7 @@ by using the following command:
 
 Everything is fine when you see a JSON string as response that looks like this:
 
-    {"schemas":["urn:scim:schemas:core:2.0:User"],"patch":{"supported":true},"bulk":{"supported":false},"filter":{"supported":true,"maxResults":100},"changePassword":{"supported":false},"sort":{"supported":true},"etag":{"supported":false},"xmlDataFormat":{"supported":false},"authenticationSchemes":{"authenticationSchemes":[{"name":"Oauth2 Bearer","description":"OAuth2 Bearer access token is used for authorization.","specUrl":"http://tools.ietf.org/html/rfc6749","documentationUrl":"http://oauth.net/2/"}]}}
+    {"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"patch":{"supported":true},"bulk":{"supported":false},"filter":{"supported":true,"maxResults":100},"changePassword":{"supported":false},"sort":{"supported":true},"etag":{"supported":false},"xmlDataFormat":{"supported":false},"authenticationSchemes":{"authenticationSchemes":[{"name":"Oauth2 Bearer","description":"OAuth2 Bearer access token is used for authorization.","specUrl":"http://tools.ietf.org/html/rfc6749","documentationUrl":"http://oauth.net/2/"}]}}
     
 ## Default setup
 
@@ -216,7 +216,10 @@ Get the initial admin user's ID
 Extract the ID of the user and use it in the following request to update the
 user with your preferred credentials:
 
-    curl -i -H "Accept:  application/json" -H "Content-type:  application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT localhost:8080/osiam/Users/<DEFAULT_USERS_ID> -d '{"schemas":["urn:scim:schemas:core:2.0:User"], "externalId":"","userName":"<YOUR_USERNAME>","password":"<YOUR_USERS_PASSWORD>"}' 
+    curl -i -H "Accept:  application/json" -H "Content-type:
+    application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT
+    localhost:8080/osiam/Users/<DEFAULT_USERS_ID> -d
+    '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"], "externalId":"","userName":"<YOUR_USERNAME>","password":"<YOUR_USERS_PASSWORD>"}' 
 
 Add your client (see also [Parameters for clients]
 (api_documentation.md#client-configuration)):
