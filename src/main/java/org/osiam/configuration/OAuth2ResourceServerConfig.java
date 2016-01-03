@@ -25,17 +25,12 @@ package org.osiam.configuration;
 
 import org.osiam.security.authorization.OsiamMethodSecurityExpressionHandler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
-import org.springframework.security.oauth2.config.annotation.web.configuration
-        .ResourceServerConfigurerAdapter;
-import org.springframework.security.oauth2.config.annotation.web.configurers
-        .ResourceServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
-import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
+import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
+import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 
 @Configuration
@@ -54,6 +49,7 @@ public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
+        // @formatter:off
         http.requestMatchers()
                 .antMatchers(
                         "/",
@@ -66,28 +62,21 @@ public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
                         "/osiam/**",
                         "/Client/**",
                         "/token/validation",
-                        "/token/revocation/**")
-                .and()
-                .authorizeRequests()
-                .antMatchers("/ServiceProviderConfigs")
-                .permitAll()
-                .antMatchers("/me/**")
-                .access("#oauth2.hasScope('ADMIN') or #oauth2.hasScope('ME')")
-                .antMatchers(HttpMethod.POST, "/Users/**")
-                .access("#oauth2.hasScope('ADMIN')")
-                .regexMatchers(HttpMethod.GET, "/Users/?")
-                .access("#oauth2.hasScope('ADMIN')")
+                        "/token/revocation/**"
+                ).and()
+            .authorizeRequests()
+                .antMatchers("/ServiceProviderConfigs").permitAll()
+                .antMatchers("/me/**").access("#oauth2.hasScope('ADMIN') or #oauth2.hasScope('ME')")
+                .antMatchers(HttpMethod.POST, "/Users/**").access("#oauth2.hasScope('ADMIN')")
+                .regexMatchers(HttpMethod.GET, "/Users/?").access("#oauth2.hasScope('ADMIN')")
                 .antMatchers("/Users/**")
-                .access("#oauth2.hasScope('ADMIN') or " +
-                        "#oauth2.hasScope('ME') and #osiam.isOwnerOfResource()")
-                .antMatchers("/token/validation")
-                .authenticated()
+                    .access("#oauth2.hasScope('ADMIN') or #oauth2.hasScope('ME') and #osiam.isOwnerOfResource()")
+                .antMatchers("/token/validation").authenticated()
                 .antMatchers("/token/revocation", "/token/revocation/")
-                .access("#oauth2.hasScope('ADMIN') or #oauth2.hasScope('ME')")
+                    .access("#oauth2.hasScope('ADMIN') or #oauth2.hasScope('ME')")
                 .antMatchers("/token/revocation/**")
-                .access("#oauth2.hasScope('ADMIN') or " +
-                        "#oauth2.hasScope('ME') and #osiam.isOwnerOfResource()")
-                .anyRequest()
-                .access("#oauth2.hasScope('ADMIN')");
+                    .access("#oauth2.hasScope('ADMIN') or #oauth2.hasScope('ME') and #osiam.isOwnerOfResource()")
+                .anyRequest().access("#oauth2.hasScope('ADMIN')");
+        // @formatter:on
     }
 }

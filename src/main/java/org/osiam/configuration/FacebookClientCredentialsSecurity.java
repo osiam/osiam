@@ -26,7 +26,6 @@ package org.osiam.configuration;
 import org.osiam.security.authentication.OsiamClientDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -35,7 +34,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter;
 import org.springframework.security.oauth2.provider.client.ClientDetailsUserDetailsService;
 import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler;
-import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
@@ -52,26 +50,28 @@ public class FacebookClientCredentialsSecurity extends WebSecurityConfigurerAdap
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers("/fb/oauth/access_token").fullyAuthenticated()
-                .and()
-                .requestMatchers()
-                .antMatchers("/fb/oauth/access_token")
-                .and()
-                .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
-                .and()
-                .httpBasic()
-                .and()
-                .addFilterBefore(fbClientCredentialsTokenEndpointFilter(), BasicAuthenticationFilter.class)
-                .exceptionHandling().accessDeniedHandler(new OAuth2AccessDeniedHandler());
-    }
-
-    public ClientCredentialsTokenEndpointFilter fbClientCredentialsTokenEndpointFilter( ) throws Exception {
         ClientCredentialsTokenEndpointFilter tokenEndpointFilter =
                 new ClientCredentialsTokenEndpointFilter("/fb/oauth/access_token");
         tokenEndpointFilter.setAuthenticationManager(authenticationManager());
         tokenEndpointFilter.afterPropertiesSet();
-        return tokenEndpointFilter;
+
+        // @formatter:off
+        http.requestMatchers()
+                .antMatchers("/fb/oauth/access_token")
+                .and()
+            .authorizeRequests()
+                .antMatchers("/fb/oauth/access_token").fullyAuthenticated()
+                .and()
+            .csrf()
+                .disable()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
+                .and()
+            .httpBasic()
+                .and()
+            .exceptionHandling()
+                .accessDeniedHandler(new OAuth2AccessDeniedHandler())
+                .and()
+            .addFilterBefore(tokenEndpointFilter, BasicAuthenticationFilter.class);
+        // @formatter:on
     }
 }
