@@ -71,7 +71,7 @@ public class WebApplicationSecurity extends WebSecurityConfigurerAdapter {
         );
 
         http.authorizeRequests()
-                .antMatchers("/login")
+                .antMatchers("/login", "/error")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
