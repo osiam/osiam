@@ -43,7 +43,7 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@Order
+@Order(2)
 @EnableWebSecurity
 public class WebApplicationSecurity extends WebSecurityConfigurerAdapter {
 
@@ -70,8 +70,11 @@ public class WebApplicationSecurity extends WebSecurityConfigurerAdapter {
         );
 
         // @formatter:off
-        http.authorizeRequests()
-                .antMatchers("/login", "/error").permitAll()
+        http.requestMatchers()
+                .antMatchers("/login/**", "/error", "/oauth/**")
+                .and()
+            .authorizeRequests()
+                .antMatchers("/login", "/login/error", "/error").permitAll()
                 .anyRequest().authenticated()
                 .and()
             .csrf()

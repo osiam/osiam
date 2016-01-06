@@ -50,21 +50,7 @@ public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
     @Override
     public void configure(HttpSecurity http) throws Exception {
         // @formatter:off
-        http.requestMatchers()
-                .antMatchers(
-                        "/",
-                        "/.search",
-                        "/ServiceProviderConfigs",
-                        "/me/**",
-                        "/Users/**",
-                        "/Groups/**",
-                        "/Metrics/**",
-                        "/osiam/**",
-                        "/Client/**",
-                        "/token/validation",
-                        "/token/revocation/**"
-                ).and()
-            .authorizeRequests()
+        http.authorizeRequests()
                 .antMatchers("/ServiceProviderConfigs").permitAll()
                 .antMatchers("/me/**").access("#oauth2.hasScope('ADMIN') or #oauth2.hasScope('ME')")
                 .antMatchers(HttpMethod.POST, "/Users/**").access("#oauth2.hasScope('ADMIN')")
