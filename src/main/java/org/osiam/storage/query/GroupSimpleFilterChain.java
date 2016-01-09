@@ -23,35 +23,27 @@
 
 package org.osiam.storage.query;
 
-import java.util.Locale;
+import org.osiam.storage.entities.GroupEntity;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.osiam.storage.entities.GroupEntity;
-
 public class GroupSimpleFilterChain implements FilterChain<GroupEntity> {
 
-    private final ScimExpression scimExpression;
+    private final FilterExpression<GroupEntity> filterExpression;
 
-    private final GroupQueryField filterField;
+    private final QueryField<GroupEntity> filterField;
     private final CriteriaBuilder criteriaBuilder;
 
-    public GroupSimpleFilterChain(CriteriaBuilder criteriaBuilder, ScimExpression scimExpression) {
+    public GroupSimpleFilterChain(CriteriaBuilder criteriaBuilder, FilterExpression<GroupEntity> filterExpression) {
         this.criteriaBuilder = criteriaBuilder;
-        this.scimExpression = scimExpression;
-        filterField = GroupQueryField.fromString(scimExpression.getField().toLowerCase(Locale.ENGLISH));
+        this.filterExpression = filterExpression;
+        filterField = filterExpression.getField().getQueryField();
     }
 
     @Override
     public Predicate createPredicateAndJoin(Root<GroupEntity> root) {
-        if (filterField == null) {
-            throw new IllegalArgumentException(String.format("Unable to filter. Field '%s' not available.",
-                    scimExpression.getField()));
-        }
-
-        return filterField.addFilter(root, scimExpression.getConstraint(), scimExpression.getValue(), criteriaBuilder);
+        return filterField.addFilter(root, filterExpression.getConstraint(), filterExpression.getValue(), criteriaBuilder);
     }
-
 }

@@ -32,65 +32,50 @@ import org.osiam.storage.entities.UserEntity;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.Locale;
 
 public class UserSimpleFilterChain implements FilterChain<UserEntity> {
 
-    private final ScimExpression scimExpression;
+    private final FilterExpression<UserEntity> filterExpression;
 
     private final QueryField<UserEntity> userFilterField;
     private final ExtensionDao extensionDao;
     private final CriteriaBuilder criteriaBuilder;
-    private ExtensionQueryField extensionFilterField;
+    private final ExtensionQueryField extensionFilterField;
 
     public UserSimpleFilterChain(CriteriaBuilder criteriaBuilder, ExtensionDao extensionDao,
-                                 ScimExpression scimExpression) {
+                                 FilterExpression<UserEntity> filterExpression) {
         this.criteriaBuilder = criteriaBuilder;
         this.extensionDao = extensionDao;
-        this.scimExpression = scimExpression;
+        this.filterExpression = filterExpression;
 
-        String field = scimExpression.getField();
-
-        userFilterField = UserQueryField.fromString(field.toLowerCase(Locale.ENGLISH));
-
-        // It's not a known user field, so try to build a extension filter
-        if (userFilterField == null) {
-            extensionFilterField = getExtensionFilterField(field.toLowerCase(Locale.ENGLISH));
-            if (extensionFilterField == null) {
-                throw new IllegalArgumentException(String.format("Filtering not possible: '%s' not available", field));
-            }
+        if (filterExpression.getField().isExtension()) {
+            extensionFilterField = getExtensionFilterField(filterExpression);
+            userFilterField = null;
+        } else {
+            userFilterField = filterExpression.getField().getQueryField();
+            extensionFilterField = null;
         }
     }
 
-    private ExtensionQueryField getExtensionFilterField(String fieldString) {
-        int lastIndexOf = fieldString.lastIndexOf('.');
-        if (lastIndexOf == -1) {
-            return null;
-        }
-
-        String urn = fieldString.substring(0, lastIndexOf);
-        String fieldName = fieldString.substring(lastIndexOf + 1);
+    private ExtensionQueryField getExtensionFilterField(FilterExpression<UserEntity> filterExpression) {
         final ExtensionEntity extension;
         try {
-            extension = extensionDao.getExtensionByUrn(urn, true);
+            extension = extensionDao.getExtensionByUrn(filterExpression.getField().getUrn(), true);
         } catch (OsiamException ex) {
-            return null;
+            throw new IllegalArgumentException(String.format("Filtering not possible. Field '%s' not available.", filterExpression.getField()));
         }
-        final ExtensionFieldEntity fieldEntity = extension.getFieldForName(fieldName, true);
-        return new ExtensionQueryField(urn, fieldEntity);
+        final ExtensionFieldEntity fieldEntity = extension.getFieldForName(filterExpression.getField().getName(), true);
+        return new ExtensionQueryField(filterExpression.getField().getUrn(), fieldEntity);
     }
 
     @Override
     public Predicate createPredicateAndJoin(Root<UserEntity> root) {
         if (userFilterField != null) {
-            return userFilterField.addFilter(root, scimExpression.getConstraint(), scimExpression.getValue(),
-                    criteriaBuilder);
-        } else if (extensionFilterField != null) {
-            return extensionFilterField.addFilter(root, scimExpression.getConstraint(), scimExpression.getValue(),
+            return userFilterField.addFilter(root, filterExpression.getConstraint(), filterExpression.getValue(),
                     criteriaBuilder);
         } else {
-            throw new IllegalArgumentException(String.format("Filtering not possible. Field '%s' not available.",
-                    scimExpression.getField()));
+            return extensionFilterField.addFilter(root, filterExpression.getConstraint(), filterExpression.getValue(),
+                    criteriaBuilder);
         }
     }
 }

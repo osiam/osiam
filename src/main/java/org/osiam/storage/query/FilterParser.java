@@ -23,14 +23,14 @@
 
 package org.osiam.storage.query;
 
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.osiam.storage.entities.ResourceEntity;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.osiam.storage.entities.ResourceEntity;
 
 public abstract class FilterParser<T extends ResourceEntity> {
 
@@ -53,8 +53,10 @@ public abstract class FilterParser<T extends ResourceEntity> {
         return filterField.createSortByField(root, entityManager.getCriteriaBuilder());
     }
 
+    public abstract FilterExpression<T> createFilterExpression(String field, FilterConstraint constraint, String value);
+
     protected abstract QueryField<T> getFilterField(String sortBy);
 
-    protected abstract FilterChain<T> createFilterChain(ScimExpression filter);
+    protected abstract FilterChain<T> createFilterChain(FilterExpression<T> filter);
 
 }

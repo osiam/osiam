@@ -41,8 +41,8 @@ public class UserFilterParser extends FilterParser<UserEntity> {
     }
 
     @Override
-    protected FilterChain<UserEntity> createFilterChain(ScimExpression filter) {
-        return new UserSimpleFilterChain(entityManager.getCriteriaBuilder(), extensionDao, filter);
+    public FilterExpression<UserEntity> createFilterExpression(String field, FilterConstraint constraint, String value) {
+        return new UserFilterExpression(field, constraint, value);
     }
 
     @Override
@@ -50,4 +50,8 @@ public class UserFilterParser extends FilterParser<UserEntity> {
         return UserQueryField.fromString(sortBy.toLowerCase(Locale.ENGLISH));
     }
 
+    @Override
+    protected UserSimpleFilterChain createFilterChain(FilterExpression<UserEntity> filter) {
+        return new UserSimpleFilterChain(entityManager.getCriteriaBuilder(), extensionDao, filter);
+    }
 }

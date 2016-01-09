@@ -867,7 +867,7 @@ public enum UserQueryField implements QueryField<UserEntity> {
 
     private final String name;
 
-    private UserQueryField(String name) {
+    UserQueryField(String name) {
         this.name = name;
     }
 
