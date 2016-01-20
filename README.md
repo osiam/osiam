@@ -5,7 +5,7 @@ authentication and authorization. We achieve this by implementing two important
 open standards:
 
 * [OAuth 2.0](http://oauth.net/2/)
-* [SCIM v2](http://www.simplecloud.info/) (still in draft phase)
+* [SCIM v2](http://www.simplecloud.info/)
 
 OSIAM is published under the MIT licence, giving you the greatest freedom
 possible to utilize OSIAM in you project or product.
