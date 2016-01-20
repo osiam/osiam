@@ -23,22 +23,27 @@
 
 package org.osiam.storage.query;
 
-import java.util.Locale;
-
 import org.osiam.storage.entities.GroupEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.Locale;
 
 @Service
 public class GroupFilterParser extends FilterParser<GroupEntity> {
 
     @Override
-    protected FilterChain<GroupEntity> createFilterChain(ScimExpression filter) {
-        return new GroupSimpleFilterChain(entityManager.getCriteriaBuilder(), filter);
+    public GroupFilterExpression createFilterExpression(String field, FilterConstraint constraint, String value) {
+        return new GroupFilterExpression(field, constraint, value);
     }
 
     @Override
-    protected QueryField<GroupEntity> getFilterField(String sortBy) {
+    protected GroupQueryField getFilterField(String sortBy) {
         return GroupQueryField.fromString(sortBy.toLowerCase(Locale.ENGLISH));
+    }
+
+    @Override
+    protected GroupSimpleFilterChain createFilterChain(FilterExpression<GroupEntity> filter) {
+        return new GroupSimpleFilterChain(entityManager.getCriteriaBuilder(), filter);
     }
 
 }

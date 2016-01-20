@@ -23,24 +23,19 @@
 
 package org.osiam.storage.query;
 
-/**
- * Representation of scim search expression.
- */
-public class ScimExpression {
+import org.osiam.storage.entities.ResourceEntity;
 
-    private final String field;
+public abstract class FilterExpression<T extends ResourceEntity> {
+
     private final FilterConstraint constraint;
     private final String value;
 
-    public ScimExpression(String field, FilterConstraint constraint, String value) {
-        this.field = field;
+    public FilterExpression(FilterConstraint constraint, String value) {
         this.constraint = constraint;
         this.value = value;
     }
 
-    public String getField() {
-        return field;
-    }
+    public abstract Field<T> getField();
 
     public FilterConstraint getConstraint() {
         return constraint;
@@ -48,5 +43,16 @@ public class ScimExpression {
 
     public String getValue() {
         return value;
+    }
+
+    public interface Field<T extends ResourceEntity> {
+
+        String getUrn();
+
+        String getName();
+
+        QueryField<T> getQueryField();
+
+        boolean isExtension();
     }
 }

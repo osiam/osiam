@@ -59,27 +59,27 @@ public class EvalVisitor<T extends ResourceEntity> extends LogicalOperatorRulesB
 
     @Override
     public Predicate visitSimpleExp(@NotNull LogicalOperatorRulesParser.SimpleExpContext ctx) {
-        ScimExpression scimExpression = getScimExpressionFromContext(ctx);
-        FilterChain<T> filterChain = filterParser.createFilterChain(scimExpression);
+        FilterExpression<T> filterExpression = getFilterExpressionFromContext(ctx);
+        FilterChain<T> filterChain = filterParser.createFilterChain(filterExpression);
         return filterChain.createPredicateAndJoin(root);
     }
 
-    private ScimExpression getScimExpressionFromContext(LogicalOperatorRulesParser.SimpleExpContext ctx) {
+    private FilterExpression<T> getFilterExpressionFromContext(LogicalOperatorRulesParser.SimpleExpContext ctx) {
         String fieldName = ctx.FIELD().getText();
         String value = ctx.VALUE().getText();
         value = value.substring(1, value.length() - 1); // removed first and last quote
         value = value.replace("\\\"", "\""); // replaced \" with "
         FilterConstraint operator = FilterConstraint.fromString(ctx.OPERATOR().getText());
-        return new ScimExpression(fieldName, operator, value);
+        return filterParser.createFilterExpression(fieldName, operator, value);
     }
 
     @Override
     public Predicate visitSimplePresentExp(@NotNull LogicalOperatorRulesParser.SimplePresentExpContext ctx) {
         String fieldName = ctx.FIELD().getText();
         FilterConstraint operator = FilterConstraint.fromString(ctx.PRESENT().getText());
-        ScimExpression scimExpression = new ScimExpression(fieldName, operator, null);
+        FilterExpression<T> filterExpression = filterParser.createFilterExpression(fieldName, operator, null);
 
-        FilterChain<T> filterChain = filterParser.createFilterChain(scimExpression);
+        FilterChain<T> filterChain = filterParser.createFilterChain(filterExpression);
         return filterChain.createPredicateAndJoin(root);
     }
 
