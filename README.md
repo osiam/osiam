@@ -9,6 +9,7 @@ open standards:
 
 OSIAM is published under the MIT licence, giving you the greatest freedom
 possible to utilize OSIAM in you project or product.
+Watch [our blog](http://osiam.github.io/) to stay informed about releases and upcoming changes.
 
 ## Use cases
 
