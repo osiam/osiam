@@ -6,6 +6,8 @@
 
 ### Changes
 
+- Require a Java runtime enviroment of at least version 8
+
 - Remove usage of old, method-based OAuth scopes
 - Remove support for old, method-based OAuth scopes
 - Add Flyway migration to replace method-based scopes
