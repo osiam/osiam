@@ -31,10 +31,10 @@ import java.util.Map;
 @EnableTransactionManagement
 @EnableMetrics
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-@PropertySource("classpath:/osiam.properties")
 public class Osiam extends SpringBootServletInitializer {
 
     private static final Map<String, Object> DEFAULT_PROPERTIES = ImmutableMap.<String, Object>of(
+            "spring.config.location", "classpath:/osiam.yaml",
             "spring.thymeleaf.prefix", "classpath:/osiam/templates/web/",
             "spring.messages.basename", "osiam/i18n/login",
             "spring.jpa.hibernate.naming_strategy", "org.hibernate.cfg.ImprovedNamingStrategy");
