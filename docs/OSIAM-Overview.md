@@ -195,12 +195,12 @@ production, please let us known by creating a [ticket]
 
 OSIAM is based on Java technology utilizing parts of the Spring framework. It
 is in general independent of the platform it runs on as long as the proper Java
-environment is in place. We are supporting both OpenJDK 7 and Oracle Java 7.
+environment is in place. We are supporting both OpenJDK 8 and Oracle Java 8.
 
 ### Operating System
 
 OSIAM has been up and running under various operating system (Fedora, CentOS,
-Windows, Debian) utilizing their available Java 7 stack.
+Windows, Debian) utilizing their available Java 8 stack.
 
 ### Databases
 

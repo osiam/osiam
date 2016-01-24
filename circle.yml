@@ -1,3 +1,7 @@
+machine:
+  java:
+   version: oraclejdk8
+
 dependencies:
   override:
     - mvn -U dependency:resolve dependency:resolve-plugins

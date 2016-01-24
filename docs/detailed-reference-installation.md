@@ -29,11 +29,11 @@ This document takes the following prerequisites as basis:
     <dt>Operating Systems</dt>
     <dd>Any OS that supports running Java applications</dd>
     <dt>Runtime Environment</dt>
-    <dd>Java 7, OpenJDK 7 JRE</dd>
+    <dd>Java 8, OpenJDK 8 JRE</dd>
     <dt>Application Server</dt>
     <dd>Tomcat 7</dd>
     <dt>Database</dt>
-    <dd>PostgreSQL 9.3 or MySQL 5.7</dd>
+    <dd>PostgreSQL 9.4 or MySQL 5.7</dd>
 </dl>
 
 All of the items have to be installed and running. For the installation of OSIAM
