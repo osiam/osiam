@@ -17,6 +17,7 @@ test:
     - sudo sh jpmInstall.sh
     - sudo jpm install com.codacy:codacy-coverage-reporter:assembly
     - codacy-coverage-reporter -l Java -r target/coverage-reports/jacoco/jacoco.xml --projectToken $CODACY_PROJECT_TOKEN
+    - mvn coveralls:report -DrepoToken=$COVERALLS_REPO_TOKEN
 
 deployment:
  staging:
