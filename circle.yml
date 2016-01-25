@@ -5,9 +5,18 @@ machine:
 dependencies:
   override:
     - mvn -U dependency:resolve dependency:resolve-plugins
+
 test:
   override:
     - mvn verify
+  post:
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - find . -type f -regex ".*/target/.*-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+    - cp -r target/coverage-reports/jacoco/ $CIRCLE_ARTIFACTS
+    - curl http://www.jpm4j.org/install/script > jpmInstall.sh
+    - sudo sh jpmInstall.sh
+    - sudo jpm install com.codacy:codacy-coverage-reporter:assembly
+    - codacy-coverage-reporter -l Java -r target/coverage-reports/jacoco/jacoco.xml --projectToken $CODACY_PROJECT_TOKEN
 
 deployment:
  staging:
