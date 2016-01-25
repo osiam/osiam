@@ -30,7 +30,7 @@ class ScimToLdapAttributeMappingSpec extends Specification {
 
     def 'constructor creates a default mapping from userName to uid'() {
         given:
-        String[] attributeMapping = []
+        def attributeMapping = [:]
 
         when:
         ScimToLdapAttributeMapping scimToLdapAttributeMapping = new ScimToLdapAttributeMapping(attributeMapping)
@@ -41,7 +41,7 @@ class ScimToLdapAttributeMappingSpec extends Specification {
 
     def 'default mapping from userName to uid can be overridden'() {
         given:
-        String[] attributeMapping = ['userName:override']
+        def attributeMapping = [userName:'override']
 
         when:
         ScimToLdapAttributeMapping scimToLdapAttributeMapping = new ScimToLdapAttributeMapping(attributeMapping)
@@ -52,7 +52,7 @@ class ScimToLdapAttributeMappingSpec extends Specification {
 
     def 'constructor creates valid mapping from an array'() {
         given:
-        String[]  attributeMapping = ['email:mail', 'nickName:ldapNickname']
+        def attributeMapping = [email:'mail', nickName:'ldapNickname']
 
         when:
         ScimToLdapAttributeMapping scimToLdapAttributeMapping = new ScimToLdapAttributeMapping(attributeMapping)
@@ -64,7 +64,7 @@ class ScimToLdapAttributeMappingSpec extends Specification {
 
     def 'constructor throws LdapConfigurationException when facing unknown SCIM attributes'() {
         given:
-        String[]  attributeMapping = ['mail:mail']
+        def attributeMapping = [mail:'mail']
 
         when:
         new ScimToLdapAttributeMapping(attributeMapping)
@@ -75,7 +75,7 @@ class ScimToLdapAttributeMappingSpec extends Specification {
 
     def 'returns collection of mapped SCIM attributes'() {
         given:
-        String[]  attributeMapping = ['email:mail', 'nickName:ldapNickname']
+        def attributeMapping = [email:'mail', nickName:'ldapNickname']
         ScimToLdapAttributeMapping scimToLdapAttributeMapping = new ScimToLdapAttributeMapping(attributeMapping)
 
         when:
@@ -88,7 +88,7 @@ class ScimToLdapAttributeMappingSpec extends Specification {
 
     def 'returns collection of mapped LDAP attributes'() {
         given:
-        String[]  attributeMapping = ['email:mail', 'nickName:ldapNickname']
+        def attributeMapping = [email:'mail', nickName:'ldapNickname']
         ScimToLdapAttributeMapping scimToLdapAttributeMapping = new ScimToLdapAttributeMapping(attributeMapping)
 
         when:

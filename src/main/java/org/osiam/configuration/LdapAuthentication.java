@@ -27,8 +27,8 @@ import com.google.common.collect.Iterables;
 import org.osiam.auth.login.ldap.OsiamLdapAuthenticationProvider;
 import org.osiam.auth.login.ldap.OsiamLdapUserContextMapper;
 import org.osiam.auth.login.ldap.ScimToLdapAttributeMapping;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ldap.core.support.BaseLdapPathContextSource;
@@ -37,50 +37,68 @@ import org.springframework.security.ldap.authentication.BindAuthenticator;
 import org.springframework.security.ldap.authentication.LdapAuthenticator;
 import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
 
+import javax.annotation.PostConstruct;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 @Configuration
-@ConditionalOnProperty(prefix = "org.osiam", name = "ldap.enabled")
+@ConditionalOnProperty("org.osiam.ldap.enabled")
+@ConfigurationProperties("org.osiam.ldap")
 public class LdapAuthentication {
 
     public static final String LDAP_PROVIDER = "ldap";
     public static final String AUTH_EXTENSION = "urn:org.osiam:scim:extensions:auth-server";
 
-    @Value("${org.osiam.ldap.server.url:}")
-    private String url;
-
-    @Value("${org.osiam.ldap.server.groupsearchbase:}")
-    private String groupSearchBase;
-
-    @Value("#{'${org.osiam.ldap.dn.patterns:}'.split(';')}")
-    private String[] dnPatterns;
-
-    @Value("${org.osiam.ldap.mapping:}")
-    private String[] attributeMapping;
+    private String serverUrl = "";
+    private String[] dnPatterns = new String[0];
+    private Map<String, String> userMapping = new HashMap<>();
 
     @Bean
     public ScimToLdapAttributeMapping ldapToScimAttributeMapping() {
-        return new ScimToLdapAttributeMapping(attributeMapping);
+        return new ScimToLdapAttributeMapping(userMapping);
     }
 
     @Bean
     public OsiamLdapAuthenticationProvider osiamLdapAuthenticationProvider() {
         return new OsiamLdapAuthenticationProvider(
                 bindAuthenticator(),
-                new DefaultLdapAuthoritiesPopulator(contextSource(), groupSearchBase),
+                new DefaultLdapAuthoritiesPopulator(contextSource(), ""),
                 new OsiamLdapUserContextMapper(ldapToScimAttributeMapping()));
     }
 
     @Bean
     public BaseLdapPathContextSource contextSource() {
-        return new DefaultSpringSecurityContextSource(url);
+        return new DefaultSpringSecurityContextSource(serverUrl);
     }
 
     @Bean
-    public LdapAuthenticator bindAuthenticator(){
+    public LdapAuthenticator bindAuthenticator() {
         BindAuthenticator bindAuthenticator = new BindAuthenticator(contextSource());
         bindAuthenticator.setUserDnPatterns(dnPatterns);
         bindAuthenticator.setUserAttributes(
                 Iterables.toArray(ldapToScimAttributeMapping().ldapAttributes(), String.class)
         );
         return bindAuthenticator;
+    }
+
+    public String getServerUrl() {
+        return serverUrl;
+    }
+
+    public String[] getDnPatterns() {
+        return dnPatterns;
+    }
+
+    public Map<String, String> getUserMapping() {
+        return userMapping;
+    }
+
+    public void setServerUrl(String serverUrl) {
+        this.serverUrl = serverUrl;
+    }
+
+    public void setDnPatterns(String[] dnPatterns) {
+        this.dnPatterns = dnPatterns;
     }
 }

@@ -36,20 +36,8 @@ public class ScimToLdapAttributeMapping {
 
     private final Map<String, String> scimToLdapAttributes = new HashMap<>();
 
-    public ScimToLdapAttributeMapping(final String[] attributeMapping) {
-        for (String keyValuePair : attributeMapping) {
-            if (!keyValuePair.contains(":")) {
-                throw new LdapConfigurationException("The ldap attribute mapping value '" + keyValuePair
-                        + "' could not be parsed. It doesn't contain a ':'");
-            }
-            String[] keyValue = keyValuePair.split(":");
-            if (keyValue.length != 2) {
-                throw new LdapConfigurationException("The ldap attribute mapping value '" + keyValuePair
-                        + "' could not be parsed. It contains more than one ':'");
-            }
-            scimToLdapAttributes.put(keyValue[0].trim(), keyValue[1].trim());
-        }
-
+    public ScimToLdapAttributeMapping(final Map<String, String> attributeMapping) {
+        scimToLdapAttributes.putAll(attributeMapping);
         if (!scimToLdapAttributes.containsKey("userName")) {
             scimToLdapAttributes.put("userName", "uid");
         }

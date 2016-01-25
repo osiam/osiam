@@ -62,63 +62,69 @@ After download, please unpack the distribution archive to a location of your cho
 ## Configuration
 
 The configuration should be self-explanatory. Just have a look at the
-[default configuration file](../src/main/deploy/osiam.properties).
+[default configuration file](../src/main/deploy/osiam.yaml).
 
-Create the file `/etc/osiam/osiam.properties` with content based on this example:
+Create the file `/etc/osiam/osiam.yaml` with content based on this example:
 
-```
-# Home URL (needed for self reference)
-org.osiam.home=http://localhost:8080/osiam
+```yaml
+org.osiam:
 
-#
-# Database configuration (PostgreSQL)
-#
-org.osiam.db.vendor=postgresql
-org.osiam.db.driver=org.postgresql.Driver
-org.osiam.db.url=jdbc:postgresql://localhost:5432/osiam
-org.osiam.db.username=osiam
-org.osiam.db.password=<YOUR_PASSWORD>
+  #
+  # Database configuration
+  #
+  db:
 
-#
-# Database configuration (MySQL)
-#
-org.osiam.db.vendor=mysql
-org.osiam.db.driver=com.mysql.jdbc.Driver
-org.osiam.db.url=jdbc:mysql://localhost:3306/osiam
-org.osiam.db.username=osiam
-org.osiam.db.password=<YOUR_PASSWORD>
+    #
+    # PostgreSQL
+    #
+    vendor: postgresql
+    driver: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/osiam
+    username: osiam
+    password: osiam
 
-#
-# LDAP configuration
-#
+    #
+    # MySQL
+    #
+    #vendor: mysql
+    #driver: com.mysql.jdbc.Driver
+    #url: jdbc:mysql://localhost:3306/osiam
+    #username: osiam
+    #password: osiam
 
-# Enable LDAP integration
-org.osiam.ldap.enabled=false
+  #
+  # LDAP configuration
+  #
+  ldap:
+    # Enable LDAP integration
+    enabled: false
 
-# LDAP URL with search base
-#org.osiam.ldap.server.url=ldap://localhost:389/dc=mycorp,dc=org
+    # LDAP server URL with search base
+    #server-url: ldap://localhost:389/dc=mycorp,dc=org
 
-# DN pattern for users
-#org.osiam.ldap.dn.patterns=uid={0},ou=people
+    # DN pattern for users
+    #dn-patterns:
+    #  - uid={0},ou=people
 
-# Synchronize data from LDAP to OSIAM on re-login
-#org.osiam.ldap.sync-user-data=true
+    # Synchronize data from LDAP to OSIAM on re-login
+    #sync-user-data: true
 
-# How SCIM attributes of a user are mapped to LDAP attributes
-#org.osiam.ldap.mapping=userName:uid\
-#,email:mail\
-#,name.familyName:sn\
-#,name.givenName:givenName\
-#,displayName:displayName
+    # How SCIM attributes of a user are mapped to LDAP attributes
+    #user-mapping:
+    #  userName: uid
+    #  email: mail
+    #  name.familyName: sn
+    #  name.givenName: givenName
+    #  displayName: displayName
 
-#
-# Login lock configuration
-#
-
-# Lock after x login failures, 0 = disabled
-org.osiam.tempLock.count=10
-# Lock for x seconds
-org.osiam.tempLock.timeout=30
+  #
+  # Login lock configuration
+  #
+  tempLock:
+    # Lock after x login failures, 0 = disabled
+    count: 10
+    # Lock for x seconds
+    timeout: 30
 ```
 
 To provide the HTML templates, static assets and message property files, you have to copy some files.
@@ -130,7 +136,7 @@ Then copy the complete folder to `/etc/osiam/` while preserving the directory st
 Before you can deploy OSIAM in Tomcat 7, you have to make some changes to
 Tomcat's configuration. Edit the file `/etc/tomcat7/catalina.properties`. Add to
 the parameter ``shared.loader`` the complete path of the directory where the
-file `osiam.properties` has been put earlier, e.g.
+file `osiam.yaml` has been put earlier, e.g.
 
     shared.loader=/var/lib/tomcat7/shared/classes,/var/lib/tomcat7/shared/*.jar,/etc/osiam
 
@@ -371,12 +377,12 @@ appears. You can show your own message if you change the message of the key
 **NOTE:** LDAP authentication currently only works with the Authorization Code
 grant of OAuth 2.
 
-First you have to set the LDAP configuration in the [osiam.properties]
-(../src/main/deploy/osiam.properties) as described [here](#configuration).
+First you have to set the LDAP configuration in the [osiam.yaml]
+(../src/main/deploy/osiam.yaml) as described [here](#configuration).
 
 The available properties are:
 
-**org.osiam.auth.ldap.enabled**
+**org.osiam.ldap.enabled**
 
 Default = false
 
@@ -384,7 +390,7 @@ Set to true if you want to enable LDAP login besides the normal OSIAM login. If
 LDAP is enabled a drop down list is shown in the login page to choose between
 the internal login and the LDAP login.
 
-**org.osiam.auth.ldap.server.url**
+**org.osiam.ldap.server-url**
 
 The url of you LDAP server:
 
@@ -392,13 +398,13 @@ The url of you LDAP server:
 
 Example: ldap://localhost:33389/dc=example,dc=org
 
-**org.osiam.auth.ldap.dn.patterns**
+**org.osiam.ldap.dn-patterns**
 
 search pattern to find the user who wants to login
 
 Example: uid={0},ou=people
 
-**org.osiam.auth.ldap.sync.user.data**
+**org.osiam.ldap.sync-user-data**
 
 Default = true
 
@@ -407,23 +413,26 @@ Additional data saved at the user won't be overridden.
 
 If set to false the user data will only be copied with the first login.
 
-**org.osiam.auth.ldap.mapping**
+**org.osiam.ldap.user-mapping**
 
 The given Attributes will be copied from the LDAP user into the OSIAM resource
-server. The attributes are always an pair of
-
-    <scim attribute>:<ldap attribute>
-
+server.
 At the start of OSIAM this configuration will be checked and an
 exception will be thrown if not all SCIM attributes can be recognized.
 
 Example: 
 
-```
-userName:uid\
-,email:mail\
-,name.familyName:sn\
-,displayName:displayName
+```yaml
+org.osiam:
+  ...
+  ldap:
+    ...
+    user-mapping:
+      userName: uid
+      email: mail
+      name.familyName: sn
+      name.givenName: givenName
+      displayName: displayName
 ```
 
 The userName always will be copied with the LDAP attribute 'uid'. If in the LDAP

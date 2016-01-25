@@ -1,0 +1,58 @@
+org.osiam:
+
+  #
+  # Database configuration
+  #
+  db:
+
+    #
+    # PostgreSQL
+    #
+    vendor: postgresql
+    driver: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/osiam
+    username: osiam
+    password: osiam
+
+    #
+    # MySQL
+    #
+    #vendor: mysql
+    #driver: com.mysql.jdbc.Driver
+    #url: jdbc:mysql://localhost:3306/osiam
+    #username: osiam
+    #password: osiam
+
+  #
+  # LDAP configuration
+  #
+  ldap:
+    # Enable LDAP integration
+    enabled: false
+
+    # LDAP server URL with search base
+    #server-url: ldap://localhost:389/dc=mycorp,dc=org
+
+    # DN pattern for users
+    #dn-patterns:
+    #  - uid={0},ou=people
+
+    # Synchronize data from LDAP to OSIAM on re-login
+    #sync-user-data: true
+
+    # How SCIM attributes of a user are mapped to LDAP attributes
+    #user-mapping:
+    #  userName: uid
+    #  email: mail
+    #  name.familyName: sn
+    #  name.givenName: givenName
+    #  displayName: displayName
+
+  #
+  # Login lock configuration
+  #
+  tempLock:
+    # Lock after x login failures, 0 = disabled
+    count: 10
+    # Lock for x seconds
+    timeout: 30
