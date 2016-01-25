@@ -345,6 +345,11 @@
                     <dataFile>${project.build.directory}/coverage-reports/jacoco.exec</dataFile>
                     <destFile>${project.build.directory}/coverage-reports/jacoco.exec</destFile>
                     <outputDirectory>${project.build.directory}/coverage-reports/jacoco/</outputDirectory>
+                    <excludes>
+                        <exclude>**/*_.*</exclude>
+                        <exclude>**/storage/parser/**</exclude>
+                        <exclude>**/db/migration/**</exclude>
+                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
