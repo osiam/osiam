@@ -14,7 +14,6 @@ import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -34,10 +33,8 @@ import java.util.Map;
 public class Osiam extends SpringBootServletInitializer {
 
     private static final Map<String, Object> DEFAULT_PROPERTIES = ImmutableMap.<String, Object>of(
-            "spring.config.location", "classpath:/osiam.yaml",
-            "spring.thymeleaf.prefix", "classpath:/osiam/templates/web/",
-            "spring.messages.basename", "osiam/i18n/login",
-            "spring.jpa.hibernate.naming_strategy", "org.hibernate.cfg.ImprovedNamingStrategy");
+            "spring.config.location", "classpath:/osiam.yaml"
+    );
 
     @Value("${org.osiam.db.driver}")
     private String driverClassName;

@@ -1,0 +1,13 @@
+#
+# Default properties for OSIAM
+#
+
+logging.level:
+  # Default log level is ERROR
+  '': ERROR
+  org.springframework: WARN
+  org.osiam: INFO
+
+spring.thymeleaf.prefix: classpath:/osiam/templates/web/
+spring.messages.basename: osiam/i18n/login
+spring.jpa.hibernate.naming_strategy: org.hibernate.cfg.ImprovedNamingStrategy
