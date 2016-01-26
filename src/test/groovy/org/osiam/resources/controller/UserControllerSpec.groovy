@@ -49,10 +49,10 @@ import java.lang.reflect.Method
 
 class UserControllerSpec extends Specification {
 
-    RequestParamHelper requestParamHelper = Mock()
-    JsonInputValidator jsonInputValidator = Mock()
-    AttributesRemovalHelper attributesRemovalHelper = Mock()
-    SCIMUserProvisioning scimUserProvisioning = Mock()
+    def requestParamHelper = Mock(RequestParamHelper)
+    def jsonInputValidator = Mock(JsonInputValidator)
+    def attributesRemovalHelper = Mock(AttributesRemovalHelper)
+    def scimUserProvisioning = Mock(SCIMUserProvisioning)
     def tokenService = Mock(TokenService)
     UserController userController = new UserController(requestParamHelper: requestParamHelper,
             jsonInputValidator: jsonInputValidator, attributesRemovalHelper: attributesRemovalHelper,
@@ -124,7 +124,7 @@ class UserControllerSpec extends Specification {
 
     def "should contain a method to DELETE a user"() {
         given:
-        Method method = UserController.class.getDeclaredMethod("delete", String, HttpServletRequest)
+        Method method = UserController.class.getDeclaredMethod("delete", String)
         when:
         RequestMapping mapping = method.getAnnotation(RequestMapping)
         ResponseStatus defaultStatus = method.getAnnotation(ResponseStatus)
@@ -136,12 +136,9 @@ class UserControllerSpec extends Specification {
     def "should call provisioning and revoke access tokens on DELETE"() {
         given:
         def id = 'id'
-        def token = 'token'
-        httpServletRequest.getRequestURL() >> new StringBuffer('irrelevant')
-        httpServletRequest.getHeader('Authorization') >> 'Bearer ' + token;
 
         when:
-        userController.delete(id, httpServletRequest)
+        userController.delete(id)
 
         then:
         1 * tokenService.revokeAllTokensOfUser(id)
