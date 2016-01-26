@@ -6,14 +6,17 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationVersion;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -33,7 +36,8 @@ import java.util.Map;
 public class Osiam extends SpringBootServletInitializer {
 
     private static final Map<String, Object> DEFAULT_PROPERTIES = ImmutableMap.<String, Object>of(
-            "spring.config.location", "classpath:/osiam.yaml"
+            "osiam.home", System.getenv("HOME") + "/.osiam",
+            "spring.config.location", "file:${osiam.home}/config/osiam.yaml"
     );
 
     @Value("${org.osiam.db.driver}")
@@ -51,6 +55,9 @@ public class Osiam extends SpringBootServletInitializer {
     @Value("${org.osiam.db.vendor}")
     private String databaseVendor;
 
+    @Autowired
+    private OsiamHome osiamHome;
+
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(Osiam.class);
         application.setDefaultProperties(DEFAULT_PROPERTIES);
@@ -58,9 +65,9 @@ public class Osiam extends SpringBootServletInitializer {
     }
 
     @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        application.application().setDefaultProperties(DEFAULT_PROPERTIES);
-        return application.sources(Osiam.class);
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder applicationBuilder) {
+        applicationBuilder.application().setDefaultProperties(DEFAULT_PROPERTIES);
+        return applicationBuilder.sources(Osiam.class);
     }
 
     @Bean
@@ -100,4 +107,12 @@ public class Osiam extends SpringBootServletInitializer {
         return passwordEncoder;
     }
 
+    @Bean
+    public MessageSource messageSource() {
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasename(osiamHome.getI18nDirectory() + "/login");
+        messageSource.setDefaultEncoding("utf-8");
+        messageSource.setCacheSeconds(-1);
+        return messageSource;
+    }
 }

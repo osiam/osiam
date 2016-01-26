@@ -23,6 +23,8 @@
 
 package org.osiam.configuration;
 
+import org.osiam.OsiamHome;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -30,9 +32,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Configuration
 public class WebApplicationConfig extends WebMvcConfigurerAdapter {
 
+    @Autowired
+    private OsiamHome osiamHome;
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/css/**").addResourceLocations("classpath:/osiam/resources/css/");
-        registry.addResourceHandler("/js/**").addResourceLocations("classpath:/osiam/resources/js/");
+        registry.addResourceHandler("/css/**").addResourceLocations(osiamHome.getCssDirectory());
+        registry.addResourceHandler("/js/**").addResourceLocations(osiamHome.getJsDirectory());
     }
 }
