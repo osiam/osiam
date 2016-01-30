@@ -101,7 +101,7 @@ public class UserController {
             throws IOException {
         User user = jsonInputValidator.validateJsonUser(request);
         User createdUser = scimUserProvisioning.replace(id, user);
-        checkAndHandleDeactivation(id, user, request);
+        checkAndHandleDeactivation(id, user);
         return setLocationUriAndCreateUserForOutput(request, response, createdUser);
     }
 
@@ -112,13 +112,13 @@ public class UserController {
             throws IOException {
         User user = jsonInputValidator.validateJsonUser(request);
         User createdUser = scimUserProvisioning.update(id, user);
-        checkAndHandleDeactivation(id, user, request);
+        checkAndHandleDeactivation(id, user);
         return setLocationUriAndCreateUserForOutput(request, response, createdUser);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
-    public void delete(@PathVariable final String id, HttpServletRequest request) {
+    public void delete(@PathVariable final String id) {
         tokenService.revokeAllTokensOfUser(id);
         scimUserProvisioning.delete(id);
     }
@@ -154,7 +154,7 @@ public class UserController {
     /*
      * Checks whether the given user was deactivated and performs necessary subsequent actions.
      */
-    private void checkAndHandleDeactivation(String id, User updateUser, HttpServletRequest request) {
+    private void checkAndHandleDeactivation(String id, User updateUser) {
         if (updateUser.isActive() != null && !updateUser.isActive()) {
             tokenService.revokeAllTokensOfUser(id);
         }
