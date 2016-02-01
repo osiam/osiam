@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.Appender
 import ch.qos.logback.core.spi.AppenderAttachable
+import org.osiam.resources.exception.InvalidFilterException
 import org.osiam.resources.scim.User
 import org.slf4j.LoggerFactory
 import spock.lang.Specification
@@ -67,11 +68,12 @@ class UserFilterExpressionSpec extends Specification {
         def expression = new UserFilterExpression("${User.SCHEMA}.${queryField}", FilterConstraint.EQUALS, 'irrelevant')
 
         then:
-        thrown(IllegalArgumentException)
+        thrown(InvalidFilterException)
 
         where:
         queryField << UserQueryField.values().collect { it.toString() }
     }
+
     def 'Make sure warning is logged if field is separated by a period'() {
         given:
         def appender = Mock(Appender)

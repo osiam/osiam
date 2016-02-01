@@ -1,5 +1,6 @@
 package org.osiam.storage.query
 
+import org.osiam.resources.exception.InvalidFilterException
 import org.osiam.resources.scim.Group
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -40,7 +41,7 @@ class GroupFilterExpressionSpec extends Specification {
         def expression = new GroupFilterExpression("${Group.SCHEMA}.${queryField}", FilterConstraint.EQUALS, 'irrelevant')
 
         then:
-        thrown(IllegalArgumentException)
+        thrown(InvalidFilterException)
 
         where:
         queryField << GroupQueryField.values().collect { it.toString() }
@@ -51,7 +52,7 @@ class GroupFilterExpressionSpec extends Specification {
         new GroupFilterExpression("urn:field", FilterConstraint.EQUALS, 'irrelevant')
 
         then:
-        thrown(IllegalArgumentException)
+        thrown(InvalidFilterException)
     }
 
 

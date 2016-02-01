@@ -56,7 +56,11 @@ public class NumberPadder {
             throw new IllegalArgumentException("The given value has more than " + (PAD_LENGTH - 1) + " digits.");
         }
 
-        integralPart = new BigInteger(integralPart).add(BIG_OFFSET).toString();
+        try {
+            integralPart = new BigInteger(integralPart).add(BIG_OFFSET).toString();
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Unable to parse a number from " + value);
+        }
         integralPart = Strings.padStart(integralPart, PAD_LENGTH, '0');
 
         return integralPart + fractionalPart;

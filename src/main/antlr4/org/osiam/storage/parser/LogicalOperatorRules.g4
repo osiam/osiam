@@ -72,3 +72,8 @@ VALUE
 EXCLUDE
     : [\b | \t | \r | \n]+ -> skip //skipping backspaces, tabs, carriage returns and newlines
     ;
+
+
+
+// handle characters which failed to match any other token
+ErrorCharacter : . ;

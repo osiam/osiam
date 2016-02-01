@@ -1,5 +1,6 @@
 package org.osiam.storage.query;
 
+import org.osiam.resources.exception.InvalidFilterException;
 import org.osiam.resources.scim.User;
 import org.osiam.storage.entities.UserEntity;
 import org.slf4j.Logger;
@@ -30,7 +31,7 @@ public class UserFilterExpression extends FilterExpression<UserEntity> {
         public Field(String field) {
             if (field.toLowerCase().startsWith(User.SCHEMA.toLowerCase())) {
                 if (field.charAt(User.SCHEMA.length()) == '.') {
-                    throw new IllegalArgumentException(String.format("Period (.) is not a valid field separator: %s", field));
+                    throw new InvalidFilterException(String.format("Period (.) is not a valid field separator: %s", field));
                 }
                 name = field.substring(User.SCHEMA.length() + 1).toLowerCase(Locale.ENGLISH);
             } else {
@@ -64,7 +65,7 @@ public class UserFilterExpression extends FilterExpression<UserEntity> {
                     name = field.substring(lastIndexOfColon + 1);
                 } else {
                     // Neither colon nor period found in string. It's a user error.
-                    throw new IllegalArgumentException(String.format("Unable to parse field or extension from %s",
+                    throw new InvalidFilterException(String.format("Unable to parse field or extension from %s",
                             field));
                 }
             }

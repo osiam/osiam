@@ -1,5 +1,6 @@
 package org.osiam.storage.query;
 
+import org.osiam.resources.exception.InvalidFilterException;
 import org.osiam.resources.scim.Group;
 import org.osiam.storage.entities.GroupEntity;
 
@@ -27,7 +28,7 @@ public class GroupFilterExpression extends FilterExpression<GroupEntity> {
 
             if (field.toLowerCase().startsWith(Group.SCHEMA.toLowerCase())) {
                 if (field.charAt(Group.SCHEMA.length()) == '.') {
-                    throw new IllegalArgumentException(String.format("Period (.) is not a valid field separator: %s", field));
+                    throw new InvalidFilterException(String.format("Period (.) is not a valid field separator: %s", field));
                 }
 
                 name = field.substring(Group.SCHEMA.length() + 1).toLowerCase(Locale.ENGLISH);
@@ -38,7 +39,7 @@ public class GroupFilterExpression extends FilterExpression<GroupEntity> {
             queryField = GroupQueryField.fromString(name);
 
             if (queryField == null) {
-                throw new IllegalArgumentException(String.format("Unable to parse %s, extensions not supported for groups",
+                throw new InvalidFilterException(String.format("Unable to parse %s, extensions not supported for groups",
                         field));
             }
         }

@@ -55,7 +55,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return produceErrorResponse("An unexpected error occurred", HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler({IllegalArgumentException.class, InvalidConstraintException.class})
+    @ExceptionHandler({IllegalArgumentException.class, InvalidFilterException.class, InvalidConstraintException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public ErrorResponse handleInvalidConstraintException(Exception e) {
