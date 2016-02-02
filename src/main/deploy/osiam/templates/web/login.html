@@ -41,8 +41,7 @@
                 <h2 class="form-signin-heading" th:text="#{login.headline}">
                      Please sign in
                 </h2>
-                <div th:if="${errorKey}" id="errorMsg" th:error="${errorKey}"
-                     th:class="'alert alert-danger'" class="alert alert-danger" th:text="#{${errorKey}(${templockTimeout})}">
+                <div th:if="${errorKey}" id="errorMsg" class="alert alert-danger" th:text="#{${errorKey}(${templockTimeout})}">
                     Login error
                 </div>
             </div>
