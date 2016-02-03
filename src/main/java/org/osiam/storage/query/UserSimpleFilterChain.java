@@ -23,6 +23,7 @@
 
 package org.osiam.storage.query;
 
+import org.osiam.resources.exception.InvalidFilterException;
 import org.osiam.resources.exception.OsiamException;
 import org.osiam.storage.dao.ExtensionDao;
 import org.osiam.storage.entities.ExtensionEntity;
@@ -62,7 +63,8 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
         try {
             extension = extensionDao.getExtensionByUrn(filterExpression.getField().getUrn(), true);
         } catch (OsiamException ex) {
-            throw new IllegalArgumentException(String.format("Filtering not possible. Field '%s' not available.", filterExpression.getField()));
+            throw new InvalidFilterException(String.format("Filtering not possible. Field '%s' not available.",
+                    filterExpression.getField()));
         }
         final ExtensionFieldEntity fieldEntity = extension.getFieldForName(filterExpression.getField().getName(), true);
         return new ExtensionQueryField(filterExpression.getField().getUrn(), fieldEntity);

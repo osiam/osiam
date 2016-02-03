@@ -72,6 +72,15 @@ class NumberPadderSpec extends Specification {
     }
 
     @Unroll
+    def 'trying to pad a value that is not a number raises an exception'() {
+        when:
+        numberPadder.pad('not a number')
+
+        then:
+        thrown(IllegalArgumentException)
+    }
+
+    @Unroll
     def 'unpadding #inputValue results in #expectedValue'() {
         expect:
         numberPadder.unpad(inputValue) == expectedValue

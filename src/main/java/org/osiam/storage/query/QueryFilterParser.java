@@ -23,14 +23,12 @@
 
 package org.osiam.storage.query;
 
+import com.google.common.base.Strings;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.osiam.storage.parser.LogicalOperatorRulesLexer;
 import org.osiam.storage.parser.LogicalOperatorRulesParser;
-import org.springframework.stereotype.Service;
-
-import com.google.common.base.Strings;
 
 public class QueryFilterParser {
 
@@ -38,10 +36,15 @@ public class QueryFilterParser {
         if (Strings.isNullOrEmpty(filter)) {
             return null;
         }
+        OsiamAntlrErrorListener errorListener = new OsiamAntlrErrorListener();
 
         LogicalOperatorRulesLexer lexer = new LogicalOperatorRulesLexer(new ANTLRInputStream(filter));
+        lexer.removeErrorListeners();
+        lexer.addErrorListener(errorListener);
+
         LogicalOperatorRulesParser parser = new LogicalOperatorRulesParser(new CommonTokenStream(lexer));
-        parser.addErrorListener(new OsiamAntlrErrorListener());
+        parser.removeErrorListeners();
+        parser.addErrorListener(errorListener);
         return parser.parse();
     }
 

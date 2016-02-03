@@ -23,10 +23,7 @@
 
 package org.osiam.storage.query;
 
-import java.util.BitSet;
-
 import org.antlr.v4.runtime.ANTLRErrorListener;
-import org.antlr.v4.runtime.InputMismatchException;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
@@ -34,6 +31,9 @@ import org.antlr.v4.runtime.atn.ATNConfigSet;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.misc.Nullable;
+import org.osiam.resources.exception.InvalidFilterException;
+
+import java.util.BitSet;
 
 /**
  * Handles parsing errors.
@@ -42,55 +42,52 @@ public class OsiamAntlrErrorListener implements ANTLRErrorListener {
 
     /**
      * {@inheritDoc}
-     * <p/>
+     * <p>
      * The method is overridden to throw an exception if the parsed input has an invalid syntax.
      */
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer, @Nullable Object offendingSymbol, int line,
-            int charPositionInLine, String msg, @Nullable RecognitionException e) {
+                            int charPositionInLine, String msg, @Nullable RecognitionException e) {
 
-        String errorMessage = msg;
-        if (e instanceof InputMismatchException && msg.endsWith(" expecting VALUE")) {
-            errorMessage += ". Please make sure that all values are surrounded by double quotes.";
-        }
+        String errorMessage = msg + ". Please make sure that all values are surrounded by double quotes.";
 
-        throw new IllegalArgumentException(errorMessage);
+        throw new InvalidFilterException(errorMessage);
     }
 
     /**
      * {@inheritDoc}
-     * <p/>
+     * <p>
      * This is not an error. Its only a report, like a warning.
-     * <p/>
+     * <p>
      * This method is called by the parser when a full-context prediction results in an ambiguity.
      */
     @Override
     public void reportAmbiguity(@NotNull Parser recognizer, @NotNull DFA dfa, int startIndex, int stopIndex,
-            boolean exact, @Nullable BitSet ambigAlts, @NotNull ATNConfigSet configs) {
+                                boolean exact, @Nullable BitSet ambigAlts, @NotNull ATNConfigSet configs) {
     }
 
     /**
      * {@inheritDoc}
-     * <p/>
+     * <p>
      * This is not an error. Its only a report, like a warning.
-     * <p/>
+     * <p>
      * This method is called when an SLL conflict occurs and the parser is about to use the full context information to
      * make an LL decision.
      */
     @Override
     public void reportAttemptingFullContext(@NotNull Parser recognizer, @NotNull DFA dfa, int startIndex,
-            int stopIndex, @Nullable BitSet conflictingAlts, @NotNull ATNConfigSet configs) {
+                                            int stopIndex, @Nullable BitSet conflictingAlts, @NotNull ATNConfigSet configs) {
     }
 
     /**
      * {@inheritDoc}
-     * <p/>
+     * <p>
      * This is not an error. Its only a report, like a warning.
-     * <p/>
+     * <p>
      * This method is called by the parser when a full-context prediction has a unique result.
      */
     @Override
     public void reportContextSensitivity(@NotNull Parser recognizer, @NotNull DFA dfa, int startIndex, int stopIndex,
-            int prediction, @NotNull ATNConfigSet configs) {
+                                         int prediction, @NotNull ATNConfigSet configs) {
     }
 }

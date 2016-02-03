@@ -24,6 +24,7 @@
 package org.osiam.storage.query;
 
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.osiam.resources.exception.InvalidFilterException;
 import org.osiam.storage.entities.ResourceEntity;
 
 import javax.persistence.EntityManager;
@@ -47,7 +48,7 @@ public abstract class FilterParser<T extends ResourceEntity> {
         QueryField<T> filterField = getFilterField(sortBy);
 
         if (filterField == null) {
-            throw new IllegalArgumentException("Sorting by " + sortBy + " is not suported.");
+            throw new InvalidFilterException("Sorting by " + sortBy + " is not suported.");
         }
 
         return filterField.createSortByField(root, entityManager.getCriteriaBuilder());

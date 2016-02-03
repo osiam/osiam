@@ -23,6 +23,7 @@
 
 package org.osiam.storage.query;
 
+import org.osiam.resources.exception.InvalidFilterException;
 import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.storage.entities.*;
 import org.osiam.storage.helper.NumberPadder;
@@ -48,7 +49,11 @@ public class ExtensionQueryField {
         if (constraint != FilterConstraint.PRESENT && (field.getType() == ExtensionFieldType.INTEGER ||
                 field.getType() == ExtensionFieldType.DECIMAL)) {
 
-            value = numberPadder.pad(value);
+            try {
+                value = numberPadder.pad(value);
+            } catch (IllegalArgumentException ex) {
+                throw new InvalidFilterException(ex.getMessage());
+            }
         }
 
         final SetJoin<UserEntity, ExtensionFieldValueEntity> join = createOrGetJoin(
