@@ -59,87 +59,27 @@ The distribution includes
 
 After download, please unpack the distribution archive to a location of your choice.
 
+## Initialize Home Directory
+
+OSIAM expects the configuration and necessary assets in a directory in the file system.
+This directory is known as the home directory.
+The distribution contains a complete skeleton of a home directory under `/configuration`.
+The easiest way to initialize the home directory is to copy this skeleton.
+
+Create the a new directory for the home directory, e.g. `/var/lib/osiam`.
+We will refer to this directory as `OSIAM_HOME` from now on.
+Copy all directories from the distribution archive under `/configuration` to `OSIAM_HOME`.
+
 ## Configuration
 
-The configuration should be self-explanatory. Just have a look at the
-[default configuration file](../src/main/deploy/osiam.yaml).
-
-Create the file `/etc/osiam/osiam.yaml` with content based on this example:
-
-```yaml
-org.osiam:
-
-  #
-  # Database configuration
-  #
-  db:
-
-    #
-    # PostgreSQL
-    #
-    vendor: postgresql
-    driver: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/osiam
-    username: osiam
-    password: osiam
-
-    #
-    # MySQL
-    #
-    #vendor: mysql
-    #driver: com.mysql.jdbc.Driver
-    #url: jdbc:mysql://localhost:3306/osiam
-    #username: osiam
-    #password: osiam
-
-  #
-  # LDAP configuration
-  #
-  ldap:
-    # Enable LDAP integration
-    enabled: false
-
-    # LDAP server URL with search base
-    #server-url: ldap://localhost:389/dc=mycorp,dc=org
-
-    # DN pattern for users
-    #dn-patterns:
-    #  - uid={0},ou=people
-
-    # Synchronize data from LDAP to OSIAM on re-login
-    #sync-user-data: true
-
-    # How SCIM attributes of a user are mapped to LDAP attributes
-    #user-mapping:
-    #  userName: uid
-    #  email: mail
-    #  name.familyName: sn
-    #  name.givenName: givenName
-    #  displayName: displayName
-
-  #
-  # Login lock configuration
-  #
-  tempLock:
-    # Lock after x login failures, 0 = disabled
-    count: 10
-    # Lock for x seconds
-    timeout: 30
-```
-
-To provide the HTML templates, static assets and message property files, you have to copy some files.
-First, find the folder `/configuration/osiam` within the distribution archive.
-Then copy the complete folder to `/etc/osiam/` while preserving the directory structure.
+The configuration file can be found under `OSIAM_HOME/config/osiam.yaml`.
+Change this file to your needs.
+It should be self-explanatory.
 
 ## Starting OSIAM
 
 Before you can deploy OSIAM in Tomcat 7, you have to make some changes to
-Tomcat's configuration. Edit the file `/etc/tomcat7/catalina.properties`. Add to
-the parameter ``shared.loader`` the complete path of the directory where the
-file `osiam.yaml` has been put earlier, e.g.
-
-    shared.loader=/var/lib/tomcat7/shared/classes,/var/lib/tomcat7/shared/*.jar,/etc/osiam
-
+Tomcat's configuration.
 Edit the file `/etc/default/tomcat7` and change the size of the heap space
 allocated for Tomcat by modifying the following line
 
@@ -153,15 +93,24 @@ Now restart Tomcat:
 
     $ sudo /etc/init.d/tomcat7 restart
 
-To start OSIAM with Tomcat, put the downloaded .war files into Tomcat's `webapp`
-directory:
+Now you need to set the home directory.
+The best way is to add a Tomcat context descriptor with the following content:
+
+```xml
+<Context>
+    <Environment name="osiam.home" value="OSIAM_HOME" type="java.lang.String"/>
+</Context>
+```
+
+Replace `OSIAM_HOME` with the directory you chose in [Initialize Home Directory](#initialize-home-directory).
+Put this file under Tomcat's `conf` directory, e.g. `/var/lib/tomcat7/conf/Catalina/localhost/osiam.xml`.
+To start OSIAM put the downloaded .war file into Tomcat's `webapp` directory:
 
     $ sudo mv osiam-<VERSION>.war /var/lib/tomcat7/webapps/osiam.war
 
-Do the same for the addons, if you like to use them. Check the Tomcat's log
-files to see the startup progress. After some seconds, OSIAM should be fully
-deployed and ready. You can check from the commandline whether OSIAM is started
-by using the following command:
+Check Tomcat's log files to see the startup progress.
+After some seconds, OSIAM should be fully deployed and ready.
+You can check from the commandline whether OSIAM is started by using the following command:
 
     $ curl http://localhost:8080/osiam/ServiceProviderConfigs
 
