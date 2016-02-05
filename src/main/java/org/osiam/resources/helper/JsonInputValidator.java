@@ -23,13 +23,10 @@
 
 package org.osiam.resources.helper;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.osiam.resources.exception.SchemaUnknownException;
 import org.osiam.resources.helper.validators.PatchValidator;
 import org.osiam.resources.helper.validators.PostValidator;
@@ -40,10 +37,11 @@ import org.osiam.resources.scim.User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class JsonInputValidator {
@@ -55,7 +53,7 @@ public class JsonInputValidator {
         ObjectMapper mapper = new ObjectMapper();
         SimpleModule testModule = new SimpleModule("userDeserializerModule", new Version(1, 0, 0, null, "org.osiam",
                 "scim-schema"))
-                .addDeserializer(User.class, new UserDeserializer(User.class));
+                .addDeserializer(User.class, new UserDeserializer(User.SCHEMA));
         mapper.registerModule(testModule);
 
         validators = new HashMap<>();

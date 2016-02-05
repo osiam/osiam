@@ -1,0 +1,23 @@
+{
+    "id":"a4bbe688-4b1e-4e4e-80e7-e5ba5c4d6db4",
+    "meta":{
+        "created":"2011-08-01T20:29:49.000+02:00",
+        "lastModified":"2011-08-01T20:29:49.000+02:00",
+        "location":"https://example.com/v1/Users/2819c223...",
+        "resourceType":"User"
+    },
+    "schemas":[
+        "urn:ietf:params:scim:schemas:core:2.0:User"$schemasMore
+    ],
+    "externalId":"bjensen",
+    "userName":"bjensen",
+    "name":{
+        "formatted":"Ms. Barbara J Jensen III",
+        "familyName":"Jensen",
+        "givenName":"Barbara"
+    },
+    "displayName":"BarbaraJ.",
+    "nickName":"Barbara",
+    "title":"Dr.",
+    "locale":"de"$dataMore
+}

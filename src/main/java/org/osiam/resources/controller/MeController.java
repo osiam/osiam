@@ -26,7 +26,7 @@ package org.osiam.resources.controller;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
-import org.osiam.client.exception.ConflictException;
+import org.osiam.resources.exception.OsiamException;
 import org.osiam.resources.scim.User;
 import org.osiam.security.helper.AccessTokenHelper;
 import org.osiam.storage.dao.UserDao;
@@ -92,7 +92,8 @@ public class MeController {
 
         OAuth2Authentication oAuth = resourceServerTokenServices.loadAuthentication(accessToken);
         if (oAuth.isClientOnly()) {
-            throw new ConflictException("Can't return an user. This access token belongs to a client.");
+            // is transformed to 409 CONFLICT
+            throw new OsiamException("Can't return an user. This access token belongs to a client.");
         }
 
         Authentication userAuthentication = oAuth.getUserAuthentication();

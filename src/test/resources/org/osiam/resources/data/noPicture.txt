@@ -1,0 +1,1 @@
+This file is used for the DataUriSpec.'A invalid #type raises exception while creating an ImageDataURI' Test
