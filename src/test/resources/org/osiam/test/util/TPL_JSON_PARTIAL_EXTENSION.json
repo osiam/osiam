@@ -1,0 +1,10 @@
+,
+"urn:scim:schemas:extension:enterprise:2.0:User":{
+    "keyString":"example",
+    "keyBoolean":true,
+    "keyInteger":123,
+    "keyDecimal":123.456,
+    "keyBinary":"ZXhhbXBsZQ==",
+    "keyReference":"https://example.com/Users/28",
+    "keyDateTime":"2011-08-01T18:29:49.000Z"
+}

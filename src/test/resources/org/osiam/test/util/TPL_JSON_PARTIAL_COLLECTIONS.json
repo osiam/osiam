@@ -1,0 +1,28 @@
+,
+"emails":[
+    {
+        "value":"bjensen@example.com",
+        "type":"work"
+    }
+],
+"photos":[
+    {
+        "value":"example.png"
+    }
+],
+"phoneNumbers":[
+    {
+        "value":"555-555-8377",
+        "type":"work"
+    }
+],
+"addresses":[
+    {
+        "type":"work",
+        "streetAddress":"example street 42",
+        "locality":"Germany",
+        "region":"Germany",
+        "postalCode":"11111",
+        "country":"Germany"
+    }
+]
