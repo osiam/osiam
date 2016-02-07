@@ -29,8 +29,10 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
+import org.hibernate.validator.constraints.NotBlank;
 import org.osiam.resources.exception.SCIMDataValidationException;
 
+import javax.validation.Valid;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
@@ -54,7 +56,9 @@ public final class Group extends Resource implements Serializable {
     public static final String SCHEMA = "urn:ietf:params:scim:schemas:core:2.0:Group";
     private static final long serialVersionUID = -2995603177584656028L;
 
+    @NotBlank(message = "The displayName is mandatory!")
     private final String displayName;
+    @Valid
     private final Set<MemberRef> members;
 
     @JsonCreator

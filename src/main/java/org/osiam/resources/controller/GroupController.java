@@ -23,67 +23,43 @@
 
 package org.osiam.resources.controller;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.osiam.resources.helper.AttributesRemovalHelper;
-import org.osiam.resources.helper.JsonInputValidator;
-import org.osiam.resources.helper.RequestParamHelper;
 import org.osiam.resources.provisioning.SCIMGroupProvisioning;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import javax.validation.Valid;
+import java.io.IOException;
+import java.net.URI;
+import java.util.Map;
 
 /**
  * HTTP Api for groups. You can create, delete, replace, update and search groups.
  */
-@Controller
 @RequestMapping(value = "/Groups")
 @Transactional
+@RestController
 public class GroupController {
 
     @Autowired
     private SCIMGroupProvisioning scimGroupProvisioning;
 
-    @Autowired
-    private JsonInputValidator jsonInputValidator;
-
-    private RequestParamHelper requestParamHelper = new RequestParamHelper();
-
     private AttributesRemovalHelper attributesRemovalHelper = new AttributesRemovalHelper();
 
     @RequestMapping(method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody
-    public Group create(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Group group = jsonInputValidator.validateJsonGroup(request);
+    public ResponseEntity<Group> create(@RequestBody @Valid Group group, UriComponentsBuilder builder) throws IOException {
         Group createdGroup = scimGroupProvisioning.create(group);
-        setLocationUriWithNewId(request, response, createdGroup.getId());
-        return createdGroup;
-    }
-
-    private void setLocationUriWithNewId(HttpServletRequest request, HttpServletResponse response, String id) {
-        String requestUrl = request.getRequestURL().toString();
-        URI uri = new UriTemplate("{requestUrl}{internalId}").expand(requestUrl + "/", id);
-        response.setHeader("Location", uri.toASCIIString());
-    }
-
-    private void setLocation(HttpServletRequest request, HttpServletResponse response) {
-        String requestUrl = request.getRequestURL().toString();
-        response.setHeader("Location", requestUrl);
+        return buildResponseWithLocation(createdGroup, builder, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    @ResponseBody
     public Group get(@PathVariable final String id) {
         return scimGroupProvisioning.getById(id);
     }
@@ -95,46 +71,39 @@ public class GroupController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public Group replace(@PathVariable final String id, HttpServletRequest request, HttpServletResponse response)
+    public ResponseEntity<Group> replace(@PathVariable final String id, @RequestBody @Valid Group group, UriComponentsBuilder builder)
             throws IOException {
-        Group group = jsonInputValidator.validateJsonGroup(request);
-        Group createdGroup = scimGroupProvisioning.replace(id, group);
-        setLocation(request, response);
-        return createdGroup;
+        Group updatedGroup = scimGroupProvisioning.replace(id, group);
+        return buildResponseWithLocation(updatedGroup, builder, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public Group update(@PathVariable final String id, HttpServletRequest request, HttpServletResponse response)
+    public ResponseEntity<Group> update(@PathVariable final String id, @RequestBody Group group, UriComponentsBuilder builder)
             throws IOException {
-        Group group = jsonInputValidator.validateJsonGroup(request);
-        Group createdGroup = scimGroupProvisioning.update(id, group);
-        setLocation(request, response);
-        return createdGroup;
+        Group updatedGroup = scimGroupProvisioning.update(id, group);
+        return buildResponseWithLocation(updatedGroup, builder, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    @ResponseBody
-    public SCIMSearchResult<Group> searchWithGet(HttpServletRequest request) {
-        Map<String, Object> parameterMap = requestParamHelper.getRequestParameterValues(request);
-        SCIMSearchResult<Group> scimSearchResult = scimGroupProvisioning.search((String) parameterMap.get("filter"),
-                (String) parameterMap.get("sortBy"), (String) parameterMap.get("sortOrder"),
-                (int) parameterMap.get("count"), (int) parameterMap.get("startIndex"));
-
-        return attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResult, parameterMap);
+    public SCIMSearchResult<Group> searchWithGet(@RequestParam Map<String, String> requestParameters) {
+        return searchWithPost(requestParameters);
     }
 
     @RequestMapping(value = "/.search", method = RequestMethod.POST)
-    @ResponseBody
-    public SCIMSearchResult<Group> searchWithPost(HttpServletRequest request) {
-        Map<String, Object> parameterMap = requestParamHelper.getRequestParameterValues(request);
-        SCIMSearchResult<Group> scimSearchResult = scimGroupProvisioning.search((String) parameterMap.get("filter"),
-                (String) parameterMap.get("sortBy"), (String) parameterMap.get("sortOrder"),
-                (int) parameterMap.get("count"), (int) parameterMap.get("startIndex"));
+    public SCIMSearchResult<Group> searchWithPost(@RequestParam Map<String, String> requestParameters) {
+        SCIMSearchResult<Group> scimSearchResult = scimGroupProvisioning.search(requestParameters.get("filter"),
+                requestParameters.get("sortBy"),
+                requestParameters.getOrDefault("sortOrder", "ascending"),
+                Integer.parseInt(requestParameters.getOrDefault("count", "" + SCIMSearchResult.MAX_RESULTS)),
+                Integer.parseInt(requestParameters.getOrDefault("startIndex", "1")));
 
-        return attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResult, parameterMap);
+        return attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResult, requestParameters);
+    }
+
+    private ResponseEntity<Group> buildResponseWithLocation(Group group, UriComponentsBuilder builder, HttpStatus status) {
+        HttpHeaders headers = new HttpHeaders();
+        URI location = builder.path("/Groups/{id}").buildAndExpand(group.getId()).toUri();
+        headers.setLocation(location);
+        return new ResponseEntity<>(group, headers, status);
     }
 }

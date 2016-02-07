@@ -41,6 +41,7 @@ import java.util.*;
 public class SCIMSearchResult<T> {
 
     public static final String SCHEMA = "urn:ietf:params:scim:api:messages:2.0:ListResponse";
+    public static final int MAX_RESULTS = 100;
     private long totalResults;
     private long itemsPerPage;
     private long startIndex;

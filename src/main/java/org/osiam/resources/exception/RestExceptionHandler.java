@@ -32,18 +32,19 @@ import org.osiam.resources.scim.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice({
         "org.osiam.auth.oauth_client",
         "org.osiam.metrics.controller",
         "org.osiam.resources.controller"
 })
-public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+public class RestExceptionHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RestExceptionHandler.class);
 
@@ -62,6 +63,15 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return produceErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorResponse handleValidationException(MethodArgumentNotValidException ex) {
+        BindingResult bindingResult = ex.getBindingResult();
+        String message = bindingResult.getFieldError().getDefaultMessage();
+        return produceErrorResponse(message, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(ResourceExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
@@ -72,7 +82,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(OsiamBackendFailureException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
-    public ErrorResponse handleBackendFailure(OsiamBackendFailureException e) {
+    public ErrorResponse handleBackendFailure() {
         return produceErrorResponse("An internal error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -140,5 +150,4 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         }
         return new ErrorResponse(status.value(), message);
     }
-
 }

@@ -24,364 +24,173 @@
 package org.osiam.resources.controller
 
 import org.osiam.auth.token.TokenService
-import org.osiam.resources.helper.AttributesRemovalHelper
-import org.osiam.resources.helper.JsonInputValidator
-import org.osiam.resources.helper.RequestParamHelper
+import org.osiam.resources.exception.RestExceptionHandler
 import org.osiam.resources.provisioning.SCIMUserProvisioning
-import org.osiam.resources.scim.Meta
-import org.osiam.resources.scim.Name
 import org.osiam.resources.scim.SCIMSearchResult
 import org.osiam.resources.scim.User
-import org.osiam.storage.entities.EmailEntity
-import org.osiam.storage.entities.MetaEntity
-import org.osiam.storage.entities.NameEntity
-import org.osiam.storage.entities.UserEntity
 import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.ResponseBody
-import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import spock.lang.Shared
 import spock.lang.Specification
 
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
-import java.lang.reflect.Method
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 
 class UserControllerSpec extends Specification {
 
-    def requestParamHelper = Mock(RequestParamHelper)
-    def jsonInputValidator = Mock(JsonInputValidator)
-    def attributesRemovalHelper = Mock(AttributesRemovalHelper)
     def scimUserProvisioning = Mock(SCIMUserProvisioning)
     def tokenService = Mock(TokenService)
-    UserController userController = new UserController(requestParamHelper: requestParamHelper,
-            jsonInputValidator: jsonInputValidator, attributesRemovalHelper: attributesRemovalHelper,
-            scimUserProvisioning: scimUserProvisioning, tokenService: tokenService)
-    def httpServletRequest = Mock(HttpServletRequest)
-    def httpServletResponse = Mock(HttpServletResponse)
 
-    User user = new User.Builder("test").setActive(true)
-            .setDisplayName("display")
-            .setLocale("locale")
-            .setName(new Name.Builder().build())
-            .setNickName("nickname")
-            .setPassword("password")
-            .setPreferredLanguage("preferredLanguage")
-            .setProfileUrl("profileUrl")
-            .setTimezone("time")
-            .setTitle("title")
-            .setUserType("userType")
-            .setExternalId("externalid")
-            .setId("id")
-            .setMeta(new Meta.Builder().build())
-            .build()
+    def UserController = new UserController(scimUserProvisioning: scimUserProvisioning, tokenService: tokenService)
 
-    // simulating provisioning (i.e. removing password)
-    User provisionedUser = new User.Builder(user).setPassword(null).build()
+    def mockMvc = MockMvcBuilders.standaloneSetup(UserController)
+            .setControllerAdvice(new RestExceptionHandler()).build()
 
-    NameEntity nameEntity = new NameEntity(familyName: "Prefect", givenName: "Fnord", formatted: "Fnord Prefect")
-    UserEntity userEntity = new UserEntity(active: true, emails: [
-            new EmailEntity(primary: true, value: "test@test.de")
-    ],
-            name: nameEntity, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
-            locale: "de_DE", userName: "fpref")
+    @Shared
+    def uuid = UUID.randomUUID()
 
-    def 'getting a user calls getById on provisioning bean'() {
-        given:
-        def id = 'irrelevant'
+    @Shared
+    def responseUser = new User.Builder([displayName: 'Test User', id: uuid]).build()
 
+    @Shared
+    def minimalUser = '{"schemas": ["urn:ietf:params:scim:schemas:core:2.0:User"],' +
+            ' "userName": "Test User"}'
+
+    def 'Creating a new User using POST returns correct location'() {
         when:
-        userController.getUser(id)
+        def response = mockMvc.perform(post('/Users')
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(minimalUser))
 
         then:
-        1 * scimUserProvisioning.getById(id) >> provisionedUser
+        1 * scimUserProvisioning.create(_) >> responseUser
+        response.andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(header().string('Location', "http://localhost/Users/${uuid}"))
+                .andExpect(jsonPath('$.id').value(uuid as String)) // is nonsense because it's what we give in
     }
 
-    def "should contain a method to GET a user"() {
-        given:
-        Method method = UserController.class.getDeclaredMethod("getUser", String)
+    def 'Creating an user with an invalid multi-value attribute raises 400 BAD REQUEST'() {
         when:
-        RequestMapping mapping = method.getAnnotation(RequestMapping)
-        ResponseBody body = method.getAnnotation(ResponseBody)
-        then:
-        mapping.value() == ["/{id}"]
-        mapping.method() == [RequestMethod.GET]
-        body
-    }
-
-    def "should contain a method to POST a user"() {
-        given:
-        Method method = UserController.class.getDeclaredMethod("create", HttpServletRequest, HttpServletResponse)
-        when:
-        RequestMapping mapping = method.getAnnotation(RequestMapping)
-        ResponseBody body = method.getAnnotation(ResponseBody)
-        ResponseStatus defaultStatus = method.getAnnotation(ResponseStatus)
-        then:
-        mapping.method() == [RequestMethod.POST]
-        body
-        defaultStatus.value() == HttpStatus.CREATED
-    }
-
-    def "should contain a method to DELETE a user"() {
-        given:
-        Method method = UserController.class.getDeclaredMethod("delete", String)
-        when:
-        RequestMapping mapping = method.getAnnotation(RequestMapping)
-        ResponseStatus defaultStatus = method.getAnnotation(ResponseStatus)
-        then:
-        mapping.method() == [RequestMethod.DELETE]
-        defaultStatus.value() == HttpStatus.OK
-    }
-
-    def "should call provisioning and revoke access tokens on DELETE"() {
-        given:
-        def id = 'id'
-
-        when:
-        userController.delete(id)
+        def response = mockMvc.perform(post('/Users')
+                .contentType(MediaType.APPLICATION_JSON)
+                .content('{"schemas": ["urn:ietf:params:scim:schemas:core:2.0:User"],' +
+                ' "userName": "Test User", "emails": [{"primary": "true"}]}'
+        ))
 
         then:
-        1 * tokenService.revokeAllTokensOfUser(id)
-        1 * scimUserProvisioning.delete(id)
+        response.andExpect(status().isBadRequest())
+                .andExpect(jsonPath('$.status').value('400'))
+                .andExpect(jsonPath('$.detail').value('Multi-Valued attributes may not have empty values'))
     }
 
-    def "should contain a method to PUT a user"() {
-        given:
-        Method method = UserController.class.getDeclaredMethod("replace", String, HttpServletRequest, HttpServletResponse)
+    def 'Creating an invalid User using POST raises a 400 BAD REQUEST'() {
         when:
-        RequestMapping mapping = method.getAnnotation(RequestMapping)
-        ResponseBody body = method.getAnnotation(ResponseBody)
-        ResponseStatus defaultStatus = method.getAnnotation(ResponseStatus)
-        then:
-        mapping.method() == [RequestMethod.PUT]
-        body
-        defaultStatus.value() == HttpStatus.OK
-    }
-
-    def "should contain a method to PATCH a user"() {
-        given:
-        Method method = UserController.class.getDeclaredMethod("update", String, HttpServletRequest, HttpServletResponse)
-        when:
-        RequestMapping mapping = method.getAnnotation(RequestMapping)
-        ResponseBody body = method.getAnnotation(ResponseBody)
-        ResponseStatus defaultStatus = method.getAnnotation(ResponseStatus)
-        then:
-        mapping.method() == [RequestMethod.PATCH]
-        body
-        defaultStatus.value() == HttpStatus.OK
-    }
-
-    def validateUser(User result, boolean locationChanged) {
-        assert result == user
-        assert user.password != null
-        assert result.password == null
-        assert result.active == user.active
-        assert result.addresses.empty
-        assert result.displayName == user.displayName
-        assert result.emails.empty
-        assert result.entitlements.empty
-        assert result.groups.empty
-        assert result.ims.empty
-        assert result.locale == user.locale
-        assert result.name == user.name
-        assert result.nickName == user.nickName
-        assert result.phoneNumbers.empty
-        assert result.photos.empty
-        assert result.preferredLanguage == user.preferredLanguage
-        assert result.profileUrl == user.profileUrl
-        assert result.roles.empty
-        assert result.timezone == user.timezone
-        assert result.title == user.title
-        assert result.userType == user.userType
-        assert result.x509Certificates.empty
-        assert result.userName == user.userName
-        assert result.id == user.id
-        assert result.externalId == user.externalId
-
-        if (!locationChanged) {
-            assert result.meta == user.meta
-        } else {
-
-            result.meta.attributes == user.meta.attributes
-            result.meta.created == user.meta.created
-            result.meta.lastModified == user.meta.lastModified
-            result.meta.resourceType == user.meta.resourceType
-            result.meta.version == user.meta.version
-            result.meta.location != user.meta.location
-        }
-        true
-    }
-
-    def "should create the user and add the location header"() {
-        given:
-        httpServletRequest.getRequestURL() >> new StringBuffer("http://host:port/deployment/User")
-        def uri = new URI("http://host:port/deployment/User/id")
-        jsonInputValidator.validateJsonUser(httpServletRequest) >> user
-
-        when:
-        def result = userController.create(httpServletRequest, httpServletResponse)
+        def response = mockMvc.perform(post('/Users')
+                .contentType(MediaType.APPLICATION_JSON)
+                .content('{"schemas": ["urn:ietf:params:scim:schemas:core:2.0:User"],"displayName": ""}}'))
 
         then:
-        1 * scimUserProvisioning.create(user) >> provisionedUser
-        1 * httpServletResponse.setHeader("Location", uri.toASCIIString())
-        validateUser(result, true)
+        response.andExpect(status().isBadRequest())
+                .andExpect(jsonPath('$.detail').value('The userName is mandatory!'))
+                .andExpect(jsonPath('$.status').value('400'))
     }
 
-    def "should replace an user and set location header"() {
-        given:
-        def id = UUID.randomUUID().toString()
-        jsonInputValidator.validateJsonUser(httpServletRequest) >> user
-
+    def 'Retrieving a User calls get on provisioning'() {
         when:
-        def result = userController.replace(id, httpServletRequest, httpServletResponse)
+        def response = mockMvc.perform(get("/Users/${uuid}")
+                .accept(MediaType.APPLICATION_JSON))
 
         then:
-        1 * scimUserProvisioning.replace(id, user) >> provisionedUser
-        1 * httpServletRequest.getRequestURL() >> new StringBuffer("http://localhorst/horst/" + id)
-        1 * httpServletResponse.setHeader("Location", "http://localhorst/horst/" + id)
-        validateUser(result, true)
+        1 * scimUserProvisioning.getById(uuid.toString()) >> responseUser
+        response.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath('$.id').value(uuid as String)) // is nonsense because it's what we give in
     }
 
-    def "should update an user and set location header"() {
-        given:
-        def id = UUID.randomUUID().toString()
-        jsonInputValidator.validateJsonUser(httpServletRequest) >> user
-
+    def 'Deleting a User removes the users tokens and calls delete on provisioning'() {
         when:
-        def result = userController.update(id, httpServletRequest, httpServletResponse)
+        mockMvc.perform(delete("/Users/${uuid}"))
 
         then:
-        1 * scimUserProvisioning.update(id, user) >> provisionedUser
-        1 * httpServletRequest.getRequestURL() >> new StringBuffer("http://localhorst/horst/yo")
-        1 * httpServletResponse.setHeader("Location", "http://localhorst/horst/yo")
-        validateUser(result, true)
+        1 * tokenService.revokeAllTokensOfUser(uuid.toString())
+        1 * scimUserProvisioning.delete(uuid.toString())
     }
 
-    def "should be able to search a user on /User URI with GET method"() {
-        given:
-        Method method = UserController.class.getDeclaredMethod("searchWithGet", HttpServletRequest)
-        def servletRequestMock = Mock(HttpServletRequest)
-        def map = Mock(Map)
-        requestParamHelper.getRequestParameterValues(servletRequestMock) >> map
-
-        map.get("filter") >> "filter"
-        map.get("sortBy") >> "sortBy"
-        map.get("sortOrder") >> "sortOrder"
-        map.get("count") >> 10
-        map.get("startIndex") >> 1
-
-        SCIMSearchResult scimSearchResultMock = Mock()
-        def set = ["schemas"] as Set
-        scimUserProvisioning.search("filter", "sortBy", "sortOrder", 10, 1) >> scimSearchResultMock
-        scimSearchResultMock.getSchemas() >> set
-
+    def 'Replacing a User using PUT sets the location header correctly'() {
         when:
-        RequestMapping mapping = method.getAnnotation(RequestMapping)
-        ResponseBody body = method.getAnnotation(ResponseBody)
-        userController.searchWithGet(servletRequestMock)
+        def response = mockMvc.perform(put("/Users/${uuid}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(minimalUser))
 
         then:
-        mapping.value() == []
-        mapping.method() == [RequestMethod.GET]
-        body
-        1 * attributesRemovalHelper.removeSpecifiedUserAttributes(scimSearchResultMock, map)
+        1 * scimUserProvisioning.replace(uuid.toString(), _) >> responseUser
+        response.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(header().string('Location', "http://localhost/Users/${uuid}"))
+                .andExpect(jsonPath('$.id').value(uuid as String)) // is nonsense because it's what we give in
     }
 
-    def "should be able to search a user on /User/.search URI with POST method"() {
-        given:
-        Method method = UserController.class.getDeclaredMethod("searchWithPost", HttpServletRequest)
-        def servletRequestMock = Mock(HttpServletRequest)
-        def map = Mock(Map)
-        requestParamHelper.getRequestParameterValues(servletRequestMock) >> map
-
-        map.get("filter") >> "filter"
-        map.get("sortBy") >> "sortBy"
-        map.get("sortOrder") >> "sortOrder"
-        map.get("count") >> 10
-        map.get("startIndex") >> 1
-
-        def scimSearchResultMock = Mock(SCIMSearchResult)
-        def set = ["schemas"] as Set
-        scimUserProvisioning.search("filter", "sortBy", "sortOrder", 10, 1) >> scimSearchResultMock
-        scimSearchResultMock.getSchemas() >> set
-
+    def 'Replacing an invalid User using PUT raises a 400 BAD REQUEST'() {
         when:
-        RequestMapping mapping = method.getAnnotation(RequestMapping)
-        ResponseBody body = method.getAnnotation(ResponseBody)
-        userController.searchWithPost(servletRequestMock)
+        def response = mockMvc.perform(put("/Users/${uuid}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content('{"schemas": ["urn:ietf:params:scim:schemas:core:2.0:User"],"userName": ""}}'))
+        then:
+        response.andExpect(status().isBadRequest())
+                .andExpect(jsonPath('$.status').value(HttpStatus.BAD_REQUEST.toString()))
+    }
+
+    def 'Replacing a User using PATCH sets the location header as expected'() {
+        when:
+        def response = mockMvc.perform(patch("/Users/${uuid}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(minimalUser))
 
         then:
-        mapping.value() == ["/.search"]
-        mapping.method() == [RequestMethod.POST]
-        body
-        1 * attributesRemovalHelper.removeSpecifiedUserAttributes(scimSearchResultMock, map)
+        1 * scimUserProvisioning.update(uuid.toString(), _) >> responseUser
+        response.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(header().string('Location', "http://localhost/Users/${uuid}"))
+                .andExpect(jsonPath('$.id').value(uuid as String)) // is nonsense because it's what we give in
     }
 
-    def "OSNG-467: updating a user should lead to a token revocation if the user is deactivated"() {
-        given: 'a request to deactivate a user'
-        def id = 'user id'
-        def token = 'token'
-        User updateUser = new User.Builder().setActive(false).build()
-        httpServletRequest.getRequestURL() >> new StringBuffer('irrelevant')
-        httpServletRequest.getHeader('Authorization') >> 'Bearer ' + token;
-        scimUserProvisioning.update(id, updateUser) >> user
-
-        when: 'the update is performed'
-        userController.update(id, httpServletRequest, httpServletResponse)
-
-        then: 'a request to revoke the tokens of the users should be sent'
-        1 * jsonInputValidator.validateJsonUser(httpServletRequest) >> updateUser
-        1 * tokenService.revokeAllTokensOfUser(id)
+    def 'Replacing an invalid User using PATCH raises a 400 BAD REQUEST'() {
+        when:
+        def response = mockMvc.perform(put("/Users/${uuid}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content('{"schemas": ["urn:ietf:params:scim:schemas:core:2.0:User"],"userName": ""}}'))
+        then:
+        response.andExpect(status().isBadRequest())
     }
 
-    def "OSNG-467: updating a user should not lead to a token revocation if the user is not deactivated"() {
-        given: 'a request to update a user without deactivation'
-        def id = 'user id'
-        def token = 'token'
-        User updateUser = new User.Builder().setDisplayName('name').build()
-        httpServletRequest.getRequestURL() >> new StringBuffer('irrelevant')
-        httpServletRequest.getHeader('Authorization') >> 'Bearer ' + token;
-        scimUserProvisioning.update(id, updateUser) >> user
+    def 'Search parameters default to SCIM RFC values'() {
+        when:
+        def response = mockMvc.perform(get("/Users")
+                .accept(MediaType.APPLICATION_JSON)
+                .param('filter', 'irrelevant'))
 
-        when: 'the update is performed'
-        userController.update(id, httpServletRequest, httpServletResponse)
-
-        then: 'no request to revoke the tokens of the users should be sent'
-        1 * jsonInputValidator.validateJsonUser(httpServletRequest) >> updateUser
-        0 * tokenService.revokeAccessTokens(id, token)
+        then:
+        1 * scimUserProvisioning.search('irrelevant', null, 'ascending', 100, 1) >> new SCIMSearchResult<User>([], 1, 100, 1)
+        response.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
     }
 
-    def "OSNG-467: replacing a user should lead to a token revocation if the user is deactivated"() {
-        given: 'a request to deactivate a user'
-        def id = 'user id'
-        def token = 'token'
-        User newUser = new User.Builder().setActive(false).build()
-        httpServletRequest.getRequestURL() >> new StringBuffer('irrelevant')
-        httpServletRequest.getHeader('Authorization') >> 'Bearer ' + token;
-        scimUserProvisioning.replace(id, newUser) >> user
+    def 'Providing parameters override defaults'() {
+        when:
+        def response = mockMvc.perform(get("/Users")
+                .accept(MediaType.APPLICATION_JSON)
+                .param('filter', 'irrelevant')
+                .param('sortBy', 'irrelevant')
+                .param('sortOrder', 'descending')
+                .param('count', '10000')
+                .param('startIndex', '500'))
 
-        when: 'the user is replaced'
-        userController.replace(id, httpServletRequest, httpServletResponse)
-
-        then: 'a request to revoke the tokens of the users should be sent'
-        1 * jsonInputValidator.validateJsonUser(httpServletRequest) >> newUser
-        1 * tokenService.revokeAllTokensOfUser(id)
+        then:
+        1 * scimUserProvisioning.search('irrelevant', 'irrelevant', 'descending', 10000, 500) >> new SCIMSearchResult<User>([], 1, 100, 1)
+        response.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
     }
 
-    def "OSNG-467: replacing a user should not lead to a token revocation if the user is not deactivated"() {
-        given: 'a request to update a user without deactivation'
-        def id = 'user id'
-        def token = 'token'
-        User newUser = new User.Builder().setDisplayName('name').build()
-        httpServletRequest.getRequestURL() >> new StringBuffer('irrelevant')
-        httpServletRequest.getHeader('Authorization') >> 'Bearer ' + token;
-        scimUserProvisioning.replace(id, newUser) >> user
-
-        when: 'the user is replaced'
-        userController.replace(id, httpServletRequest, httpServletResponse)
-
-        then: 'no request to revoke the tokens of the users should be sent'
-        1 * jsonInputValidator.validateJsonUser(httpServletRequest) >> newUser
-        0 * tokenService.revokeAccessTokens(id, token)
-    }
 }

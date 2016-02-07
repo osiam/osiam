@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.google.common.base.Strings;
 import org.osiam.resources.exception.OsiamBackendFailureException;
 import org.osiam.resources.scim.Resource;
 import org.osiam.resources.scim.SCIMSearchResult;
@@ -45,28 +46,26 @@ public class AttributesRemovalHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(AttributesRemovalHelper.class);
 
     public <T extends Resource> SCIMSearchResult<T> removeSpecifiedAttributes(SCIMSearchResult<T> resultList,
-                                                                              Map<String, Object> parameterMap) {
-        return getJsonResponseWithAdditionalFields(resultList, parameterMap);
+                                                                              Map<String, String> requestParameters) {
+        return getJsonResponseWithAdditionalFields(resultList, requestParameters);
     }
 
     public SCIMSearchResult<User> removeSpecifiedUserAttributes(SCIMSearchResult<User> resultList,
-                                                                Map<String, Object> parameterMap) {
-        return getUserJsonResponseWithAdditionalFields(resultList, parameterMap);
+                                                                Map<String, String> requestParameters) {
+        return getUserJsonResponseWithAdditionalFields(resultList, requestParameters);
     }
 
     private SCIMSearchResult<User> getUserJsonResponseWithAdditionalFields(
-            SCIMSearchResult<User> scimSearchResult, Map<String, Object> parameterMap) {
+            SCIMSearchResult<User> scimSearchResult, Map<String, String> requestParameters) {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        String[] fieldsToReturn = (String[]) parameterMap.get("attributes");
-        if (fieldsToReturn.length == 0) {
+        List<String> fieldsToReturn = extractAttributes(requestParameters.get("attributes"));
+        if (fieldsToReturn.isEmpty()) {
             return scimSearchResult;
         }
 
-        for (int i = 0; i < fieldsToReturn.length; i++) {
-            fieldsToReturn[i] = fieldsToReturn[i].trim();
-        }
+        fieldsToReturn.forEach(e -> fieldsToReturn.set(fieldsToReturn.indexOf(e), e.trim()));
 
         ObjectWriter writer = getObjectWriter(mapper, fieldsToReturn);
 
@@ -94,11 +93,11 @@ public class AttributesRemovalHelper {
     }
 
     private <T extends Resource> SCIMSearchResult<T> getJsonResponseWithAdditionalFields(
-            SCIMSearchResult<T> scimSearchResult, Map<String, Object> parameterMap) {
+            SCIMSearchResult<T> scimSearchResult, Map<String, String> requestParameters) {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        String[] fieldsToReturn = (String[]) parameterMap.get("attributes");
+        List<String> fieldsToReturn = extractAttributes(requestParameters.get("attributes"));
         ObjectWriter writer = getObjectWriter(mapper, fieldsToReturn);
 
         try {
@@ -122,17 +121,16 @@ public class AttributesRemovalHelper {
         }
     }
 
-    private List<User> filterUserSchemas(List<User> resourceList, String[] fieldsToReturn) {
+    private List<User> filterUserSchemas(List<User> resourceList, List<String> fieldsToReturn) {
 
         if (resourceList.size() == 0) {
             return resourceList;
         }
         List<User> modifiedResourceList = new ArrayList<>();
         Set<String> newSchema = new HashSet<>();
-        List<String> returnFields = Arrays.asList(fieldsToReturn);
         for (User resource : resourceList) {
             for (String schema : resource.getSchemas()) {
-                if (schema.equals(User.SCHEMA) || returnFields.contains(schema)) {
+                if (schema.equals(User.SCHEMA) || fieldsToReturn.contains(schema)) {
                     newSchema.add(schema);
                 }
             }
@@ -142,15 +140,15 @@ public class AttributesRemovalHelper {
         return modifiedResourceList;
     }
 
-    private ObjectWriter getObjectWriter(ObjectMapper mapper, String[] fieldsToReturn) {
+    private ObjectWriter getObjectWriter(ObjectMapper mapper, List<String> fieldsToReturn) {
 
-        if (fieldsToReturn.length != 0) {
-            mapper.addMixInAnnotations(
+        if (!fieldsToReturn.isEmpty()) {
+            mapper.addMixIn(
                     Object.class, PropertyFilterMixIn.class);
 
             HashSet<String> givenFields = new HashSet<>();
             givenFields.add("schemas");
-            Collections.addAll(givenFields, fieldsToReturn);
+            givenFields.addAll(fieldsToReturn);
             String[] finalFieldsToReturn = givenFields.toArray(new String[givenFields.size()]);
 
             FilterProvider filters = new SimpleFilterProvider()
@@ -160,5 +158,13 @@ public class AttributesRemovalHelper {
             return mapper.writer(filters);
         }
         return mapper.writer();
+    }
+
+    private List<String> extractAttributes(String attributesParameter) {
+        List<String> strings = new ArrayList<>();
+        if (!Strings.isNullOrEmpty(attributesParameter)) {
+            strings.addAll(Arrays.asList(attributesParameter.split("[,|\\.]")));
+        }
+        return strings;
     }
 }

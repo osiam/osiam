@@ -24,6 +24,7 @@ package org.osiam.resources.scim;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.validator.constraints.NotBlank;
 
 import java.io.Serializable;
 
@@ -65,6 +66,7 @@ public final class Entitlement extends MultiValuedAttribute implements Serializa
     }
 
     @Override
+    @NotBlank(message = "Multi-Valued attributes may not have empty values")
     public String getValue() {
         return super.getValue();
     }

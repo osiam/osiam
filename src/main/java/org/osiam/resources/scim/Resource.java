@@ -25,6 +25,7 @@ package org.osiam.resources.scim;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableSet;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.osiam.resources.exception.SCIMDataValidationException;
 
 import java.io.Serializable;
@@ -41,6 +42,7 @@ public abstract class Resource implements Serializable {
     private final String id;
     private final String externalId;
     private final Meta meta;
+    @NotEmpty
     @JsonProperty(required = true)
     private final Set<String> schemas;
 

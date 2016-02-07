@@ -24,6 +24,7 @@ package org.osiam.resources.scim;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.validator.constraints.NotBlank;
 import org.osiam.resources.exception.SCIMDataValidationException;
 
 import java.io.Serializable;
@@ -68,6 +69,8 @@ public final class Email extends MultiValuedAttribute implements Serializable {
     }
 
     @Override
+    @NotBlank(message = "Multi-Valued attributes may not have empty values")
+    @org.hibernate.validator.constraints.Email(message = "${validatedValue} is not a valid e-mail address")
     public String getValue() {
         return super.getValue();
     }

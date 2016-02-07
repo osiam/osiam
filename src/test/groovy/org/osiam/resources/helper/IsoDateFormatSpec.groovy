@@ -37,8 +37,7 @@ import javax.servlet.http.HttpServletRequest
 class IsoDateFormatSpec extends Specification {
 
     def provisioning = Mock(SCIMUserProvisioning)
-    def userController = new UserController(scimUserProvisioning: provisioning, requestParamHelper: new RequestParamHelper())
-    def servletRequestMock = Mock(HttpServletRequest)
+    def userController = new UserController(scimUserProvisioning: provisioning)
 
     def "should return the date fields in iso format"() {
         given:
@@ -51,10 +50,9 @@ class IsoDateFormatSpec extends Specification {
         def scimSearchResult = new SCIMSearchResult([user] as List, 23, 100, 0)
 
         when:
-        def result = userController.searchWithGet(servletRequestMock)
+        def result = userController.searchWithGet(["attributes":"meta.created"])
 
         then:
-        2 * servletRequestMock.getParameter("attributes") >> "meta.created"
         1 * provisioning.search(_, _, _, _, _) >> scimSearchResult
 
         result.getResources() == [[meta: [created: created], schemas: [User.SCHEMA]]] as List
