@@ -37,7 +37,7 @@ public class Osiam extends SpringBootServletInitializer {
 
     private static final Map<String, Object> DEFAULT_PROPERTIES = ImmutableMap.<String, Object>of(
             "osiam.home", System.getenv("HOME") + "/.osiam",
-            "spring.config.location", "file:${osiam.home}/config/osiam.yaml"
+            "spring.config.location", "classpath:/home/config/osiam.yaml,file:${osiam.home}/config/osiam.yaml"
     );
 
     @Value("${org.osiam.db.driver}")

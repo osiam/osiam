@@ -11,6 +11,7 @@ Chapters:
 
 - [Requirements](#requirements)
 - [Download OSIAM](#download-osiam)
+- [The Home Directory](#the-home-directory)
 - [Configuration](#configuration)
 - [Starting OSIAM](#starting-osiam)
 - [Default setup](#default-setup)
@@ -36,10 +37,22 @@ This document takes the following prerequisites as basis:
     <dd>PostgreSQL 9.4 or MySQL 5.7</dd>
 </dl>
 
-All of the items have to be installed and running. For the installation of OSIAM
-you need a PostgreSQL or MySQL database. In this document we are using the database
-"osiam" and with the user "osiam". Please make sure that the database and user
-exists before going on.
+All of the items have to be installed and running.
+For the installation of OSIAM you need a PostgreSQL or MySQL database.
+The default configuration connects to a PostgreSQL database with the following settings:
+
+<dl>
+    <dt>Server</dt>
+    <dd>localhost:5432</dd>
+    <dt>Database</dt>
+    <dd>osiam</dd>
+    <dt>User</dt>
+    <dd>osiam</dd>
+    <dt>Password</dt>
+    <dd>osiam</dd>
+</dl>
+
+Please make sure that the database and user exist before going on.
 
 **WARNING:** SCIM and OAuth 2 are standards that require TLS to be enabled. An
 exhaustive explanation how to setup TLS for HTTP connections in Tomcat 7 can be
@@ -47,34 +60,28 @@ found here: http://tomcat.apache.org/tomcat-7.0-doc/ssl-howto.html
 
 ## Download OSIAM
 
-We recommend to choose the latest OSIAM release version.
-You can easily download the distribution from the release page: https://github.com/osiam/osiam/releases
-Available formats are .zip or .tar.gz.
+OSIAM is distributed as a self-contained `.war` file.
+You can easily download it from the release page: https://github.com/osiam/osiam/releases.
+We recommend to choose the latest release version of OSIAM.
 
-The distribution includes
-
-* OSIAM server as a .war file
-* an example configuration file
-* static assets like templates, css and javascript files
-
-After download, please unpack the distribution archive to a location of your choice.
-
-## Initialize Home Directory
+## The Home Directory
 
 OSIAM expects the configuration and necessary assets in a directory in the file system.
 This directory is known as the home directory.
-The distribution contains a complete skeleton of a home directory under `/configuration`.
-The easiest way to initialize the home directory is to copy this skeleton.
-
-Create the a new directory for the home directory, e.g. `/var/lib/osiam`.
+You can set the home directory by various means, e.g. as environment variable, system property
+or JNDI attribute under `java:comp/env`.
+If no home directory is specified, `$HOME/.osiam` will be used.
+OSIAM initializes its home directory at startup, if the directory is empty.
+You should create a new directory for the home directory now, for instance `/var/lib/osiam`.
 We will refer to this directory as `OSIAM_HOME` from now on.
-Copy all directories from the distribution archive under `/configuration` to `OSIAM_HOME`.
 
 ## Configuration
 
 The configuration file can be found under `OSIAM_HOME/config/osiam.yaml`.
+It's the default configuration file that has been copied during initialization.
 Change this file to your needs.
 It should be self-explanatory.
+You have to restart OSIAM after making changes to this file.
 
 ## Starting OSIAM
 
@@ -102,7 +109,7 @@ The best way is to add a Tomcat context descriptor with the following content:
 </Context>
 ```
 
-Replace `OSIAM_HOME` with the directory you chose in [Initialize Home Directory](#initialize-home-directory).
+Replace `OSIAM_HOME` with the directory you chose in [The Home Directory](#the-home-directory).
 Put this file under Tomcat's `conf` directory, e.g. `/var/lib/tomcat7/conf/Catalina/localhost/osiam.xml`.
 To start OSIAM put the downloaded .war file into Tomcat's `webapp` directory:
 
