@@ -338,18 +338,6 @@ public enum UserQueryField implements QueryField<UserEntity> {
         }
 
     },
-    PASSWORD("password") {
-        @Override
-        public Predicate addFilter(Root<UserEntity> root,
-                FilterConstraint constraint, String value, CriteriaBuilder cb) {
-            return constraint.createPredicateForStringField(root.get(UserEntity_.password), value, cb);
-        }
-
-        @Override
-        public Expression<?> createSortByField(Root<UserEntity> root, CriteriaBuilder cb) {
-            throw handleSortByFieldNotSupported(toString());
-        }
-    },
     EMAILS("emails") {
         @Override
         public Predicate addFilter(Root<UserEntity> root, FilterConstraint constraint,
