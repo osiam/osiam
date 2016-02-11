@@ -52,7 +52,6 @@ import java.util.UUID;
 public class SCIMUserProvisioning implements SCIMProvisioning<User> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SCIMUserProvisioning.class);
-    private static final int PASSWORD_SEARCH_DELAY = 500;
 
     @Autowired
     private UserConverter userConverter;
@@ -163,9 +162,6 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
         ParseTree filterTree = queryFilterParser.getParseTree(filter);
 
         SearchResult<UserEntity> result = userDao.search(filterTree, sortBy, sortOrder, count, startIndex - 1);
-        if (searchedForPasswordAndNoResult(result, filter)) {
-            sleepIfForPasswordWasSearched(filterTree);
-        }
 
         for (UserEntity userEntity : result.results) {
             User scimResultUser = userConverter.toScim(userEntity);
@@ -173,28 +169,6 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
         }
 
         return new SCIMSearchResult<>(users, result.totalResults, count, startIndex);
-    }
-
-    private boolean searchedForPasswordAndNoResult(SearchResult<UserEntity> result, String filter) {
-        return result.totalResults == 0 && filter.contains("password");
-    }
-
-    private void sleepIfForPasswordWasSearched(ParseTree tree) {
-        if (tree == null) {
-            return;
-        }
-        String leaf = tree.getText();
-        if (leaf.equalsIgnoreCase("password")) {
-            try {
-                Thread.sleep(PASSWORD_SEARCH_DELAY);
-                return;
-            } catch (InterruptedException e) {
-                // doesn't matter
-            }
-        }
-        for (int counter = 0; counter < tree.getChildCount(); counter++) {
-            sleepIfForPasswordWasSearched(tree.getChild(counter));
-        }
     }
 
     @Override
