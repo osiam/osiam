@@ -115,3 +115,5 @@ buildNumber.properties
 .mvn/timing.properties
 
 
+# OSIAM dev
+.osiam/
