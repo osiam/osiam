@@ -96,7 +96,7 @@ public class Osiam extends SpringBootServletInitializer {
         flyway.setDataSource(dataSource());
         flyway.setLocations("db/migration/" + databaseVendor);
         flyway.setBaselineOnMigrate(true);
-        flyway.setBaselineVersion(MigrationVersion.fromVersion("2"));
+        flyway.setBaselineVersion(MigrationVersion.fromVersion("1"));
         return flyway;
     }
 

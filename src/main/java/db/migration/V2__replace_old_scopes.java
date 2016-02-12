@@ -33,7 +33,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class V4__replace_old_scopes implements JdbcMigration, MigrationChecksumProvider {
+public class V2__replace_old_scopes implements JdbcMigration, MigrationChecksumProvider {
 
     private final Map<String, Long> internalIds = new HashMap<>();
     private Connection connection;
