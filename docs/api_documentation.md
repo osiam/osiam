@@ -367,7 +367,7 @@ The following URI provides the service provider configuration of the addressed
 server:
 
 ```http
-http://OSIAM_HOST:8080/osiam/ServiceProviderConfigs
+http://OSIAM_HOST:8080/osiam/ServiceProviderConfig
 ```
 
 ### Search

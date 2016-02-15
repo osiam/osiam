@@ -140,7 +140,7 @@ list upon implementation.
 <tr><td> /Groups                 </td><td> SCIMv2    </td><td> ADMIN </td><td>                     </td></tr>
 <tr><td> /Bulk                   </td><td> SCIMv2    </td><td> ADMIN                       </td><td> not yet implemented </td></tr>
 <tr><td> /.search                </td><td> SCIMv2    </td><td> ADMIN ME                   </td><td> not yet implemented </td></tr>
-<tr><td> /ServiceProviderConfigs </td><td> SCIMv2    </td><td> public                     </td><td>                     </td></tr>
+<tr><td> /ServiceProviderConfig </td><td> SCIMv2    </td><td> public                     </td><td>                     </td></tr>
 <tr><td> /Schemas                </td><td> SCIMv2    </td><td> public                     </td><td> not yet implemented </td></tr>
 <tr><td> /Clients                </td><td> OSIAM     </td><td> ADMIN </td><td> SCIM based implementation as soon as the standard is defined</td></tr>
 <tr><td> /me                     </td><td> Facebook  </td><td> ADMIN ME                      </td><td>                     </td></tr>

@@ -26,12 +26,12 @@ package org.osiam.resources.controller
 import spock.lang.Specification
 
 class ServiceProviderConfigSpec extends Specification {
-    def underTest = new ServiceProviderConfigsController()
+    def underTest = new ServiceProviderConfigController()
 
     def "should return a ServiceProviderConfig"() {
         given:
         def schemas = [
-                ServiceProviderConfigsController.ServiceProviderConfig.SCHEMA] as Set
+                ServiceProviderConfigController.ServiceProviderConfig.SCHEMA] as Set
 
         when:
         def config = underTest.getConfig()
