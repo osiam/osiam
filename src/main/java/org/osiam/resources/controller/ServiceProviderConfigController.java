@@ -34,8 +34,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Controller
-@RequestMapping(value = "/ServiceProviderConfigs")
-public class ServiceProviderConfigsController {
+@RequestMapping(value = "/ServiceProviderConfig")
+public class ServiceProviderConfigController {
 
     @RequestMapping
     @ResponseBody

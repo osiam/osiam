@@ -119,7 +119,7 @@ Check Tomcat's log files to see the startup progress.
 After some seconds, OSIAM should be fully deployed and ready.
 You can check from the commandline whether OSIAM is started by using the following command:
 
-    $ curl http://localhost:8080/osiam/ServiceProviderConfigs
+    $ curl http://localhost:8080/osiam/ServiceProviderConfig
 
 Everything is fine when you see a JSON string as response that looks like this:
 
