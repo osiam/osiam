@@ -21,14 +21,12 @@ import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.filter.CharacterEncodingFilter;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.servlet.Filter;
 import javax.sql.DataSource;
 import java.util.Map;
 
 @SpringBootApplication
-@EnableWebMvc
 @EnableWebSecurity
 @EnableTransactionManagement
 @EnableMetrics

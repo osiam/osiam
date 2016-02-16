@@ -23,22 +23,19 @@
 
 package org.osiam.resources.controller;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.osiam.resources.scim.SCIMSearchResult;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.HashSet;
 import java.util.Set;
 
-import org.osiam.resources.helper.RequestParamHelper;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-@Controller
+@RestController
 @RequestMapping(value = "/ServiceProviderConfig")
 public class ServiceProviderConfigController {
 
     @RequestMapping
-    @ResponseBody
     public ServiceProviderConfig getConfig() {
         return ServiceProviderConfig.INSTANCE;
     }
@@ -50,7 +47,7 @@ public class ServiceProviderConfigController {
         public static final String SCHEMA = "urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig";
         public final Supported patch = new Supported(true);
         public final Supported bulk = new BulkSupported(false);
-        public final Supported filter = new FilterSupported(true, RequestParamHelper.MAX_RESULT);
+        public final Supported filter = new FilterSupported(true, SCIMSearchResult.MAX_RESULTS);
         public final Supported changePassword = new Supported(false);
         public final Supported sort = new Supported(true);
         public final Supported etag = new Supported(false);

@@ -37,20 +37,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
-import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Set;
 
 /**
  * This Controller is used for getting information about the user who initialised the access_token.
- *
  */
-@Controller
+@RestController
 @RequestMapping(value = "/me")
 @Transactional
 public class MeController {
@@ -63,9 +61,9 @@ public class MeController {
 
     /**
      * This method is used to get information about the user who initialised the authorization process.
-     * <p/>
+     * <p>
      * The result should be in json format and look like:
-     * <p/>
+     * <p>
      * {
      * "id": "73821979327912",
      * "name": "Arthur Dent",
@@ -80,13 +78,12 @@ public class MeController {
      * "verified": true,
      * "updated_time": "2012-08-20T08:03:30+0000"
      * }
-     * <p/>
+     * <p>
      * if some information are not available then ... will happen.
      *
      * @return an object to represent the json format.
      */
-    @RequestMapping(value = "/**", method = { RequestMethod.GET, RequestMethod.POST })
-    @ResponseBody
+    @RequestMapping(value = "/**", method = {RequestMethod.GET, RequestMethod.POST})
     public FacebookInformationConstruct getInformation(HttpServletRequest request) {
         String accessToken = getAccessToken(request);
 

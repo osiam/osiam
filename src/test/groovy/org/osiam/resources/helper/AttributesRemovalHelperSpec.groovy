@@ -32,13 +32,13 @@ import spock.lang.Specification
 
 class AttributesRemovalHelperSpec extends Specification {
 
-    def attributesRemovalHelperTest = new AttributesRemovalHelper()
+    def attributesRemovalHelper = new AttributesRemovalHelper()
 
     def "should not throw exception if result list is empty"() {
         given:
         def userList = [] as List<User>
         def parameterMapMock = Mock(Map)
-        def attributes = ["userName"] as String[]
+        def attributes = "userName"
 
         parameterMapMock.get("attributes") >> attributes
 
@@ -48,7 +48,7 @@ class AttributesRemovalHelperSpec extends Specification {
         scimSearchResult.getTotalResults() >> 1337
 
         when:
-        def result = attributesRemovalHelperTest.removeSpecifiedAttributes(scimSearchResult, parameterMapMock)
+        def result = attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResult, parameterMapMock)
 
         then:
         result.startIndex == 0
@@ -63,7 +63,7 @@ class AttributesRemovalHelperSpec extends Specification {
                 User.SCHEMA] as Set).build()
         def userList = [user] as List<User>
         def parameterMapMock = Mock(Map)
-        def attributes = ["userName"] as String[]
+        def attributes = "userName, displayName"
 
         parameterMapMock.get("attributes") >> attributes
 
@@ -73,7 +73,7 @@ class AttributesRemovalHelperSpec extends Specification {
         scimSearchResult.getTotalResults() >> 1337
 
         when:
-        def result = attributesRemovalHelperTest.removeSpecifiedAttributes(scimSearchResult, parameterMapMock)
+        def result = attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResult, parameterMapMock)
 
         then:
         result.startIndex == 0
@@ -86,11 +86,8 @@ class AttributesRemovalHelperSpec extends Specification {
         given:
         def user = new User.Builder("username").setSchemas([
                 "schemas:urn:ietf:params:scim:schemas:core:2.0"] as Set).build()
-        def userList = [user] as List<User>
-        def parameterMapMock = Mock(Map)
-        def attributes = [] as String[]
-
-        parameterMapMock.get("attributes") >> attributes
+        def userList = [user]
+        def parameterMap = ['attributes': '']
 
         def scimSearchResult = Mock(SCIMSearchResult)
 
@@ -98,7 +95,7 @@ class AttributesRemovalHelperSpec extends Specification {
         scimSearchResult.getTotalResults() >> 1337
 
         when:
-        def result = attributesRemovalHelperTest.removeSpecifiedAttributes(scimSearchResult, parameterMapMock)
+        def result = attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResult, parameterMap)
 
         then:
         result.startIndex == 0
@@ -112,7 +109,7 @@ class AttributesRemovalHelperSpec extends Specification {
 
     def "should return only data of a complex type"() {
         given:
-        String[] pA = ["meta", "created"]
+        def pA = "meta.created"
         def param = ["attributes": pA, "count": 23, "startIndex": 23]
 
         def actualDate = GregorianCalendar.getInstance().getTime()
@@ -124,7 +121,7 @@ class AttributesRemovalHelperSpec extends Specification {
         def scimSearchResult = new SCIMSearchResult([user], 1, 23, 1)
 
         when:
-        def result = attributesRemovalHelperTest.removeSpecifiedAttributes(scimSearchResult, param)
+        def result = attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResult, param)
 
         then:
         result.startIndex == 1

@@ -54,7 +54,7 @@ class RestExceptionHandlerSpec extends Specification {
 
     def 'status is set to INTERNAL_SERVER_ERROR when OsiamBackendFailureException occurs'() {
         when:
-        def result = exceptionHandler.handleBackendFailure(new OsiamBackendFailureException())
+        def result = exceptionHandler.handleBackendFailure()
         then:
         result.detail == "An internal error occurred"
         result.status == HttpStatus.INTERNAL_SERVER_ERROR as String

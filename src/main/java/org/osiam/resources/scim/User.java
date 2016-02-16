@@ -29,8 +29,10 @@ import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.hibernate.validator.constraints.NotBlank;
 import org.osiam.resources.exception.SCIMDataValidationException;
 
+import javax.validation.Valid;
 import java.io.Serializable;
 import java.util.*;
 
@@ -55,6 +57,7 @@ public final class User extends Resource implements Serializable {
     public static final String SCHEMA = "urn:ietf:params:scim:schemas:core:2.0:User";
     private static final long serialVersionUID = -4076516708797425414L;
 
+    @NotBlank(message = "The userName is mandatory!")
     private final String userName;
     private final Name name;
     private final String displayName;
@@ -67,43 +70,52 @@ public final class User extends Resource implements Serializable {
     private final String timezone;
     private final Boolean active;
     private final String password;
+    @Valid
     private final List<Email> emails;
+    @Valid
     private final List<PhoneNumber> phoneNumbers;
+    @Valid
     private final List<Im> ims;
+    @Valid
     private final List<Photo> photos;
+    // Can't really validate that one. value is not acessible
     private final List<Address> addresses;
+    @Valid
     private final List<GroupRef> groups;
+    @Valid
     private final List<Entitlement> entitlements;
+    @Valid
     private final List<Role> roles;
+    @Valid
     private final List<X509Certificate> x509Certificates;
     private final Map<String, Extension> extensions;
 
     @JsonCreator
     private User(@JsonProperty("id") String id,
-                @JsonProperty("externalId") String externalId,
-                @JsonProperty("meta") Meta meta,
-                @JsonProperty(value = "schemas", required = true) Set<String> schemas,
-                @JsonProperty("userName") String userName,
-                @JsonProperty("name") Name name,
-                @JsonProperty("displayName") String displayName,
-                @JsonProperty("nickName") String nickName,
-                @JsonProperty("profileUrl") String profileUrl,
-                @JsonProperty("title") String title,
-                @JsonProperty("userType") String userType,
-                @JsonProperty("preferredLanguage") String preferredLanguage,
-                @JsonProperty("locale") String locale,
-                @JsonProperty("timezone") String timezone,
-                @JsonProperty("active") Boolean active,
-                @JsonProperty("emails") List<Email> emails,
-                @JsonProperty("phoneNumbers") List<PhoneNumber> phoneNumbers,
-                @JsonProperty("ims") List<Im> ims,
-                @JsonProperty("photos") List<Photo> photos,
-                @JsonProperty("addresses") List<Address> addresses,
-                @JsonProperty("groups") List<GroupRef> groups,
-                @JsonProperty("entitlements") List<Entitlement> entitlements,
-                @JsonProperty("roles") List<Role> roles,
-                @JsonProperty("x509Certificates") List<X509Certificate> x509Certificates,
-                @JsonProperty("extensions") Map<String, Extension> extensions) {
+                 @JsonProperty("externalId") String externalId,
+                 @JsonProperty("meta") Meta meta,
+                 @JsonProperty(value = "schemas", required = true) Set<String> schemas,
+                 @JsonProperty("userName") String userName,
+                 @JsonProperty("name") Name name,
+                 @JsonProperty("displayName") String displayName,
+                 @JsonProperty("nickName") String nickName,
+                 @JsonProperty("profileUrl") String profileUrl,
+                 @JsonProperty("title") String title,
+                 @JsonProperty("userType") String userType,
+                 @JsonProperty("preferredLanguage") String preferredLanguage,
+                 @JsonProperty("locale") String locale,
+                 @JsonProperty("timezone") String timezone,
+                 @JsonProperty("active") Boolean active,
+                 @JsonProperty("emails") List<Email> emails,
+                 @JsonProperty("phoneNumbers") List<PhoneNumber> phoneNumbers,
+                 @JsonProperty("ims") List<Im> ims,
+                 @JsonProperty("photos") List<Photo> photos,
+                 @JsonProperty("addresses") List<Address> addresses,
+                 @JsonProperty("groups") List<GroupRef> groups,
+                 @JsonProperty("entitlements") List<Entitlement> entitlements,
+                 @JsonProperty("roles") List<Role> roles,
+                 @JsonProperty("x509Certificates") List<X509Certificate> x509Certificates,
+                 @JsonProperty("extensions") Map<String, Extension> extensions) {
         super(id, externalId, meta, schemas);
         this.userName = (userName != null ? userName : "");
         this.name = name;
