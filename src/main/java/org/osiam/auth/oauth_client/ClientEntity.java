@@ -24,8 +24,8 @@
 package org.osiam.auth.oauth_client;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.Sets;
 import org.hibernate.annotations.Type;
 import org.springframework.security.core.GrantedAuthority;
@@ -49,7 +49,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Entity
 @Table(name = "osiam_client")
 public class ClientEntity implements ClientDetails {

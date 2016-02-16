@@ -23,7 +23,7 @@
 
 package org.osiam.resources.controller;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,7 +40,7 @@ public class ServiceProviderConfigController {
         return ServiceProviderConfig.INSTANCE;
     }
 
-    @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public static final class ServiceProviderConfig {
 
         public static final ServiceProviderConfig INSTANCE = new ServiceProviderConfig();
@@ -62,7 +62,7 @@ public class ServiceProviderConfigController {
             schemas.add(SCHEMA);
         }
 
-        @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
         public static class Schemas {
             public final Set<String> schemas = new HashSet<>();
 
@@ -71,7 +71,7 @@ public class ServiceProviderConfigController {
             }
         }
 
-        @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
         public static class Supported {
             public final boolean supported;
 
@@ -80,7 +80,7 @@ public class ServiceProviderConfigController {
             }
         }
 
-        @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
         public static class FilterSupported extends Supported {
             public final Integer maxResults;
 
@@ -90,7 +90,7 @@ public class ServiceProviderConfigController {
             }
         }
 
-        @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
         public static class BulkSupported extends Supported {
             public final Integer maxOperations;
             public final Integer maxPayloadSize;
@@ -103,7 +103,7 @@ public class ServiceProviderConfigController {
 
         }
 
-        @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
         static class AuthenticationSchemes {
             public AuthenticationScheme[] authenticationSchemes;
 
@@ -112,7 +112,7 @@ public class ServiceProviderConfigController {
 
             }
 
-            @JsonSerialize(include = JsonSerialize.Inclusion.NON_EMPTY)
+            @JsonInclude(JsonInclude.Include.NON_EMPTY)
             public static class AuthenticationScheme {
                 public final String name;
                 public final String description;
