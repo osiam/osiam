@@ -8,9 +8,9 @@ CREATE TABLE scim_address (
   country          CHARACTER VARYING(255),
   formatted        LONGTEXT,
   locality         CHARACTER VARYING(255),
-  postalcode       CHARACTER VARYING(255),
+  postal_code       CHARACTER VARYING(255),
   region           CHARACTER VARYING(255),
-  streetaddress    CHARACTER VARYING(255),
+  street_address    CHARACTER VARYING(255),
   type             CHARACTER VARYING(255),
   user_internal_id BIGINT NOT NULL,
   PRIMARY KEY (multi_value_id)
@@ -77,9 +77,9 @@ CREATE TABLE scim_extension (
 CREATE TABLE scim_extension_field (
   internal_id           BIGINT                 NOT NULL AUTO_INCREMENT,
   name                  CHARACTER VARYING(255),
-  is_required           BOOLEAN,
+  required           BOOLEAN,
   type                  CHARACTER VARYING(255) NOT NULL,
-  extension_internal_id BIGINT,
+  extension BIGINT,
   PRIMARY KEY (internal_id)
 )
   ENGINE = InnoDB;
@@ -91,7 +91,7 @@ CREATE TABLE scim_extension_field (
 CREATE TABLE scim_extension_field_value (
   internal_id                 BIGINT   NOT NULL AUTO_INCREMENT,
   value                       LONGTEXT NOT NULL,
-  extension_field_internal_id BIGINT   NOT NULL,
+  extension_field BIGINT   NOT NULL,
   user_internal_id            BIGINT   NOT NULL,
   PRIMARY KEY (internal_id)
 )
@@ -102,7 +102,7 @@ CREATE TABLE scim_extension_field_value (
 -- Name: scim_group; Type: TABLE; Schema: public; Owner: -
 --
 CREATE TABLE scim_group (
-  displayname CHARACTER VARYING(255) NOT NULL,
+  display_name CHARACTER VARYING(255) NOT NULL,
   internal_id BIGINT                 NOT NULL
 )
   ENGINE = InnoDB;
@@ -111,9 +111,9 @@ CREATE TABLE scim_group (
 -- TOC entry 182 (class 1259 OID 108991)
 -- Name: scim_group_scim_id; Type: TABLE; Schema: public; Owner: -
 --
-CREATE TABLE scim_group_scim_id (
-  groups_internal_id  BIGINT NOT NULL,
-  members_internal_id BIGINT NOT NULL
+CREATE TABLE scim_group_members (
+  groups  BIGINT NOT NULL,
+  members BIGINT NOT NULL
 )
   ENGINE = InnoDB;
 
@@ -125,7 +125,7 @@ CREATE TABLE scim_id (
   internal_id BIGINT                 NOT NULL AUTO_INCREMENT,
   external_id CHARACTER VARYING(255),
   id          CHARACTER VARYING(255) NOT NULL,
-  meta_id     BIGINT,
+  meta     BIGINT,
   PRIMARY KEY (internal_id)
 )
   ENGINE = InnoDB;
@@ -151,9 +151,9 @@ CREATE TABLE scim_im (
 CREATE TABLE scim_meta (
   id           BIGINT    NOT NULL AUTO_INCREMENT,
   created      TIMESTAMP NULL,
-  lastmodified TIMESTAMP NULL,
+  last_modified TIMESTAMP NULL,
   location     LONGTEXT,
-  resourcetype CHARACTER VARYING(255),
+  resource_type CHARACTER VARYING(255),
   version      CHARACTER VARYING(255),
   PRIMARY KEY (id)
 )
@@ -165,12 +165,12 @@ CREATE TABLE scim_meta (
 --
 CREATE TABLE scim_name (
   id              BIGINT NOT NULL AUTO_INCREMENT,
-  familyname      CHARACTER VARYING(255),
+  family_name      CHARACTER VARYING(255),
   formatted       LONGTEXT,
-  givenname       CHARACTER VARYING(255),
-  honorificprefix CHARACTER VARYING(255),
-  honorificsuffix CHARACTER VARYING(255),
-  middlename      CHARACTER VARYING(255),
+  given_name       CHARACTER VARYING(255),
+  honorific_prefix CHARACTER VARYING(255),
+  honorific_suffix CHARACTER VARYING(255),
+  middle_name      CHARACTER VARYING(255),
   PRIMARY KEY (id)
 )
   ENGINE = InnoDB;
@@ -224,18 +224,18 @@ CREATE TABLE scim_roles (
 CREATE TABLE scim_user
 (
   active            BOOLEAN,
-  displayname       CHARACTER VARYING(255),
+  display_name       CHARACTER VARYING(255),
   locale            CHARACTER VARYING(255),
-  nickname          CHARACTER VARYING(255),
+  nick_name          CHARACTER VARYING(255),
   password          CHARACTER VARYING(255) NOT NULL,
-  preferredlanguage CHARACTER VARYING(255),
-  profileurl        LONGTEXT,
+  preferred_language CHARACTER VARYING(255),
+  profile_url        LONGTEXT,
   timezone          CHARACTER VARYING(255),
   title             CHARACTER VARYING(255),
-  username          CHARACTER VARYING(255) NOT NULL,
-  usertype          CHARACTER VARYING(255),
+  user_name          CHARACTER VARYING(255) NOT NULL,
+  user_type          CHARACTER VARYING(255),
   internal_id       BIGINT                 NOT NULL,
-  name_id           BIGINT
+  name           BIGINT
 )
   ENGINE = InnoDB;
 --
@@ -248,8 +248,8 @@ ADD CONSTRAINT scim_group_pkey PRIMARY KEY (internal_id);
 -- TOC entry 2238 (class 2606 OID 108995)
 -- Name: scim_group_scim_id_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
-ALTER TABLE scim_group_scim_id
-ADD CONSTRAINT scim_group_scim_id_pkey PRIMARY KEY (groups_internal_id, members_internal_id);
+ALTER TABLE scim_group_members
+ADD CONSTRAINT scim_group_scim_id_pkey PRIMARY KEY (groups, members);
 --
 -- TOC entry 2272 (class 2606 OID 109059)
 -- Name: scim_user_pkey; Type: CONSTRAINT; Schema: public; Owner: -
@@ -267,13 +267,13 @@ ADD CONSTRAINT uk_164dcfif0r82xubvindi9vrnc UNIQUE (external_id);
 -- Name: uk_1dt64mbf4gp83rwy18jofwwf; Type: CONSTRAINT; Schema: public; Owner: -
 --
 ALTER TABLE scim_group
-ADD CONSTRAINT uk_1dt64mbf4gp83rwy18jofwwf UNIQUE (displayname);
+ADD CONSTRAINT uk_1dt64mbf4gp83rwy18jofwwf UNIQUE (display_name);
 --
 -- TOC entry 2274 (class 2606 OID 109097)
 -- Name: uk_1onynolltgwuk8a5ngjhkqcl1; Type: CONSTRAINT; Schema: public; Owner: -
 --
 ALTER TABLE scim_user
-ADD CONSTRAINT uk_1onynolltgwuk8a5ngjhkqcl1 UNIQUE (username);
+ADD CONSTRAINT uk_1onynolltgwuk8a5ngjhkqcl1 UNIQUE (user_name);
 --
 -- TOC entry 2225 (class 2606 OID 109072)
 -- Name: uk_60sysrrwavtwwnji8nw5tng2x; Type: CONSTRAINT; Schema: public; Owner: -
@@ -285,7 +285,7 @@ ADD CONSTRAINT uk_60sysrrwavtwwnji8nw5tng2x UNIQUE (urn(255));
 -- Name: uk_9rvm7w04q503y4gx9q0c55cnv; Type: CONSTRAINT; Schema: public; Owner: -
 --
 ALTER TABLE scim_extension_field
-ADD CONSTRAINT uk_9rvm7w04q503y4gx9q0c55cnv UNIQUE (extension_internal_id, name);
+ADD CONSTRAINT uk_9rvm7w04q503y4gx9q0c55cnv UNIQUE (extension, name);
 --
 -- TOC entry 2244 (class 2606 OID 109081)
 -- Name: uk_q4ya5m8v6tafgtvw1inqtmm42; Type: CONSTRAINT; Schema: public; Owner: -
@@ -297,7 +297,7 @@ ADD CONSTRAINT uk_q4ya5m8v6tafgtvw1inqtmm42 UNIQUE (id);
 -- TOC entry 2252 (class 1259 OID 109086)
 -- Name: uk_1b0o2foyw6nainc2vrssxkok0; Type: INDEX; Schema: public; Owner: -
 --
-CREATE INDEX uk_1b0o2foyw6nainc2vrssxkok0 USING BTREE ON scim_meta (lastmodified);
+CREATE INDEX uk_1b0o2foyw6nainc2vrssxkok0 USING BTREE ON scim_meta (last_modified);
 --
 -- TOC entry 2263 (class 1259 OID 109091)
 -- Name: uk_1er38kw2ith4ewuf7b5rhh7br; Type: INDEX; Schema: public; Owner: -
@@ -319,7 +319,7 @@ CREATE INDEX uk_31njuvoulynkorup0b5pjqni6 USING BTREE ON scim_im (value(767));
 -- TOC entry 2205 (class 1259 OID 109061)
 -- Name: uk_3hqwl74jwjq0dksv2t4iqlptm; Type: INDEX; Schema: public; Owner: -
 --
-CREATE INDEX uk_3hqwl74jwjq0dksv2t4iqlptm USING BTREE ON scim_address (country(200), region(200), locality(200), postalcode(200), streetaddress(200));
+CREATE INDEX uk_3hqwl74jwjq0dksv2t4iqlptm USING BTREE ON scim_address (country(200), region(200), locality(200), postal_code(200), street_address(200));
 
 --
 -- TOC entry 2264 (class 1259 OID 109090)
@@ -439,7 +439,7 @@ CREATE INDEX uk_nxxhl5vhce96gwm0se9spjjjv USING BTREE ON scim_entitlements (valu
 -- TOC entry 2232 (class 1259 OID 109075)
 -- Name: uk_p2y10qxtuqdvbl5spxu98akx2; Type: INDEX; Schema: public; Owner: -
 --
-CREATE INDEX uk_p2y10qxtuqdvbl5spxu98akx2 USING BTREE ON scim_extension_field_value (user_internal_id, extension_field_internal_id);
+CREATE INDEX uk_p2y10qxtuqdvbl5spxu98akx2 USING BTREE ON scim_extension_field_value (user_internal_id, extension_field);
 
 --
 -- TOC entry 2211 (class 1259 OID 109062)
@@ -452,7 +452,7 @@ CREATE INDEX uk_tb6nu6msjqh1qb2ne5e4ghnp0 USING BTREE ON scim_certificate (value
 -- Name: fk_6y0v7g2y69nkvody9jv5q3tuo; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 ALTER TABLE scim_extension_field_value
-ADD CONSTRAINT fk_6y0v7g2y69nkvody9jv5q3tuo FOREIGN KEY (extension_field_internal_id) REFERENCES scim_extension_field (internal_id);
+ADD CONSTRAINT fk_6y0v7g2y69nkvody9jv5q3tuo FOREIGN KEY (extension_field) REFERENCES scim_extension_field (internal_id);
 
 --
 -- TOC entry 2280 (class 2606 OID 109113)
@@ -465,22 +465,22 @@ ADD CONSTRAINT fk_7jnl5vqcfg1j9plj4py1qvxcp FOREIGN KEY (user_internal_id) REFER
 -- TOC entry 2285 (class 2606 OID 109138)
 -- Name: fk_b29y2qc2j5uu49wa9grpbulb0; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
-ALTER TABLE scim_group_scim_id
-ADD CONSTRAINT fk_b29y2qc2j5uu49wa9grpbulb0 FOREIGN KEY (members_internal_id) REFERENCES scim_id (internal_id);
+ALTER TABLE scim_group_members
+ADD CONSTRAINT fk_b29y2qc2j5uu49wa9grpbulb0 FOREIGN KEY (members) REFERENCES scim_id (internal_id);
 
 --
 -- TOC entry 2287 (class 2606 OID 109148)
 -- Name: fk_byxttqfbmb2wcj4ud3hd53mw3; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 ALTER TABLE scim_id
-ADD CONSTRAINT fk_byxttqfbmb2wcj4ud3hd53mw3 FOREIGN KEY (meta_id) REFERENCES scim_meta (id);
+ADD CONSTRAINT fk_byxttqfbmb2wcj4ud3hd53mw3 FOREIGN KEY (meta) REFERENCES scim_meta (id);
 
 --
 -- TOC entry 2292 (class 2606 OID 109173)
 -- Name: fk_d2ji7ipe62fbg8uu2ir7b9ls4; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 ALTER TABLE scim_user
-ADD CONSTRAINT fk_d2ji7ipe62fbg8uu2ir7b9ls4 FOREIGN KEY (name_id) REFERENCES scim_name (id);
+ADD CONSTRAINT fk_d2ji7ipe62fbg8uu2ir7b9ls4 FOREIGN KEY (name) REFERENCES scim_name (id);
 
 --
 -- TOC entry 2279 (class 2606 OID 109108)
@@ -494,14 +494,14 @@ ADD CONSTRAINT fk_dmfj3s46npn4p1pcrc3iur2mp FOREIGN KEY (user_internal_id) REFER
 -- Name: fk_eksek96tmtxkaqe5a7hfmoswo; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 ALTER TABLE scim_extension_field
-ADD CONSTRAINT fk_eksek96tmtxkaqe5a7hfmoswo FOREIGN KEY (extension_internal_id) REFERENCES scim_extension (internal_id);
+ADD CONSTRAINT fk_eksek96tmtxkaqe5a7hfmoswo FOREIGN KEY (extension) REFERENCES scim_extension (internal_id);
 
 --
 -- TOC entry 2286 (class 2606 OID 109143)
 -- Name: fk_gct22972jrrv22crorixfdlmi; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
-ALTER TABLE scim_group_scim_id
-ADD CONSTRAINT fk_gct22972jrrv22crorixfdlmi FOREIGN KEY (groups_internal_id) REFERENCES scim_group (internal_id);
+ALTER TABLE scim_group_members
+ADD CONSTRAINT fk_gct22972jrrv22crorixfdlmi FOREIGN KEY (groups) REFERENCES scim_group (internal_id);
 
 --
 -- TOC entry 2278 (class 2606 OID 109103)
@@ -572,21 +572,21 @@ ADD CONSTRAINT fk_rpqvdf1p9twdigaq1wclu5wm8 FOREIGN KEY (user_internal_id) REFER
 
 INSERT INTO scim_extension VALUES (1, 'urn:org.osiam:scim:extensions:auth-server');
 
-INSERT INTO scim_extension_field (internal_id, is_required, name, type, extension_internal_id)
+INSERT INTO scim_extension_field (internal_id, required, name, type, extension)
 VALUES (1, FALSE, 'origin', 'STRING', 1);
 
 --
 -- Example User: admin, pw: koala
 --
-INSERT INTO scim_meta (id, created, lastmodified, location, resourcetype, version)
+INSERT INTO scim_meta (id, created, last_modified, location, resource_type, version)
 VALUES (1, '2011-10-10', '2011-10-10', NULL, 'User', NULL);
 
-INSERT INTO scim_id (internal_id, external_id, id, meta_id)
+INSERT INTO scim_id (internal_id, external_id, id, meta)
 VALUES (1, NULL, 'cef9452e-00a9-4cec-a086-d171374ffbef', 1);
 
-INSERT INTO scim_user (active, displayname, locale, nickname, password, preferredlanguage,
-                       profileurl, timezone, title, username, usertype, internal_id,
-                       name_id)
+INSERT INTO scim_user (active, display_name, locale, nick_name, password, preferred_language,
+                       profile_url, timezone, title, user_name, user_type, internal_id,
+                       name)
 VALUES (TRUE, NULL, NULL, NULL,
         'cbae73fac0893291c4792ef19d158a589402288b35cb18fb8406e951b9d95f6b8b06a3526ffebe96ae0d91c04ae615a7fe2af362763db386ccbf3b55c29ae800',
         NULL,
@@ -600,14 +600,13 @@ VALUES (TRUE, NULL, NULL, NULL,
 --
 CREATE TABLE osiam_client (
     internal_id bigint NOT NULL AUTO_INCREMENT,
-    accesstokenvalidityseconds integer NOT NULL,
+    access_token_validity_seconds integer NOT NULL,
     client_secret character varying(255) NOT NULL,
-    expiry datetime NULL,
     id character varying(32) NOT NULL,
     implicit_approval boolean NOT NULL,
     redirect_uri longtext NOT NULL,
-    refreshtokenvalidityseconds integer NOT NULL,
-    validityinseconds bigint NOT NULL,
+    refresh_token_validity_seconds integer NOT NULL,
+    validity_in_seconds bigint NOT NULL,
     primary key (internal_id)
 ) ENGINE=InnoDB;
 
@@ -657,10 +656,10 @@ ALTER TABLE osiam_client_scopes
 --
 -- Example Client
 --
-INSERT INTO osiam_client (internal_id, accesstokenvalidityseconds, client_secret, expiry,
-            id, implicit_approval, redirect_uri, refreshtokenvalidityseconds,
-            validityinseconds)
-    VALUES (1, 28800, 'secret', null,
+INSERT INTO osiam_client (internal_id, access_token_validity_seconds, client_secret,
+            id, implicit_approval, redirect_uri, refresh_token_validity_seconds,
+            validity_in_seconds)
+    VALUES (1, 28800, 'secret',
             'example-client', FALSE, 'http://localhost:5000/oauth2', 86400,
             28800);
 INSERT INTO osiam_client_scopes (id, scope) VALUES (1, 'GET');
