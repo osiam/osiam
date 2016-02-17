@@ -32,6 +32,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import org.hibernate.validator.constraints.NotBlank;
 import org.osiam.resources.exception.SCIMDataValidationException;
+import org.osiam.resources.validation.ValidCoreSchema;
 
 import javax.validation.Valid;
 import java.io.Serializable;
@@ -110,6 +111,12 @@ public final class Group extends Resource implements Serializable {
         return "Group [displayName=" + displayName + ", members=" + members + ", getId()=" + getId()
                 + ", getExternalId()=" + getExternalId() + ", getMeta()=" + getMeta() + ", getSchemas()="
                 + getSchemas() + "]";
+    }
+
+    @Override
+    @ValidCoreSchema(SCHEMA)
+    public Set<String> getSchemas() {
+        return super.getSchemas();
     }
 
     /**

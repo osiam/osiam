@@ -24,6 +24,7 @@
 package org.osiam.resources.scim;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.collect.ImmutableSet;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.osiam.resources.exception.SCIMDataValidationException;
 
@@ -103,7 +104,7 @@ public abstract class Resource implements Serializable {
      */
     @NotEmpty
     public Set<String> getSchemas() {
-        return schemas;
+        return ImmutableSet.copyOf(schemas);
     }
 
     @Override

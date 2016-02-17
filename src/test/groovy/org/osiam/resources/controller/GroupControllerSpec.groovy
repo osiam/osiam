@@ -93,6 +93,18 @@ class GroupControllerSpec extends Specification {
                 .andExpect(jsonPath('$.status').value('400'))
     }
 
+    def 'Creating a Group with invalid Schema raises a 400 BAD REQUEST'() {
+        when:
+        def response = mockMvc.perform(post('/Groups')
+                .contentType(MediaType.APPLICATION_JSON)
+                .content('{"schemas": ["invalid schema"], "displayName": "Test Group"}'))
+
+        then:
+        response.andExpect(status().isBadRequest())
+                .andExpect(jsonPath('$.detail').value('Invalid core schema'))
+                .andExpect(jsonPath('$.status').value('400'))
+    }
+
     def 'Retrieving a group calls get on provisioning'() {
         when:
         def response = mockMvc.perform(get("/Groups/${uuid}")

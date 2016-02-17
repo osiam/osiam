@@ -36,6 +36,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.hibernate.validator.constraints.NotBlank;
 import org.osiam.resources.exception.SCIMDataValidationException;
+import org.osiam.resources.validation.ValidCoreSchema;
 
 import javax.validation.Valid;
 import java.io.Serializable;
@@ -533,6 +534,12 @@ public final class User extends Resource implements Serializable {
                 + groups + ", entitlements=" + entitlements + ", roles=" + roles + ", x509Certificates="
                 + x509Certificates + ", extensions=" + extensions + ", getId()=" + getId() + ", getExternalId()="
                 + getExternalId() + ", getMeta()=" + getMeta() + ", getSchemas()=" + getSchemas() + "]";
+    }
+
+    @Override
+    @ValidCoreSchema(SCHEMA)
+    public Set<String> getSchemas() {
+        return super.getSchemas();
     }
 
     /**
