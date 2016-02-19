@@ -25,16 +25,18 @@ package org.osiam.resources.controller
 
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
+import org.osiam.resources.helper.AttributesRemovalHelper
 import org.osiam.resources.provisioning.SCIMUserProvisioning
 import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.SCIMSearchResult
 import org.osiam.resources.scim.User
-import org.springframework.util.LinkedMultiValueMap
 import spock.lang.Specification
 
 class ShowComplexAttributeFilterSpec extends Specification {
+
     def provisioning = Mock(SCIMUserProvisioning)
-    def userController = new UserController(scimUserProvisioning: provisioning)
+    def userController = new UserController(scimUserProvisioning: provisioning,
+            attributesRemovalHelper: new AttributesRemovalHelper())
 
     def "should be able to just show a field of an complex type"() {
         given:

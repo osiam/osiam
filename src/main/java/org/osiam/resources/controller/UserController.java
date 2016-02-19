@@ -33,7 +33,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
@@ -43,11 +49,11 @@ import java.util.Map;
 
 /**
  * This Controller is used to manage User
- * <p>
+ * <p/>
  * http://tools.ietf.org/html/draft-ietf-scim-core-schema-00#section-6
- * <p>
+ * <p/>
  * it is based on the SCIM 2.0 API Specification:
- * <p>
+ * <p/>
  * http://tools.ietf.org/html/draft-ietf-scim-api-00#section-3
  */
 @RestController
@@ -61,7 +67,8 @@ public class UserController {
     @Autowired
     private TokenService tokenService;
 
-    private AttributesRemovalHelper attributesRemovalHelper = new AttributesRemovalHelper();
+    @Autowired
+    private AttributesRemovalHelper attributesRemovalHelper;
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public User getUser(@PathVariable String id) {
