@@ -109,11 +109,4 @@ public class WebApplicationSecurity extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-
-    @Bean
-    public ShaPasswordEncoder passwordEncoder() {
-        ShaPasswordEncoder passwordEncoder = new ShaPasswordEncoder(512);
-        passwordEncoder.setIterations(1000);
-        return passwordEncoder;
-    }
 }
