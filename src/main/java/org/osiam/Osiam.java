@@ -17,7 +17,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.filter.CharacterEncodingFilter;
@@ -96,13 +95,6 @@ public class Osiam extends SpringBootServletInitializer {
         flyway.setBaselineOnMigrate(true);
         flyway.setBaselineVersion(MigrationVersion.fromVersion("1"));
         return flyway;
-    }
-
-    @Bean
-    public ShaPasswordEncoder passwordEncoder() {
-        ShaPasswordEncoder passwordEncoder = new ShaPasswordEncoder(512);
-        passwordEncoder.setIterations(1000);
-        return passwordEncoder;
     }
 
     @Bean
