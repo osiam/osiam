@@ -27,6 +27,9 @@ import com.google.common.collect.Iterables;
 import org.osiam.auth.login.ldap.OsiamLdapAuthenticationProvider;
 import org.osiam.auth.login.ldap.OsiamLdapUserContextMapper;
 import org.osiam.auth.login.ldap.ScimToLdapAttributeMapping;
+import org.osiam.resources.provisioning.SCIMUserProvisioning;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -37,8 +40,6 @@ import org.springframework.security.ldap.authentication.BindAuthenticator;
 import org.springframework.security.ldap.authentication.LdapAuthenticator;
 import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator;
 
-import javax.annotation.PostConstruct;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,11 +61,15 @@ public class LdapAuthentication {
     }
 
     @Bean
-    public OsiamLdapAuthenticationProvider osiamLdapAuthenticationProvider() {
+    @Autowired
+    public OsiamLdapAuthenticationProvider osiamLdapAuthenticationProvider(SCIMUserProvisioning userProvisioning,
+                                                                           @Value("${org.osiam.ldap.sync-user-data:true}") boolean syncUserData) {
         return new OsiamLdapAuthenticationProvider(
                 bindAuthenticator(),
                 new DefaultLdapAuthoritiesPopulator(contextSource(), ""),
-                new OsiamLdapUserContextMapper(ldapToScimAttributeMapping()));
+                new OsiamLdapUserContextMapper(ldapToScimAttributeMapping()),
+                userProvisioning,
+                syncUserData);
     }
 
     @Bean

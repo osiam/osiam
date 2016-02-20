@@ -61,14 +61,18 @@ import java.util.Map;
 @Transactional
 public class UserController {
 
-    @Autowired
-    private SCIMUserProvisioning scimUserProvisioning;
+    private final SCIMUserProvisioning scimUserProvisioning;
+    private final TokenService tokenService;
+    private final AttributesRemovalHelper attributesRemovalHelper;
 
     @Autowired
-    private TokenService tokenService;
-
-    @Autowired
-    private AttributesRemovalHelper attributesRemovalHelper;
+    public UserController(SCIMUserProvisioning scimUserProvisioning,
+                          TokenService tokenService,
+                          AttributesRemovalHelper attributesRemovalHelper) {
+        this.scimUserProvisioning = scimUserProvisioning;
+        this.tokenService = tokenService;
+        this.attributesRemovalHelper = attributesRemovalHelper;
+    }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public User getUser(@PathVariable String id) {

@@ -40,7 +40,7 @@ import java.util.Set;
 @Service
 class X509CertificateUpdater {
 
-    private X509CertificateConverter x509CertificateConverter;
+    private final X509CertificateConverter x509CertificateConverter;
 
     @Autowired
     public X509CertificateUpdater(X509CertificateConverter x509CertificateConverter) {
@@ -86,9 +86,9 @@ class X509CertificateUpdater {
     private void ensureOnlyOnePrimaryX509CertificateExists(X509CertificateEntity newX509Certificate,
                                                            Set<X509CertificateEntity> x509Certificates) {
         if (newX509Certificate.isPrimary()) {
-            for (X509CertificateEntity exisitngX509CertificateEntity : x509Certificates) {
-                if (exisitngX509CertificateEntity.isPrimary()) {
-                    exisitngX509CertificateEntity.setPrimary(false);
+            for (X509CertificateEntity existingX509CertificateEntity : x509Certificates) {
+                if (existingX509CertificateEntity.isPrimary()) {
+                    existingX509CertificateEntity.setPrimary(false);
                 }
             }
         }

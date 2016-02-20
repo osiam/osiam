@@ -40,7 +40,7 @@ import java.util.Set;
 @Service
 class AddressUpdater {
 
-    private AddressConverter addressConverter;
+    private final AddressConverter addressConverter;
 
     @Autowired
     public AddressUpdater(AddressConverter addressConverter) {
@@ -51,18 +51,18 @@ class AddressUpdater {
      * updates (adds new, delete, updates) the addresses of the given {@link UserEntity} based on the given List of
      * {@link Address}
      *
-     * @param addresss   list of {@link Address} to be deleted, updated or added
+     * @param address    list of {@link Address} to be deleted, updated or added
      * @param userEntity user who needs to be updated
      * @param attributes all {@link AddressEntity}'s will be deleted if this Set contains 'address'
      */
-    void update(List<Address> addresss, UserEntity userEntity, Set<String> attributes) {
+    void update(List<Address> address, UserEntity userEntity, Set<String> attributes) {
 
         if (attributes.contains("addresses")) {
             userEntity.removeAllAddresses();
         }
 
-        if (addresss != null) {
-            for (Address scimAddress : addresss) {
+        if (address != null) {
+            for (Address scimAddress : address) {
                 AddressEntity addressEntity = addressConverter.fromScim(scimAddress);
                 userEntity.removeAddress(addressEntity); // we always have to remove the address in case
                 // the primary attribute has changed

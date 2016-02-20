@@ -50,14 +50,16 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SCIMGroupProvisioning.class);
 
-    @Autowired
-    private GroupConverter groupConverter;
+    private final GroupConverter groupConverter;
+    private final GroupDao groupDao;
+    private final GroupUpdater groupUpdater;
 
     @Autowired
-    private GroupDao groupDao;
-
-    @Autowired
-    private GroupUpdater groupUpdater;
+    public SCIMGroupProvisioning(GroupConverter groupConverter, GroupDao groupDao, GroupUpdater groupUpdater) {
+        this.groupConverter = groupConverter;
+        this.groupDao = groupDao;
+        this.groupUpdater = groupUpdater;
+    }
 
     @Override
     public Group create(Group group) {

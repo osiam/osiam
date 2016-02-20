@@ -33,7 +33,7 @@ import java.util.Locale;
 @Service
 public class UserFilterParser extends FilterParser<UserEntity> {
 
-    private ExtensionDao extensionDao;
+    private final ExtensionDao extensionDao;
 
     @Autowired
     public UserFilterParser(ExtensionDao extensionDao) {

@@ -40,7 +40,7 @@ import java.util.Set;
 @Service
 class PhoneNumberUpdater {
 
-    private PhoneNumberConverter phoneNumberConverter;
+    private final PhoneNumberConverter phoneNumberConverter;
 
     @Autowired
     public PhoneNumberUpdater(PhoneNumberConverter phoneNumberConverter) {
@@ -86,9 +86,9 @@ class PhoneNumberUpdater {
     private void ensureOnlyOnePrimaryPhoneNumberExists(PhoneNumberEntity newPhoneNumber,
                                                        Set<PhoneNumberEntity> phoneNumbers) {
         if (newPhoneNumber.isPrimary()) {
-            for (PhoneNumberEntity exisitngPhoneNumberEntity : phoneNumbers) {
-                if (exisitngPhoneNumberEntity.isPrimary()) {
-                    exisitngPhoneNumberEntity.setPrimary(false);
+            for (PhoneNumberEntity existingPhoneNumberEntity : phoneNumbers) {
+                if (existingPhoneNumberEntity.isPrimary()) {
+                    existingPhoneNumberEntity.setPrimary(false);
                 }
             }
         }

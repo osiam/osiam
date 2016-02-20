@@ -20,14 +20,18 @@ import java.util.List;
 @Service
 public class TokenService {
 
-    @Autowired
-    private TokenStore tokenStore;
+    private final TokenStore tokenStore;
+    private final SCIMUserProvisioning userProvisioning;
+    private final ClientRepository clientRepository;
 
     @Autowired
-    private SCIMUserProvisioning userProvisioning;
-
-    @Autowired
-    private ClientRepository clientRepository;
+    public TokenService(TokenStore tokenStore,
+                        SCIMUserProvisioning userProvisioning,
+                        ClientRepository clientRepository) {
+        this.tokenStore = tokenStore;
+        this.userProvisioning = userProvisioning;
+        this.clientRepository = clientRepository;
+    }
 
     public AccessToken validateToken(final String token) {
         OAuth2Authentication auth = tokenStore.readAuthentication(token);

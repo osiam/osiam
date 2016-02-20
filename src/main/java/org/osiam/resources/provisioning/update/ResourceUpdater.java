@@ -36,7 +36,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ResourceUpdater {
 
-    private ResourceDao resourceDao;
+    private final ResourceDao resourceDao;
 
     @Autowired
     public ResourceUpdater(ResourceDao resourceDao) {

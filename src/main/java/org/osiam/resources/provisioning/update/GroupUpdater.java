@@ -43,11 +43,9 @@ import java.util.Set;
 @Service
 public class GroupUpdater {
 
-    private GroupDao groupDao;
-
-    private ResourceUpdater resourceUpdater;
-
-    private ResourceDao resourceDao;
+    private final GroupDao groupDao;
+    private final ResourceUpdater resourceUpdater;
+    private final ResourceDao resourceDao;
 
     @Autowired
     public GroupUpdater(GroupDao groupDao, ResourceUpdater resourceUpdater, ResourceDao resourceDao) {
@@ -109,7 +107,6 @@ public class GroupUpdater {
                 }
             }
         }
-
     }
 
     private ResourceEntity getMember(String memberId, GroupEntity groupEntity) {
@@ -123,5 +120,4 @@ public class GroupUpdater {
 
         return null;
     }
-
 }

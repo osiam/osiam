@@ -39,8 +39,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
     def userDao = Mock(UserDao)
     def userConverter = Mock(UserConverter)
 
-    SCIMUserProvisioning scimUserProvisioningBean = new SCIMUserProvisioning(userDao: userDao,
-            userConverter: userConverter, passwordEncoder: passwordEncoder)
+    SCIMUserProvisioning scimUserProvisioning = new SCIMUserProvisioning(userConverter, userDao, passwordEncoder, null)
 
     def 'should be possible to get a user by his id'() {
         given:
@@ -48,7 +47,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         UserEntity userEntity = new UserEntity()
 
         when:
-        scimUserProvisioningBean.getById(id)
+        scimUserProvisioning.getById(id)
 
         then:
         1 * userDao.getById(id) >> userEntity
@@ -63,7 +62,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         userConverter.toScim(userEntity) >> new User.Builder(password: 'password').build()
 
         when:
-        User user = scimUserProvisioningBean.getById(id)
+        User user = scimUserProvisioning.getById(id)
 
         then:
         user.password == null
@@ -74,7 +73,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         def scimUser = new User.Builder(userName: 'test', password: 'password').build()
 
         when:
-        def user = scimUserProvisioningBean.create(scimUser)
+        def user = scimUserProvisioning.create(scimUser)
 
         then:
         1 * passwordEncoder.encodePassword(_, _) >> "password"
@@ -92,7 +91,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         def userScim = new User.Builder(userName: userName).build()
 
         when:
-        scimUserProvisioningBean.create(userScim)
+        scimUserProvisioning.create(userScim)
 
         then:
         1 * userDao.isUserNameAlreadyTaken(_) >> true
@@ -106,7 +105,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         def userScim = new User.Builder().setExternalId(externalId).build()
 
         when:
-        scimUserProvisioningBean.create(userScim)
+        scimUserProvisioning.create(userScim)
 
         then:
         1 * userDao.isExternalIdAlreadyTaken(_) >> true
@@ -123,7 +122,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         userDao.getById(idString) >> new UserEntity(id: UUID.fromString(idString))
 
         when:
-        scimUserProvisioningBean.replace(idString, userScim)
+        scimUserProvisioning.replace(idString, userScim)
 
         then:
         1 * userConverter.fromScim(userScim) >> userEntity
@@ -140,7 +139,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         userConverter.toScim(_) >> userScim
 
         when:
-        scimUserProvisioningBean.replace(idString, userScim)
+        scimUserProvisioning.replace(idString, userScim)
 
         then:
         1 * userDao.getById(idString) >> new UserEntity(id: UUID.fromString(idString))
@@ -161,7 +160,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         userConverter.toScim(_) >> userScim
 
         when:
-        scimUserProvisioningBean.replace(idString, userScim)
+        scimUserProvisioning.replace(idString, userScim)
 
         then:
         1 * userEntity.setInternalId(internalId)
@@ -182,7 +181,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         userConverter.toScim(_) >> userScim
 
         when:
-        scimUserProvisioningBean.replace(id.toString(), userScim)
+        scimUserProvisioning.replace(id.toString(), userScim)
 
         then:
         1 * userEntity.getId() >> id
@@ -203,7 +202,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         userConverter.toScim(_) >> userScim
 
         when:
-        scimUserProvisioningBean.replace(id as String, userScim)
+        scimUserProvisioning.replace(id as String, userScim)
 
         then:
         userEntity.password == password
@@ -226,7 +225,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         userDao.update(userEntity) >> userEntity
 
         when:
-        User user = scimUserProvisioningBean.replace(id.toString(), userScim)
+        User user = scimUserProvisioning.replace(id.toString(), userScim)
 
         then:
         user.password == null
@@ -236,7 +235,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         given:
         def id = UUID.randomUUID().toString()
         when:
-        scimUserProvisioningBean.delete(id)
+        scimUserProvisioning.delete(id)
         then:
         1 * userDao.delete(id)
     }
@@ -249,7 +248,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         userConverter.toScim(userEntity) >> userScim
 
         when:
-        scimUserProvisioningBean.search('userName eq "marissa"', 'userName', 'ascending', 100, 1)
+        scimUserProvisioning.search('userName eq "marissa"', 'userName', 'ascending', 100, 1)
 
         then:
         1 * userDao.search(_, 'userName', 'ascending', 100, 0) >> searchResult
@@ -266,7 +265,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         }
 
         when:
-        def user = scimUserProvisioningBean.create(scimUser)
+        def user = scimUserProvisioning.create(scimUser)
 
         then:
         user.password == null

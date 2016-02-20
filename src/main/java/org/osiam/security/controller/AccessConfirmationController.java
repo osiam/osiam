@@ -23,8 +23,6 @@
 
 package org.osiam.security.controller;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetails;
@@ -34,17 +32,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.Map;
+
 /**
  * Controller for retrieving the model for and displaying the confirmation page for access to a protected resource.
- *
  */
 @Controller
 @SessionAttributes("authorizationRequest")
 @RequestMapping("/oauth")
 public class AccessConfirmationController {
 
+    private final ClientDetailsService clientDetailsService;
+
     @Autowired
-    private ClientDetailsService clientDetailsService;
+    public AccessConfirmationController(ClientDetailsService clientDetailsService) {
+        this.clientDetailsService = clientDetailsService;
+    }
 
     @RequestMapping("/confirm_access")
     public ModelAndView getAccessConfirmation(Map<String, Object> model) {

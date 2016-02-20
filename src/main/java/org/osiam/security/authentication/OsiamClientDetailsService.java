@@ -26,7 +26,6 @@ package org.osiam.security.authentication;
 import org.osiam.auth.oauth_client.ClientEntity;
 import org.osiam.auth.oauth_client.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.NoSuchClientException;
@@ -38,13 +37,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class OsiamClientDetailsService implements ClientDetailsService {
 
+    private final ClientRepository clientRepository;
+
     @Autowired
-    private ClientRepository clientRepository;
+    public OsiamClientDetailsService(ClientRepository clientRepository) {
+        this.clientRepository = clientRepository;
+    }
 
     @Override
     public ClientDetails loadClientByClientId(final String clientId) {
         ClientEntity client = clientRepository.findById(clientId);
-        if(client == null) {
+        if (client == null) {
             throw new NoSuchClientException(String.format(
                     "OsiamClientDetailsService failed to load client with id %s: no client found",
                     clientId

@@ -39,11 +39,10 @@ import spock.lang.Specification
 import javax.servlet.http.HttpServletRequest
 
 class MeControllerSpec extends Specification {
+
     UserDao userDao = Mock()
     def resourceServerTokenServices = Mock(ResourceServerTokenServices)
-    MeController underTest = new MeController(
-            resourceServerTokenServices: resourceServerTokenServices,
-            userDao: userDao)
+    MeController underTest = new MeController(resourceServerTokenServices, userDao)
     OAuth2Authentication authentication = Mock(OAuth2Authentication)
     HttpServletRequest request = Mock(HttpServletRequest)
     Authentication userAuthentication = Mock(Authentication)

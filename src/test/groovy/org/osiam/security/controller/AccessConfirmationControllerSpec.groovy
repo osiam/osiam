@@ -29,13 +29,13 @@ import org.springframework.security.oauth2.provider.ClientDetails
 import org.springframework.security.oauth2.provider.ClientDetailsService
 import spock.lang.Specification
 
-class AccessConfirmationControllerSpec extends Specification{
+class AccessConfirmationControllerSpec extends Specification {
 
     ClientDetailsService clientDetailsServiceMock = Mock()
     AccessConfirmationController accessConfirmationController =
-            new AccessConfirmationController(clientDetailsService: clientDetailsServiceMock)
+            new AccessConfirmationController(clientDetailsServiceMock)
 
-    def 'should call clientDetailsService and put auth_request and client into model on access confirmation'(){
+    def 'should call clientDetailsService and put auth_request and client into model on access confirmation'() {
         given:
         ClientDetails client = new ClientEntity()
         AuthorizationRequest authRequest = new AuthorizationRequest()
@@ -52,7 +52,7 @@ class AccessConfirmationControllerSpec extends Specification{
         modelAndView.viewName == 'access_confirmation'
     }
 
-    def 'should set error message on handleError'(){
+    def 'should set error message on handleError'() {
         when:
         String result = accessConfirmationController.handleError()
 

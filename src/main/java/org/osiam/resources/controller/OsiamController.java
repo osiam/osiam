@@ -18,8 +18,12 @@ import java.util.List;
 @RequestMapping(value = "/osiam")
 public class OsiamController {
 
+    private final SCIMExtensionProvisioning extensionProvisioning;
+
     @Autowired
-    private SCIMExtensionProvisioning extensionProvisioning;
+    public OsiamController(SCIMExtensionProvisioning extensionProvisioning) {
+        this.extensionProvisioning = extensionProvisioning;
+    }
 
     /**
      * This handler is responsible for getting all existing extension definitions.

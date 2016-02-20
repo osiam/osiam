@@ -23,25 +23,35 @@
 
 package org.osiam.auth.oauth_client;
 
-import java.io.*;
-import java.util.*;
+import org.osiam.auth.exception.ClientAlreadyExistsException;
+import org.osiam.auth.exception.ClientNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-import org.osiam.auth.exception.*;
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * ClientManagementController realizes the REST API for managing OAuth 2 clients.
- *
+ * <p/>
  * You can list, get, create, update and delete clients.
  */
 @RestController
 @RequestMapping(value = "/Client")
 public class ClientManagementController {
 
+    private final ClientRepository clientRepository;
+
     @Autowired
-    private ClientRepository clientRepository;
+    public ClientManagementController(ClientRepository clientRepository) {
+        this.clientRepository = clientRepository;
+    }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ClientEntity getClient(@PathVariable final String id) {

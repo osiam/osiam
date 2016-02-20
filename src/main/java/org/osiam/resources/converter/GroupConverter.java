@@ -23,9 +23,6 @@
 
 package org.osiam.resources.converter;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.MemberRef;
 import org.osiam.storage.dao.ResourceDao;
@@ -34,14 +31,20 @@ import org.osiam.storage.entities.ResourceEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Service
 public class GroupConverter implements Converter<Group, GroupEntity> {
 
-    @Autowired
-    private ResourceDao resourceDao;
+    private final ResourceDao resourceDao;
+    private final MetaConverter metaConverter;
 
     @Autowired
-    private MetaConverter metaConverter;
+    public GroupConverter(ResourceDao resourceDao, MetaConverter metaConverter) {
+        this.resourceDao = resourceDao;
+        this.metaConverter = metaConverter;
+    }
 
     @Override
     public GroupEntity fromScim(Group group) {

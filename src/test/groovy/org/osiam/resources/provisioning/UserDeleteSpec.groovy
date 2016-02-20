@@ -23,16 +23,21 @@
 
 package org.osiam.resources.provisioning
 
+import org.osiam.resources.converter.UserConverter
 import org.osiam.resources.exception.ResourceNotFoundException
 import org.osiam.storage.dao.UserDao
+import org.springframework.security.authentication.encoding.PasswordEncoder
 import spock.lang.Specification
 
 import javax.persistence.NoResultException
 
 class UserDeleteSpec extends Specification {
 
-    UserDao userDao = Mock()
-    SCIMUserProvisioning scimUserProvisioning = new SCIMUserProvisioning(userDao: userDao)
+    def passwordEncoder = Mock(PasswordEncoder)
+    def userDao = Mock(UserDao)
+    def userConverter = Mock(UserConverter)
+
+    SCIMUserProvisioning scimUserProvisioning = new SCIMUserProvisioning(userConverter, userDao, passwordEncoder, null)
 
     def uuidAsString = UUID.randomUUID().toString()
 

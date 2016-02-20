@@ -52,9 +52,8 @@ class ExtensionUpdater {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionUpdater.class);
 
-    private ExtensionDao extensionDao;
-
-    private NumberPadder numberPadder;
+    private final ExtensionDao extensionDao;
+    private final NumberPadder numberPadder;
 
     @Autowired
     public ExtensionUpdater(ExtensionDao extensionDao) {

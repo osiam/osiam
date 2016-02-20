@@ -31,7 +31,7 @@ public class SCIMExtensionProvisioning {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SCIMExtensionProvisioning.class);
 
-    private ExtensionDao dao;
+    private final ExtensionDao dao;
 
     @Autowired
     public SCIMExtensionProvisioning(ExtensionDao dao) {

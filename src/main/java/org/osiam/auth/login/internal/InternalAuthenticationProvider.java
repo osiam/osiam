@@ -44,27 +44,36 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Component
 public class InternalAuthenticationProvider implements AuthenticationProvider,
         ApplicationListener<AbstractAuthenticationEvent> {
 
-    @Value("${org.osiam.tempLock.count:0}")
-    private Integer maxLoginFailures;
+    private final Map<String, Integer> accessCounter = Collections.synchronizedMap(new HashMap<>());
+    private final Map<String, Date> lastFailedLogin = Collections.synchronizedMap(new HashMap<>());
 
-    @Value("${org.osiam.tempLock.timeout:0}")
-    private Integer lockTimeout;
-
-    private final Map<String, Integer> accessCounter = Collections.synchronizedMap(new HashMap<String, Integer>());
-    private final Map<String, Date> lastFailedLogin = Collections.synchronizedMap(new HashMap<String, Date>());
-
-    @Autowired
-    private SCIMUserProvisioning userProvisioning;
+    private final SCIMUserProvisioning userProvisioning;
+    private final ShaPasswordEncoder passwordEncoder;
+    private final Integer maxLoginFailures;
+    private final Integer lockTimeout;
 
     @Autowired
-    private ShaPasswordEncoder passwordEncoder;
+    public InternalAuthenticationProvider(SCIMUserProvisioning userProvisioning,
+                                          ShaPasswordEncoder passwordEncoder,
+                                          @Value("${org.osiam.tempLock.count:0}") Integer maxLoginFailures,
+                                          @Value("${org.osiam.tempLock.timeout:0}") Integer lockTimeout) {
+        this.userProvisioning = userProvisioning;
+        this.passwordEncoder = passwordEncoder;
+        this.maxLoginFailures = maxLoginFailures;
+        this.lockTimeout = lockTimeout;
+    }
 
     @Override
     public Authentication authenticate(Authentication authentication) {
