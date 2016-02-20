@@ -24,7 +24,6 @@
 package org.osiam.resources.converter
 
 import org.osiam.resources.scim.*
-import org.osiam.storage.dao.UserDao
 import org.osiam.storage.entities.*
 import spock.lang.Specification
 
@@ -55,20 +54,17 @@ class UserConverterSpec extends Specification {
     def extensionConverter = Mock(ExtensionConverter)
     def metaConverter = Mock(MetaConverter)
 
-    def userDao = Mock(UserDao)
-
-    UserConverter userConverter = new UserConverter(
-            x509CertificateConverter: x509CertificateConverter,
-            roleConverter: roleConverter,
-            photoConverter: photoConverter,
-            phoneNumberConverter: phoneNumberConverter,
-            imConverter: imConverter,
-            entitlementConverter: entitlementConverter,
-            emailConverter: emailConverter,
-            addressConverter: addressConverter,
-            nameConverter: nameConverter,
-            extensionConverter: extensionConverter,
-            metaConverter: metaConverter,
+    UserConverter userConverter = new UserConverter(x509CertificateConverter,
+            roleConverter,
+            photoConverter,
+            phoneNumberConverter,
+            imConverter,
+            entitlementConverter,
+            emailConverter,
+            addressConverter,
+            nameConverter,
+            extensionConverter,
+            metaConverter,
     )
 
     def 'converting user entity to scim works as expected'() {

@@ -52,19 +52,19 @@ class UserUpdaterSpec extends Specification {
     ExtensionUpdater extensionUpdater = Mock()
 
     ResourceUpdater resourceUpdater = Mock()
-    UserUpdater userUpdater = new UserUpdater(resourceUpdater: resourceUpdater,
-            nameUpdater: nameUpdater,
-            emailUpdater: emailUpdater,
-            phoneNumberUpdater: phoneNumberUpdater,
-            imUpdater: imUpdater,
-            photoUpdater: photoUpdater,
-            entitlementUpdater: entitlementUpdater,
-            roleUpdater: roleUpdater,
-            x509CertificateUpdater: x509CertificateUpdater,
-            addressUpdater: addressUpdater,
-            userDao: userDao,
-            passwordEncoder: passwordEncoder,
-            extensionUpdater: extensionUpdater)
+    UserUpdater userUpdater = new UserUpdater(userDao,
+            resourceUpdater,
+            nameUpdater,
+            emailUpdater,
+            phoneNumberUpdater,
+            imUpdater,
+            photoUpdater,
+            entitlementUpdater,
+            roleUpdater,
+            x509CertificateUpdater,
+            addressUpdater,
+            passwordEncoder,
+            extensionUpdater)
 
     User user
     UserEntity userEntity = Mock()

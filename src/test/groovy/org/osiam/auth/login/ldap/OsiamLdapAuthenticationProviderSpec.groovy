@@ -24,6 +24,7 @@
 package org.osiam.auth.login.ldap
 
 import org.osiam.auth.login.internal.InternalAuthentication
+import org.osiam.resources.provisioning.SCIMUserProvisioning
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.ldap.authentication.LdapAuthenticator
 import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopulator
@@ -34,7 +35,9 @@ class OsiamLdapAuthenticationProviderSpec extends Specification {
     DefaultLdapAuthoritiesPopulator rolePopulator = Mock()
     LdapAuthenticator authenticator = Mock()
     OsiamLdapUserContextMapper mapper = Mock()
-    OsiamLdapAuthenticationProvider provider = new OsiamLdapAuthenticationProvider(authenticator, rolePopulator, mapper)
+    SCIMUserProvisioning provisioning = Mock()
+    OsiamLdapAuthenticationProvider provider = new OsiamLdapAuthenticationProvider(authenticator, rolePopulator,
+            mapper, provisioning, true)
 
     def 'the LDAP provider only supports OsiamLdapAuthentication class'() {
         expect:

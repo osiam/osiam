@@ -23,9 +23,7 @@
 
 package org.osiam.resources.provisioning.update;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import com.google.common.base.Strings;
 import org.osiam.resources.exception.OsiamException;
 import org.osiam.resources.exception.ResourceExistsException;
 import org.osiam.resources.scim.User;
@@ -35,7 +33,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Strings;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The UserUpdater provides the functionality to update (patch) a {@link UserEntity}
@@ -43,52 +42,54 @@ import com.google.common.base.Strings;
 @Service
 public class UserUpdater {
 
-    @Autowired
-    private UserDao userDao;
+    private final UserDao userDao;
+    private final ResourceUpdater resourceUpdater;
+    private final NameUpdater nameUpdater;
+    private final EmailUpdater emailUpdater;
+    private final PhoneNumberUpdater phoneNumberUpdater;
+    private final ImUpdater imUpdater;
+    private final PhotoUpdater photoUpdater;
+    private final EntitlementsUpdater entitlementUpdater;
+    private final RoleUpdater roleUpdater;
+    private final X509CertificateUpdater x509CertificateUpdater;
+    private final AddressUpdater addressUpdater;
+    private final PasswordEncoder passwordEncoder;
+    private final ExtensionUpdater extensionUpdater;
 
     @Autowired
-    private ResourceUpdater resourceUpdater;
-
-    @Autowired
-    private NameUpdater nameUpdater;
-
-    @Autowired
-    private EmailUpdater emailUpdater;
-
-    @Autowired
-    private PhoneNumberUpdater phoneNumberUpdater;
-
-    @Autowired
-    private ImUpdater imUpdater;
-
-    @Autowired
-    private PhotoUpdater photoUpdater;
-
-    @Autowired
-    private EntitlementsUpdater entitlementUpdater;
-
-    @Autowired
-    private RoleUpdater roleUpdater;
-
-    @Autowired
-    private X509CertificateUpdater x509CertificateUpdater;
-
-    @Autowired
-    private AddressUpdater addressUpdater;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private ExtensionUpdater extensionUpdater;
+    public UserUpdater(UserDao userDao,
+                       ResourceUpdater resourceUpdater,
+                       NameUpdater nameUpdater,
+                       EmailUpdater emailUpdater,
+                       PhoneNumberUpdater phoneNumberUpdater,
+                       ImUpdater imUpdater,
+                       PhotoUpdater photoUpdater,
+                       EntitlementsUpdater entitlementUpdater,
+                       RoleUpdater roleUpdater,
+                       X509CertificateUpdater x509CertificateUpdater,
+                       AddressUpdater addressUpdater,
+                       PasswordEncoder passwordEncoder,
+                       ExtensionUpdater extensionUpdater) {
+        this.userDao = userDao;
+        this.resourceUpdater = resourceUpdater;
+        this.nameUpdater = nameUpdater;
+        this.emailUpdater = emailUpdater;
+        this.phoneNumberUpdater = phoneNumberUpdater;
+        this.imUpdater = imUpdater;
+        this.photoUpdater = photoUpdater;
+        this.entitlementUpdater = entitlementUpdater;
+        this.roleUpdater = roleUpdater;
+        this.x509CertificateUpdater = x509CertificateUpdater;
+        this.addressUpdater = addressUpdater;
+        this.passwordEncoder = passwordEncoder;
+        this.extensionUpdater = extensionUpdater;
+    }
 
     /**
      * updates the {@link UserEntity} based on the given {@link User}
      *
-     * @param user
-     *            {@link User} with all fields that needs to be updated
-     * @param userEntity
-     *            entity that needs to be updated
+     * @param user       {@link User} with all fields that needs to be updated
+     * @param userEntity entity that needs to be updated
      */
     public void update(User user, UserEntity userEntity) {
         resourceUpdater.update(user, userEntity);
@@ -242,10 +243,8 @@ public class UserUpdater {
      * the update of the relationship of a user to his group will be done through the group. If the User provides any
      * information about patching the group we will throw an exception
      *
-     * @param user
-     *            the {@link User} is not allowed to contain any groups
-     * @param attributes
-     *            the list is not allowed to contain 'groups'
+     * @param user       the {@link User} is not allowed to contain any groups
+     * @param attributes the list is not allowed to contain 'groups'
      */
     private void updateGroups(User user, Set<String> attributes) {
         if (attributes.contains("groups")

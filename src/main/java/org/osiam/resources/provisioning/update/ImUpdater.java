@@ -40,7 +40,7 @@ import java.util.Set;
 @Service
 class ImUpdater {
 
-    private ImConverter imConverter;
+    private final ImConverter imConverter;
 
     @Autowired
     public ImUpdater(ImConverter imConverter) {
@@ -85,9 +85,9 @@ class ImUpdater {
      */
     private void ensureOnlyOnePrimaryImExists(ImEntity newIm, Set<ImEntity> ims) {
         if (newIm.isPrimary()) {
-            for (ImEntity exisitngImEntity : ims) {
-                if (exisitngImEntity.isPrimary()) {
-                    exisitngImEntity.setPrimary(false);
+            for (ImEntity existingImEntity : ims) {
+                if (existingImEntity.isPrimary()) {
+                    existingImEntity.setPrimary(false);
                 }
             }
         }

@@ -40,7 +40,7 @@ import java.util.Set;
 @Service
 class EntitlementsUpdater {
 
-    private EntitlementConverter entitlementConverter;
+    private final EntitlementConverter entitlementConverter;
 
     @Autowired
     public EntitlementsUpdater(EntitlementConverter entitlementConverter) {
@@ -86,9 +86,9 @@ class EntitlementsUpdater {
     private void ensureOnlyOnePrimaryEntitlementExists(EntitlementEntity newEntitlement,
                                                        Set<EntitlementEntity> entitlements) {
         if (newEntitlement.isPrimary()) {
-            for (EntitlementEntity exisitngEntitlementEntity : entitlements) {
-                if (exisitngEntitlementEntity.isPrimary()) {
-                    exisitngEntitlementEntity.setPrimary(false);
+            for (EntitlementEntity existingEntitlementEntity : entitlements) {
+                if (existingEntitlementEntity.isPrimary()) {
+                    existingEntitlementEntity.setPrimary(false);
                 }
             }
         }

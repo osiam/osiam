@@ -42,11 +42,10 @@ class SCIMGroupProvisioningBeanSpec extends Specification {
     def groupConverter = Mock(GroupConverter)
     def groupUpdater = Mock(GroupUpdater)
 
-    def scimGroupProvisioning = new SCIMGroupProvisioning(groupDao: groupDao, groupConverter: groupConverter,
-            groupUpdater: groupUpdater)
+    def scimGroupProvisioning = new SCIMGroupProvisioning(groupConverter, groupDao, groupUpdater)
 
     Group group = new Group.Builder().build()
-    GroupEntity groupEntity = Mock()
+    GroupEntity groupEntity = Mock(GroupEntity)
 
     def groupUuid = UUID.randomUUID().toString()
     def memberId = UUID.randomUUID().toString()

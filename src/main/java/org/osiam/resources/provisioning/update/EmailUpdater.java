@@ -40,7 +40,7 @@ import java.util.Set;
 @Service
 class EmailUpdater {
 
-    private EmailConverter emailConverter;
+    private final EmailConverter emailConverter;
 
     @Autowired
     public EmailUpdater(EmailConverter emailConverter) {

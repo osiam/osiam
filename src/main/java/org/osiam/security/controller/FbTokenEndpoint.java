@@ -23,9 +23,6 @@
 
 package org.osiam.security.controller;
 
-import java.security.Principal;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
@@ -34,10 +31,13 @@ import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.security.oauth2.provider.error.DefaultWebResponseExceptionTranslator;
 import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.*;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.security.Principal;
+import java.util.Map;
 
 @Controller
 /**
@@ -49,21 +49,22 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 public class FbTokenEndpoint {
 
+    private final TokenGranter tokenGranter;
+    private final ClientDetailsService clientDetailsService;
+
     private WebResponseExceptionTranslator providerExceptionHandler = new DefaultWebResponseExceptionTranslator();
-
-    @Autowired
-    private TokenGranter tokenGranter;
-
-    @Autowired
-    private ClientDetailsService clientDetailsService;
-
     private TokenEndpoint tokenEndpoint = new TokenEndpoint();
+
+    @Autowired
+    public FbTokenEndpoint(TokenGranter tokenGranter, ClientDetailsService clientDetailsService) {
+        this.tokenGranter = tokenGranter;
+        this.clientDetailsService = clientDetailsService;
+    }
 
     @RequestMapping(value = "/fb/oauth/access_token")
     @ResponseBody
-    public String accessToken(Principal principal,
-            @RequestParam(value = "grant_type", defaultValue = "authorization_code") String grantType,
-            @RequestParam Map<String, String> parameters) throws HttpRequestMethodNotSupportedException {
+    public String accessToken(Principal principal, @RequestParam Map<String, String> parameters)
+            throws HttpRequestMethodNotSupportedException {
 
         tokenEndpoint.setClientDetailsService(clientDetailsService);
         tokenEndpoint.setProviderExceptionHandler(providerExceptionHandler);
@@ -71,6 +72,5 @@ public class FbTokenEndpoint {
 
         OAuth2AccessToken accessToken = tokenEndpoint.getAccessToken(principal, parameters).getBody();
         return "access_token=" + accessToken.getValue() + "&expires=" + accessToken.getExpiresIn();
-
     }
 }

@@ -32,8 +32,6 @@ import org.osiam.resources.provisioning.SCIMUserProvisioning;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.Role;
 import org.osiam.resources.scim.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -50,18 +48,20 @@ import java.util.List;
 
 public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider {
 
-    @Autowired
-    private SCIMUserProvisioning userProvisioning;
-
-    @Value("${org.osiam.ldap.sync-user-data:true}")
-    private boolean syncUserData;
+    private final SCIMUserProvisioning userProvisioning;
+    private final boolean syncUserData;
 
     private final OsiamLdapUserContextMapper osiamLdapUserContextMapper;
 
     public OsiamLdapAuthenticationProvider(LdapAuthenticator authenticator,
-            LdapAuthoritiesPopulator authoritiesPopulator, OsiamLdapUserContextMapper osiamLdapUserContextMapper) {
+                                           LdapAuthoritiesPopulator authoritiesPopulator,
+                                           OsiamLdapUserContextMapper osiamLdapUserContextMapper,
+                                           SCIMUserProvisioning userProvisioning,
+                                           boolean syncUserData) {
         super(authenticator, authoritiesPopulator);
         this.osiamLdapUserContextMapper = osiamLdapUserContextMapper;
+        this.userProvisioning = userProvisioning;
+        this.syncUserData = syncUserData;
     }
 
     @Override

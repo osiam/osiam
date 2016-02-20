@@ -33,15 +33,16 @@ class FbTokenEndpointSpec extends Specification {
     ResponseEntity tokenEndpointResult = Mock(ResponseEntity)
     OAuth2AccessToken accessToken = Mock(OAuth2AccessToken)
     TokenEndpoint tokenEndpoint = Mock(TokenEndpoint)
-    FbTokenEndpoint fbTokenEndpoint = new FbTokenEndpoint(tokenEndpoint: tokenEndpoint)
+    FbTokenEndpoint fbTokenEndpoint = new FbTokenEndpoint(null, null)
 
     def "Manipulates the result of TokenEndpoint to be like Facebook's one"() {
         given:
         def accessTokenValue = UUID.randomUUID().toString()
         tokenEndpointResult.getBody() >> accessToken
+        fbTokenEndpoint.@tokenEndpoint = tokenEndpoint
 
         when:
-        def result = fbTokenEndpoint.accessToken(null, "authorization-code", null)
+        def result = fbTokenEndpoint.accessToken(null, null)
 
         then:
         1 * tokenEndpoint.getAccessToken(null, null) >> tokenEndpointResult

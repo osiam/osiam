@@ -18,8 +18,7 @@ class GroupControllerSpec extends Specification {
 
     def scimGroupProvisioning = Mock(SCIMGroupProvisioning)
 
-    def groupController = new GroupController(scimGroupProvisioning: scimGroupProvisioning,
-            attributesRemovalHelper: new AttributesRemovalHelper())
+    def groupController = new GroupController(scimGroupProvisioning, new AttributesRemovalHelper())
 
     def mockMvc = MockMvcBuilders.standaloneSetup(groupController)
             .setControllerAdvice(new RestExceptionHandler()).build()

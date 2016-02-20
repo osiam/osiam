@@ -34,15 +34,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class GroupDao implements GenericDao<GroupEntity> {
 
-    private GroupFilterParser filterParser;
-
-    private ResourceDao resourceDao;
+    private final GroupFilterParser filterParser;
+    private final ResourceDao resourceDao;
 
     @Autowired
     public GroupDao(ResourceDao resourceDao, GroupFilterParser filterParser) {
-
         this.resourceDao = resourceDao;
-
         this.filterParser = filterParser;
     }
 

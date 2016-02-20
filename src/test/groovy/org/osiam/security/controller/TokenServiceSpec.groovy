@@ -43,11 +43,7 @@ class TokenServiceSpec extends Specification {
     def userProvisioning = Mock(SCIMUserProvisioning)
     def clientRepository = Mock(ClientRepository)
 
-    def tokenController = new TokenService(
-            tokenStore: tokenStore,
-            userProvisioning: userProvisioning,
-            clientRepository: clientRepository
-    )
+    def tokenController = new TokenService(tokenStore, userProvisioning, clientRepository)
 
     def 'The TokenService should return an access token with all attributes set'() {
         given:

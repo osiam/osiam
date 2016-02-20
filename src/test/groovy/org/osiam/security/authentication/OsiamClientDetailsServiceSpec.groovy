@@ -31,8 +31,7 @@ import spock.lang.Specification
 class OsiamClientDetailsServiceSpec extends Specification {
 
     ClientRepository clientRepository = Mock()
-    OsiamClientDetailsService osiamClientDetailsService =
-            new OsiamClientDetailsService(clientRepository: clientRepository)
+    OsiamClientDetailsService osiamClientDetailsService = new OsiamClientDetailsService(clientRepository)
 
     def 'loading client details returns a ClientDetails view of a ClientEntity'() {
         given:

@@ -44,9 +44,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Service
 public class ExtensionConverter implements Converter<Set<Extension>, Set<ExtensionFieldValueEntity>> {
 
-    private ExtensionDao extensionDao;
-
-    private NumberPadder numberPadder;
+    private final ExtensionDao extensionDao;
+    private final NumberPadder numberPadder;
 
     @Autowired
     public ExtensionConverter(ExtensionDao extensionDao) {

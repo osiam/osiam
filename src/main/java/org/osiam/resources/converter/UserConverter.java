@@ -23,11 +23,6 @@
 
 package org.osiam.resources.converter;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.GroupRef;
 import org.osiam.resources.scim.User;
@@ -45,41 +40,50 @@ import org.osiam.storage.entities.X509CertificateEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Service
 public class UserConverter implements Converter<User, UserEntity> {
 
-    @Autowired
-    private X509CertificateConverter x509CertificateConverter;
+    private final X509CertificateConverter x509CertificateConverter;
+    private final RoleConverter roleConverter;
+    private final PhotoConverter photoConverter;
+    private final PhoneNumberConverter phoneNumberConverter;
+    private final ImConverter imConverter;
+    private final EntitlementConverter entitlementConverter;
+    private final EmailConverter emailConverter;
+    private final AddressConverter addressConverter;
+    private final NameConverter nameConverter;
+    private final ExtensionConverter extensionConverter;
+    private final MetaConverter metaConverter;
 
     @Autowired
-    private RoleConverter roleConverter;
-
-    @Autowired
-    private PhotoConverter photoConverter;
-
-    @Autowired
-    private PhoneNumberConverter phoneNumberConverter;
-
-    @Autowired
-    private ImConverter imConverter;
-
-    @Autowired
-    private EntitlementConverter entitlementConverter;
-
-    @Autowired
-    private EmailConverter emailConverter;
-
-    @Autowired
-    private AddressConverter addressConverter;
-
-    @Autowired
-    private NameConverter nameConverter;
-
-    @Autowired
-    private ExtensionConverter extensionConverter;
-
-    @Autowired
-    private MetaConverter metaConverter;
+    public UserConverter(X509CertificateConverter x509CertificateConverter,
+                         RoleConverter roleConverter,
+                         PhotoConverter photoConverter,
+                         PhoneNumberConverter phoneNumberConverter,
+                         ImConverter imConverter,
+                         EntitlementConverter entitlementConverter,
+                         EmailConverter emailConverter,
+                         AddressConverter addressConverter,
+                         NameConverter nameConverter,
+                         ExtensionConverter extensionConverter,
+                         MetaConverter metaConverter) {
+        this.x509CertificateConverter = x509CertificateConverter;
+        this.roleConverter = roleConverter;
+        this.photoConverter = photoConverter;
+        this.phoneNumberConverter = phoneNumberConverter;
+        this.imConverter = imConverter;
+        this.entitlementConverter = entitlementConverter;
+        this.emailConverter = emailConverter;
+        this.addressConverter = addressConverter;
+        this.nameConverter = nameConverter;
+        this.extensionConverter = extensionConverter;
+        this.metaConverter = metaConverter;
+    }
 
     @Override
     public UserEntity fromScim(User user) {
@@ -92,7 +96,7 @@ public class UserConverter implements Converter<User, UserEntity> {
             userEntity.setPassword(user.getPassword());
         }
 
-        if(user.isActive() != null) {
+        if (user.isActive() != null) {
             userEntity.setActive(user.isActive());
         }
 

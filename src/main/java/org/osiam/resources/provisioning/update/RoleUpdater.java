@@ -40,7 +40,7 @@ import java.util.Set;
 @Service
 class RoleUpdater {
 
-    private RoleConverter roleConverter;
+    private final RoleConverter roleConverter;
 
     @Autowired
     public RoleUpdater(RoleConverter roleConverter) {
@@ -85,9 +85,9 @@ class RoleUpdater {
      */
     private void ensureOnlyOnePrimaryRoleExists(RoleEntity newRole, Set<RoleEntity> roles) {
         if (newRole.isPrimary()) {
-            for (RoleEntity exisitngRoleEntity : roles) {
-                if (exisitngRoleEntity.isPrimary()) {
-                    exisitngRoleEntity.setPrimary(false);
+            for (RoleEntity existingRoleEntity : roles) {
+                if (existingRoleEntity.isPrimary()) {
+                    existingRoleEntity.setPrimary(false);
                 }
             }
         }

@@ -53,17 +53,21 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SCIMUserProvisioning.class);
 
-    @Autowired
-    private UserConverter userConverter;
+    private final UserConverter userConverter;
+    private final UserDao userDao;
+    private final PasswordEncoder passwordEncoder;
+    private final UserUpdater userUpdater;
 
     @Autowired
-    private UserDao userDao;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private UserUpdater userUpdater;
+    public SCIMUserProvisioning(UserConverter userConverter,
+                                UserDao userDao,
+                                PasswordEncoder passwordEncoder,
+                                UserUpdater userUpdater) {
+        this.userConverter = userConverter;
+        this.userDao = userDao;
+        this.passwordEncoder = passwordEncoder;
+        this.userUpdater = userUpdater;
+    }
 
     @Override
     public User getById(String id) {

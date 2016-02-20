@@ -43,8 +43,7 @@ class UserControllerSpec extends Specification {
     def scimUserProvisioning = Mock(SCIMUserProvisioning)
     def tokenService = Mock(TokenService)
 
-    def UserController = new UserController(scimUserProvisioning: scimUserProvisioning, tokenService: tokenService,
-            attributesRemovalHelper: new AttributesRemovalHelper())
+    def UserController = new UserController(scimUserProvisioning, tokenService, new AttributesRemovalHelper())
 
     def mockMvc = MockMvcBuilders.standaloneSetup(UserController)
             .setControllerAdvice(new RestExceptionHandler()).build()

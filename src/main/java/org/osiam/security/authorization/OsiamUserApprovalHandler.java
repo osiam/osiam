@@ -49,15 +49,18 @@ public class OsiamUserApprovalHandler extends DefaultUserApprovalHandler {
     private static final String APPROVALS_SESSION_KEY = "osiam_oauth_approvals";
     private static final String IS_PRE_APPROVED_PARAMETER = "osiam_is_pre_approved";
 
-    @Autowired
-    private HttpSession httpSession;
+    private final HttpSession httpSession;
+    private final OsiamClientDetailsService osiamClientDetailsService;
 
     @Autowired
-    private OsiamClientDetailsService osiamClientDetailsService;
+    public OsiamUserApprovalHandler(HttpSession httpSession, OsiamClientDetailsService osiamClientDetailsService) {
+        this.httpSession = httpSession;
+        this.osiamClientDetailsService = osiamClientDetailsService;
+    }
 
     @Override
     public AuthorizationRequest checkForPreApproval(AuthorizationRequest authorizationRequest,
-            Authentication userAuthentication) {
+                                                    Authentication userAuthentication) {
         ClientDetails client = osiamClientDetailsService.loadClientByClientId(authorizationRequest.getClientId());
         if (client.isAutoApprove("") || hasRememberedApprovalForClient(authorizationRequest, client)) {
             authorizationRequest.setApproved(true);

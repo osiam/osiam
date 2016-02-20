@@ -45,10 +45,10 @@ class GroupConverterSpec extends Specification {
             group         : '0c60179c-0b9c-4cad-a918-4ec59bbab173',
             'non-existant': 'e75522d8-2b4d-4b60-bb92-6c6cda8faaea']
 
-    private ResourceDao resourceDao = Mock()
+    ResourceDao resourceDao = Mock()
 
     MetaConverter metaConverter = Mock()
-    GroupConverter groupConverter = new GroupConverter(resourceDao: resourceDao, metaConverter: metaConverter)
+    GroupConverter groupConverter = new GroupConverter(resourceDao, metaConverter)
 
     def 'mapping a user as member works'() {
         given:

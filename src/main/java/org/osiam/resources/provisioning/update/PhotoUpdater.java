@@ -40,7 +40,7 @@ import java.util.Set;
 @Service
 class PhotoUpdater {
 
-    private PhotoConverter photoConverter;
+    private final PhotoConverter photoConverter;
 
     @Autowired
     public PhotoUpdater(PhotoConverter photoConverter) {
@@ -85,9 +85,9 @@ class PhotoUpdater {
      */
     private void ensureOnlyOnePrimaryPhotoExists(PhotoEntity newPhoto, Set<PhotoEntity> photos) {
         if (newPhoto.isPrimary()) {
-            for (PhotoEntity exisitngPhotoEntity : photos) {
-                if (exisitngPhotoEntity.isPrimary()) {
-                    exisitngPhotoEntity.setPrimary(false);
+            for (PhotoEntity existingPhotoEntity : photos) {
+                if (existingPhotoEntity.isPrimary()) {
+                    existingPhotoEntity.setPrimary(false);
                 }
             }
         }

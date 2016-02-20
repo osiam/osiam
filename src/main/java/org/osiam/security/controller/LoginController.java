@@ -41,14 +41,18 @@ public class LoginController {
     private static final String SESSION_ERROR_KEY = "ERROR_KEY";
     private static final String MODEL_ERROR_KEY = "errorKey";
 
+    private final HttpSession session;
+    private final boolean isLdapConfigured;
+    private final int templockTimeout;
+
     @Autowired
-    private HttpSession session;
-
-    @Value("${org.osiam.ldap.enabled:false}")
-    private boolean isLdapConfigured;
-
-    @Value("${org.osiam.tempLock.timeout:0}")
-    private int templockTimeout;
+    public LoginController(HttpSession session,
+                           @Value("${org.osiam.ldap.enabled:false}") boolean isLdapConfigured,
+                           @Value("${org.osiam.tempLock.timeout:0}") int templockTimeout) {
+        this.session = session;
+        this.isLdapConfigured = isLdapConfigured;
+        this.templockTimeout = templockTimeout;
+    }
 
     @RequestMapping
     public String login() {
@@ -94,6 +98,5 @@ public class LoginController {
     private boolean userIsLocked() {
         return session.getAttribute("IS_LOCKED") != null && session.getAttribute("IS_LOCKED") instanceof Boolean
                 && (Boolean) session.getAttribute("IS_LOCKED");
-
     }
 }

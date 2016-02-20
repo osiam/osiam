@@ -40,9 +40,7 @@ class OsiamUserApprovalHandlerSpec extends Specification {
 
     HttpSession httpSession = new TestHttpSession()
     OsiamClientDetailsService osiamClientDetailsService = Mock()
-    OsiamUserApprovalHandler osiamUserApprovalHandler = new OsiamUserApprovalHandler(
-            osiamClientDetailsService: osiamClientDetailsService, httpSession: httpSession
-    )
+    OsiamUserApprovalHandler osiamUserApprovalHandler = new OsiamUserApprovalHandler(httpSession, osiamClientDetailsService)
     Authentication authentication = new TestAuthentication(true)
 
     def 'The client is approved if the user has approved the client'() {

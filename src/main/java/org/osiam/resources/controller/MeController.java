@@ -53,17 +53,20 @@ import java.util.Set;
 @Transactional
 public class MeController {
 
-    @Autowired
-    private ResourceServerTokenServices resourceServerTokenServices;
+    private final ResourceServerTokenServices resourceServerTokenServices;
+    private final UserDao userDao;
 
     @Autowired
-    private UserDao userDao;
+    public MeController(ResourceServerTokenServices resourceServerTokenServices, UserDao userDao) {
+        this.resourceServerTokenServices = resourceServerTokenServices;
+        this.userDao = userDao;
+    }
 
     /**
      * This method is used to get information about the user who initialised the authorization process.
-     * <p>
+     * <p/>
      * The result should be in json format and look like:
-     * <p>
+     * <p/>
      * {
      * "id": "73821979327912",
      * "name": "Arthur Dent",
@@ -78,7 +81,7 @@ public class MeController {
      * "verified": true,
      * "updated_time": "2012-08-20T08:03:30+0000"
      * }
-     * <p>
+     * <p/>
      * if some information are not available then ... will happen.
      *
      * @return an object to represent the json format.

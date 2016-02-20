@@ -25,6 +25,7 @@ package org.osiam.resources.helper
 
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
+import org.osiam.auth.token.TokenService
 import org.osiam.resources.controller.UserController
 import org.osiam.resources.provisioning.SCIMUserProvisioning
 import org.osiam.resources.scim.Meta
@@ -35,8 +36,8 @@ import spock.lang.Specification
 class IsoDateFormatSpec extends Specification {
 
     def provisioning = Mock(SCIMUserProvisioning)
-    def userController = new UserController(scimUserProvisioning: provisioning,
-            attributesRemovalHelper: new AttributesRemovalHelper())
+    def tokenService = Mock(TokenService)
+    def userController = new UserController(provisioning, tokenService, new AttributesRemovalHelper())
 
     def "should return the date fields in iso format"() {
         given:
