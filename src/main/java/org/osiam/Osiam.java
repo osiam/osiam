@@ -56,7 +56,7 @@ public class Osiam extends SpringBootServletInitializer {
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder applicationBuilder) {
         applicationBuilder.application().setDefaultProperties(DEFAULT_PROPERTIES);
-        return applicationBuilder.sources(Osiam.class);
+        return applicationBuilder;
     }
 
     @Bean
