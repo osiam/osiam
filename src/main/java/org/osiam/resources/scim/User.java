@@ -23,7 +23,12 @@
 
 package org.osiam.resources.scim;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
@@ -34,7 +39,13 @@ import org.osiam.resources.exception.SCIMDataValidationException;
 
 import javax.validation.Valid;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 /**
  * User resources are meant to enable expression of common User information. It should be possible to express most user
@@ -52,6 +63,7 @@ import java.util.*;
  */
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
+@JsonFilter("attributeFilter")
 public final class User extends Resource implements Serializable {
 
     public static final String SCHEMA = "urn:ietf:params:scim:schemas:core:2.0:User";

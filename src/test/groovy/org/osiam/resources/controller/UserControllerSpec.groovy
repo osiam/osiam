@@ -23,14 +23,16 @@
 
 package org.osiam.resources.controller
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider
 import org.osiam.auth.token.TokenService
 import org.osiam.resources.exception.RestExceptionHandler
-import org.osiam.resources.helper.AttributesRemovalHelper
 import org.osiam.resources.provisioning.SCIMUserProvisioning
 import org.osiam.resources.scim.SCIMSearchResult
 import org.osiam.resources.scim.User
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import spock.lang.Shared
 import spock.lang.Specification
@@ -43,10 +45,9 @@ class UserControllerSpec extends Specification {
     def scimUserProvisioning = Mock(SCIMUserProvisioning)
     def tokenService = Mock(TokenService)
 
-    def UserController = new UserController(scimUserProvisioning, tokenService, new AttributesRemovalHelper())
+    def UserController = new UserController(scimUserProvisioning, tokenService)
 
-    def mockMvc = MockMvcBuilders.standaloneSetup(UserController)
-            .setControllerAdvice(new RestExceptionHandler()).build()
+    def mockMvc
 
     @Shared
     def uuid = UUID.randomUUID()
@@ -57,6 +58,16 @@ class UserControllerSpec extends Specification {
     @Shared
     def minimalUser = '{"schemas": ["urn:ietf:params:scim:schemas:core:2.0:User"],' +
             ' "userName": "Test User"}'
+
+    def setup() {
+        def filterProvider = new SimpleFilterProvider().setFailOnUnknownId(false)
+        def objectMapper = new ObjectMapper(filterProvider: filterProvider)
+        def jacksonMessageConverter = new MappingJackson2HttpMessageConverter(objectMapper)
+        mockMvc = MockMvcBuilders.standaloneSetup(UserController)
+                .setControllerAdvice(new RestExceptionHandler())
+                .setMessageConverters(jacksonMessageConverter)
+                .build()
+    }
 
     def 'Creating a new User using POST returns correct location'() {
         when:

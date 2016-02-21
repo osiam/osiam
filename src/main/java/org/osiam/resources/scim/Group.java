@@ -24,6 +24,7 @@
 package org.osiam.resources.scim;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -51,6 +52,7 @@ import java.util.Set;
  * </p>
  */
 @JsonInclude(Include.NON_EMPTY)
+@JsonFilter("attributeFilter")
 public final class Group extends Resource implements Serializable {
 
     public static final String SCHEMA = "urn:ietf:params:scim:schemas:core:2.0:Group";
