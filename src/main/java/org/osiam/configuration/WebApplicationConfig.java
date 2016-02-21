@@ -25,15 +25,9 @@ package org.osiam.configuration;
 
 import org.osiam.OsiamHome;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-
-import javax.servlet.Filter;
 
 @Configuration
 public class WebApplicationConfig extends WebMvcConfigurerAdapter {
@@ -45,22 +39,5 @@ public class WebApplicationConfig extends WebMvcConfigurerAdapter {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/css/**").addResourceLocations(osiamHome.getCssDirectory());
         registry.addResourceHandler("/js/**").addResourceLocations(osiamHome.getJsDirectory());
-    }
-
-    @Bean
-    public Filter characterEncodingFilter() {
-        CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
-        characterEncodingFilter.setEncoding("UTF-8");
-        characterEncodingFilter.setForceEncoding(true);
-        return characterEncodingFilter;
-    }
-
-    @Bean
-    public MessageSource messageSource() {
-        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename(osiamHome.getI18nDirectory() + "/login");
-        messageSource.setDefaultEncoding("utf-8");
-        messageSource.setCacheSeconds(-1);
-        return messageSource;
     }
 }
