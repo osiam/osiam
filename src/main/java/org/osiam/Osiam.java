@@ -25,21 +25,28 @@ package org.osiam;
 
 import com.google.common.collect.ImmutableMap;
 import com.ryantenney.metrics.spring.config.annotation.EnableMetrics;
+import org.osiam.cli.InitHome;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
+import java.util.Collections;
 import java.util.Map;
 
 @SpringBootApplication
 @EnableWebSecurity
 @EnableMetrics
 @EnableAspectJAutoProxy(proxyTargetClass = true)
+@ComponentScan(excludeFilters = {
+        @ComponentScan.Filter(type = FilterType.REGEX, pattern = "org\\.osiam\\.cli.*")
+})
 public class Osiam extends SpringBootServletInitializer {
 
     private static final Map<String, Object> DEFAULT_PROPERTIES = ImmutableMap.<String, Object>of(
@@ -48,9 +55,29 @@ public class Osiam extends SpringBootServletInitializer {
     );
 
     public static void main(String[] args) {
-        SpringApplication application = new SpringApplication(Osiam.class);
+        SpringApplication application = new SpringApplication();
         application.setDefaultProperties(DEFAULT_PROPERTIES);
+
+        String command = extractCommand(args);
+        if ("initHome".equals(command)) {
+            application.setSources(Collections.<Object>singleton(InitHome.class));
+            application.setWebEnvironment(false);
+        } else {
+            application.setSources(Collections.<Object>singleton(Osiam.class));
+        }
+
         application.run(args);
+    }
+
+    private static String extractCommand(String[] arguments) {
+        for (String argument : arguments) {
+            for (String splitArgument : argument.trim().split("\\s")) {
+                if (!splitArgument.trim().startsWith("--") && !splitArgument.trim().startsWith("-")) {
+                    return splitArgument.trim();
+                }
+            }
+        }
+        return "server";
     }
 
     @Override
