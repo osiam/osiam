@@ -24,6 +24,7 @@
 package org.osiam.resources.scim
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider
 import com.jayway.restassured.path.json.JsonPath
 import org.osiam.test.util.DateHelper
 import spock.lang.Shared
@@ -34,7 +35,12 @@ import java.nio.ByteBuffer
 class UserJsonSpec extends Specification {
 
     @Shared
-    ObjectMapper mapper = new ObjectMapper()
+    def mapper
+
+    def setupSpec() {
+        mapper = new ObjectMapper()
+        mapper.setFilterProvider(new SimpleFilterProvider().setFailOnUnknownId(false))
+    }
 
     def 'A User is correctly serialized'() {
         given:

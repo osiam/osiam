@@ -23,8 +23,14 @@
 
 package org.osiam.resources.controller;
 
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import org.osiam.auth.token.TokenService;
-import org.osiam.resources.helper.AttributesRemovalHelper;
 import org.osiam.resources.provisioning.SCIMUserProvisioning;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.resources.scim.User;
@@ -32,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,15 +52,17 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This Controller is used to manage User
- * <p/>
+ * <p>
  * http://tools.ietf.org/html/draft-ietf-scim-core-schema-00#section-6
- * <p/>
+ * <p>
  * it is based on the SCIM 2.0 API Specification:
- * <p/>
+ * <p>
  * http://tools.ietf.org/html/draft-ietf-scim-api-00#section-3
  */
 @RestController
@@ -63,15 +72,12 @@ public class UserController {
 
     private final SCIMUserProvisioning scimUserProvisioning;
     private final TokenService tokenService;
-    private final AttributesRemovalHelper attributesRemovalHelper;
 
     @Autowired
     public UserController(SCIMUserProvisioning scimUserProvisioning,
-                          TokenService tokenService,
-                          AttributesRemovalHelper attributesRemovalHelper) {
+                          TokenService tokenService) {
         this.scimUserProvisioning = scimUserProvisioning;
         this.tokenService = tokenService;
-        this.attributesRemovalHelper = attributesRemovalHelper;
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -109,12 +115,12 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public SCIMSearchResult<User> searchWithGet(@RequestParam Map<String, String> requestParameters) {
+    public MappingJacksonValue searchWithGet(@RequestParam Map<String, String> requestParameters) {
         return searchWithPost(requestParameters);
     }
 
     @RequestMapping(value = "/.search", method = RequestMethod.POST)
-    public SCIMSearchResult<User> searchWithPost(@RequestParam Map<String, String> requestParameters) {
+    public MappingJacksonValue searchWithPost(@RequestParam Map<String, String> requestParameters) {
         SCIMSearchResult<User> scimSearchResult = scimUserProvisioning.search(
                 requestParameters.get("filter"),
                 requestParameters.get("sortBy"),
@@ -122,7 +128,15 @@ public class UserController {
                 Integer.parseInt(requestParameters.getOrDefault("count", "" + SCIMSearchResult.MAX_RESULTS)),
                 Integer.parseInt(requestParameters.getOrDefault("startIndex", "1"))); // scim default
 
-        return attributesRemovalHelper.removeSpecifiedUserAttributes(scimSearchResult, requestParameters);
+        MappingJacksonValue wrapper = new MappingJacksonValue(scimSearchResult);
+        if (requestParameters.containsKey("attributes")) {
+            Set<String> attributes = extractAttributes(requestParameters.get("attributes"));
+            FilterProvider filterProvider = new SimpleFilterProvider().addFilter(
+                    "attributeFilter", SimpleBeanPropertyFilter.filterOutAllExcept(attributes)
+            );
+            wrapper.setFilters(filterProvider);
+        }
+        return wrapper;
     }
 
     /*
@@ -139,5 +153,20 @@ public class UserController {
         URI location = builder.path("/Users/{id}").buildAndExpand(group.getId()).toUri();
         headers.setLocation(location);
         return new ResponseEntity<>(group, headers, status);
+    }
+
+
+    private Set<String> extractAttributes(String attributesParameter) {
+        Set<String> result = new HashSet<>();
+        if (!Strings.isNullOrEmpty(attributesParameter)) {
+            result = Sets.newHashSet(
+                    Splitter.on(CharMatcher.anyOf(".,"))
+                            .trimResults()
+                            .omitEmptyStrings()
+                            .split(attributesParameter)
+            );
+        }
+        result.add("schemas");
+        return result;
     }
 }

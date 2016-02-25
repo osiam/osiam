@@ -23,7 +23,13 @@
 
 package org.osiam.resources.controller;
 
-import org.osiam.resources.helper.AttributesRemovalHelper;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import org.osiam.resources.provisioning.SCIMGroupProvisioning;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.SCIMSearchResult;
@@ -31,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,7 +51,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * HTTP Api for groups. You can create, delete, replace, update and search groups.
@@ -55,13 +64,10 @@ import java.util.Map;
 public class GroupController {
 
     private final SCIMGroupProvisioning scimGroupProvisioning;
-    private final AttributesRemovalHelper attributesRemovalHelper;
 
     @Autowired
-    public GroupController(SCIMGroupProvisioning scimGroupProvisioning,
-                           AttributesRemovalHelper attributesRemovalHelper) {
+    public GroupController(SCIMGroupProvisioning scimGroupProvisioning) {
         this.scimGroupProvisioning = scimGroupProvisioning;
-        this.attributesRemovalHelper = attributesRemovalHelper;
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -96,19 +102,27 @@ public class GroupController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public SCIMSearchResult<Group> searchWithGet(@RequestParam Map<String, String> requestParameters) {
+    public MappingJacksonValue searchWithGet(@RequestParam Map<String, String> requestParameters) {
         return searchWithPost(requestParameters);
     }
 
     @RequestMapping(value = "/.search", method = RequestMethod.POST)
-    public SCIMSearchResult<Group> searchWithPost(@RequestParam Map<String, String> requestParameters) {
+    public MappingJacksonValue searchWithPost(@RequestParam Map<String, String> requestParameters) {
         SCIMSearchResult<Group> scimSearchResult = scimGroupProvisioning.search(requestParameters.get("filter"),
                 requestParameters.get("sortBy"),
                 requestParameters.getOrDefault("sortOrder", "ascending"),
                 Integer.parseInt(requestParameters.getOrDefault("count", "" + SCIMSearchResult.MAX_RESULTS)),
                 Integer.parseInt(requestParameters.getOrDefault("startIndex", "1")));
 
-        return attributesRemovalHelper.removeSpecifiedAttributes(scimSearchResult, requestParameters);
+        MappingJacksonValue wrapper = new MappingJacksonValue(scimSearchResult);
+        if (requestParameters.containsKey("attributes")) {
+            Set<String> attributes = extractAttributes(requestParameters.get("attributes"));
+            FilterProvider filterProvider = new SimpleFilterProvider().addFilter(
+                    "attributeFilter", SimpleBeanPropertyFilter.filterOutAllExcept(attributes)
+            );
+            wrapper.setFilters(filterProvider);
+        }
+        return wrapper;
     }
 
     private ResponseEntity<Group> buildResponseWithLocation(Group group, UriComponentsBuilder builder, HttpStatus status) {
@@ -116,5 +130,19 @@ public class GroupController {
         URI location = builder.path("/Groups/{id}").buildAndExpand(group.getId()).toUri();
         headers.setLocation(location);
         return new ResponseEntity<>(group, headers, status);
+    }
+
+    private Set<String> extractAttributes(String attributesParameter) {
+        Set<String> result = new HashSet<>();
+        if (!Strings.isNullOrEmpty(attributesParameter)) {
+            result = Sets.newHashSet(
+                    Splitter.on(CharMatcher.anyOf(".,"))
+                            .trimResults()
+                            .omitEmptyStrings()
+                            .split(attributesParameter)
+            );
+        }
+        result.add("schemas");
+        return result;
     }
 }
