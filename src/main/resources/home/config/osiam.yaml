@@ -22,7 +22,7 @@
 # SOFTWARE.
 #
 
-org.osiam:
+osiam:
 
   #
   # Database configuration

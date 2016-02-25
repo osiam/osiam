@@ -44,8 +44,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-@ConditionalOnProperty("org.osiam.ldap.enabled")
-@ConfigurationProperties("org.osiam.ldap")
+@ConditionalOnProperty("osiam.ldap.enabled")
+@ConfigurationProperties("osiam.ldap")
 public class LdapAuthentication {
 
     public static final String LDAP_PROVIDER = "ldap";
@@ -63,7 +63,7 @@ public class LdapAuthentication {
     @Bean
     @Autowired
     public OsiamLdapAuthenticationProvider osiamLdapAuthenticationProvider(SCIMUserProvisioning userProvisioning,
-                                                                           @Value("${org.osiam.ldap.sync-user-data:true}") boolean syncUserData) {
+                                                                           @Value("${osiam.ldap.sync-user-data:true}") boolean syncUserData) {
         return new OsiamLdapAuthenticationProvider(
                 bindAuthenticator(),
                 new DefaultLdapAuthoritiesPopulator(contextSource(), ""),

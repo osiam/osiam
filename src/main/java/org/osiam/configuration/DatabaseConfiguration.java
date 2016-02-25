@@ -39,19 +39,19 @@ import javax.sql.DataSource;
 @EnableTransactionManagement
 public class DatabaseConfiguration {
 
-    @Value("${org.osiam.db.driver}")
+    @Value("${osiam.db.driver}")
     private String driverClassName;
 
-    @Value("${org.osiam.db.url}")
+    @Value("${osiam.db.url}")
     private String databaseUrl;
 
-    @Value("${org.osiam.db.username}")
+    @Value("${osiam.db.username}")
     private String databaseUserName;
 
-    @Value("${org.osiam.db.password}")
+    @Value("${osiam.db.password}")
     private String databasePassword;
 
-    @Value("${org.osiam.db.vendor}")
+    @Value("${osiam.db.vendor}")
     private String databaseVendor;
 
     @Primary
