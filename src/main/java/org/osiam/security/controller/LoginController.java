@@ -47,8 +47,8 @@ public class LoginController {
 
     @Autowired
     public LoginController(HttpSession session,
-                           @Value("${org.osiam.ldap.enabled:false}") boolean isLdapConfigured,
-                           @Value("${org.osiam.tempLock.timeout:0}") int templockTimeout) {
+                           @Value("${osiam.ldap.enabled:false}") boolean isLdapConfigured,
+                           @Value("${osiam.tempLock.timeout:0}") int templockTimeout) {
         this.session = session;
         this.isLdapConfigured = isLdapConfigured;
         this.templockTimeout = templockTimeout;

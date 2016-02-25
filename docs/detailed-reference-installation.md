@@ -338,7 +338,7 @@ First you have to set the LDAP configuration in the [osiam.yaml]
 
 The available properties are:
 
-**org.osiam.ldap.enabled**
+**osiam.ldap.enabled**
 
 Default = false
 
@@ -346,7 +346,7 @@ Set to true if you want to enable LDAP login besides the normal OSIAM login. If
 LDAP is enabled a drop down list is shown in the login page to choose between
 the internal login and the LDAP login.
 
-**org.osiam.ldap.server-url**
+**osiam.ldap.server-url**
 
 The url of you LDAP server:
 
@@ -354,13 +354,13 @@ The url of you LDAP server:
 
 Example: ldap://localhost:33389/dc=example,dc=org
 
-**org.osiam.ldap.dn-patterns**
+**osiam.ldap.dn-patterns**
 
 search pattern to find the user who wants to login
 
 Example: uid={0},ou=people
 
-**org.osiam.ldap.sync-user-data**
+**osiam.ldap.sync-user-data**
 
 Default = true
 
@@ -369,7 +369,7 @@ Additional data saved at the user won't be overridden.
 
 If set to false the user data will only be copied with the first login.
 
-**org.osiam.ldap.user-mapping**
+**osiam.ldap.user-mapping**
 
 The given Attributes will be copied from the LDAP user into the OSIAM resource
 server.
@@ -379,7 +379,7 @@ exception will be thrown if not all SCIM attributes can be recognized.
 Example: 
 
 ```yaml
-org.osiam:
+osiam:
   ...
   ldap:
     ...

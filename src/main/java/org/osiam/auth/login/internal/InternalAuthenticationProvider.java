@@ -67,8 +67,8 @@ public class InternalAuthenticationProvider implements AuthenticationProvider,
     @Autowired
     public InternalAuthenticationProvider(SCIMUserProvisioning userProvisioning,
                                           ShaPasswordEncoder passwordEncoder,
-                                          @Value("${org.osiam.tempLock.count:0}") Integer maxLoginFailures,
-                                          @Value("${org.osiam.tempLock.timeout:0}") Integer lockTimeout) {
+                                          @Value("${osiam.tempLock.count:0}") Integer maxLoginFailures,
+                                          @Value("${osiam.tempLock.timeout:0}") Integer lockTimeout) {
         this.userProvisioning = userProvisioning;
         this.passwordEncoder = passwordEncoder;
         this.maxLoginFailures = maxLoginFailures;
