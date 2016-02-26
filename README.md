@@ -1,4 +1,4 @@
-# OSIAM - Open Source Identity and Access Management
+# OSIAM - Open Source Identity and Access Management [![Circle CI](https://circleci.com/gh/osiam/osiam.svg?style=svg)](https://circleci.com/gh/osiam/osiam) [![Codacy Badge](https://api.codacy.com/project/badge/grade/c63f2618f4c64292ae47a1decf1a7270)](https://www.codacy.com/app/OSIAM/osiam) [![Codacy Badge](https://api.codacy.com/project/badge/coverage/c63f2618f4c64292ae47a1decf1a7270)](https://www.codacy.com/app/OSIAM/osiam)
 
 OSIAM is a secure identity management solution providing REST based services for
 authentication and authorization. We achieve this by implementing two important
