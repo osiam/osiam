@@ -109,6 +109,18 @@ class UserControllerSpec extends Specification {
                 .andExpect(jsonPath('$.status').value('400'))
     }
 
+    def 'Creating a User with invalid Schema raises a 400 BAD REQUEST'() {
+        when:
+        def response = mockMvc.perform(post('/Users')
+                .contentType(MediaType.APPLICATION_JSON)
+                .content('{"schemas": ["invalid schema"], "userName": "Test User"}'))
+
+        then:
+        response.andExpect(status().isBadRequest())
+                .andExpect(jsonPath('$.detail').value('Invalid core schema'))
+                .andExpect(jsonPath('$.status').value('400'))
+    }
+
     def 'Retrieving a User calls get on provisioning'() {
         when:
         def response = mockMvc.perform(get("/Users/${uuid}")
