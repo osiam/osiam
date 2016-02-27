@@ -44,7 +44,7 @@ import java.util.Locale;
 @Repository
 public class ExtensionDao {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionDao.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExtensionDao.class);
 
     @PersistenceContext
     private EntityManager em;
@@ -88,7 +88,7 @@ public class ExtensionDao {
             singleExtension = query.getSingleResult();
         } catch (NoResultException e) {
             String message = String.format("Extension with urn '%s' not found", urn);
-            LOGGER.warn(message);
+            logger.warn(message);
             throw new NoSuchElementException(message);
         }
 
