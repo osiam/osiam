@@ -52,7 +52,7 @@ import java.util.Map.Entry;
 @Transactional
 public class SCIMExtensionProvisioning {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SCIMExtensionProvisioning.class);
+    private static final Logger logger = LoggerFactory.getLogger(SCIMExtensionProvisioning.class);
 
     private final ExtensionDao dao;
 
@@ -124,7 +124,7 @@ public class SCIMExtensionProvisioning {
                     try {
                         builder.setField(fieldEntity.getName(), new URI("http://www.osiam.org"));
                     } catch (URISyntaxException e) {
-                        LOGGER.warn("Unable to contruct URI for http://www.osiam.org This should never happen!", e);
+                        logger.warn("Unable to contruct URI for http://www.osiam.org This should never happen!", e);
                         throw new OsiamBackendFailureException();
                     }
                     break;

@@ -50,7 +50,7 @@ import java.util.Set;
 @Service
 class ExtensionUpdater {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionUpdater.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExtensionUpdater.class);
 
     private final ExtensionDao extensionDao;
     private final NumberPadder numberPadder;
@@ -116,7 +116,7 @@ class ExtensionUpdater {
             try {
                 extensionEntitiyField = extensionEntity.getFieldForName(fieldName, true);
             } catch (NoSuchElementException e) {
-                LOGGER.warn("Update Extension failed: ", e.getMessage());
+                logger.warn("Update Extension failed: ", e.getMessage());
                 throw e;
             }
             ExtensionFieldValueEntity extensionFieldValue = findExtensionFieldValue(extensionEntitiyField,

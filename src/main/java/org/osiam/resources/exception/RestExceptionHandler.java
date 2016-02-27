@@ -46,13 +46,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 })
 public class RestExceptionHandler {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RestExceptionHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(RestExceptionHandler.class);
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
     public ErrorResponse defaultExceptionHandler(Exception ex) {
-        LOGGER.warn("An unexpected exception occurred", ex);
+        logger.warn("An unexpected exception occurred", ex);
         return produceErrorResponse("An unexpected error occurred", HttpStatus.CONFLICT);
     }
 
@@ -97,7 +97,7 @@ public class RestExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
     protected JsonErrorResult handleClientNotFound(ClientNotFoundException e) {
-        LOGGER.warn(e.getMessage());
+        logger.warn(e.getMessage());
         return new JsonErrorResult(HttpStatus.NOT_FOUND.name(), e.getMessage());
     }
 
@@ -105,7 +105,7 @@ public class RestExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
     protected JsonErrorResult handleClientAlreadyExists(ClientAlreadyExistsException e) {
-        LOGGER.warn(e.getMessage());
+        logger.warn(e.getMessage());
         return new JsonErrorResult(HttpStatus.CONFLICT.name(), e.getMessage());
     }
 
@@ -127,7 +127,7 @@ public class RestExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
     public ErrorResponse handleUnrecognizedProperty(UnrecognizedPropertyException e) {
-        LOGGER.error("Unknown property", e);
+        logger.error("Unknown property", e);
         return produceErrorResponse(e.getMessage(), HttpStatus.CONFLICT, new JsonPropertyMessageTransformer());
     }
 
@@ -135,7 +135,7 @@ public class RestExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
     public ErrorResponse handleJsonMapping(JsonMappingException e) {
-        LOGGER.error("Unable to deserialize", e);
+        logger.error("Unable to deserialize", e);
         return produceErrorResponse(e.getMessage(), HttpStatus.CONFLICT, new JsonMappingMessageTransformer());
     }
 

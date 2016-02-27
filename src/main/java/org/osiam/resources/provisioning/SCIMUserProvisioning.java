@@ -51,7 +51,7 @@ import java.util.UUID;
 @Transactional
 public class SCIMUserProvisioning implements SCIMProvisioning<User> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SCIMUserProvisioning.class);
+    private static final Logger logger = LoggerFactory.getLogger(SCIMUserProvisioning.class);
 
     private final UserConverter userConverter;
     private final UserDao userDao;
@@ -76,10 +76,10 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
             User user = userConverter.toScim(userEntity);
             return removePassword(user);
         } catch (NoResultException nre) {
-            LOGGER.info(nre.getMessage(), nre);
+            logger.info(nre.getMessage(), nre);
             throw new ResourceNotFoundException(String.format("User with id '%s' not found", id), nre);
         } catch (PersistenceException pe) {
-            LOGGER.warn(pe.getMessage(), pe);
+            logger.warn(pe.getMessage(), pe);
             throw new ResourceNotFoundException(String.format("User with id '%s' not found", id), pe);
         }
     }
@@ -92,11 +92,11 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
         try {
             return userConverter.toScim(userDao.getByUsername(username));
         } catch (NoResultException nre) {
-            LOGGER.info(nre.getMessage(), nre);
+            logger.info(nre.getMessage(), nre);
             throw new ResourceNotFoundException(String.format("User with username '%s' not found",
                     username), nre);
         } catch (PersistenceException pe) {
-            LOGGER.warn(pe.getMessage(), pe);
+            logger.warn(pe.getMessage(), pe);
             throw new ResourceNotFoundException(String.format("User with username '%s' not found",
                     username), pe);
         }

@@ -33,12 +33,11 @@ import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 @ControllerAdvice("org.osiam.security.controller")
 public class WebExceptionHandler extends SimpleMappingExceptionResolver {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(WebExceptionHandler.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(WebExceptionHandler.class.getName());
 
     @ExceptionHandler(Exception.class)
     protected ModelAndView handleErrors(Exception e) {
-        LOGGER.error("Showing error page, because of the following exception", e);
+        logger.error("Showing error page, because of the following exception", e);
         return new ModelAndView("oauth_error");
     }
-
 }

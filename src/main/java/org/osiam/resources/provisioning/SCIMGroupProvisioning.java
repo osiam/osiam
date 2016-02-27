@@ -48,7 +48,7 @@ import java.util.UUID;
 @Service
 public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SCIMGroupProvisioning.class);
+    private static final Logger logger = LoggerFactory.getLogger(SCIMGroupProvisioning.class);
 
     private final GroupConverter groupConverter;
     private final GroupDao groupDao;
@@ -124,11 +124,11 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
         try {
             return groupConverter.toScim(groupDao.getById(id));
         } catch (NoResultException nre) {
-            LOGGER.info(nre.getMessage(), nre);
+            logger.info(nre.getMessage(), nre);
 
             throw new ResourceNotFoundException(String.format("Group with id '%s' not found", id), nre);
         } catch (PersistenceException pe) {
-            LOGGER.warn(pe.getMessage(), pe);
+            logger.warn(pe.getMessage(), pe);
 
             throw new ResourceNotFoundException(String.format("Group with id '%s' not found", id), pe);
         }
