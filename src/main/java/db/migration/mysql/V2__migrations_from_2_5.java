@@ -23,5 +23,5 @@
  */
 package db.migration.mysql;
 
-public class V2__replace_old_scopes extends db.migration.V2__replace_old_scopes {
+public class V2__migrations_from_2_5 extends db.migration.V2__migrations_from_2_5 {
 }
