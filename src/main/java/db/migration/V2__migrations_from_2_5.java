@@ -33,7 +33,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class V2__replace_old_scopes implements JdbcMigration, MigrationChecksumProvider {
+public class V2__migrations_from_2_5 implements JdbcMigration, MigrationChecksumProvider {
 
     private final Map<String, Long> internalIds = new HashMap<>();
     private Connection connection;
@@ -46,12 +46,35 @@ public class V2__replace_old_scopes implements JdbcMigration, MigrationChecksumP
     @Override
     public void migrate(Connection connection) throws Exception {
         this.connection = connection;
+        removeClient("auth-server");
         removeScopesFromClient("example-client", "GET", "POST", "PUT", "PATCH", "DELETE");
         addScopesToClient("example-client", "ADMIN", "ME");
         removeScopesFromClient("addon-self-administration-client", "GET", "POST", "PUT", "PATCH", "DELETE");
         addScopesToClient("addon-self-administration-client", "ADMIN");
         removeScopesFromClient("addon-administration-client", "GET", "POST", "PUT", "PATCH", "DELETE");
         addScopesToClient("addon-administration-client", "ADMIN");
+    }
+
+    private void removeClient(String clientId) throws SQLException {
+        long internalId = toInternalId(clientId);
+        if (internalId < 0) {
+            return;
+        }
+        try (PreparedStatement statement = connection
+                .prepareStatement("delete from osiam_client_scopes where id = ?")) {
+            statement.setLong(1, internalId);
+            statement.execute();
+        }
+        try (PreparedStatement statement = connection
+                .prepareStatement("delete from osiam_client_grants where id = ?")) {
+            statement.setLong(1, internalId);
+            statement.execute();
+        }
+        try (PreparedStatement statement = connection
+                .prepareStatement("delete from osiam_client where internal_id = ?")) {
+            statement.setLong(1, internalId);
+            statement.execute();
+        }
     }
 
     private void removeScopesFromClient(String clientId, String... scopes) throws SQLException {
