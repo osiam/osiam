@@ -191,6 +191,10 @@ public class ClientEntity implements ClientDetails {
         this.id = clientId;
     }
 
+    public void setClientSecret(String clientSecret) {
+        this.clientSecret = clientSecret;
+    }
+
     public void setRedirectUri(String redirectUri) {
         this.redirectUri = redirectUri;
     }

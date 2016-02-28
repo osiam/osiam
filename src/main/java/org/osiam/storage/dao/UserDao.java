@@ -57,6 +57,11 @@ public class UserDao implements GenericDao<UserEntity> {
         }
     }
 
+    @Override
+    public long count() {
+        return resourceDao.count(UserEntity.class);
+    }
+
     public UserEntity getByUsername(String userName) {
         try {
             return resourceDao.getByAttribute(UserEntity_.userName, userName, UserEntity.class);

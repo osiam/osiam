@@ -590,33 +590,6 @@ ADD CONSTRAINT fk_qr6gtqi0h9r6yp034tarlry1k FOREIGN KEY (user_internal_id) REFER
 ALTER TABLE scim_phonenumber
 ADD CONSTRAINT fk_rpqvdf1p9twdigaq1wclu5wm8 FOREIGN KEY (user_internal_id) REFERENCES scim_user (internal_id);
 
--- Must be imported into database before starting resource server
-
--- This extension needed by the auth server
-
-INSERT INTO scim_extension VALUES (1, 'urn:org.osiam:scim:extensions:auth-server');
-
-INSERT INTO scim_extension_field (internal_id, required, name, type, extension)
-VALUES (1, FALSE, 'origin', 'STRING', 1);
-
---
--- Example User: admin, pw: koala
---
-INSERT INTO scim_meta (id, created, last_modified, location, resource_type, version)
-VALUES (1, '2011-10-10', '2011-10-10', NULL, 'User', NULL);
-
-INSERT INTO scim_id (internal_id, external_id, id, meta)
-VALUES (1, NULL, 'cef9452e-00a9-4cec-a086-d171374ffbef', 1);
-
-INSERT INTO scim_user (active, display_name, locale, nick_name, password, preferred_language,
-                       profile_url, timezone, title, user_name, user_type, internal_id,
-                       name)
-VALUES (TRUE, NULL, NULL, NULL,
-        'cbae73fac0893291c4792ef19d158a589402288b35cb18fb8406e951b9d95f6b8b06a3526ffebe96ae0d91c04ae615a7fe2af362763db386ccbf3b55c29ae800',
-        NULL,
-        NULL, NULL, NULL, 'admin', NULL, 1,
-        NULL);
-
 --
 -- TOC entry 162 (class 1259 OID 34625)
 -- Dependencies: 5
@@ -677,22 +650,7 @@ ALTER TABLE osiam_client_grants
 ALTER TABLE osiam_client_scopes
     ADD CONSTRAINT fk_gl93uw092wua8dl5cpb5ysn3f FOREIGN KEY (id) REFERENCES osiam_client(internal_id);
 
---
--- Example Client
---
-INSERT INTO osiam_client (internal_id, access_token_validity_seconds, client_secret,
-            id, implicit_approval, redirect_uri, refresh_token_validity_seconds,
-            validity_in_seconds)
-    VALUES (1, 28800, 'secret',
-            'example-client', FALSE, 'http://localhost:5000/oauth2', 86400,
-            28800);
-INSERT INTO osiam_client_scopes (id, scope) VALUES (1, 'GET');
-INSERT INTO osiam_client_scopes (id, scope) VALUES (1, 'POST');
-INSERT INTO osiam_client_scopes (id, scope) VALUES (1, 'PUT');
-INSERT INTO osiam_client_scopes (id, scope) VALUES (1, 'PATCH');
-INSERT INTO osiam_client_scopes (id, scope) VALUES (1, 'DELETE');
-
-INSERT INTO osiam_client_grants (id, grants) VALUES (1, 'authorization_code');
-INSERT INTO osiam_client_grants (id, grants) VALUES (1, 'refresh_token');
-INSERT INTO osiam_client_grants (id, grants) VALUES (1, 'password');
-INSERT INTO osiam_client_grants (id, grants) VALUES (1, 'client_credentials');
+-- This extension is needed by OSIAM
+INSERT INTO scim_extension VALUES (1, 'urn:org.osiam:scim:extensions:auth-server');
+INSERT INTO scim_extension_field (internal_id, required, name, type, extension)
+VALUES (1, FALSE, 'origin', 'STRING', 1);
