@@ -37,8 +37,15 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import spock.lang.Shared
 import spock.lang.Specification
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 class UserControllerSpec extends Specification {
 
@@ -217,4 +224,20 @@ class UserControllerSpec extends Specification {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
     }
 
+    def 'id is always returned'() {
+        given:
+        def randomUuid = UUID.randomUUID().toString()
+        def user = new User.Builder("irrelevant")
+                .setId(randomUuid)
+                .build()
+        scimUserProvisioning.search(_, _, _, _, _) >> new SCIMSearchResult<User>([user], 1, 100, 1)
+
+        when:
+        def response = mockMvc.perform(get("/Users")
+                .accept(MediaType.APPLICATION_JSON)
+                .param('attributes', 'userName'))
+
+        then:
+        response.andExpect(jsonPath('$.Resources[0].id').value(randomUuid))
+    }
 }

@@ -200,4 +200,20 @@ class GroupControllerSpec extends Specification {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
     }
 
+    def 'id is always returned'() {
+        given:
+        def randomUuid = UUID.randomUUID().toString()
+        def group = new Group.Builder("irrelevant")
+                .setId(randomUuid)
+                .build()
+        scimGroupProvisioning.search(_, _, _, _, _) >> new SCIMSearchResult<Group>([group], 1, 100, 1)
+
+        when:
+        def response = mockMvc.perform(get("/Groups")
+                .accept(MediaType.APPLICATION_JSON)
+                .param('attributes', 'displayName'))
+
+        then:
+        response.andExpect(jsonPath('$.Resources[0].id').value(randomUuid))
+    }
 }

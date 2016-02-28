@@ -155,7 +155,6 @@ public class UserController {
         return new ResponseEntity<>(group, headers, status);
     }
 
-
     private Set<String> extractAttributes(String attributesParameter) {
         Set<String> result = new HashSet<>();
         if (!Strings.isNullOrEmpty(attributesParameter)) {
@@ -167,6 +166,7 @@ public class UserController {
             );
         }
         result.add("schemas");
+        result.add("id");
         return result;
     }
 }
