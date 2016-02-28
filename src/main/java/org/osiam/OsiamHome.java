@@ -57,7 +57,7 @@ public class OsiamHome {
             return;
         }
         checkState(Files.isWritable(osiamHomeDir), "'osiam.home' (%s) is not writable", osiamHomeDir);
-        logger.info("osiam.home ({}) is empty. Initializing it.", osiamHomeDir);
+        logger.info("Initializing osiam.home");
         Resource[] resources = new PathMatchingResourcePatternResolver().getResources("classpath:/home/**/*");
         for (Resource resource : resources) {
             // don't process directories

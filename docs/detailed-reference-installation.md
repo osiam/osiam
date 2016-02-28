@@ -13,6 +13,7 @@ Chapters:
 - [Download OSIAM](#download-osiam)
 - [The Home Directory](#the-home-directory)
 - [Configuration](#configuration)
+    - [Initialize the Home Directory from the Command Line](#initialize-the-home-directory-from-the-command-line)
 - [Starting OSIAM](#starting-osiam)
 - [Default setup](#default-setup)
 - [Customize setup](#customize-setup)
@@ -74,6 +75,20 @@ If no home directory is specified, `$HOME/.osiam` will be used.
 OSIAM initializes its home directory at startup, if the directory is empty.
 You should create a new directory for the home directory now, for instance `/var/lib/osiam`.
 We will refer to this directory as `OSIAM_HOME` from now on.
+
+### Initialize the Home Directory from the Command Line
+
+Sometimes it can be handy to initialize the home directory without actually starting OSIAM,
+especially when using an automated deployment process.
+You can do this by running the following command on the command line:
+
+```sh
+java -jar osiam.war initHome --osiam.home=/var/lib/osiam
+```
+
+**NOTE:** You can also use an environment variable `OSIAM_HOME` set to OSIAM's home directory.
+
+After that, you can change the configuration file and templates to your needs and then start OSIAM.
 
 ## Configuration
 
