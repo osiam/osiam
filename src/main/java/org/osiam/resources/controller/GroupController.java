@@ -143,6 +143,7 @@ public class GroupController {
             );
         }
         result.add("schemas");
+        result.add("id");
         return result;
     }
 }
