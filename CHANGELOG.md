@@ -30,6 +30,11 @@
 - Remove configuration property `org.osiam.*.db.dialect`
 - Remove self written profiling solution since we now use the [Metrics](https://github.com/dropwizard/metrics)
   framework. This removes the configuration property `org.osiam.*.profiling`
+- Example data will now be created during startup. If there are no clients in
+  the database, an example client will be created. If there are no users in the
+  database, an initial admin user will be created. The details of the client and
+  user will be logged. This removes the creation of initial data during the
+  database setup.
 
 ## Old Versions
 

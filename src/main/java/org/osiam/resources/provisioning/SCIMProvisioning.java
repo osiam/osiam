@@ -42,6 +42,12 @@ public interface SCIMProvisioning<T extends Resource> {
     T getById(String id);
 
     /**
+     * Counts all resources in the database
+     * @return The number of resources in the database
+     */
+    long count();
+
+    /**
      * This method creates a resource, it is used for POST calls.
      *
      * @param resource

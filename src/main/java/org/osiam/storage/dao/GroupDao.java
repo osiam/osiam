@@ -57,6 +57,11 @@ public class GroupDao implements GenericDao<GroupEntity> {
         }
     }
 
+    @Override
+    public long count() {
+        return resourceDao.count(GroupEntity.class);
+    }
+
     /**
      * Checks if a displayName is already taken by another group.
      *

@@ -23,8 +23,14 @@
  */
 package org.osiam.storage.dao;
 
-import java.util.List;
-import java.util.Set;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.osiam.resources.exception.OsiamException;
+import org.osiam.resources.exception.ResourceNotFoundException;
+import org.osiam.storage.entities.GroupEntity;
+import org.osiam.storage.entities.ResourceEntity;
+import org.osiam.storage.entities.ResourceEntity_;
+import org.osiam.storage.query.FilterParser;
+import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -39,15 +45,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.SingularAttribute;
-
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.osiam.resources.exception.OsiamException;
-import org.osiam.resources.exception.ResourceNotFoundException;
-import org.osiam.storage.entities.GroupEntity;
-import org.osiam.storage.entities.ResourceEntity;
-import org.osiam.storage.entities.ResourceEntity_;
-import org.osiam.storage.query.FilterParser;
-import org.springframework.stereotype.Repository;
+import java.util.List;
+import java.util.Set;
 
 @Repository
 public class ResourceDao {
@@ -104,7 +103,6 @@ public class ResourceDao {
     }
 
     private <T extends ResourceEntity> long getTotalResults(Class<T> clazz, Subquery<Long> internalIdQuery) {
-
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> resourceQuery = cb.createQuery(Long.class);
         Root<T> resourceRoot = resourceQuery.from(clazz);
@@ -112,9 +110,7 @@ public class ResourceDao {
         resourceQuery.select(cb.count(resourceRoot)).where(
                 cb.in(resourceRoot.get(ResourceEntity_.internalId)).value(internalIdQuery));
 
-        Long total = em.createQuery(resourceQuery).getSingleResult();
-
-        return total;
+        return em.createQuery(resourceQuery).getSingleResult();
     }
 
     /**
@@ -197,6 +193,15 @@ public class ResourceDao {
         return isExternalIdAlreadyTaken(externalId, null);
     }
 
+    public <T extends ResourceEntity> long count(Class<T> clazz) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+
+        CriteriaQuery<Long> query = cb.createQuery(Long.class);
+        query.select(cb.count(query.from(clazz)));
+
+        return em.createQuery(query).getSingleResult();
+    }
+
     /**
      * Removes a {@link ResourceEntity} from the database by its id
      *
@@ -225,5 +230,4 @@ public class ResourceDao {
     public <T extends ResourceEntity> void create(T resourceEntity) {
         em.persist(resourceEntity);
     }
-
 }

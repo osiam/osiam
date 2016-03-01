@@ -135,6 +135,11 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
     }
 
     @Override
+    public long count() {
+        return groupDao.count();
+    }
+
+    @Override
     public Group update(String id, Group group) {
         if (groupDao.isDisplayNameAlreadyTaken(group.getDisplayName(), id)) {
             throw new ResourceExistsException(String.format("Can't update the group with the id \"" + id

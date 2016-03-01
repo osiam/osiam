@@ -84,6 +84,11 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
         }
     }
 
+    @Override
+    public long count() {
+        return userDao.count();
+    }
+
     public User getByUsername(String username) {
         return removePassword(getByUsernameWithPassword(username));
     }

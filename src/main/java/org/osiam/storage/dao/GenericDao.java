@@ -32,6 +32,8 @@ public interface GenericDao<T extends ResourceEntity> {
 
     T getById(String id);
 
+    long count();
+
     T update(T entity);
 
     void delete(String id);
