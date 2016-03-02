@@ -51,14 +51,11 @@ import java.util.Map;
 public class Osiam extends SpringBootServletInitializer {
 
     private static final Map<String, Object> DEFAULT_PROPERTIES = ImmutableMap.<String, Object>of(
-            "osiam.home", System.getenv("HOME") + "/.osiam",
-            "spring.config.location", "classpath:/home/config/osiam.yaml,file:${osiam.home}/config/osiam.yaml"
+            "spring.config.location", "file:${osiam.home}/config/osiam.yaml"
     );
 
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication();
-        application.setDefaultProperties(DEFAULT_PROPERTIES);
-
         String command = extractCommand(args);
         if ("initHome".equals(command)) {
             application.setSources(Collections.<Object>singleton(InitHome.class));
@@ -66,7 +63,8 @@ public class Osiam extends SpringBootServletInitializer {
         } else {
             application.setSources(Collections.<Object>singleton(Osiam.class));
         }
-
+        application.addListeners(new OsiamHome());
+        application.setDefaultProperties(DEFAULT_PROPERTIES);
         application.run(args);
     }
 
@@ -84,6 +82,7 @@ public class Osiam extends SpringBootServletInitializer {
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder applicationBuilder) {
         applicationBuilder.application().setDefaultProperties(DEFAULT_PROPERTIES);
+        applicationBuilder.application().addListeners(new OsiamHome());
         return applicationBuilder;
     }
 

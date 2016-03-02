@@ -23,8 +23,7 @@
  */
 package org.osiam.configuration;
 
-import org.osiam.OsiamHome;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,13 +37,13 @@ import javax.servlet.Filter;
 @Configuration
 public class WebApplicationConfig extends WebMvcConfigurerAdapter {
 
-    @Autowired
-    private OsiamHome osiamHome;
+    @Value("${osiam.home}")
+    private String osiamHome;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/css/**").addResourceLocations(osiamHome.getCssDirectory());
-        registry.addResourceHandler("/js/**").addResourceLocations(osiamHome.getJsDirectory());
+        registry.addResourceHandler("/css/**").addResourceLocations("file:" + osiamHome + "/css/");
+        registry.addResourceHandler("/js/**").addResourceLocations("file:" + osiamHome + "/js/");
     }
 
     @Bean
@@ -58,7 +57,7 @@ public class WebApplicationConfig extends WebMvcConfigurerAdapter {
     @Bean
     public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename(osiamHome.getI18nDirectory() + "/login");
+        messageSource.setBasename("file:" + osiamHome + "/i18n/login");
         messageSource.setDefaultEncoding("utf-8");
         messageSource.setCacheSeconds(-1);
         return messageSource;

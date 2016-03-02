@@ -26,11 +26,16 @@ package org.osiam;
 import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.config.ConfigFileApplicationListener;
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
+import org.springframework.boot.context.event.ApplicationPreparedEvent;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.core.annotation.Order;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -41,57 +46,72 @@ import java.nio.file.StandardCopyOption;
 
 import static com.google.common.base.Preconditions.checkState;
 
-@Component
-public class OsiamHome {
+@Order(ConfigFileApplicationListener.DEFAULT_ORDER - 1)
+public class OsiamHome implements ApplicationListener<ApplicationEvent> {
 
-    public static final Logger logger = LoggerFactory.getLogger(OsiamHome.class);
+    private static final Logger logger = LoggerFactory.getLogger(OsiamHome.class);
 
-    private final Path osiamHomeDir;
+    private boolean hasInitializedHome = false;
+    private Path osiamHome;
 
-    @Autowired
-    public OsiamHome(@Value("${osiam.home}") String osiamHome) throws IOException {
-        checkState(!Strings.isNullOrEmpty(osiamHome), "'osiam.home' is not set");
-        osiamHomeDir = checkOsiamHome(osiamHome);
-        logger.info("osiam.home = {}", osiamHomeDir);
-        if (!isEmpty(osiamHomeDir)) {
-            return;
+    @Override
+    public void onApplicationEvent(ApplicationEvent event) {
+        if (event instanceof ApplicationEnvironmentPreparedEvent) {
+            ConfigurableEnvironment environment = ((ApplicationEnvironmentPreparedEvent) event).getEnvironment();
+            configure(environment);
+            initialize();
+        } else if (event instanceof ApplicationPreparedEvent) {
+            writeLogs();
         }
-        checkState(Files.isWritable(osiamHomeDir), "'osiam.home' (%s) is not writable", osiamHomeDir);
-        logger.info("Initializing osiam.home");
-        Resource[] resources = new PathMatchingResourcePatternResolver().getResources("classpath:/home/**/*");
-        for (Resource resource : resources) {
-            // don't process directories
-            if (resource.getURL().toString().endsWith("/")) {
-                continue;
+    }
+
+    public void configure(ConfigurableEnvironment environment) {
+        String rawOsiamHome = environment.getProperty("osiam.home", System.getenv("HOME") + "/.osiam");
+        checkState(!Strings.isNullOrEmpty(rawOsiamHome), "'osiam.home' is not set");
+        osiamHome = Paths.get(rawOsiamHome).toAbsolutePath();
+        environment.getPropertySources().addFirst(new PropertySource<Path>("osiamHome", osiamHome) {
+            @Override
+            public Object getProperty(String name) {
+                return "osiam.home".equals(name) ? source.toString() : null;
             }
-            copyToHome(resource);
+        });
+    }
+
+    public void initialize() {
+        try {
+            if (Files.notExists(osiamHome)) {
+                Files.createDirectories(osiamHome);
+            } else {
+                checkState(Files.isDirectory(osiamHome), "'osiam.home' (%s) is not a directory", osiamHome);
+                checkState(Files.isReadable(osiamHome), "'osiam.home' (%s) is not readable", osiamHome);
+                checkState(Files.isExecutable(osiamHome), "'osiam.home' (%s) is not accessible", osiamHome);
+            }
+
+            if (!isEmpty(osiamHome)) {
+                return;
+            }
+
+            checkState(Files.isWritable(osiamHome), "'osiam.home' (%s) is not writable", osiamHome);
+            Resource[] resources = new PathMatchingResourcePatternResolver().getResources("classpath:/home/**/*");
+            for (Resource resource : resources) {
+                // don't process directories
+                if (resource.getURL().toString().endsWith("/")) {
+                    continue;
+                }
+                copyToHome(resource, osiamHome);
+            }
+
+            hasInitializedHome = true;
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not initialize osiam.home", e);
         }
     }
 
-    public String getI18nDirectory() {
-        return osiamHomeDir.resolve("i18n").toUri().toString();
-    }
-
-    public String getCssDirectory() {
-        return osiamHomeDir.resolve("css").toUri().toString();
-    }
-
-    public String getJsDirectory() {
-        return osiamHomeDir.resolve("js").toUri().toString();
-    }
-
-    private Path checkOsiamHome(String osiamHome) throws IOException {
-        Path osiamHomeDir = Paths.get(osiamHome).toAbsolutePath();
-
-        if (Files.notExists(osiamHomeDir)) {
-            Files.createDirectories(osiamHomeDir);
-        } else {
-            checkState(Files.isDirectory(osiamHomeDir), "'osiam.home' (%s) is not a directory", osiamHomeDir);
-            checkState(Files.isReadable(osiamHomeDir), "'osiam.home' (%s) is not readable", osiamHomeDir);
-            checkState(Files.isExecutable(osiamHomeDir), "'osiam.home' (%s) is not accessible", osiamHomeDir);
+    public void writeLogs() {
+        logger.info("osiam.home = {}", osiamHome);
+        if (hasInitializedHome) {
+            logger.info("Initialized osiam.home");
         }
-
-        return osiamHomeDir.toRealPath();
     }
 
     /**
@@ -103,7 +123,7 @@ public class OsiamHome {
         }
     }
 
-    private void copyToHome(Resource resource) throws IOException {
+    private void copyToHome(Resource resource, Path osiamHomeDir) throws IOException {
         String pathUnderHome = resource.getURL().toString().replaceFirst(".*home/", "");
         Path target = osiamHomeDir.resolve(pathUnderHome);
         Files.createDirectories(target.getParent());
