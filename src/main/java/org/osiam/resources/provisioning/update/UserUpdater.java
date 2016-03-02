@@ -30,7 +30,7 @@ import org.osiam.resources.scim.User;
 import org.osiam.storage.dao.UserDao;
 import org.osiam.storage.entities.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -53,7 +53,7 @@ public class UserUpdater {
     private final RoleUpdater roleUpdater;
     private final X509CertificateUpdater x509CertificateUpdater;
     private final AddressUpdater addressUpdater;
-    private final PasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ExtensionUpdater extensionUpdater;
 
     @Autowired
@@ -68,7 +68,7 @@ public class UserUpdater {
                        RoleUpdater roleUpdater,
                        X509CertificateUpdater x509CertificateUpdater,
                        AddressUpdater addressUpdater,
-                       PasswordEncoder passwordEncoder,
+                       BCryptPasswordEncoder bCryptPasswordEncoder,
                        ExtensionUpdater extensionUpdater) {
         this.userDao = userDao;
         this.resourceUpdater = resourceUpdater;
@@ -81,7 +81,7 @@ public class UserUpdater {
         this.roleUpdater = roleUpdater;
         this.x509CertificateUpdater = x509CertificateUpdater;
         this.addressUpdater = addressUpdater;
-        this.passwordEncoder = passwordEncoder;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.extensionUpdater = extensionUpdater;
     }
 
@@ -234,7 +234,7 @@ public class UserUpdater {
         }
 
         if (!Strings.isNullOrEmpty(user.getPassword())) {
-            String hashedPassword = passwordEncoder.encodePassword(user.getPassword(), userEntity.getId());
+            String hashedPassword = bCryptPasswordEncoder.encode(user.getPassword());
             userEntity.setPassword(hashedPassword);
         }
     }

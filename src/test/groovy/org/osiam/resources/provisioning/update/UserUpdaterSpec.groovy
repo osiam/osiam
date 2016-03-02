@@ -30,7 +30,7 @@ import org.osiam.resources.scim.Meta
 import org.osiam.resources.scim.User
 import org.osiam.storage.dao.UserDao
 import org.osiam.storage.entities.UserEntity
-import org.springframework.security.authentication.encoding.PasswordEncoder
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -38,18 +38,18 @@ class UserUpdaterSpec extends Specification {
 
     static IRRELEVANT = 'irrelevant'
 
-    NameUpdater nameUpdater = Mock()
-    EmailUpdater emailUpdater = Mock()
-    PhoneNumberUpdater phoneNumberUpdater = Mock()
-    ImUpdater imUpdater = Mock()
-    PhotoUpdater photoUpdater = Mock()
-    EntitlementsUpdater entitlementUpdater = Mock()
-    RoleUpdater roleUpdater = Mock()
-    X509CertificateUpdater x509CertificateUpdater = Mock()
-    AddressUpdater addressUpdater = Mock()
-    UserDao userDao = Mock()
-    PasswordEncoder passwordEncoder = Mock()
-    ExtensionUpdater extensionUpdater = Mock()
+    def nameUpdater = Mock(NameUpdater)
+    def emailUpdater = Mock(EmailUpdater)
+    def phoneNumberUpdater = Mock(PhoneNumberUpdater)
+    def imUpdater = Mock(ImUpdater)
+    def photoUpdater = Mock(PhotoUpdater)
+    def entitlementUpdater = Mock(EntitlementsUpdater)
+    def roleUpdater = Mock(RoleUpdater)
+    def x509CertificateUpdater = Mock(X509CertificateUpdater)
+    def addressUpdater = Mock(AddressUpdater)
+    def userDao = Mock(UserDao)
+    def bCryptPasswordEncoder = Mock(BCryptPasswordEncoder)
+    def extensionUpdater = Mock(ExtensionUpdater)
 
     ResourceUpdater resourceUpdater = Mock()
     UserUpdater userUpdater = new UserUpdater(userDao,
@@ -63,11 +63,11 @@ class UserUpdaterSpec extends Specification {
             roleUpdater,
             x509CertificateUpdater,
             addressUpdater,
-            passwordEncoder,
+            bCryptPasswordEncoder,
             extensionUpdater)
 
     User user
-    UserEntity userEntity = Mock()
+    def userEntity = Mock(UserEntity)
 
     def 'updating a user triggers resource updater'() {
         given:
@@ -607,15 +607,13 @@ class UserUpdaterSpec extends Specification {
 
     def 'updating the password is possible'() {
         given:
-        def uuid = UUID.randomUUID()
         User user = new User.Builder(password: IRRELEVANT).build()
 
         when:
         userUpdater.update(user, userEntity)
 
         then:
-        1 * userEntity.getId() >> uuid
-        1 * passwordEncoder.encodePassword(IRRELEVANT, uuid) >> 'hashedPassword'
+        1 * bCryptPasswordEncoder.encode(IRRELEVANT) >> 'hashedPassword'
         1 * userEntity.setPassword('hashedPassword')
     }
 

@@ -36,6 +36,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Collections;
 import java.util.Map;
@@ -87,9 +88,14 @@ public class Osiam extends SpringBootServletInitializer {
     }
 
     @Bean
-    public ShaPasswordEncoder passwordEncoder() {
-        ShaPasswordEncoder passwordEncoder = new ShaPasswordEncoder(512);
-        passwordEncoder.setIterations(1000);
-        return passwordEncoder;
+    public ShaPasswordEncoder shaPasswordEncoder() {
+        ShaPasswordEncoder shaPasswordEncoder = new ShaPasswordEncoder(512);
+        shaPasswordEncoder.setIterations(1000);
+        return shaPasswordEncoder;
+    }
+
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder(13);
     }
 }

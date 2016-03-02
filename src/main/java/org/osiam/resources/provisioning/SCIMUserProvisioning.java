@@ -37,7 +37,7 @@ import org.osiam.storage.query.QueryFilterParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,17 +55,17 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
 
     private final UserConverter userConverter;
     private final UserDao userDao;
-    private final PasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserUpdater userUpdater;
 
     @Autowired
     public SCIMUserProvisioning(UserConverter userConverter,
                                 UserDao userDao,
-                                PasswordEncoder passwordEncoder,
+                                BCryptPasswordEncoder bCryptPasswordEncoder,
                                 UserUpdater userUpdater) {
         this.userConverter = userConverter;
         this.userDao = userDao;
-        this.passwordEncoder = passwordEncoder;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userUpdater = userUpdater;
     }
 
@@ -120,7 +120,7 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
         UserEntity userEntity = userConverter.fromScim(user);
         userEntity.setId(UUID.randomUUID());
 
-        String hashedPassword = passwordEncoder.encodePassword(user.getPassword(), userEntity.getId());
+        String hashedPassword = bCryptPasswordEncoder.encode(user.getPassword());
         userEntity.setPassword(hashedPassword);
 
         userDao.create(userEntity);
@@ -150,7 +150,7 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
         userEntity.setId(existingEntity.getId());
 
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-            String hashedPassword = passwordEncoder.encodePassword(user.getPassword(), userEntity.getId());
+            String hashedPassword = bCryptPasswordEncoder.encode(user.getPassword());
             userEntity.setPassword(hashedPassword);
         } else {
             userEntity.setPassword(existingEntity.getPassword());

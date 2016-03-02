@@ -30,16 +30,16 @@ import org.osiam.storage.dao.SearchResult
 import org.osiam.storage.dao.UserDao
 import org.osiam.storage.entities.MetaEntity
 import org.osiam.storage.entities.UserEntity
-import org.springframework.security.authentication.encoding.PasswordEncoder
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import spock.lang.Specification
 
 class SCIMUserProvisioningBeanSpec extends Specification {
 
-    def passwordEncoder = Mock(PasswordEncoder)
+    def bCryptPasswordEncoder = Mock(BCryptPasswordEncoder)
     def userDao = Mock(UserDao)
     def userConverter = Mock(UserConverter)
 
-    SCIMUserProvisioning scimUserProvisioning = new SCIMUserProvisioning(userConverter, userDao, passwordEncoder, null)
+    SCIMUserProvisioning scimUserProvisioning = new SCIMUserProvisioning(userConverter, userDao, bCryptPasswordEncoder, null)
 
     def 'should be possible to get a user by his id'() {
         given:
@@ -76,7 +76,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         def user = scimUserProvisioning.create(scimUser)
 
         then:
-        1 * passwordEncoder.encodePassword(_, _) >> "password"
+        1 * bCryptPasswordEncoder.encode('password')
         1 * userConverter.fromScim(_) >> new UserEntity(userName: 'test')
         1 * userDao.create(_)
         1 * userConverter.toScim(_) >> { UserEntity it ->
@@ -184,8 +184,7 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         scimUserProvisioning.replace(id.toString(), userScim)
 
         then:
-        1 * userEntity.getId() >> id
-        1 * passwordEncoder.encodePassword(password, id) >> hashedPassword
+        1 * bCryptPasswordEncoder.encode(password) >> hashedPassword
         1 * userEntity.setPassword(hashedPassword)
     }
 
@@ -258,7 +257,6 @@ class SCIMUserProvisioningBeanSpec extends Specification {
         given:
         def scimUser = new User.Builder(userName: 'test', password: 'password').build()
 
-        passwordEncoder.encodePassword(_, _) >> "password"
         userConverter.fromScim(_) >> new UserEntity(userName: 'test')
         userConverter.toScim(_) >> { UserEntity it ->
             new User.Builder(id: it.id, password: it.password).build()
