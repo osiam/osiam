@@ -205,5 +205,5 @@ Windows, Debian) utilizing their available Java 8 stack.
 ### Databases
 
 OSIAM uses database abstraction technologies (Hibernate) that enables us to
-support a wide variety of databases. For production you should use at least
-PostgreSQL 9.3 or MySQL 5.7.
+support a wide variety of databases. Supported Databases are PostgreSQL, MySQL
+and H2. For production you should use either PostgreSQL or MySQL.

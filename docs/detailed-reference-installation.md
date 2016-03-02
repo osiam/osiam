@@ -34,26 +34,13 @@ This document takes the following prerequisites as basis:
     <dd>Java 8, OpenJDK 8 JRE</dd>
     <dt>Application Server</dt>
     <dd>Tomcat 7</dd>
-    <dt>Database</dt>
+    <dt>Database Server (optional)</dt>
     <dd>PostgreSQL 9.4 or MySQL 5.7</dd>
 </dl>
 
 All of the items have to be installed and running.
-For the installation of OSIAM you need a PostgreSQL or MySQL database.
-The default configuration connects to a PostgreSQL database with the following settings:
-
-<dl>
-    <dt>Server</dt>
-    <dd>localhost:5432</dd>
-    <dt>Database</dt>
-    <dd>osiam</dd>
-    <dt>User</dt>
-    <dd>osiam</dd>
-    <dt>Password</dt>
-    <dd>osiam</dd>
-</dl>
-
-Please make sure that the database and user exist before going on.
+The default configuration uses a file-based H2 database that is stored in the home directory under the folder `/data`.
+For the installation of OSIAM in a production environment, we recommend to use a PostgreSQL or MySQL database.
 
 **WARNING:** SCIM and OAuth 2 are standards that require TLS to be enabled. An
 exhaustive explanation how to setup TLS for HTTP connections in Tomcat 7 can be
@@ -67,12 +54,13 @@ We recommend to choose the latest release version of OSIAM.
 
 ## The Home Directory
 
-OSIAM expects the configuration and necessary assets in a directory in the file system.
+OSIAM expects the configuration, runtime data and necessary assets in a directory in the file system.
 This directory is known as the home directory.
 You can set the home directory by various means, e.g. as environment variable, system property
 or JNDI attribute under `java:comp/env`.
 If no home directory is specified, `$HOME/.osiam` will be used.
-OSIAM initializes its home directory at startup, if the directory is empty.
+If the home directory does not exist, OSIAM will try to create it.
+If the directory is empty, it will be initialized on startup.
 You should create a new directory for the home directory now, for instance `/var/lib/osiam`.
 We will refer to this directory as `OSIAM_HOME` from now on.
 
@@ -96,6 +84,8 @@ The configuration file can be found under `OSIAM_HOME/config/osiam.yaml`.
 It's the default configuration file that has been copied during initialization.
 Change this file to your needs.
 It should be self-explanatory.
+You should at least change the database connection to point to a PostgreSQL or MySQL server,
+if you install OSIAM in a production environment.
 You have to restart OSIAM after making changes to this file.
 
 ## Starting OSIAM

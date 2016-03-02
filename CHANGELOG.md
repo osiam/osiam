@@ -4,6 +4,12 @@
 
 **Breaking changes!**
 
+### Features
+
+- Support for H2 database has been added and a file-based one is the default
+  configuration from now on. The usage scenarios are small installations,
+  testing and development.
+
 ### Changes
 
 - Require a Java runtime environment of at least version 8
