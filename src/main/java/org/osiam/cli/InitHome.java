@@ -23,34 +23,8 @@
  */
 package org.osiam.cli;
 
-import org.osiam.OsiamHome;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.config.ConfigFileApplicationListener;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-
-@Configuration
 public class InitHome {
-
-    @Value("${osiam.home}")
-    private String osiamHomeDir;
-
-    @PostConstruct
-    public void osiamHome() throws IOException {
-        new OsiamHome(osiamHomeDir);
-    }
-
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-        return new PropertySourcesPlaceholderConfigurer();
-    }
-
-    @Bean
-    public static ConfigFileApplicationListener configFileApplicationListener() {
-        return new ConfigFileApplicationListener();
-    }
+    // Intentionally left empty. Home directory is automatically initialized by OsiamHome.
+    // Unfortunately, Spring Boot requires some class to be used as application source.
+    // As nothing has to be done, this empty class is used for that.
 }
