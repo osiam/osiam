@@ -71,7 +71,7 @@
     </developers>
 
     <prerequisites>
-        <maven>3.0.4</maven>
+        <maven>3.2.1</maven>
     </prerequisites>
 
     <scm>
@@ -320,7 +320,7 @@
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>3.0.4</version>
+                                    <version>3.2.1</version>
                                 </requireMavenVersion>
                             </rules>
                         </configuration>
