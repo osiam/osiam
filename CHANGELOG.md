@@ -55,6 +55,8 @@ OSIAM 2.5 to OSIAM 3.0, see the [migration notes](docs/migration.md).
 - Change URL of service provider configuration resource from
   `/ServiceProviderConfigs` to `/ServiceProviderConfig`.
 - Always return the `id` attribute, when searching for `User`s.
+- Return a SCIM 2 compliant `User` when querying `/Me`. This replaces the old Facebook
+  connector.
 
 ## Old Versions
 
