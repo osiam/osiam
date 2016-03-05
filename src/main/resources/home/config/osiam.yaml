@@ -30,13 +30,22 @@ osiam:
   db:
 
     #
+    # file-based H2
+    #
+    vendor: h2
+    driver: org.h2.Driver
+    url: jdbc:h2:${osiam.home}/data/osiam
+    username: sa
+    password:
+
+    #
     # PostgreSQL
     #
-    vendor: postgresql
-    driver: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/osiam
-    username: osiam
-    password: osiam
+    #vendor: postgresql
+    #driver: org.postgresql.Driver
+    #url: jdbc:postgresql://localhost:5432/osiam
+    #username: osiam
+    #password: osiam
 
     #
     # MySQL

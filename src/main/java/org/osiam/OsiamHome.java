@@ -100,6 +100,9 @@ public class OsiamHome implements ApplicationListener<ApplicationEvent> {
                 }
                 copyToHome(resource, osiamHome);
             }
+            if (Files.notExists(osiamHome.resolve("data"))) {
+                Files.createDirectories(osiamHome.resolve("data"));
+            }
 
             hasInitializedHome = true;
         } catch (IOException e) {
