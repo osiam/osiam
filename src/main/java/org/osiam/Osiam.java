@@ -26,6 +26,7 @@ package org.osiam;
 import com.google.common.collect.ImmutableMap;
 import com.ryantenney.metrics.spring.config.annotation.EnableMetrics;
 import org.osiam.cli.InitHome;
+import org.osiam.cli.MigrateDb;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -57,13 +58,18 @@ public class Osiam extends SpringBootServletInitializer {
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication();
         String command = extractCommand(args);
+        OsiamHome osiamHome = new OsiamHome();
         if ("initHome".equals(command)) {
             application.setSources(Collections.<Object>singleton(InitHome.class));
             application.setWebEnvironment(false);
+        } else if ("migrateDb".equals(command)) {
+            application.setSources(Collections.<Object>singleton(MigrateDb.class));
+            application.setWebEnvironment(false);
+            osiamHome.shouldInitializeHome(false);
         } else {
             application.setSources(Collections.<Object>singleton(Osiam.class));
         }
-        application.addListeners(new OsiamHome());
+        application.addListeners(osiamHome);
         application.setDefaultProperties(DEFAULT_PROPERTIES);
         application.run(args);
     }

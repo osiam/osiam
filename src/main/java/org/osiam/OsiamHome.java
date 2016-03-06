@@ -52,6 +52,7 @@ public class OsiamHome implements ApplicationListener<ApplicationEvent> {
     private static final Logger logger = LoggerFactory.getLogger(OsiamHome.class);
 
     private boolean hasInitializedHome = false;
+    private boolean shouldInitializeHome = true;
     private Path osiamHome;
 
     @Override
@@ -59,7 +60,9 @@ public class OsiamHome implements ApplicationListener<ApplicationEvent> {
         if (event instanceof ApplicationEnvironmentPreparedEvent) {
             ConfigurableEnvironment environment = ((ApplicationEnvironmentPreparedEvent) event).getEnvironment();
             configure(environment);
-            initialize();
+            if(shouldInitializeHome) {
+                initialize();
+            }
         } else if (event instanceof ApplicationPreparedEvent) {
             writeLogs();
         }
@@ -131,5 +134,9 @@ public class OsiamHome implements ApplicationListener<ApplicationEvent> {
         Path target = osiamHomeDir.resolve(pathUnderHome);
         Files.createDirectories(target.getParent());
         Files.copy(resource.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    public void shouldInitializeHome(boolean shouldInitializeHome) {
+        this.shouldInitializeHome = shouldInitializeHome;
     }
 }

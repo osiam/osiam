@@ -9,6 +9,10 @@
 - Support for H2 database has been added and a file-based one is the default
   configuration from now on. The usage scenarios are small installations,
   testing and development.
+- Migration and initialization of the database can be done from the command line
+  with the `migrateDb` command. See [Initialize the Database from the Command Line]
+  (docs/detailed-reference-installation.md#initialize-the-database-from-the-command-line).
+
 
 ### Changes
 

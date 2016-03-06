@@ -14,6 +14,7 @@ Chapters:
 - [The Home Directory](#the-home-directory)
     - [Initialize the Home Directory from the Command Line](#initialize-the-home-directory-from-the-command-line)
 - [Configuration](#configuration)
+- [Initialize the Database from the Command Line](#initialize-the-database-from-the-command-line)
 - [Starting OSIAM](#starting-osiam)
 - [Default setup](#default-setup)
 - [Customize setup](#customize-setup)
@@ -87,6 +88,20 @@ It should be self-explanatory.
 You should at least change the database connection to point to a PostgreSQL or MySQL server,
 if you install OSIAM in a production environment.
 You have to restart OSIAM after making changes to this file.
+
+## Initialize the Database from the Command Line
+
+This is an optional step, but if you want to, you can now initialize the database before starting OSIAM.
+This might be helpful if you want to create additional data like clients or define extensions.
+Currently, the only way to define extensions is via direct database manipulation.
+The configuration should be fully created before you can run the command.
+To start the initialization run the following command on the command line:
+
+```sh
+java -jar osiam.war migrateDb --osiam.home=/var/lib/osiam
+```
+
+Of course, you can also use this command to migrate the database when updating OSIAM.
 
 ## Starting OSIAM
 
