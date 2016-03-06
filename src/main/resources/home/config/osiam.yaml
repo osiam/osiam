@@ -56,6 +56,12 @@ osiam:
     #username: osiam
     #password: osiam
 
+    #
+    # Connection Pool Settings
+    #
+    #maximum-pool-size: 10
+    #connection-timeout-ms: 30000
+
   #
   # LDAP configuration
   #

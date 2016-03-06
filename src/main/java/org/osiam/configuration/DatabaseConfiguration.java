@@ -54,6 +54,12 @@ public class DatabaseConfiguration {
     @Value("${osiam.db.vendor}")
     private String databaseVendor;
 
+    @Value("${osiam.db.maximum-pool-size:10}")
+    private int maximumPoolSize;
+
+    @Value("${osiam.db.connection-timeout-ms:30000}")
+    private int connectionTimeoutMs;
+
     @Primary
     @Bean
     public DataSource dataSource() {
@@ -63,6 +69,8 @@ public class DatabaseConfiguration {
         hikariConfig.setJdbcUrl(databaseUrl);
         hikariConfig.setUsername(databaseUserName);
         hikariConfig.setPassword(databasePassword);
+        hikariConfig.setMaximumPoolSize(maximumPoolSize);
+        hikariConfig.setConnectionTimeout(connectionTimeoutMs);
         return new HikariDataSource(hikariConfig);
     }
 
