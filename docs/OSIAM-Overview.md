@@ -5,14 +5,13 @@ https://osiam.org for additional information on OSIAM.
 
 Chapters:
 - [Functional overview](#functional-overview)
-    - [Architecture model](#architecture-model)
-    - [SCIMv2](#scimv2)
-    - [OAuth 2.0](#oauth-20)
+    - [SCIM 2](#scim-2)
+    - [OAuth 2](#oauth-2)
     - [Facebook Connect](#facebook-connect)
+    - [LDAP login](#ldap-login)
     - [OSIAM specific interfaces](#osiam-specific-interfaces)
     - [Interface / endpoint overview and status](#interface--endpoint-overview-and-status)
-    - [Homepage](#homepage)
-    - [The Forum](#the-forum)
+- [Community resources overview](#community-resources-overview)
     - [The Backlog](#the-backlog)
     - [Public CI](#public-ci)
     - [Software Quality Analytics](#software-quality-analytics)
