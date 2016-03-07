@@ -47,12 +47,6 @@ public class V2__migrations_from_2_5 implements JdbcMigration, MigrationChecksum
     public void migrate(Connection connection) throws Exception {
         this.connection = connection;
         removeClient("auth-server");
-        removeScopesFromClient("example-client", "GET", "POST", "PUT", "PATCH", "DELETE");
-        addScopesToClient("example-client", "ADMIN", "ME");
-        removeScopesFromClient("addon-self-administration-client", "GET", "POST", "PUT", "PATCH", "DELETE");
-        addScopesToClient("addon-self-administration-client", "ADMIN");
-        removeScopesFromClient("addon-administration-client", "GET", "POST", "PUT", "PATCH", "DELETE");
-        addScopesToClient("addon-administration-client", "ADMIN");
     }
 
     private void removeClient(String clientId) throws SQLException {
@@ -74,36 +68,6 @@ public class V2__migrations_from_2_5 implements JdbcMigration, MigrationChecksum
                 .prepareStatement("delete from osiam_client where internal_id = ?")) {
             statement.setLong(1, internalId);
             statement.execute();
-        }
-    }
-
-    private void removeScopesFromClient(String clientId, String... scopes) throws SQLException {
-        long internalId = toInternalId(clientId);
-        if (internalId < 0) {
-            return;
-        }
-        for (String scope : scopes) {
-            try (PreparedStatement statement = connection
-                    .prepareStatement("delete from osiam_client_scopes where id = ? and scope = ?")) {
-                statement.setLong(1, internalId);
-                statement.setString(2, scope);
-                statement.execute();
-            }
-        }
-    }
-
-    private void addScopesToClient(String clientId, String... scopes) throws SQLException {
-        long internalId = toInternalId(clientId);
-        if (internalId < 0) {
-            return;
-        }
-        for (String scope : scopes) {
-            try (PreparedStatement statement = connection
-                    .prepareStatement("insert into osiam_client_scopes (id, scope) values (?, ?)")) {
-                statement.setLong(1, internalId);
-                statement.setString(2, scope);
-                statement.execute();
-            }
         }
     }
 
