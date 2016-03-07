@@ -22,6 +22,8 @@ OSIAM 2.5 to OSIAM 3.0, see the [migration notes](docs/migration.md).
 - Migration and initialization of the database can be done from the command line
   with the `migrateDb` command. See [Initialize the Database from the Command Line]
   (docs/detailed-reference-installation.md#initialize-the-database-from-the-command-line).
+- Connections via AJP can be used now. This is disabled by default. See
+  [Enable AJP support](docs/detailed-reference-installation.md#enable-ajp-support).
 
 ### Changes
 

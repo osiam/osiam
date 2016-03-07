@@ -14,6 +14,7 @@ Chapters:
 - [The Home Directory](#the-home-directory)
     - [Initialize the Home Directory from the Command Line](#initialize-the-home-directory-from-the-command-line)
 - [Configuration](#configuration)
+    - [Enable AJP support](#enable-ajp-support)
 - [Initialize the Database from the Command Line](#initialize-the-database-from-the-command-line)
 - [Starting OSIAM](#starting-osiam)
 - [Default setup](#default-setup)
@@ -88,6 +89,13 @@ It should be self-explanatory.
 You should at least change the database connection to point to a PostgreSQL or MySQL server,
 if you install OSIAM in a production environment.
 You have to restart OSIAM after making changes to this file.
+
+### Enable AJP support
+
+If you want to proxy OSIAM using AJP, you have to enable it explicitly.
+To do this, change the configuration property `osiam.ajp.enabled` to `true`.
+By default the AJP connector will listen on port `8009` and binds to `127.0.0.1`.
+To customize this, change the corresponding configuration properties.
 
 ## Initialize the Database from the Command Line
 

@@ -95,3 +95,8 @@ osiam:
     count: 10
     # Lock for x seconds
     timeout: 30
+
+  ajp:
+    enabled: false
+    #bind-address: 127.0.0.1
+    #port: 8009
