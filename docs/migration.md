@@ -299,6 +299,7 @@ new OsiamConnector.Builder()
 There have been some minor API changes, namely:
 
 - Invalid filters now get a reply of 400 BAD REQUEST.
+- Unexpected errors now reply with 500 INTERNAL SERVER ERROR instead of 409 CONFLICT.
 - The URL of the service provider configuration was changed from `/ServiceProviderConfigs` to `/ServiceProviderConfig`.
 
 Please update your applications accordingly.
