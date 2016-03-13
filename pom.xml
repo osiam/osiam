@@ -306,6 +306,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <finalName>osiam</finalName>
+                    <executable>true</executable>
                     <folders>
                         <folder>src/main/deploy</folder>
                     </folders>
