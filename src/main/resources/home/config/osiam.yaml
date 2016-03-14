@@ -24,6 +24,9 @@
 
 osiam:
 
+  # The port to listen on
+  port: 8080
+
   #
   # Database configuration
   #
