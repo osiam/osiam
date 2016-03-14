@@ -63,6 +63,13 @@ osiam:
     #connection-timeout-ms: 30000
 
   #
+  # Logging configuration
+  #
+  logging:
+    # Log level severity. Can be one of ALL, TRACE, DEBUG, INFO, WARN, ERROR, OFF
+    level: INFO
+
+  #
   # LDAP configuration
   #
   ldap:

@@ -30,7 +30,7 @@ logging.level:
   # Default log level is ERROR
   '': ERROR
   org.springframework: WARN
-  org.osiam: INFO
+  org.osiam: ${osiam.logging.level:INFO}
 
 spring.thymeleaf.prefix: file:${osiam.home}/templates/web/
 spring.jpa.hibernate.naming_strategy: org.hibernate.cfg.ImprovedNamingStrategy
