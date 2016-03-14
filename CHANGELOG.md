@@ -10,7 +10,8 @@ OSIAM 2.5 to OSIAM 3.0, see the [migration notes](docs/migration.md).
 
 ### Features
 
-- Run as a standalone application with `java -jar osiam.war`.
+- Run as a standalone application using the `.war` file as an executable, i.e.
+  just run `osiam.war` on the command line like you would run any other command.
 - Support for H2 database has been added and a file-based one is the default
   configuration from now on. The usage scenarios are small installations,
   testing and development.
