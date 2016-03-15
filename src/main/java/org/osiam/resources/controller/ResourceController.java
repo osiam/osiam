@@ -38,7 +38,7 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ResourceController<T extends Resource> {
+public abstract class ResourceController<T extends Resource> {
 
     protected ResponseEntity<T> buildResponseWithLocation(T resource,
                                                           UriComponentsBuilder builder,
