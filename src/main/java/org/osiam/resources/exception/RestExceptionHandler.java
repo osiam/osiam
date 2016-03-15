@@ -56,10 +56,11 @@ public class RestExceptionHandler {
         return produceErrorResponse("An unexpected error occurred", HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler({IllegalArgumentException.class, InvalidFilterException.class, InvalidConstraintException.class})
+    @ExceptionHandler({IllegalArgumentException.class, InvalidFilterException.class, InvalidConstraintException.class,
+            InvalidTokenException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ErrorResponse handleInvalidConstraintException(Exception e) {
+    public ErrorResponse handleInvalidRequests(Exception e) {
         return produceErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 

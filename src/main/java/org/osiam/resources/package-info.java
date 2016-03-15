@@ -27,11 +27,6 @@
  *  <p>The resource-server of OSIAM is build on top of SCIM v2 (see http://tools.ietf.org/html/draft-ietf-scim-api-01,
  *  http://tools.ietf.org/html/draft-ietf-scim-core-schema-01 for further details on the standard).</p>
  *
- *  <p>It has also some additional functionalities which are:</p>
- *
- *  <p>- the functionality to be a fake facebook site, so that facebook-connector could be used with OSIAM.</p>
- *
- *
  *  <p>The api is build on http and contains:</p>
  *
  *  <p>/ - org.osiam.resources.controller.RootController - would be a resource independent search but it is currently

@@ -87,15 +87,6 @@ authorize the client. The user is not involved in this process so basically the
 client is fully flexible in make API calls against OSIAM no matter what user is
 logged in. This flow is not recommended and only acceptable for certain setups.
 
-### Facebook Connect
-
-Facebook Connect is based on OAuth 2.0 but it has some specialities. OSIAM can
-act as a Service Provider for the Facebook Connect login and logout process.
-That means you can easily run a Facebook Connect Service Consumer against OSIAM.
-We have verified the compatibility of our Facebook Connect endpoint using
-[LifeRays Facebook Connect Service Consumer](http://www.liferay.com/en/documentation/liferay-portal/6.1/user-guide/-/ai/facebook-connect-sso)
-implementation.
-
 ### LDAP Login
 
 While using the [Authorization Code Grant](#authorization-code-grant) the User

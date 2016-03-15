@@ -26,16 +26,11 @@ package org.osiam.resources.controller;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import com.google.common.base.CharMatcher;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
 import org.osiam.auth.token.TokenService;
 import org.osiam.resources.provisioning.SCIMUserProvisioning;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.resources.scim.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
@@ -51,8 +46,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.io.IOException;
-import java.net.URI;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -68,7 +61,7 @@ import java.util.Set;
 @RestController
 @RequestMapping(value = "/Users")
 @Transactional
-public class UserController {
+public class UserController extends ResourceController<User> {
 
     private final SCIMUserProvisioning scimUserProvisioning;
     private final TokenService tokenService;
@@ -148,25 +141,4 @@ public class UserController {
         }
     }
 
-    private ResponseEntity<User> buildResponseWithLocation(User group, UriComponentsBuilder builder, HttpStatus status) {
-        HttpHeaders headers = new HttpHeaders();
-        URI location = builder.path("/Users/{id}").buildAndExpand(group.getId()).toUri();
-        headers.setLocation(location);
-        return new ResponseEntity<>(group, headers, status);
-    }
-
-    private Set<String> extractAttributes(String attributesParameter) {
-        Set<String> result = new HashSet<>();
-        if (!Strings.isNullOrEmpty(attributesParameter)) {
-            result = Sets.newHashSet(
-                    Splitter.on(CharMatcher.anyOf(".,"))
-                            .trimResults()
-                            .omitEmptyStrings()
-                            .split(attributesParameter)
-            );
-        }
-        result.add("schemas");
-        result.add("id");
-        return result;
-    }
 }

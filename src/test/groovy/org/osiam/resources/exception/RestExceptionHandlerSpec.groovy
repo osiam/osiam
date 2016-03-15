@@ -46,9 +46,17 @@ class RestExceptionHandlerSpec extends Specification {
 
     def 'status is set to BAD_REQUEST when InvalidConstraintException occurs'() {
         when:
-        def result = exceptionHandler.handleInvalidConstraintException(new InvalidConstraintException(IRRELEVANT))
+        def result = exceptionHandler.handleInvalidRequests(new InvalidConstraintException(IRRELEVANT))
         then:
         result.detail == "Constraint ${IRRELEVANT} is invalid" as String
+        result.status == HttpStatus.BAD_REQUEST as String
+    }
+
+    def 'status is set to BAD_REQUEST when InvalidTokenException occurs'() {
+        when:
+        def result = exceptionHandler.handleInvalidRequests(new InvalidTokenException(IRRELEVANT))
+        then:
+        result.detail == IRRELEVANT
         result.status == HttpStatus.BAD_REQUEST as String
     }
 

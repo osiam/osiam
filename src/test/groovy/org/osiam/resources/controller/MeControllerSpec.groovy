@@ -23,165 +23,78 @@
  */
 package org.osiam.resources.controller
 
-import org.joda.time.format.DateTimeFormatter
-import org.joda.time.format.ISODateTimeFormat
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider
+import org.osiam.resources.exception.RestExceptionHandler
 import org.osiam.resources.scim.User
-import org.osiam.storage.dao.UserDao
-import org.osiam.storage.entities.EmailEntity
-import org.osiam.storage.entities.MetaEntity
-import org.osiam.storage.entities.NameEntity
-import org.osiam.storage.entities.UserEntity
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.provider.OAuth2Authentication
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices
+import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import spock.lang.Specification
 
-import javax.servlet.http.HttpServletRequest
+import static org.hamcrest.core.StringEndsWith.endsWith
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 
 class MeControllerSpec extends Specification {
 
-    UserDao userDao = Mock()
     def resourceServerTokenServices = Mock(ResourceServerTokenServices)
-    MeController underTest = new MeController(resourceServerTokenServices, userDao)
+    def mockMvc
+
+    def accessToken = "IrrelevantAccessToken"
+
+    def meController = new MeController(resourceServerTokenServices)
     OAuth2Authentication authentication = Mock(OAuth2Authentication)
-    HttpServletRequest request = Mock(HttpServletRequest)
+    def id = UUID.randomUUID()
     Authentication userAuthentication = Mock(Authentication)
-    NameEntity name = new NameEntity(familyName: 'Prefect', givenName: 'Fnord', formatted: 'Fnord Prefect')
-    UserEntity user = new UserEntity(active: true, emails: [
-            new EmailEntity(primary: true, value: 'test@test.de')
-    ],
-            name: name, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
-            locale: 'de_DE', userName: 'fpref')
-    DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTime()
+
+    def user = new User.Builder(id: id).build()
 
     def setup() {
+        def filterProvider = new SimpleFilterProvider().setFailOnUnknownId(false)
+        def objectMapper = new ObjectMapper(filterProvider: filterProvider)
+        def jacksonMessageConverter = new MappingJackson2HttpMessageConverter(objectMapper)
+        mockMvc = MockMvcBuilders.standaloneSetup(meController)
+                .setControllerAdvice(new RestExceptionHandler())
+                .setMessageConverters(jacksonMessageConverter)
+                .build()
         authentication.getUserAuthentication() >> userAuthentication
     }
 
-    def 'should return correct facebook representation'() {
-        given:
-        User principal = new User.Builder('username').setId('theUserId').build()
-        def userId = 'theUserId'
-
+    def 'should provide logged in user with correct location header set'() {
         when:
-        def result = underTest.getInformation(request)
-
+        def response = mockMvc.perform(get('/Me')
+                .header('Authorization', "Bearer ${accessToken}"))
         then:
-        1 * request.getParameter('access_token') >> 'access_token'
-        1 * resourceServerTokenServices.loadAuthentication('access_token') >> authentication
-        1 * userAuthentication.getPrincipal() >> principal
-        1 * userDao.getById(principal.id) >> user
-        result.email == 'test@test.de'
-        result.first_name == user.name.givenName
-        result.last_name == user.name.familyName
-        result.gender == 'not supported.'
-        result.link == 'not supported.'
-        result.locale == 'de_DE'
-        result.name == user.name.formatted
-        result.timezone == 2
-        result.updated_time == dateTimeFormatter.print(user.getMeta().getLastModified().time)
-        result.userName == 'fpref'
-        result.id == user.getId().toString()
-        result.isVerified()
+        1 * resourceServerTokenServices.loadAuthentication(accessToken) >> authentication
+        1 * userAuthentication.getPrincipal() >> user
+        response.andExpect(status().isOk())
+                .andExpect(header().string('Location', endsWith("/Users/${id}")))
     }
 
-    def 'should not provide an email address if no primary email exists'() {
-        given:
-        UserEntity user = new UserEntity(active: true, name: name, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
-                emails: [
-                        new EmailEntity(primary: false, value: 'test@test.de')
-                ], locale: 'de_DE', userName: 'fpref')
-        User principal = new User.Builder('username').setId('theUserId').build()
-        def userId = 'theUserId'
-
+    def 'Using a client-only access token generates a 400 BAD_REQUEST'() {
         when:
-        def result = underTest.getInformation(request)
-
+        def response = mockMvc.perform(get('/Me')
+                .header('Authorization', "Bearer ${accessToken}"))
         then:
-        1 * request.getParameter('access_token') >> 'access_token'
-        1 * resourceServerTokenServices.loadAuthentication('access_token') >> authentication
-        1 * userAuthentication.getPrincipal() >> principal
-        1 * userDao.getById(principal.id) >> user
-        result.getEmail() == null
+        1 * resourceServerTokenServices.loadAuthentication(accessToken) >> authentication
+        1 * authentication.isClientOnly() >> true
+        response.andExpect(status().isBadRequest())
+                .andExpect(jsonPath('$.status').value('400'))
     }
 
-    def 'should get access_token in bearer format'() {
-        given:
-        User principal = new User.Builder('username').setId('theUserId').build()
-        def userId = 'theUserId'
-        def token = 'access_token'
-        request.getHeader('Authorization') >> 'Bearer ' + token;
-
+    def 'Using an token unknown to OSIAM generates a 400 BAD_REQUEST'() {
         when:
-        def result = underTest.getInformation(request)
+        def response = mockMvc.perform(get('/Me')
+                .header('Authorization', "Bearer ${accessToken}"))
 
         then:
-        1 * request.getParameter(token) >> null
-        1 * resourceServerTokenServices.loadAuthentication(token) >> authentication
-        1 * userAuthentication.getPrincipal() >> principal
-        1 * userDao.getById(principal.id) >> user
-        result
-    }
-
-    def 'should throw exception if principal is not a String'() {
-        given:
-        def token = 'access_token'
-        request.getHeader('Authorization') >> 'Bearer ' + token;
-
-        when:
-        underTest.getInformation(request)
-
-        then:
-        1 * request.getParameter('access_token') >> null
-        1 * resourceServerTokenServices.loadAuthentication(token) >> authentication
-        1 * userAuthentication.getPrincipal() >> new Object()
-        def e = thrown(IllegalArgumentException)
-        e.message == 'User was not authenticated with OSIAM.'
-    }
-
-    def 'should not provide an email address if no emails were submitted'() {
-        given:
-        MetaEntity meta = new MetaEntity(GregorianCalendar.getInstance())
-        def user = new UserEntity(active: true, name: name, id: UUID.randomUUID(), meta: meta, locale: 'de_DE',
-                userName: 'fpref')
-        User principal = new User.Builder('username').setId('theUserId').build()
-        def userId = 'theUserId'
-        def token = 'access_token'
-        request.getHeader('Authorization') >> 'Bearer ' + token;
-
-        when:
-        def result = underTest.getInformation(request)
-
-        then:
-        1 * request.getParameter(token) >> null
-        1 * resourceServerTokenServices.loadAuthentication(token) >> authentication
-        1 * userAuthentication.getPrincipal() >> principal
-        1 * userDao.getById(principal.id) >> user
-        result.getEmail() == null
-    }
-
-    def 'should not provide name, first name, last name if no name was submitted'() {
-        given:
-        def user = new UserEntity(active: true, emails: [
-                new EmailEntity(primary: true, value: 'test@test.de')
-        ],
-                name: null, id: UUID.randomUUID(), meta: new MetaEntity(GregorianCalendar.getInstance()),
-                locale: 'de_DE', userName: 'fpref')
-        User principal = new User.Builder('username').setId('theUserId').build()
-        def userId = 'theUserId'
-        def token = 'access_token'
-        request.getHeader('Authorization') >> 'Bearer ' + token;
-
-        when:
-        def result = underTest.getInformation(request)
-
-        then:
-        1 * request.getParameter(token) >> null
-        1 * resourceServerTokenServices.loadAuthentication(token) >> authentication
-        1 * userAuthentication.getPrincipal() >> principal
-        1 * userDao.getById(principal.id) >> user
-        result.getName() == null
-        result.getFirst_name() == null
-        result.getLast_name() == null
+        1 * resourceServerTokenServices.loadAuthentication(accessToken) >> authentication
+        1 * userAuthentication.getPrincipal() >> null
+        response.andExpect(status().isBadRequest())
+                .andExpect(jsonPath('$.status').value('400'))
+                .andExpect(jsonPath('$.detail').value('User not authenticated.'))
     }
 }

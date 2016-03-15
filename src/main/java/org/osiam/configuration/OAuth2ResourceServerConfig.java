@@ -52,7 +52,7 @@ public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
         // @formatter:off
         http.authorizeRequests()
                 .antMatchers("/ServiceProviderConfig").permitAll()
-                .antMatchers("/me/**").access("#oauth2.hasScope('ADMIN') or #oauth2.hasScope('ME')")
+                .antMatchers("/Me/**").access("#oauth2.hasScope('ADMIN') or #oauth2.hasScope('ME')")
                 .antMatchers(HttpMethod.POST, "/Users/**").access("#oauth2.hasScope('ADMIN')")
                 .regexMatchers(HttpMethod.GET, "/Users/?").access("#oauth2.hasScope('ADMIN')")
                 .antMatchers("/Users/**")

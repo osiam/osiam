@@ -23,186 +23,61 @@
  */
 package org.osiam.resources.controller;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
-import org.osiam.resources.exception.OsiamException;
+import com.google.common.base.Strings;
+import org.osiam.resources.exception.InvalidTokenException;
 import org.osiam.resources.scim.User;
-import org.osiam.security.helper.AccessTokenHelper;
-import org.osiam.storage.dao.UserDao;
-import org.osiam.storage.entities.EmailEntity;
-import org.osiam.storage.entities.NameEntity;
-import org.osiam.storage.entities.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Set;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * This Controller is used for getting information about the user who initialised the access_token.
  */
 @RestController
-@RequestMapping(value = "/me")
+@RequestMapping(value = "/Me")
 @Transactional
-public class MeController {
+public class MeController extends ResourceController<User> {
 
     private final ResourceServerTokenServices resourceServerTokenServices;
-    private final UserDao userDao;
 
     @Autowired
-    public MeController(ResourceServerTokenServices resourceServerTokenServices, UserDao userDao) {
+    public MeController(ResourceServerTokenServices resourceServerTokenServices) {
         this.resourceServerTokenServices = resourceServerTokenServices;
-        this.userDao = userDao;
     }
 
-    /**
-     * This method is used to get information about the user who initialised the authorization process.
-     * <p/>
-     * The result should be in json format and look like:
-     * <p/>
-     * {
-     * "id": "73821979327912",
-     * "name": "Arthur Dent",
-     * "first_name": "Arthur",
-     * "last_name": "Dent",
-     * "link": "https://www.facebook.com/arthur.dent.167",
-     * "username": "arthur.dent.167",
-     * "gender": "male",
-     * "email": "arthur@dent.de",
-     * "timezone": 2,
-     * "locale": "en_US",
-     * "verified": true,
-     * "updated_time": "2012-08-20T08:03:30+0000"
-     * }
-     * <p/>
-     * if some information are not available then ... will happen.
-     *
-     * @return an object to represent the json format.
-     */
-    @RequestMapping(value = "/**", method = {RequestMethod.GET, RequestMethod.POST})
-    public FacebookInformationConstruct getInformation(HttpServletRequest request) {
-        String accessToken = getAccessToken(request);
+    @RequestMapping(method = RequestMethod.GET)
+    public ResponseEntity<User> getCurrentUser(@RequestHeader("Authorization") String tokenHeader,
+                                               UriComponentsBuilder builder) {
+
+        if (Strings.isNullOrEmpty(tokenHeader)) {
+            throw new IllegalArgumentException("No access token provided!"); // This should never happen!
+        }
+
+        String accessToken = tokenHeader.substring("Bearer ".length());
 
         OAuth2Authentication oAuth = resourceServerTokenServices.loadAuthentication(accessToken);
         if (oAuth.isClientOnly()) {
-            // is transformed to 409 CONFLICT
-            throw new OsiamException("Can't return an user. This access token belongs to a client.");
+            throw new InvalidTokenException("Can't return an user. This access token belongs to a client.");
         }
 
         Authentication userAuthentication = oAuth.getUserAuthentication();
 
         Object principal = userAuthentication.getPrincipal();
+        User user;
         if (principal instanceof User) {
-            User user = (User) principal;
-            UserEntity userEntity = userDao.getById(user.getId());
-            return new FacebookInformationConstruct(userEntity);
+            user = (User) principal;
         } else {
-            throw new IllegalArgumentException("User was not authenticated with OSIAM.");
+            throw new IllegalArgumentException("User not authenticated.");
         }
-    }
-
-    private String getAccessToken(HttpServletRequest request) {
-        String accessToken = request.getParameter("access_token");
-        return accessToken != null ? accessToken : AccessTokenHelper.getBearerToken(request);
-    }
-
-    public static class FacebookInformationConstruct {
-
-        @JsonIgnore
-        private final DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTime();
-        private String id;
-        private String name;
-        private String first_name;
-        private String last_name;
-        private String link = "not supported.";
-        private String userName;
-        private String gender = "not supported.";
-        private String email;
-        private int timezone = 2; // The user's timezone offset from UTC
-        private String locale;
-        private boolean verified = true;
-        private String updated_time;
-
-        public FacebookInformationConstruct(UserEntity userEntity) {
-            this.id = userEntity.getId().toString();
-            setName(userEntity);
-            this.email = lookForEmail(userEntity.getEmails());
-            this.locale = userEntity.getLocale();
-            this.updated_time = dateTimeFormatter.print(userEntity.getMeta().getLastModified().getTime());
-            this.userName = userEntity.getUserName();
-        }
-
-        private String lookForEmail(Set<EmailEntity> emails) {
-            for (EmailEntity e : emails) {
-                if (e.isPrimary()) {
-                    return e.getValue();
-                }
-            }
-            return null;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        private void setName(UserEntity userEntity) {
-            NameEntity nameEntity = userEntity.getName();
-            if (nameEntity != null) {
-                this.name = nameEntity.getFormatted();
-                this.first_name = nameEntity.getGivenName();
-                this.last_name = nameEntity.getFamilyName();
-            }
-        }
-
-        public String getFirst_name() {
-            return first_name;
-        }
-
-        public String getLast_name() {
-            return last_name;
-        }
-
-        public String getLink() {
-            return link;
-        }
-
-        public String getUserName() {
-            return userName;
-        }
-
-        public String getGender() {
-            return gender;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public int getTimezone() {
-            return timezone;
-        }
-
-        public String getLocale() {
-            return locale;
-        }
-
-        public boolean isVerified() {
-            return verified;
-        }
-
-        public String getUpdated_time() {
-            return updated_time;
-        }
+        return buildResponseWithLocation(user, builder, HttpStatus.OK);
     }
 }

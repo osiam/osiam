@@ -27,6 +27,7 @@
         - [Create a new User] (#create-a-new-user)
         - [Replace an existing User] (#replace-an-existing-user)
         - [Update a User](#update-a-user)
+        - [Get the Authenticated User](#get-the-authenticated-user)
         - [Delete a User](#delete-a-user)
     - [Group management](#group-management)
         - [Get a single Group](#get-a-single-group)
@@ -34,8 +35,6 @@
         - [Replace an existing Group](#replace-an-existing-group)
         - [Update a Group](#update-a-group)
         - [Delete a Group](#delete-a-group)
-- [Other](#other)
-      - [Facebook's me](#facebooks-me)
 
 ## Basics
 
@@ -573,11 +572,6 @@ See [SCIMv2 specification]
 (http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.2.1) for further
 details.
 
-#### Get the User of the current accessToken
-
-To know the user of the actual accessToken OSIAM implemented an /me interface.
-For more detail information please look [here](#facebooks-me).
-
 #### Create a new User
 
 To create a new user you need to send the user input as JSON via POST to the
@@ -650,6 +644,15 @@ e.g.:
 ```sh
 curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X DELETE http://localhost:8080/osiam/Users/$ID
 ```
+
+### Get the Authenticated User
+To get the user authenticated by a given access token it is possible to to query the `/Me` url:
+
+```sh
+curl -i -H "Accept: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET http://localhost:8080/osiam/Me
+```
+
+The response is the json representation of the user currently authenticated with the provided access token.
 
 ### Group management
 
@@ -745,38 +748,4 @@ e.g.:
 
 ```sh
 curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X DELETE http://localhost:8080/osiam/Groups/$ID
-```
-
-## Other
-
-### Facebooks me
-
-To get information about who granted the access_token you can call:
-
-```http
-http://OSIAM_HOST:8080/osiam/me
-```
-
-e.g.:
-```sh
-curl -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" http://localhost:8080/osiam/me
-```
-
-The response is like the result of facebooks /me:
-
-```json
-{
-    "id":"cef9452e-00a9-4cec-a086-d171374ffbef",
-    "name":"Mar Issa",
-    "first_name":"Issa",
-    "last_name":"Mar",
-    "link":"not supported.",
-    "userName":"admin",
-    "gender":"female",
-    "email":"mari@ssa.ma",
-    "timezone":2,
-    "locale":null,
-    "verified":true,
-    "updated_time":"2011-10-10T00:00:00.000+02:00"
-}
 ```
