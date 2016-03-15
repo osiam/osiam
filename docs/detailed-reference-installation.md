@@ -17,6 +17,8 @@ Chapters:
     - [Enable AJP support](#enable-ajp-support)
 - [Initialize the Database from the Command Line](#initialize-the-database-from-the-command-line)
 - [Starting OSIAM](#starting-osiam)
+    - [Starting as a Standalone Application](#starting-as-a-standalone-application)
+    - [Starting in Tomcat](#starting-in-tomcat)
 - [Default setup](#default-setup)
 - [Customize setup](#customize-setup)
 - [Using OSIAM](#using-osiam)
@@ -54,6 +56,27 @@ OSIAM is distributed as a self-contained `.war` file.
 You can easily download it from the release page: https://github.com/osiam/osiam/releases.
 We recommend to choose the latest release version of OSIAM.
 
+The `.war` file is actually an executable application.
+This makes it possible to run it on the command line like any other command.
+So, instead of starting it with `java -jar osiam.war` you can just run `./osiam.war`.
+
+**Note:** This probably works on UNIX and similar systems (like Linux or OSX) only.
+It might work in a cygwin environment, but that has not been thoroughly tested.
+Essentially you need Bash, some standard UNIX commands and Java.
+
+You should make the `.war` file executable now:
+
+```sh
+chmod +x osiam.war
+```
+
+**NOTE:** This is a feature of [Spring Boot](http://projects.spring.io/spring-boot/), the underlying framework OSIAM uses.
+It works by prepending a regular Bash script to the `.war` file.
+Most applications will just ignore the script and process the `.war` part of the file.
+You can find more detailed information about this in the [Spring Boot Reference Guide]
+(http://docs.spring.io/spring-boot/docs/current/reference/html/deployment-install.html#deployment-initd-service).
+It is recommended to read the script part at the beginning of the `.war` file to fully understand its powers.
+
 ## The Home Directory
 
 OSIAM expects the configuration, runtime data and necessary assets in a directory in the file system.
@@ -73,7 +96,7 @@ especially when using an automated deployment process.
 You can do this by running the following command on the command line:
 
 ```sh
-java -jar osiam.war initHome --osiam.home=/var/lib/osiam
+./osiam.war initHome --osiam.home=/var/lib/osiam
 ```
 
 **NOTE:** You can also use an environment variable `OSIAM_HOME` set to OSIAM's home directory.
@@ -83,7 +106,7 @@ After that, you can change the configuration file and templates to your needs an
 ## Configuration
 
 The configuration file can be found under `OSIAM_HOME/config/osiam.yaml`.
-It's the default configuration file that has been copied during initialization.
+It is the default configuration file that has been copied during initialization.
 Change this file to your needs.
 It should be self-explanatory.
 You should at least change the database connection to point to a PostgreSQL or MySQL server,
@@ -106,12 +129,136 @@ The configuration should be fully created before you can run the command.
 To start the initialization run the following command on the command line:
 
 ```sh
-java -jar osiam.war migrateDb --osiam.home=/var/lib/osiam
+./osiam.war migrateDb --osiam.home=/var/lib/osiam
 ```
 
 Of course, you can also use this command to migrate the database when updating OSIAM.
 
 ## Starting OSIAM
+
+OSIAM can be started in two different ways: as a standalone application or as a Tomcat deployment.
+Both ways are equally well supported, but we recommend to use standalone application deployment.
+It is highly recommended to run OSIAM under a distinct service user.
+Never run OSIAM under the root user.
+
+### Starting as a Standalone Application
+
+Starting OSIAM this way is super easy:
+
+```sh
+./osiam.war --osiam.home=/var/lib/osiam
+```
+
+**NOTE:** You have to find a directory, where you can place the `.war` file in.
+The simplest solution being to that issue is to use OSIAM's home directory.
+We will use `/var/lib/osiam` here, but it is really up to you, where you actually put it.
+
+Remember, that you can also use an environment variable `OSIAM_HOME` to set the home directory.
+You should never run OSIAM as root, but create a distinct system user account for it, e.g. `osiam`.
+
+#### systemd
+
+To start OSIAM using systemd, create the file `/etc/systemd/system/osiam.service` using the following example:
+
+```
+[Unit]
+Description=OSIAM
+After=network.target
+
+[Service]
+User=osiam
+Environment="RUN_ARGS=--osiam.home=/var/lib/osiam"
+Environment="JAVA_OPTS=-Djava.awt.headless=true -Xms512m -Xmx1024m -XX:+UseConcMarkSweepGC"
+ExecStart=/var/lib/osiam/osiam.war
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Adjust this files to your needs.
+Basic configuration options of the service are set via environment variables.
+Important configuration options are:
+
+<dl>
+    <dt><code>RUN_ARGS</code></dt>
+    <dd>Arguments for OSIAM</dd>
+    <dt><code>JAVA_OPTS</code></dt>
+    <dd>Arguments for the JVM</dd>
+</dl>
+
+**NOTE:** The complete list of options can be found in the [Spring Boot Reference Guide]
+(http://docs.spring.io/spring-boot/docs/current/reference/html/deployment-install.html#deployment-script-customization).
+
+From now on you can treat `osiam` like any other systemd service unit on your system.
+You can reload systemd, and enable and start OSIAM now:
+
+```sh
+systemctl daemon-reload
+systemctl enable osiam.service
+systemctl start osiam.service
+```
+
+Check the journal to see the startup progress:
+
+```sh
+journalctl -u osiam.service
+```
+
+#### SysVinit
+
+The `.war` file can also act as an init script when linked to `/etc/init.d/`:
+
+```sh
+ln -s /var/lib/osiam/osiam.war /etc/init.d/osiam
+```
+
+**WARNING:** You really should read the [Spring Boot Reference Guide](http://docs.spring.io/spring-boot/docs/current/reference/html/deployment-install.html#deployment-initd-service-securing)
+on how to secure the SysVinit service.
+
+From now on you can treat `osiam` like any other SysVinit service on your system.
+The init script understands the following commands: `start`, `stop`, `restart` and `status`.
+It also writes a log file to `/var/log/osiam.log` and creates a pid file under `/var/run/osiam/osiam.pid`
+to keep track of the process.
+
+**NOTE:** Read the documentation of your OS on how to enable or automatically start the service.
+
+Next, create a file `osiam.conf` and put it in the same directory, where you put the `.war` file.
+In this file you can configure basic options of the service.
+It should at least contain the following lines:
+
+```
+RUN_ARGS="--osiam.home=/var/lib/osiam"
+JAVA_OPTS="-Djava.awt.headless=true -Xms512m -Xmx1024m -XX:+UseConcMarkSweepGC"
+```
+
+Important configuration options are:
+
+<dl>
+    <dt><code>RUN_ARGS</code></dt>
+    <dd>Arguments for OSIAM</dd>
+    <dt><code>JAVA_OPTS</code></dt>
+    <dd>Arguments for the JVM</dd>
+    <dt><code>PID_FOLDER</code></dt>
+    <dd>Path to the pid file root folder (default: <code>/var/run</code>)</dd>
+    <dt><code>LOG_FOLDER</code></dt>
+    <dd>Path to the log folder (default: <code>/var/log</code>)</dd>
+    <dt><code>LOG_FILENAME</code></dt>
+    <dd>Name of the log file (default: <code>osiam.log</code>)</dd>
+</dl>
+
+**NOTE:** The complete list of options can be found in the [Spring Boot Reference Guide]
+(http://docs.spring.io/spring-boot/docs/current/reference/html/deployment-install.html#deployment-script-customization).
+
+You can start OSIAM now:
+
+```sh
+service osiam start
+```
+
+Check the log file under `/var/log/osiam.log` to see the startup progress.
+
+### Starting in Tomcat
 
 Before you can deploy OSIAM in Tomcat 7, you have to make some changes to
 Tomcat's configuration.
