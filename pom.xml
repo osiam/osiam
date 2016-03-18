@@ -79,16 +79,17 @@
         <developerConnection>scm:git:ssh://git@github.com/osiam/osiam.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
+
     <distributionManagement>
         <repository>
-            <id>osiam-repository</id>
+            <id>releases</id>
             <name>public evolvis release repository</name>
             <url>scpexe://maven-repo.evolvis.org:/var/www/maven_repo/releases</url>
         </repository>
         <snapshotRepository>
-            <id>OSIAM-NG-SNAPSHOT-repository</id>
-            <name>public evolvis snapshot repository</name>
-            <url>scpexe://maven-repo.evolvis.org:/var/www/maven_repo/snapshots/</url>
+            <id>snapshots</id>
+            <name>oss-jfrog-artifactory-snapshots</name>
+            <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
         </snapshotRepository>
     </distributionManagement>
 
@@ -282,23 +283,6 @@
         </dependency>
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>osiam releases repo</id>
-            <url>https://maven-repo.evolvis.org/releases</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>osiam snapshots repo</id>
-            <url>https://maven-repo.evolvis.org/snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
-    </repositories>
-
     <build>
         <plugins>
             <plugin>
@@ -344,6 +328,7 @@
                         <exclude>LICENSE</exclude>
                         <exclude>circle.yml</exclude>
                         <exclude>jpmInstall.sh</exclude>
+                        <exclude>settings.xml</exclude>
                         <exclude>**/*.md</exclude>
                         <exclude>bootstrap.min.css</exclude>
                     </excludes>
@@ -432,6 +417,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>
@@ -442,6 +428,7 @@
                     </jacocoReports>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
