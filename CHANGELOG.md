@@ -56,6 +56,8 @@ OSIAM 2.5 to OSIAM 3.0, see the [migration notes](docs/migration.md).
 ### Fixes
 
 - Reply with 400 BAD REQUEST to invalid filters.
+- Reply with 500 INTERNAL SERVER ERROR, instead of 409 CONFLICT, on unexpected
+  errors.
 - Change URL of service provider configuration resource from
   `/ServiceProviderConfigs` to `/ServiceProviderConfig`.
 - Always return the `id` attribute, when searching for `User`s.

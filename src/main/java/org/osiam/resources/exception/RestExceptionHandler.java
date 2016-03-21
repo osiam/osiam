@@ -49,11 +49,18 @@ public class RestExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(RestExceptionHandler.class);
 
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ErrorResponse defaultExceptionHandler(Exception ex) {
         logger.warn("An unexpected exception occurred", ex);
-        return produceErrorResponse("An unexpected error occurred", HttpStatus.CONFLICT);
+        return produceErrorResponse("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(OsiamException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseBody
+    public ErrorResponse handleOsiamException(OsiamException e) {
+        return produceErrorResponse(e.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler({IllegalArgumentException.class, InvalidFilterException.class, InvalidConstraintException.class,

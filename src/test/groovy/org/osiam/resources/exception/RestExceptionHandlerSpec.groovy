@@ -40,7 +40,7 @@ class RestExceptionHandlerSpec extends Specification {
         when:
         def result = exceptionHandler.defaultExceptionHandler(new NullPointerException(IRRELEVANT))
         then:
-        result.status == HttpStatus.CONFLICT as String
+        result.status == HttpStatus.INTERNAL_SERVER_ERROR as String
         result.detail == "An unexpected error occurred"
     }
 
