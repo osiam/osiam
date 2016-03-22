@@ -48,6 +48,11 @@ your own templates, stylesheets and scripts to make OSIAM integrate seamlessly
 with your application. Read the
 [customization guide](docs/customization-guide.md) to learn more.
 
+## Snapshots
+
+To use the latest snapshot of OSIAM just download it from the oss jfrog
+repository: https://oss.jfrog.org/artifactory/repo/org/osiam/osiam
+
 ## Issue Tracker
 
 Please report issues, bugs and feature requests via [the issue tracker]
