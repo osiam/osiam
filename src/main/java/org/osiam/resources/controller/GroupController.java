@@ -23,9 +23,6 @@
  */
 package org.osiam.resources.controller;
 
-import com.fasterxml.jackson.databind.ser.FilterProvider;
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import org.osiam.resources.provisioning.SCIMGroupProvisioning;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.SCIMSearchResult;
@@ -34,19 +31,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * HTTP Api for groups. You can create, delete, replace, update and search groups.
@@ -64,14 +54,18 @@ public class GroupController extends ResourceController<Group> {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Group> create(@RequestBody @Valid Group group, UriComponentsBuilder builder) throws IOException {
+    public ResponseEntity<MappingJacksonValue> create(@RequestBody @Valid Group group,
+                                                      @RequestParam(required = false) String attributes,
+                                                      UriComponentsBuilder builder) throws IOException {
         Group createdGroup = scimGroupProvisioning.create(group);
-        return buildResponseWithLocation(createdGroup, builder, HttpStatus.CREATED);
+        return buildResponseWithLocation(createdGroup, builder, HttpStatus.CREATED, attributes);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public Group get(@PathVariable final String id) {
-        return scimGroupProvisioning.getById(id);
+    public MappingJacksonValue get(@PathVariable final String id,
+                                   @RequestParam(required = false) String attributes) {
+        Group group = scimGroupProvisioning.getById(id);
+        return buildResponse(group, attributes);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
@@ -81,17 +75,22 @@ public class GroupController extends ResourceController<Group> {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<Group> replace(@PathVariable final String id, @RequestBody @Valid Group group, UriComponentsBuilder builder)
+    public ResponseEntity<MappingJacksonValue> replace(@PathVariable final String id,
+                                                       @RequestBody @Valid Group group,
+                                                       @RequestParam(required = false) String attributes,
+                                                       UriComponentsBuilder builder)
             throws IOException {
         Group updatedGroup = scimGroupProvisioning.replace(id, group);
-        return buildResponseWithLocation(updatedGroup, builder, HttpStatus.OK);
+        return buildResponseWithLocation(updatedGroup, builder, HttpStatus.OK, attributes);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
-    public ResponseEntity<Group> update(@PathVariable final String id, @RequestBody Group group, UriComponentsBuilder builder)
+    public ResponseEntity<MappingJacksonValue> update(@PathVariable final String id,
+                                                      @RequestBody Group group,
+                                                      UriComponentsBuilder builder)
             throws IOException {
         Group updatedGroup = scimGroupProvisioning.update(id, group);
-        return buildResponseWithLocation(updatedGroup, builder, HttpStatus.OK);
+        return buildResponseWithLocation(updatedGroup, builder, HttpStatus.OK, ""); // we're going to remove patch soon anyways
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -107,14 +106,7 @@ public class GroupController extends ResourceController<Group> {
                 Integer.parseInt(requestParameters.getOrDefault("count", "" + SCIMSearchResult.MAX_RESULTS)),
                 Integer.parseInt(requestParameters.getOrDefault("startIndex", "1")));
 
-        MappingJacksonValue wrapper = new MappingJacksonValue(scimSearchResult);
-        if (requestParameters.containsKey("attributes")) {
-            Set<String> attributes = extractAttributes(requestParameters.get("attributes"));
-            FilterProvider filterProvider = new SimpleFilterProvider().addFilter(
-                    "attributeFilter", SimpleBeanPropertyFilter.filterOutAllExcept(attributes)
-            );
-            wrapper.setFilters(filterProvider);
-        }
-        return wrapper;
+        String attributes = (requestParameters.containsKey("attributes") ? requestParameters.get("attributes") : "");
+        return buildResponse(scimSearchResult, attributes);
     }
 }

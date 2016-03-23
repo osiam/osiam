@@ -23,6 +23,9 @@
  */
 package org.osiam.resources.controller;
 
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -32,6 +35,7 @@ import org.osiam.resources.scim.User;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
@@ -40,17 +44,23 @@ import java.util.Set;
 
 public abstract class ResourceController<T extends Resource> {
 
-    protected ResponseEntity<T> buildResponseWithLocation(T resource,
-                                                          UriComponentsBuilder builder,
-                                                          HttpStatus status) {
+    protected ResponseEntity<MappingJacksonValue> buildResponseWithLocation(T resource,
+                                                                            UriComponentsBuilder builder,
+                                                                            HttpStatus status,
+                                                                            String attributes) {
         HttpHeaders headers = new HttpHeaders();
-        String resourceType = resource.getSchemas().contains(User.SCHEMA) ? "Users" : "Groups";
-        URI location = builder.path("/{resource}/{id}").buildAndExpand(resourceType, resource.getId()).toUri();
+        URI location = buildLocation(resource, builder);
         headers.setLocation(location);
-        return new ResponseEntity<>(resource, headers, status);
+        MappingJacksonValue response = buildResponse(resource, attributes);
+        return new ResponseEntity<>(response, headers, status);
     }
 
-    protected Set<String> extractAttributes(String attributesParameter) {
+    protected URI buildLocation(T resource, UriComponentsBuilder builder) {
+        String resourceType = resource.getSchemas().contains(User.SCHEMA) ? "Users" : "Groups";
+        return builder.path("/{resource}/{id}").buildAndExpand(resourceType, resource.getId()).toUri();
+    }
+
+    private Set<String> extractAttributes(String attributesParameter) {
         Set<String> result = new HashSet<>();
         if (!Strings.isNullOrEmpty(attributesParameter)) {
             result = Sets.newHashSet(
@@ -63,5 +73,18 @@ public abstract class ResourceController<T extends Resource> {
         result.add("schemas");
         result.add("id");
         return result;
+    }
+
+    protected MappingJacksonValue buildResponse(Object resource, String attributes) {
+
+        MappingJacksonValue wrapper = new MappingJacksonValue(resource);
+        if (!Strings.isNullOrEmpty(attributes)) {
+            Set<String> attributesSet = extractAttributes(attributes);
+            FilterProvider filterProvider = new SimpleFilterProvider().addFilter(
+                    "attributeFilter", SimpleBeanPropertyFilter.filterOutAllExcept(attributesSet)
+            );
+            wrapper.setFilters(filterProvider);
+        }
+        return wrapper;
     }
 }

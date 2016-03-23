@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider
 import org.osiam.resources.exception.RestExceptionHandler
 import org.osiam.resources.provisioning.SCIMGroupProvisioning
 import org.osiam.resources.scim.Group
+import org.osiam.resources.scim.MemberRef
 import org.osiam.resources.scim.SCIMSearchResult
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -36,6 +37,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import spock.lang.Shared
 import spock.lang.Specification
 
+import static org.osiam.resources.scim.MemberRef.Type.USER
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 
@@ -51,7 +53,9 @@ class GroupControllerSpec extends Specification {
     def uuid = UUID.randomUUID()
 
     @Shared
-    def responseGroup = new Group.Builder([displayName: 'Test Group', id: uuid]).build()
+    def responseGroup = new Group.Builder([displayName: 'Test Group', id: uuid, externalId: 'externalId'])
+            .addMember(new MemberRef.Builder([type: USER]).build())
+            .build()
 
     @Shared
     def minimalGroup = '{"schemas": ["urn:ietf:params:scim:schemas:core:2.0:Group"],' +
@@ -79,6 +83,19 @@ class GroupControllerSpec extends Specification {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andExpect(header().string('Location', "http://localhost/Groups/${uuid}"))
                 .andExpect(jsonPath('$.id').value(uuid as String)) // is nonsense because it's what we give in
+    }
+
+    def 'Filtering a Group created with POST is possible'() {
+        when:
+        def response = mockMvc.perform(post('/Groups')
+                .contentType(MediaType.APPLICATION_JSON)
+                .param('attributes', 'externalId')
+                .content(minimalGroup))
+        then:
+        1 * scimGroupProvisioning.create(_) >> responseGroup
+        response.andExpect(status().isCreated())
+                .andExpect(jsonPath('$.displayName').doesNotExist())
+                .andExpect(jsonPath('$.externalId').value('externalId'))
     }
 
     def 'Creating an invalid group using POST raises a 400 BAD REQUEST'() {
@@ -117,6 +134,19 @@ class GroupControllerSpec extends Specification {
                 .andExpect(jsonPath('$.id').value(uuid as String)) // is nonsense because it's what we give in
     }
 
+    def 'Filtering on attributes for groups retrieved by id is possible'() {
+        when:
+        def response = mockMvc.perform(get("/Groups/${uuid}")
+                .accept(MediaType.APPLICATION_JSON)
+                .param('attributes', 'displayName'))
+
+        then:
+        1 * scimGroupProvisioning.getById(uuid.toString()) >> responseGroup
+        response.andExpect(jsonPath('$.members').doesNotExist())
+                .andExpect(jsonPath('$.displayName').value('Test Group'))
+                .andExpect(status().isOk())
+    }
+
     def 'Deleting a group calls delete on provisioning'() {
         when:
         mockMvc.perform(delete("/Groups/${uuid}"))
@@ -137,6 +167,19 @@ class GroupControllerSpec extends Specification {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(header().string('Location', "http://localhost/Groups/${uuid}"))
                 .andExpect(jsonPath('$.id').value(uuid as String)) // is nonsense because it's what we give in
+    }
+
+    def 'Filtering a group replaced by PUT is possible'() {
+        when:
+        def response = mockMvc.perform(put("/Groups/${uuid}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param('attributes', 'externalId')
+                .content(minimalGroup))
+        then:
+        1 * scimGroupProvisioning.replace(uuid.toString(), _) >> responseGroup
+        response.andExpect(status().isOk())
+                .andExpect(jsonPath('$.displayName').doesNotExist())
+                .andExpect(jsonPath('$.externalId').value('externalId'))
     }
 
     def 'Replacing an invalid group using PUT raises a 400 BAD REQUEST'() {
@@ -200,20 +243,25 @@ class GroupControllerSpec extends Specification {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
     }
 
-    def 'id is always returned'() {
-        given:
-        def randomUuid = UUID.randomUUID().toString()
-        def group = new Group.Builder("irrelevant")
-                .setId(randomUuid)
-                .build()
-        scimGroupProvisioning.search(_, _, _, _, _) >> new SCIMSearchResult<Group>([group], 1, 100, 1)
+    def 'filtering searches on attributes is possible'() {
+        when:
+        def response = mockMvc.perform(get("/Groups")
+                .param('attributes', 'displayName'))
 
+        then:
+        1 * scimGroupProvisioning.search(_, _, _, 100, 1) >> new SCIMSearchResult<Group>([responseGroup], 1, 100, 1)
+        response.andExpect(jsonPath('$.Resources[0].members').doesNotExist())
+                .andExpect(jsonPath('$.Resources[0].displayName').value('Test Group'))
+    }
+
+    def 'id is always returned'() {
         when:
         def response = mockMvc.perform(get("/Groups")
                 .accept(MediaType.APPLICATION_JSON)
                 .param('attributes', 'displayName'))
 
         then:
-        response.andExpect(jsonPath('$.Resources[0].id').value(randomUuid))
+        1 * scimGroupProvisioning.search(_, _, _, _, _) >> new SCIMSearchResult<Group>([responseGroup], 1, 100, 1)
+        response.andExpect(jsonPath('$.Resources[0].id').value(uuid as String))
     }
 }

@@ -37,15 +37,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import spock.lang.Shared
 import spock.lang.Specification
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 
 class UserControllerSpec extends Specification {
 
@@ -60,11 +53,11 @@ class UserControllerSpec extends Specification {
     def uuid = UUID.randomUUID()
 
     @Shared
-    def responseUser = new User.Builder([displayName: 'Test User', id: uuid]).build()
+    def responseUser = new User.Builder([displayName: 'Test User', userName: 'testUser', id: uuid]).build()
 
     @Shared
     def minimalUser = '{"schemas": ["urn:ietf:params:scim:schemas:core:2.0:User"],' +
-            ' "userName": "Test User"}'
+            ' "userName": "testUser"}'
 
     def setup() {
         def filterProvider = new SimpleFilterProvider().setFailOnUnknownId(false)
@@ -88,6 +81,19 @@ class UserControllerSpec extends Specification {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andExpect(header().string('Location', "http://localhost/Users/${uuid}"))
                 .andExpect(jsonPath('$.id').value(uuid as String)) // is nonsense because it's what we give in
+    }
+
+    def 'filtering the User returned by POST is possible'() {
+        when:
+        def response = mockMvc.perform(post('/Users')
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(minimalUser)
+                .param('attributes', 'userName'))
+        then:
+        1 * scimUserProvisioning.create(_) >> responseUser
+        response.andExpect(status().isCreated())
+                .andExpect(jsonPath('$.userName').value("testUser"))
+                .andExpect(jsonPath('$.displayName').doesNotExist())
     }
 
     def 'Creating an user with an invalid multi-value attribute raises 400 BAD REQUEST'() {
@@ -140,6 +146,18 @@ class UserControllerSpec extends Specification {
                 .andExpect(jsonPath('$.id').value(uuid as String)) // is nonsense because it's what we give in
     }
 
+    def 'Retrieving a User allows filtering'() {
+        when:
+        def response = mockMvc.perform(get("/Users/${uuid}?attributes=userName")
+                .accept(MediaType.APPLICATION_JSON))
+        then:
+        1 * scimUserProvisioning.getById(uuid.toString()) >> responseUser
+        response.andExpect(status().isOk())
+                .andExpect(jsonPath('$.id').value(uuid as String))
+                .andExpect(jsonPath('$.userName').value("testUser"))
+                .andExpect(jsonPath('$.displayName').doesNotExist())
+    }
+
     def 'Deleting a User removes the users tokens and calls delete on provisioning'() {
         when:
         mockMvc.perform(delete("/Users/${uuid}"))
@@ -161,6 +179,20 @@ class UserControllerSpec extends Specification {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(header().string('Location', "http://localhost/Users/${uuid}"))
                 .andExpect(jsonPath('$.id').value(uuid as String)) // is nonsense because it's what we give in
+    }
+
+    def 'Filtering the User returned by PUT is possible'() {
+        when:
+        def response = mockMvc.perform(put("/Users/${uuid}")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param('attributes', 'userName')
+                .content(minimalUser))
+        then:
+        1 * scimUserProvisioning.replace(uuid.toString(), _) >> responseUser
+        response.andExpect(status().isOk())
+                .andExpect(header().string('Location', "http://localhost/Users/${uuid}"))
+                .andExpect(jsonPath('$.userName').value("testUser"))
+                .andExpect(jsonPath('$.displayName').doesNotExist())
     }
 
     def 'Replacing an invalid User using PUT raises a 400 BAD REQUEST'() {
@@ -238,6 +270,6 @@ class UserControllerSpec extends Specification {
                 .param('attributes', 'userName'))
 
         then:
-        response.andExpect(jsonPath('$.Resources[0].id').value(randomUuid))
+        response.andExpect jsonPath('$.Resources[0].id').value(randomUuid)
     }
 }
