@@ -26,6 +26,7 @@ package org.osiam.resources.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider
 import org.osiam.resources.exception.RestExceptionHandler
+import org.osiam.resources.provisioning.SCIMUserProvisioning
 import org.osiam.resources.scim.User
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.security.core.Authentication
@@ -45,7 +46,9 @@ class MeControllerSpec extends Specification {
 
     def accessToken = "IrrelevantAccessToken"
 
-    def meController = new MeController(resourceServerTokenServices)
+    def userProvisioning = Mock(SCIMUserProvisioning)
+
+    def meController = new MeController(resourceServerTokenServices, userProvisioning)
     OAuth2Authentication authentication = Mock(OAuth2Authentication)
     def id = UUID.randomUUID()
     Authentication userAuthentication = Mock(Authentication)
@@ -69,7 +72,8 @@ class MeControllerSpec extends Specification {
                 .header('Authorization', "Bearer ${accessToken}"))
         then:
         1 * resourceServerTokenServices.loadAuthentication(accessToken) >> authentication
-        1 * userAuthentication.getPrincipal() >> user
+        1 * userAuthentication.getPrincipal() >> user // the user returned by getPrincipal is not fully populated
+        1 * userProvisioning.getById(user.id) >> user // But the mocking is irrelevant here.
         response.andExpect(status().isOk())
                 .andExpect(header().string('Location', endsWith("/Users/${id}")))
     }

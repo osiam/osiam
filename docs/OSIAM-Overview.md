@@ -7,7 +7,6 @@ Chapters:
 - [Functional overview](#functional-overview)
     - [SCIM 2](#scim-2)
     - [OAuth 2](#oauth-2)
-    - [Facebook Connect](#facebook-connect)
     - [LDAP login](#ldap-login)
     - [OSIAM specific interfaces](#osiam-specific-interfaces)
     - [Interface / endpoint overview and status](#interface--endpoint-overview-and-status)
@@ -133,7 +132,6 @@ list upon implementation.
 <tr><td> /ServiceProviderConfig </td><td> SCIMv2    </td><td> public                     </td><td>                     </td></tr>
 <tr><td> /Schemas                </td><td> SCIMv2    </td><td> public                     </td><td> not yet implemented </td></tr>
 <tr><td> /Clients                </td><td> OSIAM     </td><td> ADMIN </td><td> SCIM based implementation as soon as the standard is defined</td></tr>
-<tr><td> /me                     </td><td> Facebook  </td><td> ADMIN ME                      </td><td>                     </td></tr>
 </table>
 
 ## Community resources overview

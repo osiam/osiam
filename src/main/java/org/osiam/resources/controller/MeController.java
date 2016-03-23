@@ -25,6 +25,7 @@ package org.osiam.resources.controller;
 
 import com.google.common.base.Strings;
 import org.osiam.resources.exception.InvalidTokenException;
+import org.osiam.resources.provisioning.SCIMUserProvisioning;
 import org.osiam.resources.scim.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,9 +50,12 @@ public class MeController extends ResourceController<User> {
 
     private final ResourceServerTokenServices resourceServerTokenServices;
 
+    private final SCIMUserProvisioning userProvisioning;
+
     @Autowired
-    public MeController(ResourceServerTokenServices resourceServerTokenServices) {
+    public MeController(ResourceServerTokenServices resourceServerTokenServices, SCIMUserProvisioning userProvisioning) {
         this.resourceServerTokenServices = resourceServerTokenServices;
+        this.userProvisioning = userProvisioning;
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -74,7 +78,7 @@ public class MeController extends ResourceController<User> {
         Object principal = userAuthentication.getPrincipal();
         User user;
         if (principal instanceof User) {
-            user = (User) principal;
+            user = userProvisioning.getById(((User) principal).getId());
         } else {
             throw new IllegalArgumentException("User not authenticated.");
         }
