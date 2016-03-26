@@ -35,8 +35,6 @@
  *  <p>/Group - org.osiam.resources.controller.GroupController - is a Controller to create, replace, modify, get,
  *  delete and search groups.</p>
  *
- *  <p>/me - org.osiam.resources.controller.MeController - is a Facebook /me clone to get name, email and id of an user.</p>
- *
  *  <p>/User - org.osiam.resources.controller.UserController - is a Controller to create, replace, modify, get,</p>
  *  delete and search user.
  *
