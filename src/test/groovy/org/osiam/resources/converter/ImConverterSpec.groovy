@@ -37,20 +37,23 @@ class ImConverterSpec extends Specification {
     def setup() {
         def value = 'user@gmail.com'
         def type = Im.Type.GTALK
+        def display = 'mygtalk'
 
         entity = new ImEntity()
         entity.setValue(value)
         entity.setType(type)
+        entity.setDisplay(display)
 
         attribute = new Im.Builder()
                 .setValue(value)
                 .setType(type)
+                .setDisplay(display)
                 .build()
 
         converter = new ImConverter()
     }
 
-    def 'convert Entity to scim IM MultiValueAttribute works'() {
+    def 'convert entity to SCIM Im'() {
         when:
         def attribute = converter.toScim(entity)
 
@@ -58,7 +61,7 @@ class ImConverterSpec extends Specification {
         attribute.equals(this.attribute)
     }
 
-    def 'convert scim IM MultiValueAttribuite to Entity works'() {
+    def 'convert SCIM Im to entity'() {
         when:
         def entity = converter.fromScim(this.attribute)
 

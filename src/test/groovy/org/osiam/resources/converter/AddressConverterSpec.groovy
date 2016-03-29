@@ -40,7 +40,8 @@ class AddressConverterSpec extends Specification {
                 locality: 'de',
                 region: 'de',
                 postalCode: '12345',
-                country: 'Germany')
+                country: 'Germany',
+                display: 'myaddress')
         addressEntity.setPrimary(true)
 
         scimAddress = new Address.Builder()
@@ -51,12 +52,13 @@ class AddressConverterSpec extends Specification {
                 .setPostalCode('12345')
                 .setCountry('Germany')
                 .setPrimary(true)
+                .setDisplay('myaddress')
                 .build()
 
         addressConverter = new AddressConverter()
     }
 
-    def 'convert addressEntity to scim address works'() {
+    def 'convert entity to SCIM Address'() {
         when:
         Address address = addressConverter.toScim(addressEntity)
 
@@ -64,7 +66,7 @@ class AddressConverterSpec extends Specification {
         address.equals(scimAddress)
     }
 
-    def 'convert scim address to addressEntity works'() {
+    def 'convert SCIM Address to entity'() {
         when:
         AddressEntity entity = addressConverter.fromScim(scimAddress)
 
@@ -72,16 +74,17 @@ class AddressConverterSpec extends Specification {
         entity == addressEntity
     }
 
-    def "primary in entity is false when null in scim"() {
+    def "primary in entity is false when null in SCIM"() {
         given:
-        Address address = new Address.Builder().
-                setCountry("country").
-                setFormatted("formatted").
-                setLocality("locality").
-                setPostalCode("123456").
-                setRegion("region").
-                setStreetAddress("streetAddress").
-                build()
+        Address address = new Address.Builder()
+                .setCountry("country")
+                .setFormatted("formatted")
+                .setLocality("locality")
+                .setPostalCode("123456")
+                .setRegion("region")
+                .setStreetAddress("streetAddress")
+                .setDisplay('myaddress')
+                .build()
         when:
         def result = addressConverter.fromScim(address)
 
@@ -89,17 +92,17 @@ class AddressConverterSpec extends Specification {
         !result.isPrimary()
     }
 
-    def 'passing null scim address returns null'() {
+    def 'passing null SCIM Address returns null'() {
         expect:
         addressConverter.fromScim(null) == null
     }
 
-    def 'passing null addressEntity returns null'() {
+    def 'passing null entity returns null'() {
         expect:
         addressConverter.toScim(null) == null
     }
 
-    def 'all attributes of the scim address should be null'() {
+    def 'all attributes of the SCIM Address should be null'() {
         given:
         AddressEntity addressEntity = new AddressEntity()
 
@@ -113,9 +116,10 @@ class AddressConverterSpec extends Specification {
         result.postalCode == null
         result.region == null
         result.streetAddress == null
+        result.display == null
     }
 
-    def 'all attributes of the address entity should be null'() {
+    def 'all attributes of the entity should be null'() {
         given:
         Address address = new Address.Builder().build()
 
@@ -129,5 +133,6 @@ class AddressConverterSpec extends Specification {
         result.postalCode == null
         result.region == null
         result.streetAddress == null
+        result.display == null
     }
 }

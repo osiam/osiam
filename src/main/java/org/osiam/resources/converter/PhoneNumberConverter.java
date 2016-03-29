@@ -36,7 +36,7 @@ public class PhoneNumberConverter implements Converter<PhoneNumber, PhoneNumberE
         phoneNumberEntity.setValue(String.valueOf(scim.getValue()));
         phoneNumberEntity.setType(scim.getType());
         phoneNumberEntity.setPrimary(scim.isPrimary());
-
+        phoneNumberEntity.setDisplay(scim.getDisplay());
         return phoneNumberEntity;
     }
 
@@ -46,7 +46,7 @@ public class PhoneNumberConverter implements Converter<PhoneNumber, PhoneNumberE
                 .setType(entity.getType())
                 .setValue(entity.getValue())
                 .setPrimary(entity.isPrimary())
+                .setDisplay(entity.getDisplay())
                 .build();
     }
-
 }

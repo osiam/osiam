@@ -36,20 +36,23 @@ class PhotoConverterSpec extends Specification {
     def setup() {
         def value = 'myphoto.com/me.JPG'
         def type = Photo.Type.PHOTO
+        def display = 'myphoto'
 
         entity = new PhotoEntity()
         entity.setValue(value)
         entity.setType(type)
+        entity.setDisplay(display)
 
         attribute = new Photo.Builder()
                 .setValue(value)
                 .setType(type)
+                .setDisplay(display)
                 .build()
 
         converter = new PhotoConverter()
     }
 
-    def 'convert Entity to scim Photo MultiValueAttribute works'() {
+    def 'convert entity to SCIM Photo'() {
         when:
         def attribute = converter.toScim(entity)
 
@@ -57,7 +60,7 @@ class PhotoConverterSpec extends Specification {
         attribute.equals(this.attribute)
     }
 
-    def 'convert scim Photo MultiValueAttribuite to Entity works'() {
+    def 'convert SCIM Photo to entity'() {
         when:
         def entity = converter.fromScim(this.attribute)
 

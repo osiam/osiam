@@ -44,7 +44,7 @@ public class AddressConverter implements Converter<Address, AddressEntity> {
         addressEntity.setRegion(scim.getRegion());
         addressEntity.setStreetAddress(scim.getStreetAddress());
         addressEntity.setType(scim.getType());
-
+        addressEntity.setDisplay(scim.getDisplay());
         return addressEntity;
     }
 
@@ -62,6 +62,7 @@ public class AddressConverter implements Converter<Address, AddressEntity> {
                 .setStreetAddress(entity.getStreetAddress())
                 .setPrimary(entity.isPrimary())
                 .setType(entity.getType())
+                .setDisplay(entity.getDisplay())
                 .build();
     }
 

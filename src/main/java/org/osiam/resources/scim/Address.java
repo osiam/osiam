@@ -168,6 +168,11 @@ public final class Address extends MultiValuedAttribute implements Serializable 
     }
 
     @Override
+    public String getDisplay() {
+        return super.getDisplay();
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
@@ -370,6 +375,12 @@ public final class Address extends MultiValuedAttribute implements Serializable 
         @Override
         public Builder setOperation(String operation) {
             super.setOperation(operation);
+            return this;
+        }
+
+        @Override
+        public Builder setDisplay(String display) {
+            super.setDisplay(display);
             return this;
         }
 

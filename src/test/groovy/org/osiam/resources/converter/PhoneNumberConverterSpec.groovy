@@ -36,20 +36,23 @@ class PhoneNumberConverterSpec extends Specification {
     def setup() {
         def value = '+49 179 48754125'
         def type = PhoneNumber.Type.WORK
+        def display = 'myphonenumber'
 
         entity = new PhoneNumberEntity()
         entity.setValue(value)
         entity.setType(type)
+        entity.setDisplay(display)
 
         attribute = new PhoneNumber.Builder()
                 .setValue(value)
                 .setType(type)
+                .setDisplay(display)
                 .build()
 
         converter = new PhoneNumberConverter()
     }
 
-    def 'convert Entity to scim PhoneNumber MultiValueAttribute works'() {
+    def 'convert entity to SCIM PhoneNumber'() {
         when:
         def attribute = converter.toScim(entity)
 
@@ -57,7 +60,7 @@ class PhoneNumberConverterSpec extends Specification {
         attribute.equals(this.attribute)
     }
 
-    def 'convert scim PhoneNumber MultiValueAttribuite to Entity works'() {
+    def 'convert SCIM PhoneNumber to entity'() {
         when:
         def entity = converter.fromScim(this.attribute)
 

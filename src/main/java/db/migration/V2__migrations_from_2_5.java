@@ -47,6 +47,49 @@ public class V2__migrations_from_2_5 implements JdbcMigration, MigrationChecksum
     public void migrate(Connection connection) throws Exception {
         this.connection = connection;
         removeClient("auth-server");
+        addDisplayToMultiValuedAttributes();
+    }
+
+    private void addDisplayToMultiValuedAttributes() throws SQLException {
+        try (PreparedStatement statement = connection
+                .prepareStatement("ALTER TABLE scim_address ADD display VARCHAR(255)")) {
+            statement.execute();
+        }
+
+        try (PreparedStatement statement = connection
+                .prepareStatement("ALTER TABLE scim_certificate ADD display VARCHAR(255)")) {
+            statement.execute();
+        }
+
+        try (PreparedStatement statement = connection
+                .prepareStatement("ALTER TABLE scim_email ADD display VARCHAR(255)")) {
+            statement.execute();
+        }
+
+        try (PreparedStatement statement = connection
+                .prepareStatement("ALTER TABLE scim_entitlements ADD display VARCHAR(255)")) {
+            statement.execute();
+        }
+
+        try (PreparedStatement statement = connection
+                .prepareStatement("ALTER TABLE scim_im ADD display VARCHAR(255)")) {
+            statement.execute();
+        }
+
+        try (PreparedStatement statement = connection
+                .prepareStatement("ALTER TABLE scim_phonenumber ADD display VARCHAR(255)")) {
+            statement.execute();
+        }
+
+        try (PreparedStatement statement = connection
+                .prepareStatement("ALTER TABLE scim_photo ADD display VARCHAR(255)")) {
+            statement.execute();
+        }
+
+        try (PreparedStatement statement = connection
+                .prepareStatement("ALTER TABLE scim_roles ADD display VARCHAR(255)")) {
+            statement.execute();
+        }
     }
 
     private void removeClient(String clientId) throws SQLException {
