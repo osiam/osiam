@@ -39,6 +39,7 @@ import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
@@ -75,14 +76,12 @@ public class Osiam extends SpringBootServletInitializer {
     }
 
     private static String extractCommand(String[] arguments) {
-        for (String argument : arguments) {
-            for (String splitArgument : argument.trim().split("\\s")) {
-                if (!splitArgument.trim().startsWith("--") && !splitArgument.trim().startsWith("-")) {
-                    return splitArgument.trim();
-                }
-            }
-        }
-        return "server";
+        return Arrays.stream(arguments)
+                .map(String::trim)
+                .filter(argument -> !argument.startsWith("-"))
+                .filter(argument -> !argument.startsWith("--"))
+                .findFirst()
+                .orElse("server");
     }
 
     @Override
