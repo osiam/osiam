@@ -36,7 +36,7 @@ public class EmailConverter implements Converter<Email, EmailEntity> {
         emailEntity.setValue(scim.getValue());
         emailEntity.setPrimary(scim.isPrimary());
         emailEntity.setType(scim.getType());
-
+        emailEntity.setDisplay(scim.getDisplay());
         return emailEntity;
     }
 
@@ -46,7 +46,7 @@ public class EmailConverter implements Converter<Email, EmailEntity> {
                 .setPrimary(entity.isPrimary())
                 .setType(entity.getType())
                 .setValue(entity.getValue())
+                .setDisplay(entity.getDisplay())
                 .build();
     }
-
 }

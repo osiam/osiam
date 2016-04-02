@@ -36,18 +36,21 @@ class RoleConverterSpec extends Specification {
 
     def setup() {
         def value = 'student'
+        def display = 'myrole'
 
         entity = new RoleEntity()
         entity.setValue(value)
+        entity.setDisplay(display)
 
         attribute = new Role.Builder()
                 .setValue(value)
+                .setDisplay(display)
                 .build()
 
         converter = new RoleConverter()
     }
 
-    def 'convert Entity to scim Role MultiValueAttribute works'() {
+    def 'convert entity to SCIM Role'() {
         when:
         def attribute = converter.toScim(entity)
 
@@ -55,7 +58,7 @@ class RoleConverterSpec extends Specification {
         attribute.equals(this.attribute)
     }
 
-    def 'convert scim Role MultiValueAttribuite to Entity works'() {
+    def 'convert SCIM Role to entity'() {
         when:
         def entity = converter.fromScim(this.attribute)
 

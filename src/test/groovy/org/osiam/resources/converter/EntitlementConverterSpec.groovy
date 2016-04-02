@@ -36,18 +36,21 @@ class EntitlementConverterSpec extends Specification {
 
     def setup() {
         def value = 'example'
+        def display = 'myentitlement'
 
         entity = new EntitlementEntity()
         entity.setValue(value)
+        entity.setDisplay(display)
 
         attribute = new Entitlement.Builder()
                 .setValue(value)
+                .setDisplay(display)
                 .build()
 
         converter = new EntitlementConverter()
     }
 
-    def 'convert Entity to scim Entitlement MultiValueAttribute works'() {
+    def 'convert entity to SCIM Entitlement'() {
         when:
         def attribute = converter.toScim(entity)
 
@@ -55,7 +58,7 @@ class EntitlementConverterSpec extends Specification {
         attribute.equals(this.attribute)
     }
 
-    def 'convert scim Entitlement MultiValueAttribuite to Entity works'() {
+    def 'convert SCIM Entitlement to entity'() {
         when:
         def entity = converter.fromScim(this.attribute)
 

@@ -36,22 +36,25 @@ class EmailConverterSpec extends Specification {
     def setup() {
         def value = 'example@web.com'
         def type = Email.Type.WORK
+        def display = 'mymail'
 
         entity = new EmailEntity()
         entity.setValue(value)
         entity.setType(type)
         entity.setPrimary(true)
+        entity.setDisplay(display)
 
         attribute = new Email.Builder()
                 .setValue(value)
                 .setType(type)
                 .setPrimary(true)
+                .setDisplay(display)
                 .build()
 
         converter = new EmailConverter()
     }
 
-    def 'convert Entity to scim Email MultiValueAttribute works'() {
+    def 'convert entity to SCIM Email'() {
         when:
         def attribute = converter.toScim(entity)
 
@@ -59,7 +62,7 @@ class EmailConverterSpec extends Specification {
         attribute.equals(this.attribute)
     }
 
-    def 'convert scim Email MultiValueAttribuite to Entity works'() {
+    def 'convert SCIM Email to entity'() {
         when:
         def entity = converter.fromScim(this.attribute)
 

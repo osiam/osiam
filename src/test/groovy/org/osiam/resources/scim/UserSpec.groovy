@@ -84,7 +84,7 @@ class UserSpec extends Specification {
         PhoneNumber phoneNumber = getPhoneNumber()
         Photo photo = getPhoto()
         Role role = getRole()
-        X509Certificate x509Certificat = getX509Certificat()
+        X509Certificate x509Certificate = getX509Certificate()
 
         def builder = new User.Builder('username')
                 .setId('id')
@@ -106,7 +106,7 @@ class UserSpec extends Specification {
                 .addRoles([role] as List)
                 .setTimezone('MEZ')
                 .setTitle('title')
-                .addX509Certificates([x509Certificat] as List)
+                .addX509Certificates([x509Certificate] as List)
                 .setMeta(meta)
                 .setUserType('userType')
                 .addExtension(extension)
@@ -133,7 +133,7 @@ class UserSpec extends Specification {
         user.timezone == 'MEZ'
         user.title == 'title'
         user.userType == 'userType'
-        user.x509Certificates.first() == x509Certificat
+        user.x509Certificates.first() == x509Certificate
         user.userName == 'username'
         user.id == 'id'
         user.meta == meta
@@ -347,6 +347,7 @@ class UserSpec extends Specification {
                 .setPrimary(true)
                 .setValue('test@tarent.de')
                 .setType(Email.Type.WORK)
+                .setDisplay('mymail')
                 .build()
     }
 
@@ -360,13 +361,14 @@ class UserSpec extends Specification {
                 .setRegion('Berlin')
                 .setStreetAddress('Voltastr. 5')
                 .setType(Address.Type.WORK)
+                .setDisplay('myaddress')
                 .build()
     }
 
     Extension getExtension(urn) {
-        Extension extension = new Extension.Builder(urn)
-                .setField('gender', 'male').build()
-        return extension
+        new Extension.Builder(urn)
+                .setField('gender', 'male')
+                .build()
     }
 
     Entitlement getEntitlement() {
@@ -374,6 +376,7 @@ class UserSpec extends Specification {
                 .setPrimary(true)
                 .setType(new Entitlement.Type('irrelevant'))
                 .setValue('entitlement')
+                .setDisplay('myentitlement')
                 .build()
     }
 
@@ -382,6 +385,7 @@ class UserSpec extends Specification {
                 .setPrimary(true)
                 .setType(Im.Type.AIM)
                 .setValue('aim')
+                .setDisplay('aim')
                 .build()
     }
 
@@ -392,7 +396,8 @@ class UserSpec extends Specification {
                 .setGivenName('test')
                 .setHonorificPrefix('Dr.')
                 .setHonorificSuffix('Mr.')
-                .setMiddleName('test').build()
+                .setMiddleName('test')
+                .build()
     }
 
     PhoneNumber getPhoneNumber() {
@@ -400,6 +405,7 @@ class UserSpec extends Specification {
                 .setPrimary(true)
                 .setType(PhoneNumber.Type.WORK)
                 .setValue('03012345678')
+                .setDisplay('myphonenumber')
                 .build()
     }
 
@@ -408,6 +414,7 @@ class UserSpec extends Specification {
                 .setPrimary(true)
                 .setType(Photo.Type.PHOTO)
                 .setValue('username.jpg')
+                .setDisplay('myphoto')
                 .build()
     }
 
@@ -415,13 +422,15 @@ class UserSpec extends Specification {
         new Role.Builder()
                 .setPrimary(true)
                 .setValue('user_role')
+                .setDisplay('myrole')
                 .build()
     }
 
-    X509Certificate getX509Certificat() {
+    X509Certificate getX509Certificate() {
         new X509Certificate.Builder()
                 .setPrimary(true)
-                .setValue('x509Certificat')
+                .setValue('x509Certificate')
+                .setDisplay('mycert')
                 .build()
     }
 
@@ -444,7 +453,8 @@ class UserSpec extends Specification {
                 .setLocale('de')
                 .addEmail(new Email.Builder()
                 .setValue('bjensen@example.com')
-                .setType(Email.Type.WORK).build())
+                .setType(Email.Type.WORK)
+                .setDisplay('myemail').build())
                 .addPhoto(new Photo.Builder()
                 .setValue('example.png').build())
                 .addPhoneNumber(new PhoneNumber.Builder()
@@ -456,7 +466,8 @@ class UserSpec extends Specification {
                 .setLocality('Bonn')
                 .setRegion('North Rhine-Westphalia')
                 .setPostalCode('11111')
-                .setCountry('Germany').build())
+                .setCountry('Germany')
+                .setDisplay('myaddress').build())
                 .addExtension(new Extension.Builder('urn:scim:schemas:extension:test:1.0:User')
                 .setField('keyString', 'example')
                 .setField('keyBoolean', true)

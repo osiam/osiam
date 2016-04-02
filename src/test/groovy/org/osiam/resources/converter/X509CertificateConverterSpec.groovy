@@ -36,18 +36,21 @@ class X509CertificateConverterSpec extends Specification {
 
     def setup() {
         def value = 'example'
+        def display = 'mycert'
 
         entity = new X509CertificateEntity()
         entity.setValue(value)
+        entity.setDisplay(display)
 
         attribute = new X509Certificate.Builder()
                 .setValue(value)
+                .setDisplay(display)
                 .build()
 
         converter = new X509CertificateConverter()
     }
 
-    def 'convert Entity to scim X509Certificate MultiValueAttribute works'() {
+    def 'convert entity to SCIM X509Certificate'() {
         when:
         def attribute = converter.toScim(entity)
 
@@ -55,7 +58,7 @@ class X509CertificateConverterSpec extends Specification {
         attribute.equals(this.attribute)
     }
 
-    def 'convert scim X509Certificate MultiValueAttribuite to Entity works'() {
+    def 'convert SCIM X509Certificate to entity'() {
         when:
         def entity = converter.fromScim(this.attribute)
 

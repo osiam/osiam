@@ -32,15 +32,12 @@ import spock.lang.Specification
 
 import java.nio.ByteBuffer
 
+import static com.jayway.restassured.path.json.JsonPath.from
+
 class UserJsonSpec extends Specification {
 
     @Shared
-    def mapper
-
-    def setupSpec() {
-        mapper = new ObjectMapper()
-        mapper.setFilterProvider(new SimpleFilterProvider().setFailOnUnknownId(false))
-    }
+    def mapper = new ObjectMapper(filterProvider: new SimpleFilterProvider().setFailOnUnknownId(false))
 
     def 'A User is correctly serialized'() {
         given:
@@ -60,19 +57,23 @@ class UserJsonSpec extends Specification {
                 .setLocale('de')
                 .addEmail(new Email.Builder()
                 .setValue('bjensen@example.com')
-                .setType(Email.Type.WORK).build())
+                .setType(Email.Type.WORK)
+                .setDisplay('mymail').build())
                 .addPhoto(new Photo.Builder()
-                .setValue('example.png').build())
+                .setValue('example.png')
+                .setDisplay('myphoto').build())
                 .addPhoneNumber(new PhoneNumber.Builder()
                 .setValue('555-555-8377')
-                .setType(PhoneNumber.Type.WORK).build())
+                .setType(PhoneNumber.Type.WORK)
+                .setDisplay('myphonenumber').build())
                 .addAddress(new Address.Builder()
                 .setType(Address.Type.WORK)
                 .setStreetAddress('example street 42')
                 .setLocality('Bonn')
                 .setRegion('North Rhine-Westphalia')
                 .setPostalCode('11111')
-                .setCountry('Germany').build())
+                .setCountry('Germany')
+                .setDisplay('myaddress').build())
                 .addExtension(new Extension.Builder('urn:scim:schemas:extension:test:1.0:User')
                 .setField('keyString', 'example')
                 .setField('keyBoolean', true)
@@ -84,7 +85,7 @@ class UserJsonSpec extends Specification {
                 .build()
 
         when:
-        JsonPath json = com.jayway.restassured.path.json.JsonPath.from(mapper.writeValueAsString(user))
+        JsonPath json = from(mapper.writeValueAsString(user))
 
         then:
         json.getString('id') == 'a4bbe688-4b1e-4e4e-80e7-e5ba5c4d6db4'
@@ -103,15 +104,19 @@ class UserJsonSpec extends Specification {
         json.getString('locale') == 'de'
         json.getString('emails[0].value') == 'bjensen@example.com'
         json.getString('emails[0].type') == 'work'
+        json.getString('emails[0].display') == 'mymail'
         json.getString('photos[0].value') == 'example.png'
+        json.getString('photos[0].display') == 'myphoto'
         json.getString('phoneNumbers[0].value') == '555-555-8377'
         json.getString('phoneNumbers[0].type') == 'work'
+        json.getString('phoneNumbers[0].display') == 'myphonenumber'
         json.getString('addresses[0].type') == 'work'
         json.getString('addresses[0].streetAddress') == 'example street 42'
         json.getString('addresses[0].locality') == 'Bonn'
         json.getString('addresses[0].region') == 'North Rhine-Westphalia'
         json.getString('addresses[0].postalCode') == '11111'
         json.getString('addresses[0].country') == 'Germany'
+        json.getString('addresses[0].display') == 'myaddress'
         json.getString('\'urn:scim:schemas:extension:test:1.0:User\'.keyString') == 'example'
         json.getBoolean('\'urn:scim:schemas:extension:test:1.0:User\'.keyBoolean') == true
         json.getInt('\'urn:scim:schemas:extension:test:1.0:User\'.keyInteger') == 123
@@ -120,5 +125,4 @@ class UserJsonSpec extends Specification {
         json.getString('\'urn:scim:schemas:extension:test:1.0:User\'.keyReference') == 'https://example.com/Users/28'
         json.getString('\'urn:scim:schemas:extension:test:1.0:User\'.keyDateTime') == '2008-01-23T18:29:49.000Z'
     }
-
 }

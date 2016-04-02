@@ -36,7 +36,7 @@ public class ImConverter implements Converter<Im, ImEntity> {
         imEntity.setValue(String.valueOf(scim.getValue()));
         imEntity.setType(scim.getType());
         imEntity.setPrimary(scim.isPrimary());
-
+        imEntity.setDisplay(scim.getDisplay());
         return imEntity;
     }
 
@@ -46,7 +46,7 @@ public class ImConverter implements Converter<Im, ImEntity> {
                 .setType(entity.getType())
                 .setValue(entity.getValue())
                 .setPrimary(entity.isPrimary())
+                .setDisplay(entity.getDisplay())
                 .build();
     }
-
 }
