@@ -24,8 +24,9 @@
 package org.osiam.auth.login.ldap;
 
 import com.google.common.base.Strings;
-import org.osiam.configuration.LdapAuthentication;
+import org.osiam.scim.extension.OsiamExtension;
 import org.osiam.auth.exception.LdapConfigurationException;
+import org.osiam.configuration.LdapAuthentication;
 import org.osiam.resources.scim.Address;
 import org.osiam.resources.scim.Email;
 import org.osiam.resources.scim.Entitlement;
@@ -57,7 +58,7 @@ public class OsiamLdapUserContextMapper extends LdapUserDetailsMapper {
 
     public User mapUser(DirContextOperations ldapUserData) {
 
-        Extension extension = new Extension.Builder(LdapAuthentication.AUTH_EXTENSION)
+        Extension extension = new Extension.Builder(OsiamExtension.URN)
                 .setField("origin", LdapAuthentication.LDAP_PROVIDER)
                 .build();
 

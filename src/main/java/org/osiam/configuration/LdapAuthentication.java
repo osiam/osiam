@@ -49,7 +49,6 @@ import java.util.Map;
 public class LdapAuthentication {
 
     public static final String LDAP_PROVIDER = "ldap";
-    public static final String AUTH_EXTENSION = "urn:org.osiam:scim:extensions:auth-server";
 
     private String serverUrl = "";
     private String[] dnPatterns = new String[0];

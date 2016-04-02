@@ -301,6 +301,3 @@ CREATE INDEX uk_8qwt29ewjm8urpi7vk10q2fb3 ON scim_roles (type);
 ALTER TABLE scim_user ADD FOREIGN KEY (internal_id) REFERENCES scim_id (internal_id);
 ALTER TABLE scim_user ADD FOREIGN KEY (name) REFERENCES scim_name (id);
 CREATE UNIQUE INDEX uk_o2e5caak3gw9roil6nbgvew5o ON scim_user (user_name);
-
-INSERT INTO scim_extension VALUES (1, 'urn:org.osiam:scim:extensions:auth-server');
-INSERT INTO scim_extension_field (internal_id, required, name, type, extension) VALUES (1, FALSE, 'origin', 'STRING', 1);

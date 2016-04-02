@@ -649,8 +649,3 @@ ALTER TABLE osiam_client_grants
 --
 ALTER TABLE osiam_client_scopes
     ADD CONSTRAINT fk_gl93uw092wua8dl5cpb5ysn3f FOREIGN KEY (id) REFERENCES osiam_client(internal_id);
-
--- This extension is needed by OSIAM
-INSERT INTO scim_extension VALUES (1, 'urn:org.osiam:scim:extensions:auth-server');
-INSERT INTO scim_extension_field (internal_id, required, name, type, extension)
-VALUES (1, FALSE, 'origin', 'STRING', 1);

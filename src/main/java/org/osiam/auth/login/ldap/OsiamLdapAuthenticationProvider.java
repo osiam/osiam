@@ -25,6 +25,7 @@ package org.osiam.auth.login.ldap;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import org.osiam.scim.extension.OsiamExtension;
 import org.osiam.auth.exception.LdapAuthenticationProcessException;
 import org.osiam.configuration.LdapAuthentication;
 import org.osiam.resources.exception.ResourceNotFoundException;
@@ -132,10 +133,10 @@ public class OsiamLdapAuthenticationProvider extends LdapAuthenticationProvider 
     }
 
     private boolean hasAuthServerExtension(User user) {
-        if (!user.isExtensionPresent(LdapAuthentication.AUTH_EXTENSION)) {
+        if (!user.isExtensionPresent(OsiamExtension.URN)) {
             return false;
         }
-        Extension authExtension = user.getExtension(LdapAuthentication.AUTH_EXTENSION);
+        Extension authExtension = user.getExtension(OsiamExtension.URN);
         return authExtension.isFieldPresent("origin")
                 && authExtension.getFieldAsString("origin").equals(LdapAuthentication.LDAP_PROVIDER);
     }
