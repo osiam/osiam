@@ -25,15 +25,15 @@ package org.osiam.resources.provisioning
 
 import org.osiam.resources.provisioning.model.ExtensionDefinition
 import org.osiam.resources.scim.ExtensionFieldType
-import org.osiam.storage.dao.ExtensionDao
+import org.osiam.storage.ExtensionRepository
 import org.osiam.storage.entities.ExtensionEntity
 import org.osiam.storage.entities.ExtensionFieldEntity
 import spock.lang.Specification
 
 class SCIMExtensionProvisioningSpec extends Specification {
 
-    ExtensionDao extensionDao = Mock()
-    SCIMExtensionProvisioning provisioning = new SCIMExtensionProvisioning(extensionDao)
+    ExtensionRepository extensionRepository = Mock()
+    SCIMExtensionProvisioning provisioning = new SCIMExtensionProvisioning(extensionRepository)
 
     def 'get extension definitions'() {
         given:
@@ -57,7 +57,7 @@ class SCIMExtensionProvisioningSpec extends Specification {
         List<ExtensionDefinition> extensionDefinitions = provisioning.getAllExtensionDefinitions()
 
         then:
-        1 * extensionDao.getAllExtensions() >> [extensionEntity]
+        1 * extensionRepository.findAll() >> [extensionEntity]
         extensionDefinitions.size() == 1
         extensionDefinitions.get(0).urn == 'urn'
         extensionDefinitions.get(0).getNamedTypePairs().containsKey('test1')
@@ -71,7 +71,7 @@ class SCIMExtensionProvisioningSpec extends Specification {
         List<ExtensionDefinition> extensionDefinitions = provisioning.getAllExtensionDefinitions()
 
         then:
-        1 * extensionDao.getAllExtensions() >> []
+        1 * extensionRepository.findAll() >> []
         extensionDefinitions.size() == 0
     }
 }

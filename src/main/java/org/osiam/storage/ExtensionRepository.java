@@ -21,37 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.osiam.storage.query;
+package org.osiam.storage;
 
-import org.osiam.storage.ExtensionRepository;
-import org.osiam.storage.entities.UserEntity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.osiam.storage.entities.ExtensionEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Locale;
+@Transactional
+@Repository
+public interface ExtensionRepository extends JpaRepository<ExtensionEntity, Long> {
 
-@Service
-public class UserFilterParser extends FilterParser<UserEntity> {
+    ExtensionEntity findByUrn(String urn);
 
-    private final ExtensionRepository extensionRepository;
+    ExtensionEntity findByUrnIgnoreCase(String urn);
 
-    @Autowired
-    public UserFilterParser(ExtensionRepository extensionRepository) {
-        this.extensionRepository = extensionRepository;
-    }
-
-    @Override
-    public FilterExpression<UserEntity> createFilterExpression(String field, FilterConstraint constraint, String value) {
-        return new UserFilterExpression(field, constraint, value);
-    }
-
-    @Override
-    protected QueryField<UserEntity> getFilterField(String sortBy) {
-        return UserQueryField.fromString(sortBy.toLowerCase(Locale.ENGLISH));
-    }
-
-    @Override
-    protected UserSimpleFilterChain createFilterChain(FilterExpression<UserEntity> filter) {
-        return new UserSimpleFilterChain(entityManager.getCriteriaBuilder(), extensionRepository, filter);
-    }
+    @Query("SELECT CASE WHEN COUNT(e) > 0 THEN true ELSE false END FROM ExtensionEntity e WHERE UPPER(e.urn) = UPPER(:urn)")
+    boolean existsByUrnIgnoreCase(@Param("urn") String urn);
 }

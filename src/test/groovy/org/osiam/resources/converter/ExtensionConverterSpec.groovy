@@ -23,11 +23,10 @@
  */
 package org.osiam.resources.converter
 
-import com.sun.xml.internal.bind.v2.schemagen.xmlschema.ExtensionType
 import org.joda.time.format.ISODateTimeFormat
 import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.ExtensionFieldType
-import org.osiam.storage.dao.ExtensionDao
+import org.osiam.storage.ExtensionRepository
 import org.osiam.storage.entities.ExtensionEntity
 import org.osiam.storage.entities.ExtensionFieldEntity
 import org.osiam.storage.entities.ExtensionFieldValueEntity
@@ -39,9 +38,9 @@ class ExtensionConverterSpec extends Specification {
     private static String URN1 = "urn:org.osiam.extensions:Test01:1.0"
     private static String URN2 = "urn:org.osiam.extensions:Test02:1.0"
 
-    private ExtensionDao extensionDao = Mock()
+    private ExtensionRepository extensionRepository = Mock()
 
-    private ExtensionConverter converter = new ExtensionConverter(extensionDao)
+    private ExtensionConverter converter = new ExtensionConverter(extensionRepository)
 
     Map fixtures = [(URN1): [
             [fieldname: 'gender', valueAsString: 'male', value: 'male', type: ExtensionFieldType.STRING],
@@ -77,8 +76,8 @@ class ExtensionConverterSpec extends Specification {
         Set<ExtensionFieldEntity> extensions = converter.fromScim(scimExtensionSet)
 
         then:
-        1 * extensionDao.getExtensionByUrn(URN1) >> extensionMap[URN1]
-        1 * extensionDao.getExtensionByUrn(URN2) >> extensionMap[URN2]
+        1 * extensionRepository.findByUrn(URN1) >> extensionMap[URN1]
+        1 * extensionRepository.findByUrn(URN2) >> extensionMap[URN2]
         extensions == extensionFieldValueEntitySet
     }
 

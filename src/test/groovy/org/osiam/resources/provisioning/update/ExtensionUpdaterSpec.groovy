@@ -23,12 +23,11 @@
  */
 package org.osiam.resources.provisioning.update
 
-import org.osiam.resources.converter.ExtensionConverter
 import org.osiam.resources.exception.InvalidConstraintException
 import org.osiam.resources.exception.OsiamException
 import org.osiam.resources.scim.Extension
 import org.osiam.resources.scim.ExtensionFieldType
-import org.osiam.storage.dao.ExtensionDao
+import org.osiam.storage.ExtensionRepository
 import org.osiam.storage.entities.ExtensionEntity
 import org.osiam.storage.entities.ExtensionFieldEntity
 import org.osiam.storage.entities.ExtensionFieldValueEntity
@@ -44,15 +43,15 @@ class ExtensionUpdaterSpec extends Specification {
     static IRRELEVANT = 'irrelevant'
 
     UserEntity userEntity = Mock()
-    ExtensionDao extensionDao = Mock()
-    ExtensionUpdater extensionUpdater = new ExtensionUpdater(extensionDao)
+    ExtensionRepository extensionRepository = Mock()
+    ExtensionUpdater extensionUpdater = new ExtensionUpdater(extensionRepository)
 
     def 'removing an extension is possible'() {
         when:
         extensionUpdater.update(null, userEntity, [URN] as Set)
 
         then:
-        1 * extensionDao.getExtensionByUrn(URN, true) >> createExtensionEntity()
+        1 * extensionRepository.existsByUrnIgnoreCase(URN) >> true
         1 * userEntity.removeAllExtensionFieldValues(URN)
     }
 
@@ -61,7 +60,7 @@ class ExtensionUpdaterSpec extends Specification {
         extensionUpdater.update(null, userEntity, [URN + "." + FIELD] as Set)
 
         then:
-        1 * extensionDao.getExtensionByUrn(URN, true) >> createExtensionEntity()
+        1 * extensionRepository.existsByUrnIgnoreCase(URN) >> true
         1 * userEntity.getExtensionFieldValues() >> ([getExtensionValueEntity()] as Set)
         1 * userEntity.removeExtensionFieldValue(_)
     }
@@ -74,7 +73,7 @@ class ExtensionUpdaterSpec extends Specification {
         extensionUpdater.update([(URN): extension] as Map, userEntity, [] as Set)
 
         then:
-        1 * extensionDao.getExtensionByUrn(URN) >> { throw new OsiamException() }
+        1 * extensionRepository.findByUrn(URN) >> { throw new OsiamException() }
         thrown(OsiamException)
     }
 
@@ -88,7 +87,7 @@ class ExtensionUpdaterSpec extends Specification {
         extensionUpdater.update([(URN): extension] as Map, userEntity, [] as Set)
 
         then:
-        1 * extensionDao.getExtensionByUrn(URN) >> extensionEntity
+        1 * extensionRepository.findByUrn(URN) >> extensionEntity
         thrown(InvalidConstraintException)
     }
 
@@ -101,7 +100,7 @@ class ExtensionUpdaterSpec extends Specification {
         extensionUpdater.update([(URN): extension] as Map, userEntity, [] as Set)
 
         then:
-        1 * extensionDao.getExtensionByUrn(URN) >> extensionEntity
+        1 * extensionRepository.findByUrn(URN) >> extensionEntity
         1 * userEntity.getExtensionFieldValues() >> ([getExtensionValueEntity()] as Set)
         1 * userEntity.addOrUpdateExtensionValue(_)
     }
@@ -115,7 +114,7 @@ class ExtensionUpdaterSpec extends Specification {
         extensionUpdater.update([(URN): extension] as Map, userEntity, [] as Set)
 
         then:
-        1 * extensionDao.getExtensionByUrn(URN) >> extensionEntity
+        1 * extensionRepository.findByUrn(URN) >> extensionEntity
         1 * userEntity.getExtensionFieldValues() >> ([] as Set)
         1 * userEntity.addOrUpdateExtensionValue(_)
     }

@@ -29,7 +29,7 @@ import com.google.common.collect.ImmutableSet;
 import org.osiam.resources.exception.NoSuchElementException;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.ExtensionFieldType;
-import org.osiam.storage.dao.ExtensionDao;
+import org.osiam.storage.ExtensionRepository;
 import org.osiam.storage.entities.ExtensionEntity;
 import org.osiam.storage.entities.ExtensionFieldEntity;
 import org.osiam.storage.entities.ExtensionFieldValueEntity;
@@ -52,12 +52,12 @@ class ExtensionUpdater {
 
     private static final Logger logger = LoggerFactory.getLogger(ExtensionUpdater.class);
 
-    private final ExtensionDao extensionDao;
+    private final ExtensionRepository extensionRepository;
     private final NumberPadder numberPadder;
 
     @Autowired
-    public ExtensionUpdater(ExtensionDao extensionDao) {
-        this.extensionDao = extensionDao;
+    public ExtensionUpdater(ExtensionRepository extensionRepository) {
+        this.extensionRepository = extensionRepository;
         this.numberPadder = new NumberPadder();
     }
 
@@ -109,7 +109,7 @@ class ExtensionUpdater {
     private void updateExtensionField(Entry<String, Extension> extensionEntry, UserEntity userEntity) {
         String urn = extensionEntry.getKey();
         Extension updatedScimExtension = extensionEntry.getValue();
-        ExtensionEntity extensionEntity = extensionDao.getExtensionByUrn(urn);
+        ExtensionEntity extensionEntity = extensionRepository.findByUrn(urn);
 
         for (String fieldName : updatedScimExtension.getFields().keySet()) {
             ExtensionFieldEntity extensionEntitiyField;
@@ -163,9 +163,7 @@ class ExtensionUpdater {
         } else {
             urn = attribute;
         }
-        try {
-            extensionDao.getExtensionByUrn(urn, true);
-        } catch (Exception e) {
+        if(!extensionRepository.existsByUrnIgnoreCase(urn)) {
             return Optional.absent();
         }
         return Optional.of(urn);

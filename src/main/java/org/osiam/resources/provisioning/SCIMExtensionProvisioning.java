@@ -29,7 +29,7 @@ import org.osiam.resources.provisioning.model.ExtensionDefinition;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.Extension.Field;
 import org.osiam.resources.scim.ExtensionFieldType;
-import org.osiam.storage.dao.ExtensionDao;
+import org.osiam.storage.ExtensionRepository;
 import org.osiam.storage.entities.ExtensionEntity;
 import org.osiam.storage.entities.ExtensionFieldEntity;
 import org.slf4j.Logger;
@@ -54,11 +54,11 @@ public class SCIMExtensionProvisioning {
 
     private static final Logger logger = LoggerFactory.getLogger(SCIMExtensionProvisioning.class);
 
-    private final ExtensionDao dao;
+    private final ExtensionRepository repository;
 
     @Autowired
-    public SCIMExtensionProvisioning(ExtensionDao dao) {
-        this.dao = dao;
+    public SCIMExtensionProvisioning(ExtensionRepository repository) {
+        this.repository = repository;
     }
 
     /**
@@ -67,7 +67,7 @@ public class SCIMExtensionProvisioning {
      * @return A list of all {@link ExtensionDefinition} that are persisted.
      */
     public List<ExtensionDefinition> getAllExtensionDefinitions() {
-        List<Extension> extensions = fromEntity(dao.getAllExtensions());
+        List<Extension> extensions = fromEntity(repository.findAll());
         final List<ExtensionDefinition> extensionDefinitions = new ArrayList<>();
 
         for (Extension extension : extensions) {
