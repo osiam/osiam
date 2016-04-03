@@ -21,37 +21,43 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.osiam.storage.query;
+package org.osiam.scim.extension
 
-import org.osiam.storage.ExtensionRepository;
-import org.osiam.storage.entities.UserEntity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.osiam.resources.scim.ExtensionFieldType
+import org.osiam.storage.ExtensionRepository
+import spock.lang.Specification
 
-import java.util.Locale;
+class OsiamExtensionSpec extends Specification {
 
-@Service
-public class UserFilterParser extends FilterParser<UserEntity> {
+    def extensionRepository = Mock(ExtensionRepository)
+    def OsiamExtension osiamExtension = new OsiamExtension(extensionRepository)
 
-    private final ExtensionRepository extensionRepository;
+    def 'Creates the OSIAM extension, if it does not exist'(){
+        given:
+        extensionRepository.existsByUrnIgnoreCase(osiamExtension.URN) >> false
 
-    @Autowired
-    public UserFilterParser(ExtensionRepository extensionRepository) {
-        this.extensionRepository = extensionRepository;
+        when:
+        osiamExtension.create()
+
+        then:
+        1 * extensionRepository.saveAndFlush({ extension ->
+            extension.urn == OsiamExtension.URN
+            def field = extension.fields.iterator().next()
+            field.name == 'origin'
+            field.required == false
+            field.type == ExtensionFieldType.STRING
+        })
     }
 
-    @Override
-    public FilterExpression<UserEntity> createFilterExpression(String field, FilterConstraint constraint, String value) {
-        return new UserFilterExpression(field, constraint, value);
+    def 'Does not do anything, if the OSIAM extension exists'(){
+        given:
+        extensionRepository.existsByUrnIgnoreCase(osiamExtension.URN) >> true
+
+        when:
+        osiamExtension.create()
+
+        then:
+        0 * extensionRepository.saveAndFlush(_)
     }
 
-    @Override
-    protected QueryField<UserEntity> getFilterField(String sortBy) {
-        return UserQueryField.fromString(sortBy.toLowerCase(Locale.ENGLISH));
-    }
-
-    @Override
-    protected UserSimpleFilterChain createFilterChain(FilterExpression<UserEntity> filter) {
-        return new UserSimpleFilterChain(entityManager.getCriteriaBuilder(), extensionRepository, filter);
-    }
 }

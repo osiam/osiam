@@ -21,37 +21,42 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.osiam.storage.query;
+package org.osiam.scim.extension;
 
+import com.google.common.collect.Sets;
+import org.osiam.resources.scim.ExtensionFieldType;
 import org.osiam.storage.ExtensionRepository;
-import org.osiam.storage.entities.UserEntity;
+import org.osiam.storage.entities.ExtensionEntity;
+import org.osiam.storage.entities.ExtensionFieldEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-import java.util.Locale;
+import javax.annotation.PostConstruct;
 
-@Service
-public class UserFilterParser extends FilterParser<UserEntity> {
+@Component
+public class OsiamExtension {
+
+    public static final String URN = "urn:org.osiam:scim:extensions:auth-server";
 
     private final ExtensionRepository extensionRepository;
 
     @Autowired
-    public UserFilterParser(ExtensionRepository extensionRepository) {
+    public OsiamExtension(ExtensionRepository extensionRepository) {
         this.extensionRepository = extensionRepository;
     }
 
-    @Override
-    public FilterExpression<UserEntity> createFilterExpression(String field, FilterConstraint constraint, String value) {
-        return new UserFilterExpression(field, constraint, value);
-    }
-
-    @Override
-    protected QueryField<UserEntity> getFilterField(String sortBy) {
-        return UserQueryField.fromString(sortBy.toLowerCase(Locale.ENGLISH));
-    }
-
-    @Override
-    protected UserSimpleFilterChain createFilterChain(FilterExpression<UserEntity> filter) {
-        return new UserSimpleFilterChain(entityManager.getCriteriaBuilder(), extensionRepository, filter);
+    @PostConstruct
+    public void create() throws Exception {
+        if (!extensionRepository.existsByUrnIgnoreCase(URN)) {
+            ExtensionFieldEntity field = new ExtensionFieldEntity();
+            field.setName("origin");
+            field.setType(ExtensionFieldType.STRING);
+            field.setRequired(false);
+            ExtensionEntity extension = new ExtensionEntity();
+            extension.setUrn(URN);
+            extension.setFields(Sets.newHashSet(field));
+            field.setExtension(extension);
+            extensionRepository.saveAndFlush(extension);
+        }
     }
 }

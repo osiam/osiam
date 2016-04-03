@@ -52,7 +52,7 @@ public class ExtensionEntity {
     @Column(nullable = false)
     private String urn;
 
-    @OneToMany(mappedBy = "extension")
+    @OneToMany(mappedBy = "extension", cascade = {CascadeType.PERSIST})
     private Set<ExtensionFieldEntity> fields = new HashSet<>();
 
     public long getInternalId() {

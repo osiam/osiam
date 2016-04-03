@@ -26,7 +26,7 @@ package org.osiam.resources.converter;
 import com.google.common.base.Strings;
 import org.osiam.resources.scim.Extension;
 import org.osiam.resources.scim.ExtensionFieldType;
-import org.osiam.storage.dao.ExtensionDao;
+import org.osiam.storage.ExtensionRepository;
 import org.osiam.storage.entities.ExtensionEntity;
 import org.osiam.storage.entities.ExtensionFieldEntity;
 import org.osiam.storage.entities.ExtensionFieldValueEntity;
@@ -44,12 +44,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Service
 public class ExtensionConverter implements Converter<Set<Extension>, Set<ExtensionFieldValueEntity>> {
 
-    private final ExtensionDao extensionDao;
+    private final ExtensionRepository extensionRepository;
     private final NumberPadder numberPadder;
 
     @Autowired
-    public ExtensionConverter(ExtensionDao extensionDao) {
-        this.extensionDao = extensionDao;
+    public ExtensionConverter(ExtensionRepository extensionRepository) {
+        this.extensionRepository = extensionRepository;
         this.numberPadder = new NumberPadder();
     }
 
@@ -59,7 +59,7 @@ public class ExtensionConverter implements Converter<Set<Extension>, Set<Extensi
 
         for (Extension extension : checkNotNull(extensions)) {
             String urn = extension.getUrn();
-            ExtensionEntity extensionEntity = extensionDao.getExtensionByUrn(urn);
+            ExtensionEntity extensionEntity = extensionRepository.findByUrn(urn);
 
             for (ExtensionFieldEntity field : extensionEntity.getFields()) {
                 if (extension.isFieldPresent(field.getName())) {

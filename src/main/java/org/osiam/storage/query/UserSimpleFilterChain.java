@@ -25,7 +25,7 @@ package org.osiam.storage.query;
 
 import org.osiam.resources.exception.InvalidFilterException;
 import org.osiam.resources.exception.OsiamException;
-import org.osiam.storage.dao.ExtensionDao;
+import org.osiam.storage.ExtensionRepository;
 import org.osiam.storage.entities.ExtensionEntity;
 import org.osiam.storage.entities.ExtensionFieldEntity;
 import org.osiam.storage.entities.UserEntity;
@@ -39,15 +39,15 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
     private final FilterExpression<UserEntity> filterExpression;
 
     private final QueryField<UserEntity> userFilterField;
-    private final ExtensionDao extensionDao;
+    private final ExtensionRepository extensionRepository;
     private final CriteriaBuilder criteriaBuilder;
     private final ExtensionQueryField extensionFilterField;
 
-    public UserSimpleFilterChain(CriteriaBuilder criteriaBuilder, ExtensionDao extensionDao,
+    public UserSimpleFilterChain(CriteriaBuilder criteriaBuilder, ExtensionRepository extensionRepository,
                                  FilterExpression<UserEntity> filterExpression) {
         this.criteriaBuilder = criteriaBuilder;
-        this.extensionDao = extensionDao;
         this.filterExpression = filterExpression;
+        this.extensionRepository = extensionRepository;
 
         if (filterExpression.getField().isExtension()) {
             extensionFilterField = getExtensionFilterField(filterExpression);
@@ -60,14 +60,15 @@ public class UserSimpleFilterChain implements FilterChain<UserEntity> {
 
     private ExtensionQueryField getExtensionFilterField(FilterExpression<UserEntity> filterExpression) {
         final ExtensionEntity extension;
+        final String urn = filterExpression.getField().getUrn();
         try {
-            extension = extensionDao.getExtensionByUrn(filterExpression.getField().getUrn(), true);
+            extension = extensionRepository.findByUrnIgnoreCase(urn);
         } catch (OsiamException ex) {
             throw new InvalidFilterException(String.format("Filtering not possible. Field '%s' not available.",
                     filterExpression.getField()));
         }
         final ExtensionFieldEntity fieldEntity = extension.getFieldForName(filterExpression.getField().getName(), true);
-        return new ExtensionQueryField(filterExpression.getField().getUrn(), fieldEntity);
+        return new ExtensionQueryField(urn, fieldEntity);
     }
 
     @Override
