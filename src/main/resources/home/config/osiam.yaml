@@ -66,6 +66,25 @@ osiam:
     #connection-timeout-ms: 30000
 
   #
+  # SCIM Extensions
+  #
+  scim:
+    extensions:
+      #- urn: exampleExtension1
+      #  fields:
+      #    - name: requiredStringField
+      #      # Case-insensitive, so can also be 'string' or 'String'
+      #      type: STRING
+      #      # Optional, by default fields are not required to have a value
+      #      required: yes
+      #    - name: integerField
+      #      type: INTEGER
+      #- urn: exampleExtension2
+      #  fields:
+      #    - name: booleanField
+      #      type: BOOLEAN
+
+  #
   # Logging configuration
   #
   logging:
