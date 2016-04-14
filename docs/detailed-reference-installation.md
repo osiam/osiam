@@ -60,7 +60,7 @@ The `.war` file is actually an executable application.
 This makes it possible to run it on the command line like any other command.
 So, instead of starting it with `java -jar osiam.war` you can just run `./osiam.war`.
 
-**Note:** This probably works on UNIX and similar systems (like Linux or OSX) only.
+**NOTE:** This probably works on UNIX and similar systems (like Linux or OSX) only.
 It might work in a cygwin environment, but that has not been thoroughly tested.
 Essentially you need Bash, some standard UNIX commands and Java.
 
@@ -381,50 +381,65 @@ Now you are ready to work with OSIAM, either using a [connector]
 
 ### Configuring SCIM Extension
 
-At the moment you can register an extension and all users will have this
-additional self-defined fields. There are no pure SCIM core schema users
-anymore. The additional fields could be empty, so it will be optional for the
-users to fill them out with values.
+You can extend OSIAM's data model with custom extensions.
+This is a feature of [SCIM 2](http://www.simplecloud.info/), the data model and API that OSIAM implements.
+Extensions add new attributes to resources using a unique namespace.
+These attributes can be mandatory or optional and have a fixed data type.
+See [the section about extensions in the SCIM 2 RFC](https://tools.ietf.org/html/rfc7643#section-3.3) for more information.
 
-To add some self-defined fields your previously have to define an extension with
-a URN. This URN must be unique. Here is an example of such an insert for
-postgres:
+**NOTE:** OSIAM currently only supports extensions for User objects.
+Support for Group objects will be added in a future version.
 
-`INSERT INTO scim_extension VALUES (<UNIQUE_EXTENSION_ID>, <UNIQUE_URN>)`
+You can configure extensions in the `osiam.yaml` configuration file.
+The following example configuration should help you get started:
 
-**NOTE:** You may leave the `UNIQUE_EXTENSION_ID` off and let your database
-generate a unique id.
+```yaml
+osiam:
 
-for example:
+  [...]
 
-`INSERT INTO scim_extension VALUES (39, 'urn:org.osiam.extensions:Test:1.0')`
-
-For adding the fields, you have to reference the previously added extension. You
-need to execute an insert something like this for postgres:
-
-```sql
-INSERT INTO scim_extension_field VALUES(
-  <UNIQUE_EXT_FIELD_ID>,
-  <REQUIRED - currently only false>,
-  <SELFDEFINED_FIELD_NAME>,
-  <TYPE>,
-  <UNIQUE_EXTENSION_ID>)`
+  scim:
+    extensions:
+      - urn: exampleExtension1
+        fields:
+          - name: requiredStringField
+            type: STRING  # Case-insensitive, so can also be 'string' or 'String'
+            required: yes # Optional, by default fields are not required to have a value
+          - name: integerField
+            type: INTEGER
+      - urn: exampleExtension2
+        fields:
+          - name: booleanField
+            type: BOOLEAN
 ```
 
-**NOTE:** You may leave the UNIQUE_EXT_FIELD_ID off and let your database
-generate a unique id, for example:
+Supported data types for attributes are:
 
-`INSERT INTO scim_extension_field VALUES(213, false, 'gender', 'STRING', 39)`
+- `STRING`: A simple string containing some text
+- `BOOLEAN`: true or false
+- `BINARY`: Base64 encoded raw binary data
+- `DATE_TIME`: A string containing an ISO8601 timestamp
+- `DECIMAL`: An arbitrary decimal number, e.g. `3.0`
+- `INTEGER`: An arbitrary integral number, e.g `30`
+- `REFERENCE`: A String containing a URI
 
-The supported types are:
+**NOTE:** OSIAM does not yet support complex data types for extensions.
+The absence of this feature will be addressed in a future version.
 
-- `STRING`
-- `BOOLEAN`
-- `BINARY`
-- `DATE_TIME` 
-- `DECIMAL` (BigDecimal)
-- `INTEGER` (BigInteger)
-- `REFERENCE` (URI)
+See [the section about data types in the SCIM 2 RFC](https://tools.ietf.org/html/rfc7643#section-2.3) for more information.
+
+OSIAM creates all configured extensions on startup, if they do not exist in the database.
+It will only check, if an extension with the same URN is already defined.
+This means, that adding or changing a field in the configuration file will not change the extension in the database.
+If you want to change an extension, follow these steps:
+
+1. Configure a new extension, with a different name, i.e by increasing a version number in the URN.
+2. For each user: copy all data of the old extension to the new one.
+3. Manually delete the old extension from the database.
+
+Likewise, extensions missing in the configuration file will not be removed from the database.
+You have to do this manually.
+A more sophisticated extension management might be added in a future version.
 
 ### Customizing the Login via Authorization Code Grant
 
