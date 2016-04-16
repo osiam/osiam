@@ -25,6 +25,7 @@ package org.osiam.auth.login.internal;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import org.osiam.resources.exception.ResourceNotFoundException;
 import org.osiam.resources.provisioning.SCIMUserProvisioning;
 import org.osiam.resources.scim.Role;
 import org.osiam.resources.scim.User;
@@ -97,10 +98,11 @@ public class InternalAuthenticationProvider implements AuthenticationProvider,
 
         assertUserNotLocked(username);
 
-        User user = userProvisioning.getByUsernameWithPassword(username);
-
-        if (user == null) {
-            throw new BadCredentialsException("The user with the username '" + username + "' doesn't exist!");
+        User user;
+        try {
+            user = userProvisioning.getByUsernameWithPassword(username);
+        } catch (ResourceNotFoundException rnfe) {
+            throw new BadCredentialsException("The user with the username '" + username + "' doesn't exist!", rnfe);
         }
 
         if (user.isActive() != Boolean.TRUE) {
