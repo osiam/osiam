@@ -156,7 +156,7 @@ class SCIMGroupProvisioningBeanSpec extends Specification {
         scimGroupProvisioning.delete(groupUuid)
 
         then:
-        1 * groupDao.delete(groupUuid) >> { throw new NoResultException() }
+        1 * groupDao.delete(groupUuid) >> { throw new ResourceNotFoundException("Group with id '${groupUuid}' not found") }
         def rnfe = thrown(ResourceNotFoundException)
 
         rnfe.getMessage().with {
