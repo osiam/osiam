@@ -53,6 +53,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Component
 public class InternalAuthenticationProvider implements AuthenticationProvider,
@@ -120,11 +121,9 @@ public class InternalAuthenticationProvider implements AuthenticationProvider,
 
         User authUser = new User.Builder(username).setId(user.getId()).build();
 
-        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-
-        for (Role role : user.getRoles()) {
-            grantedAuthorities.add(new SimpleGrantedAuthority(role.getValue()));
-        }
+        List<GrantedAuthority> grantedAuthorities = user.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getValue()))
+                .collect(Collectors.toList());
 
         return new InternalAuthentication(authUser, password, grantedAuthorities);
     }
