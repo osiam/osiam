@@ -26,7 +26,6 @@ package org.osiam.resources.provisioning;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.osiam.resources.converter.GroupConverter;
 import org.osiam.resources.exception.ResourceExistsException;
-import org.osiam.resources.exception.ResourceNotFoundException;
 import org.osiam.resources.provisioning.update.GroupUpdater;
 import org.osiam.resources.scim.Group;
 import org.osiam.resources.scim.SCIMSearchResult;
@@ -34,21 +33,15 @@ import org.osiam.storage.dao.GroupDao;
 import org.osiam.storage.dao.SearchResult;
 import org.osiam.storage.entities.GroupEntity;
 import org.osiam.storage.query.QueryFilterParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
-
-    private static final Logger logger = LoggerFactory.getLogger(SCIMGroupProvisioning.class);
 
     private final GroupConverter groupConverter;
     private final GroupDao groupDao;
@@ -121,17 +114,7 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
 
     @Override
     public Group getById(String id) {
-        try {
-            return groupConverter.toScim(groupDao.getById(id));
-        } catch (NoResultException nre) {
-            logger.info(nre.getMessage(), nre);
-
-            throw new ResourceNotFoundException(String.format("Group with id '%s' not found", id), nre);
-        } catch (PersistenceException pe) {
-            logger.warn(pe.getMessage(), pe);
-
-            throw new ResourceNotFoundException(String.format("Group with id '%s' not found", id), pe);
-        }
+        return groupConverter.toScim(groupDao.getById(id));
     }
 
     @Override
@@ -160,10 +143,6 @@ public class SCIMGroupProvisioning implements SCIMProvisioning<Group> {
 
     @Override
     public void delete(String id) {
-        try {
-            groupDao.delete(id);
-        } catch (NoResultException nre) {
-            throw new ResourceNotFoundException(String.format("Group with id '%s' not found", id), nre);
-        }
+        groupDao.delete(id);
     }
 }

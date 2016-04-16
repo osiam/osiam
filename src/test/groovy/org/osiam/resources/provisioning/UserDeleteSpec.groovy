@@ -48,7 +48,7 @@ class UserDeleteSpec extends Specification {
         scimUserProvisioning.delete(uuidAsString)
 
         then:
-        1 * userDao.delete(uuidAsString) >> { throw new NoResultException() }
+        1 * userDao.delete(uuidAsString) >> { throw new ResourceNotFoundException("User with id '${uuidAsString}' not found") }
         def rnfe = thrown(ResourceNotFoundException)
 
         rnfe.getMessage().with {

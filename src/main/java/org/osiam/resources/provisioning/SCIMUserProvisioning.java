@@ -26,7 +26,6 @@ package org.osiam.resources.provisioning;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.osiam.resources.converter.UserConverter;
 import org.osiam.resources.exception.ResourceExistsException;
-import org.osiam.resources.exception.ResourceNotFoundException;
 import org.osiam.resources.provisioning.update.UserUpdater;
 import org.osiam.resources.scim.SCIMSearchResult;
 import org.osiam.resources.scim.User;
@@ -34,15 +33,11 @@ import org.osiam.storage.dao.SearchResult;
 import org.osiam.storage.dao.UserDao;
 import org.osiam.storage.entities.UserEntity;
 import org.osiam.storage.query.QueryFilterParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -50,8 +45,6 @@ import java.util.UUID;
 @Service
 @Transactional
 public class SCIMUserProvisioning implements SCIMProvisioning<User> {
-
-    private static final Logger logger = LoggerFactory.getLogger(SCIMUserProvisioning.class);
 
     private final UserConverter userConverter;
     private final UserDao userDao;
@@ -71,17 +64,9 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
 
     @Override
     public User getById(String id) {
-        try {
-            UserEntity userEntity = userDao.getById(id);
-            User user = userConverter.toScim(userEntity);
-            return removePassword(user);
-        } catch (NoResultException nre) {
-            logger.info(nre.getMessage(), nre);
-            throw new ResourceNotFoundException(String.format("User with id '%s' not found", id), nre);
-        } catch (PersistenceException pe) {
-            logger.warn(pe.getMessage(), pe);
-            throw new ResourceNotFoundException(String.format("User with id '%s' not found", id), pe);
-        }
+        UserEntity userEntity = userDao.getById(id);
+        User user = userConverter.toScim(userEntity);
+        return removePassword(user);
     }
 
     @Override
@@ -94,17 +79,7 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
     }
 
     public User getByUsernameWithPassword(String username) {
-        try {
-            return userConverter.toScim(userDao.getByUsername(username));
-        } catch (NoResultException nre) {
-            logger.info(nre.getMessage(), nre);
-            throw new ResourceNotFoundException(String.format("User with username '%s' not found",
-                    username), nre);
-        } catch (PersistenceException pe) {
-            logger.warn(pe.getMessage(), pe);
-            throw new ResourceNotFoundException(String.format("User with username '%s' not found",
-                    username), pe);
-        }
+        return userConverter.toScim(userDao.getByUsername(username));
     }
 
     @Override
@@ -204,11 +179,7 @@ public class SCIMUserProvisioning implements SCIMProvisioning<User> {
 
     @Override
     public void delete(String id) {
-        try {
-            userDao.delete(id);
-        } catch (NoResultException nre) {
-            throw new ResourceNotFoundException(String.format("User with id '%s' not found", id), nre);
-        }
+        userDao.delete(id);
     }
 
     private User removePassword(User user) {
