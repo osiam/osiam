@@ -83,12 +83,12 @@
     <distributionManagement>
         <repository>
             <id>releases</id>
-            <name>public evolvis release repository</name>
-            <url>scpexe://maven-repo.evolvis.org:/var/www/maven_repo/releases</url>
+            <name>osiam-releases</name>
+            <url>https://api.bintray.com/maven/osiam/OSIAM/org.osiam:osiam/;publish=1</url>
         </repository>
         <snapshotRepository>
             <id>snapshots</id>
-            <name>oss-jfrog-artifactory-snapshots</name>
+            <name>osiam-snapshots</name>
             <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
         </snapshotRepository>
     </distributionManagement>
