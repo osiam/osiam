@@ -28,17 +28,15 @@ import org.osiam.resources.exception.InvalidTokenException;
 import org.osiam.resources.provisioning.SCIMUserProvisioning;
 import org.osiam.resources.scim.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * This Controller is used for getting information about the user who initialised the access_token.
@@ -59,8 +57,10 @@ public class MeController extends ResourceController<User> {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<User> getCurrentUser(@RequestHeader("Authorization") String tokenHeader,
-                                               UriComponentsBuilder builder) {
+    public MappingJacksonValue getCurrentUser(@RequestHeader("Authorization") String tokenHeader,
+                                              @RequestParam(required = false) String attributes,
+                                              HttpServletResponse response,
+                                              UriComponentsBuilder builder) {
 
         if (Strings.isNullOrEmpty(tokenHeader)) {
             throw new IllegalArgumentException("No access token provided!"); // This should never happen!
@@ -82,6 +82,8 @@ public class MeController extends ResourceController<User> {
         } else {
             throw new IllegalArgumentException("User not authenticated.");
         }
-        return buildResponseWithLocation(user, builder, HttpStatus.OK);
+
+        response.setHeader("Location", buildLocation(user, builder).toString());
+        return buildResponse(user, attributes);
     }
 }

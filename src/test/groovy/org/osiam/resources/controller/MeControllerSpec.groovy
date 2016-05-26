@@ -53,7 +53,7 @@ class MeControllerSpec extends Specification {
     def id = UUID.randomUUID()
     Authentication userAuthentication = Mock(Authentication)
 
-    def user = new User.Builder(id: id).build()
+    def user = new User.Builder(id: id, displayName: 'Test User', userName: 'testUser').build()
 
     def setup() {
         def filterProvider = new SimpleFilterProvider().setFailOnUnknownId(false)
@@ -76,6 +76,22 @@ class MeControllerSpec extends Specification {
         1 * userProvisioning.getById(user.id) >> user // But the mocking is irrelevant here.
         response.andExpect(status().isOk())
                 .andExpect(header().string('Location', endsWith("/Users/${id}")))
+                .andExpect(jsonPath('$.userName').value("testUser"))
+                .andExpect(jsonPath('$.displayName').value("Test User"))
+    }
+
+    def 'Filtering on attributes for returned user is possible'() {
+        when:
+        def response = mockMvc.perform(get('/Me')
+                .header('Authorization', "Bearer ${accessToken}")
+                .param('attributes', 'userName'))
+        then:
+        1 * resourceServerTokenServices.loadAuthentication(accessToken) >> authentication
+        1 * userAuthentication.getPrincipal() >> user
+        1 * userProvisioning.getById(user.id) >> user
+        response.andExpect(status().isOk())
+                .andExpect(jsonPath('$.userName').value("testUser"))
+                .andExpect(jsonPath('$.displayName').doesNotExist())
     }
 
     def 'Using a client-only access token generates a 400 BAD_REQUEST'() {

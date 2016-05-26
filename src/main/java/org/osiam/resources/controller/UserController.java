@@ -23,9 +23,6 @@
  */
 package org.osiam.resources.controller;
 
-import com.fasterxml.jackson.databind.ser.FilterProvider;
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import org.osiam.auth.token.TokenService;
 import org.osiam.resources.provisioning.SCIMUserProvisioning;
 import org.osiam.resources.scim.SCIMSearchResult;
@@ -35,19 +32,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * This Controller is used to manage User
@@ -74,30 +64,39 @@ public class UserController extends ResourceController<User> {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public User getUser(@PathVariable String id) {
-        return scimUserProvisioning.getById(id);
+    public MappingJacksonValue getUser(@PathVariable String id,
+                                       @RequestParam(required = false) String attributes) {
+        User user = scimUserProvisioning.getById(id);
+        return buildResponse(user, attributes);
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<User> create(@RequestBody @Valid User user, UriComponentsBuilder builder) throws IOException {
+    public ResponseEntity<MappingJacksonValue> create(@RequestBody @Valid User user,
+                                                      @RequestParam(required = false) String attributes,
+                                                      UriComponentsBuilder builder) throws IOException {
         User createdUser = scimUserProvisioning.create(user);
-        return buildResponseWithLocation(createdUser, builder, HttpStatus.CREATED);
+        return buildResponseWithLocation(createdUser, builder, HttpStatus.CREATED, attributes);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<User> replace(@PathVariable String id, @RequestBody @Valid User user, UriComponentsBuilder builder)
+    public ResponseEntity<MappingJacksonValue> replace(@PathVariable String id,
+                                                       @RequestBody @Valid User user,
+                                                       @RequestParam(required = false) String attributes,
+                                                       UriComponentsBuilder builder)
             throws IOException {
         User createdUser = scimUserProvisioning.replace(id, user);
         checkAndHandleDeactivation(id, user);
-        return buildResponseWithLocation(createdUser, builder, HttpStatus.OK);
+        return buildResponseWithLocation(createdUser, builder, HttpStatus.OK, attributes);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
-    public ResponseEntity<User> update(@PathVariable String id, @RequestBody User user, UriComponentsBuilder builder)
+    public ResponseEntity<MappingJacksonValue> update(@PathVariable String id,
+                                                      @RequestBody User user,
+                                                      UriComponentsBuilder builder)
             throws IOException {
         User createdUser = scimUserProvisioning.update(id, user);
         checkAndHandleDeactivation(id, user);
-        return buildResponseWithLocation(createdUser, builder, HttpStatus.OK);
+        return buildResponseWithLocation(createdUser, builder, HttpStatus.OK, ""); // We're going to remove this soon
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
@@ -121,15 +120,8 @@ public class UserController extends ResourceController<User> {
                 Integer.parseInt(requestParameters.getOrDefault("count", "" + SCIMSearchResult.MAX_RESULTS)),
                 Integer.parseInt(requestParameters.getOrDefault("startIndex", "1"))); // scim default
 
-        MappingJacksonValue wrapper = new MappingJacksonValue(scimSearchResult);
-        if (requestParameters.containsKey("attributes")) {
-            Set<String> attributes = extractAttributes(requestParameters.get("attributes"));
-            FilterProvider filterProvider = new SimpleFilterProvider().addFilter(
-                    "attributeFilter", SimpleBeanPropertyFilter.filterOutAllExcept(attributes)
-            );
-            wrapper.setFilters(filterProvider);
-        }
-        return wrapper;
+        String attributes = (requestParameters.containsKey("attributes") ? requestParameters.get("attributes") : "");
+        return buildResponse(scimSearchResult, attributes);
     }
 
     /*

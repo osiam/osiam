@@ -28,6 +28,9 @@ OSIAM 2.5 to OSIAM 3.0, see the [migration notes](docs/migration.md).
 - Connections via AJP can be used now. This is disabled by default. See
   [Enable AJP support](docs/detailed-reference-installation.md#enable-ajp-support).
 - Set the logging level with the configuration property `osiam.logging.level`.
+- It's possible to filter all returned resources returned by request to the `/Users`
+  and `/Groups` URLs, including searches, by passing a comma separated list of
+  attributes to be included in the returned resources.
 
 ### Changes
 

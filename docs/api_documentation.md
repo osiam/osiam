@@ -18,14 +18,14 @@
     - [Service provider configuration](#service-provider-configuration)
     - [Search](#search)
         - [Search filtering including logical operators](#search-filtering-including-logical-operators)
-        - [Limiting the output to predefined attributes] (#limiting-the-output-to-predefined-attributes)
+        - [Limiting the output to predefined attributes](#limiting-the-output-to-predefined-attributes)
         - [Sorting](#sorting)
         - [Paging](#paging)
     - [User management](#user-management)
-        - [Get a single User] (#get-a-single-user)
+        - [Get a single User](#get-a-single-user)
         - [Get the User of the current accessToken](#get-the-user-of-the-current-accesstoken)
-        - [Create a new User] (#create-a-new-user)
-        - [Replace an existing User] (#replace-an-existing-user)
+        - [Create a new User](#create-a-new-user)
+        - [Replace an existing User](#replace-an-existing-user)
         - [Update a User](#update-a-user)
         - [Get the Authenticated User](#get-the-authenticated-user)
         - [Delete a User](#delete-a-user)
@@ -351,8 +351,8 @@ tokens are bound to a client or a user and need specific scopes, which are
 * xmlDataFormat is not supported
 
 ### OSIAM's Known Limitations
-* the [etag](http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.11) is
-not supported yet, but it is already in OSIAMs backlog
+* [etag](http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.11) for resource
+versioning is not supported yet, but it is already in OSIAMs backlog
 
 ### Unsupported Interfaces
 * SCIM bulk actions: Is not yet implemented, but it is on the roadmap
@@ -370,7 +370,7 @@ http://OSIAM_HOST:8080/osiam/ServiceProviderConfig
 ```
 
 ### Search
-OSIAM supports search on both SCIM resource types, user and group.
+OSIAM supports search for both SCIM resource types, user and group.
 * Users: 
 ```
 http://OSIAM_HOST:8080/osiam/Users
@@ -551,12 +551,11 @@ http://OSIAM_HOST:8080/osiam/Users?access_token=$YOUR_ACCESSTOKEN&count=5&startI
 
 ### User management
 
-This section will describe the handling of user with OSIAM.
+This section describes the handling of user with OSIAM.
 
-#### Get a single User
+#### Retrieving a single User
 
-To get a single user you need to send a GET request to the URL providing the
-user's ID
+Retrieving a single user is done by sending a GET request to the `/Users` URL providing the users id
 
 ```http
 http://OSIAM_HOST:8080/osiam/Users/ID
@@ -571,6 +570,16 @@ curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Au
 See [SCIMv2 specification]
 (http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.2.1) for further
 details.
+
+##### Filtering the output with predefined attributes
+
+It is possible to filter the returned resource by a list of
+attributes. To define more than one separate them with comma using the
+`attributes` parameter.
+
+```sh
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET http://localhost:8080/osiam/Users/$ID?attributes=userName,meta.created
+```
 
 #### Create a new User
 
@@ -593,6 +602,16 @@ See [scim 2 rest spec]
 (http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.1) for further
 details.
 
+##### Filtering the output with predefined attributes
+
+It is possible to filter the returned resource by a list of
+attributes. To define more than one separate them with comma using the
+`attributes` parameter.
+
+```sh
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X POST http://localhost:8080/osiam/Users?attributes=userName,meta.created -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"externalId":"external_id","userName":"arthur","password":"dent"}'
+```
+
 #### Replace an existing User
 To replace an existing user you need to send the user input as json via put to
 the url
@@ -612,6 +631,16 @@ See [scim 2 rest spec]
 (http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.3.1) for further
 details.
 
+##### Filtering the output with predefined attributes
+
+It is possible to filter the returned resource by a list of
+attributes. To define more than one separate them with comma using the
+`attributes` parameter.
+
+```sh
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT http://localhost:8080/osiam/Users?attributes=userName,meta.created -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"externalId":"ne_externalId","userName":"arthur","password":"dent"}'
+```
+
 #### Update a User
 To update an existing user you need to send the fields you which to update or
 delete as json via patch to the url
@@ -620,7 +649,7 @@ delete as json via patch to the url
 http://OSIAM_HOST:8080/osiam/Users/$ID
 ```
 
-the response will be the updated user in json format.
+the response is the updated user in JSON format.
 
 e.g.:
 ```sh
@@ -654,9 +683,20 @@ curl -i -H "Accept: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOK
 
 The response is the json representation of the user currently authenticated with the provided access token.
 
+##### Filtering the output with predefined attributes
+
+It is possible to filter the returned resource by a list of
+attributes. To define more than one separate them with comma using the
+`attributes` parameter.
+
+```sh
+curl -i -H "Accept: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET http://localhost:8080/osiam/Me?attributes=displayName,meta.created
+```
+
+
 ### Group management
 
-This section will describe the handling of user in the osiam context.
+This section describes the handling of user in the osiam context.
 
 #### Get a single Group
 
@@ -678,6 +718,16 @@ See [scim 2 rest spec]
 (http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.2.1) for further
 details.
 
+##### Filtering the output with predefined attributes
+
+It is possible to filter the returned resource by a list of
+attributes. To define more than one separate them with comma using the
+`attributes` parameter.
+
+```sh
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET http://localhost:8080/osiam/Groups/$ID?attributes=displayName,meta.created
+```
+
 #### Create a new Group
 To create a new group you need to send the group input as json via post to the
 url
@@ -698,6 +748,16 @@ See [scim 2 rest spec]
 (http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.1) for further
 details.
 
+##### Filtering the output with predefined attributes
+
+It is possible to filter the returned resource by a list of
+attributes. To define more than one separate them with comma using the
+`attributes` parameter.
+
+```sh
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X POST http://localhost:8080/osiam/Groups?attributes=deisplayName,meta.created -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:Group"],"displayName":"adminsGroup"}'
+```
+
 #### Replace an existing Group
 To replace a group you need to send the group input as json via put to the url
 
@@ -716,6 +776,15 @@ See [scim 2 rest spec]
 (http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.3.1) for further
 details.
 
+##### Filtering the output with predefined attributes
+
+It is possible to filter the returned resource by a list of
+attributes. To define more than one separate them with comma using the
+`attributes` parameter.
+
+```sh
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT http://localhost:8080/osiam/Groups?attributes=deisplayName,meta.created -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:Group"],"displayName":"newDisplayName"}'
+```
 #### Update a Group
 To update a group you need to send the fields you which to update oder delete
 as json via patch to the url
