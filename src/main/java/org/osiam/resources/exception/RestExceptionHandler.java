@@ -29,6 +29,7 @@ import org.osiam.auth.exception.ClientAlreadyExistsException;
 import org.osiam.auth.exception.ClientNotFoundException;
 import org.osiam.auth.exception.JsonErrorResult;
 import org.osiam.resources.scim.ErrorResponse;
+import org.osiam.security.controller.TokenController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -39,11 +40,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ControllerAdvice({
-        "org.osiam.auth.oauth_client",
-        "org.osiam.metrics.controller",
-        "org.osiam.resources.controller"
-})
+@ControllerAdvice(
+        basePackages = {"org.osiam.auth.oauth_client", "org.osiam.metrics.controller", "org.osiam.resources.controller" },
+        assignableTypes = TokenController.class
+)
 public class RestExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(RestExceptionHandler.class);

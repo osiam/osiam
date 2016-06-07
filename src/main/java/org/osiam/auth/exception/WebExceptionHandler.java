@@ -23,6 +23,8 @@
  */
 package org.osiam.auth.exception;
 
+import org.osiam.security.controller.AccessConfirmationController;
+import org.osiam.security.controller.LoginController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -30,7 +32,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
-@ControllerAdvice("org.osiam.security.controller")
+@ControllerAdvice(
+        assignableTypes = {LoginController.class, AccessConfirmationController.class}
+)
 public class WebExceptionHandler extends SimpleMappingExceptionResolver {
 
     private static final Logger logger = LoggerFactory.getLogger(WebExceptionHandler.class.getName());
