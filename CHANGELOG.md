@@ -31,6 +31,7 @@ OSIAM 2.5 to OSIAM 3.0, see the [migration notes](docs/migration.md).
 - It's possible to filter all returned resources returned by request to the `/Users`
   and `/Groups` URLs, including searches, by passing a comma separated list of
   attributes to be included in the returned resources.
+- The display attribute of a multi-valued attribute get persisted from now on.
 
 ### Changes
 
@@ -68,6 +69,7 @@ OSIAM 2.5 to OSIAM 3.0, see the [migration notes](docs/migration.md).
 - Always return the `id` attribute, when searching for `User`s.
 - Return a SCIM 2 compliant `User` when querying `/Me`. This replaces the old Facebook
   connector.
+- Use JSON error messages with `/token/*` endpoints instead of HTML documents.
 
 ## Old Versions
 
