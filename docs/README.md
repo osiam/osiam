@@ -2,10 +2,6 @@
 
 This is the central place for the OSIAM documentation. We have several types of documentation:
 
-## Getting Started
-* [OSIAM in 5 Minutes using Docker and Java](osiam-in-5-minutes.md)
-* [10 minutes quickstart with Vagrant](10-minutes-quickstart.md)
-
 ## What and why?
 * [OSIAM Overview](OSIAM-Overview.md)
 * [Single app use case](single-app-use-case.md)
