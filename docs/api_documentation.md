@@ -86,6 +86,11 @@ OSIAM.
 The user needs to be stored in the OSIAM database, including an authentication
 parameter (e.g. a password).
 
+**NOTE:** The URLs used in this document are valid for a standalone deployment only.
+If you deploy OSIAM into a Servlet container, i.e. Tomcat, you have to append the context root after the hostname, e.g.:
+`http://localhost:8080/ServiceProviderConfig` becomes `http://localhost:8080/osiam/ServiceProviderConfig`.
+The context root is probably `osiam` by default.
+
 ## OAuth2
 
 ### Supported Grants
@@ -127,7 +132,7 @@ The client that wants to get the authorization code redirects the user's
 browser to the authorization server providing several parameters shown in the
 example request below:
 
-    https://OSIAM_HOST:8080/osiam/oauth/authorize?client_id=<CLIENT_ID>&response_type=code&redirect_uri=<CLIENT_REDIRECT_URI>&scope=<SCOPES>
+    http://OSIAM_HOST:8080/oauth/authorize?client_id=<CLIENT_ID>&response_type=code&redirect_uri=<CLIENT_REDIRECT_URI>&scope=<SCOPES>
 
 This request an all consequent examples are based on an encrypted connection,
 if you do not have SSL enabled on your application server, the protocol prefix
@@ -164,7 +169,7 @@ request the access token. This is done via the
 access token request below:
 
 ```sh
-curl -H "Authorization: Basic <BASE64_CLIENT_CREDENTIALS>" -X POST -d "code=<AUTH_CODE>&grant_type=authorization_code&redirect_uri=<CLIENT_PROVIDED_URI>" http://OSIAM_HOST:8080/osiam/oauth/token
+curl -H "Authorization: Basic <BASE64_CLIENT_CREDENTIALS>" -X POST -d "code=<AUTH_CODE>&grant_type=authorization_code&redirect_uri=<CLIENT_PROVIDED_URI>" http://OSIAM_HOST:8080/oauth/token
 ```
 
 The parameters (beside OSIAM_HOST are):
@@ -188,7 +193,7 @@ required. is necessary, only the
 [HTTP Basic Authentication](http://tools.ietf.org/html/rfc2617) is used.
 
 ```sh
-curl -H "Authorization: Basic <BASE64_CLIENT_CREDENTIALS>" -X POST -d "grant_type=password&username=<USERNAME>&password=<PASSWORD>&scope=<SCOPES>" http://OSIAM_HOST:8080/osiam/oauth/token
+curl -H "Authorization: Basic <BASE64_CLIENT_CREDENTIALS>" -X POST -d "grant_type=password&username=<USERNAME>&password=<PASSWORD>&scope=<SCOPES>" http://OSIAM_HOST:8080/oauth/token
 ```
 
 The parameters are similar to the access token request from the authorization
@@ -200,7 +205,7 @@ An example based on [OSIAM's default setup]
 (https://github.com/osiam/osiam/blob/master/docs/detailed-reference-installation.md#default-setup):
 
 ```sh
-curl -H "Authorization: Basic ZXhhbXBsZS1jbGllbnQ6c2VjcmV0" -X POST -d "grant_type=password&username=admin&password=koala&scope=ADMIN" http://localhost:8080/osiam/oauth/token
+curl -H "Authorization: Basic ZXhhbXBsZS1jbGllbnQ6c2VjcmV0" -X POST -d "grant_type=password&username=admin&password=koala&scope=ADMIN" http://localhost:8080/oauth/token
 ```
 
 ### Client Credentials Grant
@@ -212,14 +217,14 @@ required, only the [Access Token Request]
 
 ```sh
 curl -H "Authorization: Basic <BASE64_CLIENT_CREDENTIALS>" -X POST -d "grant_type=client_credentials&scope=<SCOPES>"
-http://OSIAM_HOST:8080/osiam/oauth/token
+http://OSIAM_HOST:8080/oauth/token
 ```
 
 An example based on [OSIAM's default setup]
 (https://github.com/osiam/osiam/blob/master/docs/detailed-reference-installation.md#default-setup)
 
 ```sh
-curl -H "Authorization: Basic ZXhhbXBsZS1jbGllbnQ6c2VjcmV0" -X POST -d "grant_type=client_credentials&scope=ADMIN" http://localhost:8080/osiam/oauth/token
+curl -H "Authorization: Basic ZXhhbXBsZS1jbGllbnQ6c2VjcmV0" -X POST -d "grant_type=client_credentials&scope=ADMIN" http://localhost:8080/oauth/token
 ```
 
 ## Scopes
@@ -242,7 +247,7 @@ The client management is a osiam defined endpoint to manage the clients needed
 for the oauth flow.
 
 URI:
-    http://OSIAM_HOST:8080/osiam/Client
+    http://OSIAM_HOST:8080/Client
 
 The client role in oauth is described as follows:
 
@@ -277,39 +282,39 @@ OSIAM holds this information in the user's session.
 
 To get a single client you need to send a GET request to the url
 
-    http://OSIAM_HOST:8080/osiam/Client/$ID
+    http://OSIAM_HOST:8080/Client/$ID
 
 the response will be a osiam client in json format.
 
 e.g.:
 
-    curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET http://localhost:8080/osiam/Client/$ID
+    curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET http://localhost:8080/Client/$ID
 
 ### Create a client
 
 To create a client you need to send the client input as json via post to the
 url
 
-    http://OSIAM_HOST:8080/osiam/Client
+    http://OSIAM_HOST:8080/Client
 
 the response will be the created client in json format.
 
 e.g.:
 
-    curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X POST http://localhost:8080/osiam/Client -d '{"id": "client_id", "accessTokenValiditySeconds": "1337", "refreshTokenValiditySeconds": "1337", "redirectUri": "http://OSIAM_HOST:5000/stuff", "scope": ["ADMIN", "ME"], "validityInSeconds": "1337", "implicit": "false", "grants": ["authorization_code", "client_credentials", "password", "refresh-token"]}'
+    curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X POST http://localhost:8080/Client -d '{"id": "client_id", "accessTokenValiditySeconds": "1337", "refreshTokenValiditySeconds": "1337", "redirectUri": "http://OSIAM_HOST:5000/stuff", "scope": ["ADMIN", "ME"], "validityInSeconds": "1337", "implicit": "false", "grants": ["authorization_code", "client_credentials", "password", "refresh-token"]}'
 
 ### Replace an client
 
 To replace a client you need to send the client input as json via put to the url
 
-    http://OSIAM_HOST:8080/osiam/Client/$ID
+    http://OSIAM_HOST:8080/Client/$ID
 
 the response will be the replaced client in json format.
 
 e.g.:
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT http://localhost:8080/osiam/Client/$ID
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT http://localhost:8080/Client/$ID
 -d '{"id": "client_id", "accessTokenValiditySeconds": "1337", "refreshTokenValiditySeconds": "1337", "redirectUri": "http://localhost:5000/stuff", "scope": ["ADMIN", "ME"], "validityInSeconds": "1337", "implicit": "false", "grants": ["authorization_code", "client_credentials", "password", "refresh-token"]}'
 ```
 
@@ -317,13 +322,13 @@ curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Au
 
 To delete a client you need to call the url via delete
 
-    http://OSIAM_HOST:8080/osiam/Client/$ID
+    http://OSIAM_HOST:8080/Client/$ID
 
 the response will be status.
 
 e.g.:
 
-    curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X DELETE http://OSIAM_HOST:8080/osiam/Client/$ID
+    curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X DELETE http://OSIAM_HOST:8080/Client/$ID
 
 ## SCIM
 
@@ -331,7 +336,7 @@ All SCIM endpoints are secured with OAuth 2.0, so you will at least have to
 send an access token in order get the expected response:
 
 ```sh
-curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN" http://OSIAM_HOST:8080/osiam/Users/ID
+curl -H "Authorization: Bearer YOUR_ACCESS_TOKEN" http://OSIAM_HOST:8080/Users/ID
 ```
 
 The parameters are:
@@ -366,18 +371,18 @@ The following URI provides the service provider configuration of the addressed
 server:
 
 ```http
-http://OSIAM_HOST:8080/osiam/ServiceProviderConfig
+http://OSIAM_HOST:8080/ServiceProviderConfig
 ```
 
 ### Search
 OSIAM supports search for both SCIM resource types, user and group.
 * Users: 
 ```
-http://OSIAM_HOST:8080/osiam/Users
+http://OSIAM_HOST:8080/Users
 ```
 * Groups
 ```
-http://OSIAM_HOST:8080/osiam/Groups
+http://OSIAM_HOST:8080/Groups
 ```
 
 #### Parser grammar for search
@@ -474,39 +479,39 @@ the search value, the input must contain \" for each desired quote.**
 Here are some examples:
 
 ```http
-http://OSIAM_HOST:8080/osiam/Users?access_token=YOUR_ACCESSTOKEN&filter=userName%20eq%20"TheUserName"
+http://OSIAM_HOST:8080/Users?access_token=YOUR_ACCESSTOKEN&filter=userName%20eq%20"TheUserName"
 
-http://OSIAM_HOST:8080/osiam/Users?access_token=YOUR_ACCESSTOKEN&filter=userName%20co%20"someValue"
+http://OSIAM_HOST:8080/Users?access_token=YOUR_ACCESSTOKEN&filter=userName%20co%20"someValue"
 
-http://OSIAM_HOST:8080/osiam/Users?access_token=YOUR_ACCESSTOKEN&filter=userName%20sw%20"someValue"
+http://OSIAM_HOST:8080/Users?access_token=YOUR_ACCESSTOKEN&filter=userName%20sw%20"someValue"
 
-http://OSIAM_HOST:8080/osiam/Users?access_token=YOUR_ACCESSTOKEN&filter=displayName%20pr
+http://OSIAM_HOST:8080/Users?access_token=YOUR_ACCESSTOKEN&filter=displayName%20pr
 
-http://OSIAM_HOST:8080/osiam/Users?access_token=YOUR_ACCESSTOKEN&filter=meta.created%20gt%20"2013-05-23T13:12:45.672#;4302:00"
+http://OSIAM_HOST:8080/Users?access_token=YOUR_ACCESSTOKEN&filter=meta.created%20gt%20"2013-05-23T13:12:45.672#;4302:00"
 
-http://OSIAM_HOST:8080/osiam/Users?access_token=YOUR_ACCESSTOKEN&filter=meta.created%20ge%20<an existing time>
+http://OSIAM_HOST:8080/Users?access_token=YOUR_ACCESSTOKEN&filter=meta.created%20ge%20<an existing time>
 
-http://OSIAM_HOST:8080/osiam/Users?access_token=YOUR_ACCESSTOKEN&filter=meta.created%20lt%20"2013-05-23T13:12:45.672#;4302:00"
+http://OSIAM_HOST:8080/Users?access_token=YOUR_ACCESSTOKEN&filter=meta.created%20lt%20"2013-05-23T13:12:45.672#;4302:00"
 
-http://OSIAM_HOST:8080/osiam/Users?access_token=YOUR_ACCESSTOKEN&filter=meta.created%20le%20<an existing time>
+http://OSIAM_HOST:8080/Users?access_token=YOUR_ACCESSTOKEN&filter=meta.created%20le%20<an existing time>
 ```
 
 Additionally "AND" and "OR" as logical operators are supported, including
 grouping with parentheses.
 
 ```http
-http://OSIAM_HOST:8080/osiam/Users?access_token=YOUR_ACCESSTOKEN&filter=userName%20eq%20"TheUserName"%20and%20meta.created%20lt%20"2013-05-23T13:12:45.672#;4302:00"
+http://OSIAM_HOST:8080/Users?access_token=YOUR_ACCESSTOKEN&filter=userName%20eq%20"TheUserName"%20and%20meta.created%20lt%20"2013-05-23T13:12:45.672#;4302:00"
 
-http://OSIAM_HOST:8080/osiam/Users?access_token=YOUR_ACCESSTOKEN&filter=userName%20eq%20"TheUserName"%20or%20userName%20eq%20"TheUserName1"
+http://OSIAM_HOST:8080/Users?access_token=YOUR_ACCESSTOKEN&filter=userName%20eq%20"TheUserName"%20or%20userName%20eq%20"TheUserName1"
 
-http://OSIAM_HOST:8080/osiam/Users?access_token=YOUR_ACCESSTOKEN&filter=(userName%20eq%20"TheUserName"%20or%20userName%20eq%20"TheUserName1")%20and%20meta.created%20gt%20"2013-05-23T13:12:45.672#;4302:00"
+http://OSIAM_HOST:8080/Users?access_token=YOUR_ACCESSTOKEN&filter=(userName%20eq%20"TheUserName"%20or%20userName%20eq%20"TheUserName1")%20and%20meta.created%20gt%20"2013-05-23T13:12:45.672#;4302:00"
 ```
 
 Also the "NOT" operator is supported. The parentheses are required and not
 optional. The "NOT" can also include filters already combined with "AND" and "OR".
 
 ```http
-http://OSIAM_HOST:8080/osiam/Users?access_token=YOUR_ACCESSTOKEN&filter=active%20eq%20"true"%20and%20not%20(groups.display%20eq%20"TheGroupName")
+http://OSIAM_HOST:8080/Users?access_token=YOUR_ACCESSTOKEN&filter=active%20eq%20"true"%20and%20not%20(groups.display%20eq%20"TheGroupName")
 ```
 
 #### Limiting the output to predefined attributes
@@ -516,7 +521,7 @@ attributes. To define more than one separate them with comma using the
 `attributes` parameter.
 
 ```http
-http://OSIAM_HOST:8080/osiam/Users?access_token=YOUR_ACCESSTOKEN&attributes=userName,displayName,meta.created
+http://OSIAM_HOST:8080/Users?access_token=YOUR_ACCESSTOKEN&attributes=userName,displayName,meta.created
 ```
 
 #### Sorting
@@ -528,9 +533,9 @@ following parameters:
 "id"
 
 ```http
-http://OSIAM_HOST:8080/osiam/Users?access_token=YOUR_ACCESSTOKEN&sortBy=meta.created&sortOrder=ascending
+http://OSIAM_HOST:8080/Users?access_token=YOUR_ACCESSTOKEN&sortBy=meta.created&sortOrder=ascending
 
-http://OSIAM_HOST:8080/osiam/Users?access_token=YOUR_ACCESSTOKEN&sortBy=meta.created&sortOrder=descending
+http://OSIAM_HOST:8080/Users?access_token=YOUR_ACCESSTOKEN&sortBy=meta.created&sortOrder=descending
 ```
 
 #### Paging
@@ -544,9 +549,9 @@ To paginate through the results increase the startIndex to the next desired
 position.
 
 ```http
-http://OSIAM_HOST:8080/osiam/Users?access_token=$YOUR_ACCESSTOKEN&count=5&startIndex=0
+http://OSIAM_HOST:8080/Users?access_token=$YOUR_ACCESSTOKEN&count=5&startIndex=0
 
-http://OSIAM_HOST:8080/osiam/Users?access_token=$YOUR_ACCESSTOKEN&count=5&startIndex=5
+http://OSIAM_HOST:8080/Users?access_token=$YOUR_ACCESSTOKEN&count=5&startIndex=5
 ```
 
 ### User management
@@ -558,14 +563,14 @@ This section describes the handling of user with OSIAM.
 Retrieving a single user is done by sending a GET request to the `/Users` URL providing the users id
 
 ```http
-http://OSIAM_HOST:8080/osiam/Users/ID
+http://OSIAM_HOST:8080/Users/ID
 ```
 
 The response contains the SCIM compliant record of the user from the OSIAM
 database.
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET http://localhost:8080/osiam/Users/$ID
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET http://localhost:8080/Users/$ID
 ```
 See [SCIMv2 specification]
 (http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.2.1) for further
@@ -578,7 +583,7 @@ attributes. To define more than one separate them with comma using the
 `attributes` parameter.
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET http://localhost:8080/osiam/Users/$ID?attributes=userName,meta.created
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET http://localhost:8080/Users/$ID?attributes=userName,meta.created
 ```
 
 #### Create a new User
@@ -587,7 +592,7 @@ To create a new user you need to send the user input as JSON via POST to the
 URL
 
 ```http
-http://OSIAM_HOST:8080/osiam/Users
+http://OSIAM_HOST:8080/Users
 ```
 
 the response will be the created user.
@@ -595,7 +600,7 @@ the response will be the created user.
 e.g.:
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X POST http://localhost:8080/osiam/Users -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"externalId":"external_id","userName":"arthur","password":"dent"}'
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X POST http://localhost:8080/Users -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"externalId":"external_id","userName":"arthur","password":"dent"}'
 ```
 
 See [scim 2 rest spec]
@@ -609,7 +614,7 @@ attributes. To define more than one separate them with comma using the
 `attributes` parameter.
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X POST http://localhost:8080/osiam/Users?attributes=userName,meta.created -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"externalId":"external_id","userName":"arthur","password":"dent"}'
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X POST http://localhost:8080/Users?attributes=userName,meta.created -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"externalId":"external_id","userName":"arthur","password":"dent"}'
 ```
 
 #### Replace an existing User
@@ -617,14 +622,14 @@ To replace an existing user you need to send the user input as json via put to
 the url
 
 ```http
-http://OSIAM_HOST:8080/osiam/Users/$ID
+http://OSIAM_HOST:8080/Users/$ID
 ```
 
 the response will be the replaced user in json format.
 
 e.g.:
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT http://localhost:8080/osiam/Users/$ID -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"], "externalId":"new_external_id","userName":"arthur","password":"dent"}'
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT http://localhost:8080/Users/$ID -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"], "externalId":"new_external_id","userName":"arthur","password":"dent"}'
 ```
 
 See [scim 2 rest spec]
@@ -638,7 +643,7 @@ attributes. To define more than one separate them with comma using the
 `attributes` parameter.
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT http://localhost:8080/osiam/Users?attributes=userName,meta.created -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"externalId":"ne_externalId","userName":"arthur","password":"dent"}'
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT http://localhost:8080/Users?attributes=userName,meta.created -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"externalId":"ne_externalId","userName":"arthur","password":"dent"}'
 ```
 
 #### Update a User
@@ -646,14 +651,14 @@ To update an existing user you need to send the fields you which to update or
 delete as json via patch to the url
 
 ```http
-http://OSIAM_HOST:8080/osiam/Users/$ID
+http://OSIAM_HOST:8080/Users/$ID
 ```
 
 the response is the updated user in JSON format.
 
 e.g.:
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PATCH http://localhost:8080/osiam/Users/$ID -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"], "externalId":"new_external_id"}'
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PATCH http://localhost:8080/Users/$ID -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"], "externalId":"new_external_id"}'
 ```
 See [scim 2 rest spec]
 (http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.3.2) for further
@@ -663,7 +668,7 @@ details.
 To delete an existing user you need to call the url via delete
 
 ```http
-http://OSIAM_HOST:8080/osiam/Users/$ID
+http://OSIAM_HOST:8080/Users/$ID
 ```
 
 the response will be the http status.
@@ -671,14 +676,14 @@ the response will be the http status.
 e.g.:
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X DELETE http://localhost:8080/osiam/Users/$ID
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X DELETE http://localhost:8080/Users/$ID
 ```
 
 ### Get the Authenticated User
 To get the user authenticated by a given access token it is possible to to query the `/Me` url:
 
 ```sh
-curl -i -H "Accept: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET http://localhost:8080/osiam/Me
+curl -i -H "Accept: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET http://localhost:8080/Me
 ```
 
 The response is the json representation of the user currently authenticated with the provided access token.
@@ -690,7 +695,7 @@ attributes. To define more than one separate them with comma using the
 `attributes` parameter.
 
 ```sh
-curl -i -H "Accept: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET http://localhost:8080/osiam/Me?attributes=displayName,meta.created
+curl -i -H "Accept: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET http://localhost:8080/Me?attributes=displayName,meta.created
 ```
 
 
@@ -703,7 +708,7 @@ This section describes the handling of user in the osiam context.
 To get a single group you need to send a GET request to the url
 
 ```http
-http://OSIAM_HOST:8080/osiam/Groups/$ID
+http://OSIAM_HOST:8080/Groups/$ID
 ```
 
 the response will be a osiam group in json format.
@@ -711,7 +716,7 @@ the response will be a osiam group in json format.
 e.g.:
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET http://localhost:8080/osiam/Groups/$ID
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET http://localhost:8080/Groups/$ID
 ```
 
 See [scim 2 rest spec]
@@ -725,7 +730,7 @@ attributes. To define more than one separate them with comma using the
 `attributes` parameter.
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET http://localhost:8080/osiam/Groups/$ID?attributes=displayName,meta.created
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X GET http://localhost:8080/Groups/$ID?attributes=displayName,meta.created
 ```
 
 #### Create a new Group
@@ -733,7 +738,7 @@ To create a new group you need to send the group input as json via post to the
 url
 
 ```http
-http://OSIAM_HOST:8080/osiam/Groups
+http://OSIAM_HOST:8080/Groups
 ```
 
 the response will be the created group in json format.
@@ -741,7 +746,7 @@ the response will be the created group in json format.
 e.g.:
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X POST http://localhost:8080/osiam/Groups -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:Group"],"displayName":"adminsGroup"}'
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X POST http://localhost:8080/Groups -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:Group"],"displayName":"adminsGroup"}'
 ```
 
 See [scim 2 rest spec]
@@ -755,14 +760,14 @@ attributes. To define more than one separate them with comma using the
 `attributes` parameter.
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X POST http://localhost:8080/osiam/Groups?attributes=deisplayName,meta.created -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:Group"],"displayName":"adminsGroup"}'
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X POST http://localhost:8080/Groups?attributes=deisplayName,meta.created -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:Group"],"displayName":"adminsGroup"}'
 ```
 
 #### Replace an existing Group
 To replace a group you need to send the group input as json via put to the url
 
 ```http
-http://OSIAM_HOST:8080/osiam/Groups/$ID
+http://OSIAM_HOST:8080/Groups/$ID
 ```
 
 the response will be the replaced group in json format.
@@ -770,7 +775,7 @@ the response will be the replaced group in json format.
 e.g.:
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT http://localhost:8080/osiam/Groups/$ID -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:Group"], "displayName":"Group1"}'
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT http://localhost:8080/Groups/$ID -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:Group"], "displayName":"Group1"}'
 ```
 See [scim 2 rest spec]
 (http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.3.1) for further
@@ -783,14 +788,14 @@ attributes. To define more than one separate them with comma using the
 `attributes` parameter.
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT http://localhost:8080/osiam/Groups?attributes=deisplayName,meta.created -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:Group"],"displayName":"newDisplayName"}'
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT http://localhost:8080/Groups?attributes=deisplayName,meta.created -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:Group"],"displayName":"newDisplayName"}'
 ```
 #### Update a Group
 To update a group you need to send the fields you which to update oder delete
 as json via patch to the url
 
 ```http
-http://OSIAM_HOST:8080/osiam/Groups/$ID
+http://OSIAM_HOST:8080/Groups/$ID
 ```
 
 the response will be the updated group in json format.
@@ -798,7 +803,7 @@ the response will be the updated group in json format.
 e.g.:
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PATCH http://localhost:8080/osiam/Groups/$ID -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:Group"], "displayName":"adminsGroup"}'
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PATCH http://localhost:8080/Groups/$ID -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:Group"], "displayName":"adminsGroup"}'
 ```
 See [scim 2 rest spec]
 (http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.3.2) for further
@@ -808,7 +813,7 @@ details.
 To delete a group you need to call the url via delete
 
 ```http
-http://OSIAM_HOST:8080/osiam/Groups/$ID
+http://OSIAM_HOST:8080/Groups/$ID
 ```
 
 the response will be status.
@@ -816,5 +821,5 @@ the response will be status.
 e.g.:
 
 ```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X DELETE http://localhost:8080/osiam/Groups/$ID
+curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X DELETE http://localhost:8080/Groups/$ID
 ```
