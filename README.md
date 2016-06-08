@@ -50,8 +50,9 @@ with your application. Read the
 
 ## Snapshots
 
-To use the latest snapshot of OSIAM just download it from the oss jfrog
-repository: https://oss.jfrog.org/artifactory/repo/org/osiam/osiam
+To use the latest snapshot of OSIAM just download it from Bintray:
+https://dl.bintray.com/osiam/downloads/osiam/latest/osiam-latest.war
+([GPG Signature](https://dl.bintray.com/osiam/downloads/osiam/latest/osiam-latest.war.asc))
 
 ## Issue Tracker
 
