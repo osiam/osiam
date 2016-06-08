@@ -20,12 +20,34 @@ Watch [our blog](http://osiam.github.io/) to stay informed about releases and up
 * [Publish your app's API with OSIAM](docs/protected-api-use-case.md) as auth
   service for 3rd-parties and allow safe access to your user's data.
 
-## Get started
+## Quick Start
 
-You want to try OSIAM without much effort? Get started with
-[OSIAM in 5 Minutes](docs/osiam-in-5-minutes.md) using Docker and Java. Don't
-like Docker? No problem! Take the
-[10 minutes quickstart](docs/10-minutes-quickstart.md) with Vagrant.
+[Download](https://dl.bintray.com/osiam/downloads/osiam/latest/osiam-latest.war) the latest version of OSIAM:
+
+```
+curl -L https://dl.bintray.com/osiam/downloads/osiam/latest/osiam-latest.war -o osiam.war
+```
+
+Make the `.war` file executable:
+
+```
+chmod +x osiam.war
+```
+
+Start OSIAM:
+
+```
+./osiam.war
+```
+
+After some seconds, OSIAM should be fully running. You can now retrieve your first access token:
+
+```
+curl -H "Authorization: Basic ZXhhbXBsZS1jbGllbnQ6c2VjcmV0" -X POST -d "grant_type=client_credentials&scope=ADMIN" http://localhost:8080/oauth/token
+```
+
+You can now start to setup OSIAM, by changing the administrator's password and add your own OAuth client.
+Please see the [Installation and Configuration Manual](docs/detailed-reference-installation.md#customize-setup) for details.
 
 ## Documentation
 
