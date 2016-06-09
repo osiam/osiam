@@ -10,6 +10,8 @@ dependencies:
     - sudo jpm install com.codacy:codacy-coverage-reporter:assembly
 
 test:
+  pre:
+    - test -z ${CIRCLE_TAG} || mvn versions:set -DnewVersion=${CIRCLE_TAG}
   override:
     - mvn verify
   post:
@@ -20,12 +22,20 @@ test:
     - test -z $COVERALLS_REPO_TOKEN || mvn coveralls:report -DrepoToken=$COVERALLS_REPO_TOKEN
 
 deployment:
- staging:
-   branch: master
-   commands:
-     - wget https://raw.githubusercontent.com/osiam/circleci/master/settings.xml
-     - mvn deploy -s settings.xml -DskipTests
-     - curl -T target/osiam.war -u${BINTRAY_USER}:${BINTRAY_KEY} -H "X-Bintray-Package:osiam" -H "X-Bintray-Version:latest" -H "X-Bintray-Publish:1" -H "X-Bintray-Override:1" https://api.bintray.com/content/osiam/downloads/osiam/latest/osiam-latest.war
-     - curl -X POST https://circleci.com/api/v1/project/osiam/connector4java-integration-tests/tree/master?circle-token=$CIRCLE_TOKEN
-     - >
-      curl -H "Content-Type: application/json" --data '{"source_type": "Branch", "source_name": "master"}' -X POST https://registry.hub.docker.com/u/osiamorg/osiam/trigger/${DOCKER_HUB_TRIGGER_TOKEN}/
+  staging:
+    branch: master
+    commands:
+      - wget https://raw.githubusercontent.com/osiam/circleci/master/settings.xml
+      - mvn deploy -s settings.xml -DskipTests
+      - curl -T target/osiam.war -u${BINTRAY_USER}:${BINTRAY_KEY} -H "X-Bintray-Package:osiam" -H "X-Bintray-Version:latest" -H "X-Bintray-Publish:1" -H "X-Bintray-Override:1" https://api.bintray.com/content/osiam/downloads/osiam/latest/osiam-latest.war
+      - curl -X POST https://circleci.com/api/v1/project/osiam/connector4java-integration-tests/tree/master?circle-token=$CIRCLE_TOKEN
+      - >
+        curl -H "Content-Type: application/json" --data '{"source_type": "Branch", "source_name": "master"}' -X POST https://registry.hub.docker.com/u/osiamorg/osiam/trigger/${DOCKER_HUB_TRIGGER_TOKEN}/
+  release:
+    tag: /[0-9]+(\.[0-9]+)*/
+    owner: osiam
+    commands:
+      - mvn versions:set -DnewVersion=${CIRCLE_TAG}
+      - wget https://raw.githubusercontent.com/osiam/circleci/master/settings.xml
+      - mvn deploy -s settings.xml -DskipTests
+      - curl -T target/osiam.war -u${BINTRAY_USER}:${BINTRAY_KEY} -H "X-Bintray-Package:osiam" -H "X-Bintray-Version:${CIRCLE_TAG}" -H "X-Bintray-Publish:1" -H "X-Bintray-Override:1" https://api.bintray.com/content/osiam/downloads/osiam/${CIRCLE_TAG}/osiam-${CIRCLE_TAG}.war
