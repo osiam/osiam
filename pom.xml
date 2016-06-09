@@ -36,7 +36,7 @@
 
     <groupId>org.osiam</groupId>
     <artifactId>osiam</artifactId>
-    <version>3.0-SNAPSHOT</version>
+    <version>latest-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>OSIAM</name>
