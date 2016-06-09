@@ -35,7 +35,6 @@ deployment:
     tag: /.*/
     owner: osiam
     commands:
-      - mvn versions:set -DnewVersion=${CIRCLE_TAG}
       - wget https://raw.githubusercontent.com/osiam/circleci/master/settings.xml
       - mvn deploy -s settings.xml -DskipTests
       - curl -T target/osiam.war -u${BINTRAY_USER}:${BINTRAY_KEY} -H "X-Bintray-Package:osiam" -H "X-Bintray-Version:${CIRCLE_TAG}" -H "X-Bintray-Publish:1" -H "X-Bintray-Override:1" https://api.bintray.com/content/osiam/downloads/osiam/${CIRCLE_TAG}/osiam-${CIRCLE_TAG}.war
