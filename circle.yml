@@ -26,7 +26,11 @@ deployment:
     branch: master
     commands:
       - wget https://raw.githubusercontent.com/osiam/circleci/master/settings.xml
-      - mvn deploy -s settings.xml -DskipTests
+      - >
+        mvn deploy:deploy-file
+          -DrepositoryId=snapshots
+          -Durl=https://oss.jfrog.org/artifactory/oss-snapshot-local
+          -s settings.xml
       - curl -T target/osiam.war -u${BINTRAY_USER}:${BINTRAY_KEY} -H "X-Bintray-Package:osiam" -H "X-Bintray-Version:latest" -H "X-Bintray-Publish:1" -H "X-Bintray-Override:1" https://api.bintray.com/content/osiam/downloads/osiam/latest/osiam-latest.war
       - curl -X POST https://circleci.com/api/v1/project/osiam/connector4java-integration-tests/tree/master?circle-token=$CIRCLE_TOKEN
       - >
@@ -36,5 +40,9 @@ deployment:
     owner: osiam
     commands:
       - wget https://raw.githubusercontent.com/osiam/circleci/master/settings.xml
-      - mvn deploy -s settings.xml -DskipTests
+      - >
+        mvn deploy:deploy-file
+          -DrepositoryId=releases
+          -Durl=https://api.bintray.com/maven/osiam/OSIAM/org.osiam:osiam/;publish=1
+          -s settings.xml
       - curl -T target/osiam.war -u${BINTRAY_USER}:${BINTRAY_KEY} -H "X-Bintray-Package:osiam" -H "X-Bintray-Version:${CIRCLE_TAG}" -H "X-Bintray-Publish:1" -H "X-Bintray-Override:1" https://api.bintray.com/content/osiam/downloads/osiam/${CIRCLE_TAG}/osiam-${CIRCLE_TAG}.war
