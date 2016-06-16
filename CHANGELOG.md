@@ -58,6 +58,9 @@ OSIAM 2.5 to OSIAM 3.0, see the [migration notes](docs/migration.md).
 - Replace SHA-512 with BCrypt for hashing passwords. When a user logs in, their
   password will be automatically migrated to BCrypt. Support for SHA-512
   password hashes will be removed in OSIAM 4.0.
+- Snapshot builds can now be downloaded from [Bintray]
+  (https://dl.bintray.com/osiam/downloads/osiam/latest/osiam-latest.war)
+  ([GPG Signature](https://dl.bintray.com/osiam/downloads/osiam/latest/osiam-latest.war.asc)).
 
 ### Fixes
 
