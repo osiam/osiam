@@ -296,7 +296,45 @@ new OsiamConnector.Builder()
 
 #### API Changes
 
-There have been some minor API changes, namely:
+OSIAM 3.0 removes the obsolete PATCH API for updating resources.
+From now on, the only way to change a resource is to send a complete resource representation via PUT.
+This means that you have to retrieve the complete resource first.
+This should always be possible, because for updating a resource you already need the UUID and a
+connection to OSIAM.
+Then you can make the desired changes to the resource and after that send the complete, updated
+resource back to OSIAM via PUT.
+If you use the connector4java, a migration can be done with these simple steps:
+
+1. Retrieve the resource you want to update from the server, if you did not do this before anyway.
+
+2. Instead of building an `UpdateUser` or `UpdateGroup`, use the corresponding copy-of builder:
+
+    ```java
+    new UpdateUser.Builder()
+            .updateActive(false)
+            .build();
+    ```
+
+    becomes
+
+    ```java
+    new User.Builder(originalUser)
+            .setActive(false)
+            .build();
+    ```
+
+    Just pass the original resource, which you retrieved in step 1., to the builder's copy-of constructor.
+    To update complex or multi-valued attributes, first remove them and then add the updated version.
+    All attribute types have a copy-of builder now to make this work.
+    For more details, see the tests for updating [users](https://github.com/osiam/connector4java/blob/fd66195ef31b43a7e4cf7c801b04b3ab74b06f76/src/test/groovy/org/osiam/resources/scim/UserUpdateSpec.groovy)
+    and [groups](https://github.com/osiam/connector4java/blob/e3f285fe3aa8be32d240c71b3dfa3905ed9a161c/src/test/groovy/org/osiam/resources/scim/GroupUpdateSpec.groovy).
+
+3. Call `replaceUser(...)`/`replaceGroup(...)` instead of `updateUser(...)`/`updateGroup(...)` with
+   the updated resource.
+
+##### Minor API Changes
+
+There are also some minor API changes, namely:
 
 - Invalid filters now get a reply of 400 BAD REQUEST.
 - Unexpected errors now reply with 500 INTERNAL SERVER ERROR instead of 409 CONFLICT.
