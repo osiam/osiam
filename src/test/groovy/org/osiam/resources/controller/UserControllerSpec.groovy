@@ -205,29 +205,6 @@ class UserControllerSpec extends Specification {
                 .andExpect(jsonPath('$.status').value(HttpStatus.BAD_REQUEST.toString()))
     }
 
-    def 'Replacing a User using PATCH sets the location header as expected'() {
-        when:
-        def response = mockMvc.perform(patch("/Users/${uuid}")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(minimalUser))
-
-        then:
-        1 * scimUserProvisioning.update(uuid.toString(), _) >> responseUser
-        response.andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(header().string('Location', "http://localhost/Users/${uuid}"))
-                .andExpect(jsonPath('$.id').value(uuid as String)) // is nonsense because it's what we give in
-    }
-
-    def 'Replacing an invalid User using PATCH raises a 400 BAD REQUEST'() {
-        when:
-        def response = mockMvc.perform(put("/Users/${uuid}")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content('{"schemas": ["urn:ietf:params:scim:schemas:core:2.0:User"],"userName": ""}}'))
-        then:
-        response.andExpect(status().isBadRequest())
-    }
-
     def 'Search parameters default to SCIM RFC values'() {
         when:
         def response = mockMvc.perform(get("/Users")

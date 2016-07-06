@@ -38,7 +38,7 @@ class ServiceProviderConfigSpec extends Specification {
 
         then:
         config.schemas == schemas
-        config.patch.supported
+        !config.patch.supported
         !config.bulk.supported
         !config.bulk.maxOperations
         !config.bulk.maxPayloadSize

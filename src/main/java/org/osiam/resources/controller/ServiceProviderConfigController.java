@@ -45,7 +45,7 @@ public class ServiceProviderConfigController {
 
         public static final ServiceProviderConfig INSTANCE = new ServiceProviderConfig();
         public static final String SCHEMA = "urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig";
-        public final Supported patch = new Supported(true);
+        public final Supported patch = new Supported(false);
         public final Supported bulk = new BulkSupported(false);
         public final Supported filter = new FilterSupported(true, SCIMSearchResult.MAX_RESULTS);
         public final Supported changePassword = new Supported(false);

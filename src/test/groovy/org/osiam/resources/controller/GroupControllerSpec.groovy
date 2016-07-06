@@ -192,29 +192,6 @@ class GroupControllerSpec extends Specification {
                 .andExpect(jsonPath('$.status').value(HttpStatus.BAD_REQUEST.toString()))
     }
 
-    def 'Replacing a group using PATCH sets the location header as expected'() {
-        when:
-        def response = mockMvc.perform(patch("/Groups/${uuid}")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(minimalGroup))
-
-        then:
-        1 * scimGroupProvisioning.update(uuid.toString(), _) >> responseGroup
-        response.andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(header().string('Location', "http://localhost/Groups/${uuid}"))
-                .andExpect(jsonPath('$.id').value(uuid as String)) // is nonsense because it's what we give in
-    }
-
-    def 'Replacing an invalid group using PATCH raises a 400 BAD REQUEST'() {
-        when:
-        def response = mockMvc.perform(put("/Groups/${uuid}")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content('{"schemas": ["urn:ietf:params:scim:schemas:core:2.0:Group"],"displayName": ""}}'))
-        then:
-        response.andExpect(status().isBadRequest())
-    }
-
     def 'Search parameters default to SCIM RFC values'() {
         when:
         def response = mockMvc.perform(get("/Groups")
