@@ -84,15 +84,6 @@ public class GroupController extends ResourceController<Group> {
         return buildResponseWithLocation(updatedGroup, builder, HttpStatus.OK, attributes);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
-    public ResponseEntity<MappingJacksonValue> update(@PathVariable final String id,
-                                                      @RequestBody Group group,
-                                                      UriComponentsBuilder builder)
-            throws IOException {
-        Group updatedGroup = scimGroupProvisioning.update(id, group);
-        return buildResponseWithLocation(updatedGroup, builder, HttpStatus.OK, ""); // we're going to remove patch soon anyways
-    }
-
     @RequestMapping(method = RequestMethod.GET)
     public MappingJacksonValue searchWithGet(@RequestParam Map<String, String> requestParameters) {
         return searchWithPost(requestParameters);

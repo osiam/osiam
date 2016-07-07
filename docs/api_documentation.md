@@ -646,24 +646,6 @@ attributes. To define more than one separate them with comma using the
 curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT http://localhost:8080/Users?attributes=userName,meta.created -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"],"externalId":"ne_externalId","userName":"arthur","password":"dent"}'
 ```
 
-#### Update a User
-To update an existing user you need to send the fields you which to update or
-delete as json via patch to the url
-
-```http
-http://OSIAM_HOST:8080/Users/$ID
-```
-
-the response is the updated user in JSON format.
-
-e.g.:
-```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PATCH http://localhost:8080/Users/$ID -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:User"], "externalId":"new_external_id"}'
-```
-See [scim 2 rest spec]
-(http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.3.2) for further
-details.
-
 #### Delete a User
 To delete an existing user you need to call the url via delete
 
@@ -790,24 +772,6 @@ attributes. To define more than one separate them with comma using the
 ```sh
 curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PUT http://localhost:8080/Groups?attributes=deisplayName,meta.created -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:Group"],"displayName":"newDisplayName"}'
 ```
-#### Update a Group
-To update a group you need to send the fields you which to update oder delete
-as json via patch to the url
-
-```http
-http://OSIAM_HOST:8080/Groups/$ID
-```
-
-the response will be the updated group in json format.
-
-e.g.:
-
-```sh
-curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X PATCH http://localhost:8080/Groups/$ID -d '{"schemas":["urn:ietf:params:scim:schemas:core:2.0:Group"], "displayName":"adminsGroup"}'
-```
-See [scim 2 rest spec]
-(http://tools.ietf.org/html/draft-ietf-scim-api-02#section-3.3.2) for further
-details.
 
 #### Delete a Group
 To delete a group you need to call the url via delete

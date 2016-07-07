@@ -89,16 +89,6 @@ public class UserController extends ResourceController<User> {
         return buildResponseWithLocation(createdUser, builder, HttpStatus.OK, attributes);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PATCH)
-    public ResponseEntity<MappingJacksonValue> update(@PathVariable String id,
-                                                      @RequestBody User user,
-                                                      UriComponentsBuilder builder)
-            throws IOException {
-        User createdUser = scimUserProvisioning.update(id, user);
-        checkAndHandleDeactivation(id, user);
-        return buildResponseWithLocation(createdUser, builder, HttpStatus.OK, ""); // We're going to remove this soon
-    }
-
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable final String id) {
