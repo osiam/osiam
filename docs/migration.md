@@ -100,7 +100,7 @@ osiam:
       name.familyName: sn
       name.givenName: givenName
       displayName: displayName
-``
+```
 
 Migrate the temporary lock configuration:
 
@@ -221,7 +221,7 @@ Edit the file `/etc/osiam/addon-administration.properties` and remove the proper
 - `org.osiam.authServerEndpoint`
 - `org.osiam.resourceServerEndpoint`
 
-Add the property `org.osiam.endpoint` and set it to the base URL of OSIAM, e.g. 
+Add the property `org.osiam.endpoint` and set it to the base URL of OSIAM, e.g.
 
 ```
 # Standalone deployment
@@ -236,7 +236,7 @@ Next, edit the file `/etc/osiam/addon-self-administration.properties` and remove
 - `org.osiam.auth-server.home`
 - `org.osiam.resource-server.home`
 
-Add the property `org.osiam.home` and set it to the base URL of OSIAM, e.g. 
+Add the property `org.osiam.home` and set it to the base URL of OSIAM, e.g.
 
 ```
 # Standalone deployment
