@@ -22,10 +22,10 @@ Watch [our blog](http://osiam.github.io/) to stay informed about releases and up
 
 ## Quick Start
 
-[Download](https://dl.bintray.com/osiam/downloads/osiam/latest/osiam-latest.war) the latest version of OSIAM:
+[Download](https://dl.bintray.com/osiam/downloads/osiam/3.0/osiam-3.0.war) the latest version of OSIAM:
 
 ```
-curl -L https://dl.bintray.com/osiam/downloads/osiam/latest/osiam-latest.war -o osiam.war
+curl -L https://dl.bintray.com/osiam/downloads/osiam/3.0/osiam-3.0.war -o osiam.war
 ```
 
 Make the `.war` file executable:
