@@ -35,6 +35,9 @@ OSIAM 2.5 to OSIAM 3.0, see the [migration notes](docs/migration.md).
 
 ### Changes
 
+- Updating resources via PATCH was not SCIM compliant and has been removed.
+  Resources can still be updated via PUT. See the [migration notes](https://github.com/osiam/osiam/blob/3.0.CR2/docs/migration.md#api-changes)
+  for details.
 - Distribution artifacts have been completely dropped. The `.war` file contains
   all needed files and assets now.
 - Use sensible defaults for logging. Default level is now error, Spring stuff
