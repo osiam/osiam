@@ -1,6 +1,6 @@
 # OSIAM
 
-## 3.0 - Unreleased
+## 3.0 - 2016-08-09
 
 **Breaking changes!**
 
