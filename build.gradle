@@ -1,0 +1,203 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE")
+    }
+}
+
+plugins {
+    id 'antlr'
+    id 'java'
+    id 'groovy'
+    id 'war'
+    id 'jacoco'
+    id 'maven'
+    id 'maven-publish'
+    id 'com.github.hierynomus.license' version '0.13.1'
+    id 'com.github.kt3k.coveralls' version '2.6.3'
+    id 'com.jfrog.bintray' version '1.7.2'
+}
+
+apply plugin: 'spring-boot'
+
+group = 'org.osiam'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+publishing {
+    publications {
+        OsiamPublication(MavenPublication) {
+            from components.web
+            groupId 'org.osiam'
+            artifactId 'osiam'
+            version "latest-SNAPSHOT"
+        }
+    }
+    repositories {
+        maven {
+            name 'JFrog OSS snapshot repository'
+            if (project.version == 'latest') {
+                url 'https://oss.jfrog.org/artifactory/oss-snapshot-local'
+            } else {
+                url 'https://api.bintray.com/maven/osiam/OSIAM/org.osiam:osiam/;publish=1'
+            }
+            credentials {
+                username System.getenv('BINTRAY_USER')
+                password System.getenv('BINTRAY_KEY')
+            }
+        }
+    }
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+    publish = true
+    override = true
+    filesSpec {
+        from 'build/libs/osiam.war'
+        into '.'
+    }
+    pkg {
+        repo = 'downloads'
+        name = 'osiam'
+        userOrg = 'osiam'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/osiam/osiam.git'
+        version {
+            name = project.version
+            released = new Date()
+            gpg {
+                sign = true
+                passphrase = System.getenv('GPG_PASSPHRASE')
+            }
+        }
+    }
+}
+
+war {
+    archiveName = 'osiam.war'
+    version = project.version
+}
+
+springBoot {
+    executable = true
+}
+
+ext {
+    generatedSourcesDir = new File("${projectDir}/build/generated")
+    generatedSourcesJavaDir = new File(generatedSourcesDir, "/java")
+}
+
+configurations {
+    jpaModelGen
+}
+
+dependencies {
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.springframework.boot:spring-boot-starter-data-jpa'
+    compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    compile 'org.springframework.boot:spring-boot-starter-security'
+    compile 'org.springframework.boot:spring-boot-starter-actuator'
+    compile 'org.springframework.security.oauth:spring-security-oauth2'
+    compile 'org.springframework.security:spring-security-ldap'
+    compile 'org.springframework.boot:spring-boot-devtools'
+    compile 'org.flywaydb:flyway-core'
+    compile 'org.postgresql:postgresql'
+    compile 'mysql:mysql-connector-java'
+    compile 'com.h2database:h2'
+    compile 'com.zaxxer:HikariCP'
+    compile 'joda-time:joda-time'
+    compile 'org.aspectj:aspectjrt'
+    compile 'org.aspectj:aspectjweaver'
+    compile 'org.hibernate:hibernate-validator'
+    compile 'org.apache.tika:tika-core:1.13'
+    compile 'com.google.guava:guava:19.0'
+    compile 'org.antlr:antlr4:4.5.3'
+    testCompile 'org.codehaus.groovy:groovy-all'
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile 'org.spockframework:spock-core'
+    testCompile 'cglib:cglib-nodep:3.2.4'
+    testCompile 'org.objenesis:objenesis:2.4'
+    testCompile 'com.jayway.restassured:json-path:2.9.0'
+    testCompile 'com.jayway.jsonpath:json-path:2.2.0'
+    testCompile 'nl.jqno.equalsverifier:equalsverifier:1.7.8'
+
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+
+    antlr 'org.antlr:antlr4:4.5.3'
+    jpaModelGen 'org.hibernate:hibernate-jpamodelgen'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir generatedSourcesJavaDir
+        }
+    }
+}
+
+task generateJPAMetaModel(type: JavaCompile, group: 'build', description: 'Generate JPA Meta Models') {
+    source = sourceSets.main.java
+    outputs.dir generatedSourcesJavaDir
+    destinationDir = generatedSourcesJavaDir
+    dependencyCacheDir = compileJava.dependencyCacheDir
+    classpath = configurations.compile + configurations.jpaModelGen
+    options.compilerArgs = [
+            "-proc:only"
+    ]
+}
+
+generateGrammarSource {
+    outputDirectory = generatedSourcesJavaDir
+    arguments += ["-visitor", "-long-messages"]
+}
+
+compileJava {
+    dependsOn generateJPAMetaModel
+}
+
+license {
+    mapping {
+        g4 = 'JAVADOC_STYLE'
+    }
+    excludes(["**/*_.java", "**/LogicalOperatorRules*.java", "**/*.json"])
+}
+
+jacoco {
+    toolVersion = "0.7.7.201606060606"
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.enabled true
+    }
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    '**/ * _ * ',
+                    '**/LogicalOperatorRules*'
+            ])
+        })
+    }
+}
+check.dependsOn jacocoTestReport
+
+tasks.coveralls {
+    group = 'Coverage reports'
+    description = 'Uploads the aggregated coverage report to Coveralls'
+
+    dependsOn jacocoTestReport
+    onlyIf {
+        System.env.'COVERALLS_REPO_TOKEN'
+    }
+}
