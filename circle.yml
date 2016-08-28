@@ -4,30 +4,27 @@ machine:
 
 dependencies:
   override:
-    - mvn -U dependency:resolve dependency:resolve-plugins
     - curl http://www.jpm4j.org/install/script > jpmInstall.sh
     - sudo sh jpmInstall.sh
     - sudo jpm install com.codacy:codacy-coverage-reporter:assembly
+    - ./gradlew dependencies
 
 test:
-  pre:
-    - test -z ${CIRCLE_TAG} || mvn versions:set -DnewVersion=${CIRCLE_TAG}
   override:
-    - mvn verify
+    - test -z ${CIRCLE_TAG} && ./gradlew check || ./gradlew -Pversion=${CIRCLE_TAG} check
   post:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
-    - find . -type f -regex ".*/target/.*-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
-    - cp -r target/coverage-reports/jacoco/ $CIRCLE_ARTIFACTS
-    - test -z $CODACY_PROJECT_TOKEN || codacy-coverage-reporter -l Java -r target/coverage-reports/jacoco/jacoco.xml --projectToken $CODACY_PROJECT_TOKEN
-    - test -z $COVERALLS_REPO_TOKEN || mvn coveralls:report -DrepoToken=$COVERALLS_REPO_TOKEN
+    - find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+    - cp -r build/reports/jacoco/ $CIRCLE_ARTIFACTS
+    - test -z $CODACY_PROJECT_TOKEN || codacy-coverage-reporter -l Java -r build/reports/jacoco/test/jacocoTestReport.xml --projectToken $CODACY_PROJECT_TOKEN
+    - test -z $COVERALLS_REPO_TOKEN || ./gradlew coveralls
 
 deployment:
   staging:
     branch: master
     commands:
-      - wget https://raw.githubusercontent.com/osiam/circleci/master/settings.xml
-      - mvn deploy:deploy-file -DrepositoryId=snapshots -Durl=https://oss.jfrog.org/artifactory/oss-snapshot-local -s settings.xml
-      - curl -T target/osiam.war -u${BINTRAY_USER}:${BINTRAY_KEY} -H "X-Bintray-Package:osiam" -H "X-Bintray-Version:latest" -H "X-Bintray-Publish:1" -H "X-Bintray-Override:1" https://api.bintray.com/content/osiam/downloads/osiam/latest/osiam-latest.war
+      - ./gradlew publish
+      - curl -T build/libs/OSIAM.war -u${BINTRAY_USER}:${BINTRAY_KEY} -H "X-GPG-PASSPHRASE:${GPG_PASSPHRASE}" -H "X-Bintray-Package:osiam" -H "X-Bintray-Version:latest" -H "X-Bintray-Publish:1" -H "X-Bintray-Override:1" https://api.bintray.com/content/osiam/downloads/osiam/latest/osiam.war
       - curl -X POST https://circleci.com/api/v1/project/osiam/connector4java-integration-tests/tree/master?circle-token=$CIRCLE_TOKEN
       - >
         curl -H "Content-Type: application/json" --data '{"source_type": "Branch", "source_name": "master"}' -X POST https://registry.hub.docker.com/u/osiamorg/osiam/trigger/${DOCKER_HUB_TRIGGER_TOKEN}/
@@ -35,6 +32,5 @@ deployment:
     tag: /.*/
     owner: osiam
     commands:
-      - wget https://raw.githubusercontent.com/osiam/circleci/master/settings.xml
-      - mvn deploy:deploy-file -DrepositoryId=releases -Durl="https://api.bintray.com/maven/osiam/OSIAM/org.osiam:osiam/;publish=1" -s settings.xml
-      - curl -T target/osiam.war -u${BINTRAY_USER}:${BINTRAY_KEY} -H "X-Bintray-Package:osiam" -H "X-Bintray-Version:${CIRCLE_TAG}" -H "X-Bintray-Publish:1" -H "X-Bintray-Override:1" https://api.bintray.com/content/osiam/downloads/osiam/${CIRCLE_TAG}/osiam-${CIRCLE_TAG}.war
+      - ./gradlew -Pversion=${CIRCLE_TAG} bintrayUpload
+      - curl -T build/libs/osiam.war -u${BINTRAY_USER}:${BINTRAY_KEY} -H "X-GPG-PASSPHRASE:${GPG_PASSPHRASE}" -H "X-Bintray-Package:osiam" -H "X-Bintray-Version:${CIRCLE_TAG}" -H "X-Bintray-Publish:1" -H "X-Bintray-Override:1" https://api.bintray.com/content/osiam/downloads/osiam/${CIRCLE_TAG}/osiam-${CIRCLE_TAG}.war
