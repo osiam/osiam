@@ -24,6 +24,10 @@
 /** Define a grammer called LogicalOperatorRules which will be the basis for ARNTL to generate the java classes for lexer and parser */
 grammar LogicalOperatorRules;
 
+@header {
+package org.osiam.storage.parser;
+}
+
 /** Parser: will organize the tokens provided by the lexer into the tree with sub-trees and also defining the precedence of the operators */
 parse
     : expression
