@@ -129,8 +129,7 @@ To customize this, change the corresponding configuration properties.
 ## Initialize the Database from the Command Line
 
 This is an optional step, but if you want to, you can now initialize the database before starting OSIAM.
-This might be helpful if you want to create additional data like clients or define extensions.
-Currently, the only way to define extensions is via direct database manipulation.
+This might be helpful if you want to create additional data like clients or users.
 The configuration should be fully created before you can run the command.
 To start the initialization run the following command on the command line:
 
