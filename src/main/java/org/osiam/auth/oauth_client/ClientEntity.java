@@ -128,7 +128,7 @@ public class ClientEntity implements ClientDetails {
     @Override
     @JsonIgnore
     public Map<String, Object> getAdditionalInformation() {
-        return Collections.singletonMap("validityInSeconds", (Object) validityInSeconds);
+        return Collections.singletonMap("validityInSeconds", validityInSeconds);
     }
 
     @Override

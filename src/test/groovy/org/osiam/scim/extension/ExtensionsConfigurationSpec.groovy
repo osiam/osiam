@@ -23,15 +23,8 @@
  */
 package org.osiam.scim.extension
 
-import org.osiam.Osiam
 import org.osiam.resources.scim.ExtensionFieldType
 import org.osiam.storage.ExtensionRepository
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.EnvironmentTestUtils
-import org.springframework.boot.test.SpringApplicationConfiguration
-import org.springframework.context.ApplicationContextInitializer
-import org.springframework.context.ConfigurableApplicationContext
-import org.springframework.core.env.ConfigurableEnvironment
 import spock.lang.Specification
 
 class ExtensionsConfigurationSpec extends Specification {
