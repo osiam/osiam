@@ -23,10 +23,8 @@
  */
 package org.osiam.storage.entities;
 
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import com.google.common.collect.ImmutableSet;
+import org.osiam.resources.scim.MemberRef.Type;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -35,14 +33,16 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import org.osiam.resources.scim.MemberRef.Type;
-
-import com.google.common.collect.ImmutableSet;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "scim_id")
@@ -67,6 +67,7 @@ public abstract class ResourceEntity {
     private String externalId;
 
     @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "meta")
     private MetaEntity meta = new MetaEntity(GregorianCalendar.getInstance());
 
     @ManyToMany(mappedBy = "members")

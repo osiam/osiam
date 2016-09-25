@@ -23,14 +23,13 @@
  */
 package org.osiam.storage.entities;
 
+import org.hibernate.annotations.Type;
+import org.osiam.resources.scim.Address;
+
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.Index;
-import javax.persistence.Lob;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Type;
-import org.osiam.resources.scim.Address;
 
 /**
  * Address Entity
@@ -55,8 +54,7 @@ public class AddressEntity extends BaseMultiValuedAttributeEntity {
     @Basic
     private Address.Type type; // @Basic is needed for JPA meta model generator
 
-    @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "text")
     private String formatted;
 
     private String streetAddress;

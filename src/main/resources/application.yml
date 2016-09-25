@@ -34,7 +34,6 @@ logging.level:
 
 spring.main.banner-mode: 'off'
 spring.thymeleaf.prefix: file:${osiam.home}/templates/web/
-spring.jpa.hibernate.naming_strategy: org.hibernate.cfg.ImprovedNamingStrategy
 spring.jpa.hibernate.ddl-auto: none
 server.port: ${osiam.port:8080}
 

@@ -23,16 +23,14 @@
  */
 package org.osiam.storage.entities;
 
-import javax.persistence.Lob;
-import javax.persistence.MappedSuperclass;
-
 import org.hibernate.annotations.Type;
+
+import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public abstract class BaseMultiValuedAttributeEntityWithValue extends BaseMultiValuedAttributeEntity {
 
-    @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "text")
     private String value;
 
     public String getValue() {

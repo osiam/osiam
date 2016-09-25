@@ -23,18 +23,17 @@
  */
 package org.osiam.storage.entities;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Type;
 
 /**
  * Defines a value of a field of a scim-extension. It's user-dependent!
@@ -58,10 +57,10 @@ public class ExtensionFieldValueEntity {
     private long internalId;
 
     @ManyToOne(optional = false)
+    @JoinColumn(name = "extension_field", nullable = false)
     private ExtensionFieldEntity extensionField;
 
-    @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "text")
     @Column(nullable = false)
     private String value;
 
