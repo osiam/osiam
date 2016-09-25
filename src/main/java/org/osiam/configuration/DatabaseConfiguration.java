@@ -25,8 +25,6 @@ package org.osiam.configuration;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.flywaydb.core.Flyway;
-import org.flywaydb.core.api.MigrationVersion;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,9 +49,6 @@ public class DatabaseConfiguration {
     @Value("${osiam.db.password}")
     private String databasePassword;
 
-    @Value("${osiam.db.vendor}")
-    private String databaseVendor;
-
     @Value("${osiam.db.maximum-pool-size:10}")
     private int maximumPoolSize;
 
@@ -72,16 +67,5 @@ public class DatabaseConfiguration {
         hikariConfig.setMaximumPoolSize(maximumPoolSize);
         hikariConfig.setConnectionTimeout(connectionTimeoutMs);
         return new HikariDataSource(hikariConfig);
-    }
-
-    @Bean
-    public Flyway flyway() {
-        Flyway flyway = new Flyway();
-        flyway.setDataSource(dataSource());
-        flyway.setLocations("db/migration/" + databaseVendor);
-        flyway.setBaselineOnMigrate(true);
-        flyway.setBaselineVersion(MigrationVersion.fromVersion("1"));
-        flyway.migrate();
-        return flyway;
     }
 }
