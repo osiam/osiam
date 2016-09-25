@@ -23,20 +23,20 @@
  */
 package org.osiam.storage.entities;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import org.osiam.resources.scim.ExtensionFieldType;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
-import org.osiam.resources.scim.ExtensionFieldType;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Defines a field in a scim-extension.
@@ -98,6 +98,7 @@ public class ExtensionFieldEntity {
     private boolean required;
 
     @ManyToOne
+    @JoinColumn(name = "extension", nullable = false)
     private ExtensionEntity extension;
 
     public ExtensionEntity getExtension() {

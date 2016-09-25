@@ -26,7 +26,15 @@ package org.osiam.storage.entities;
 import org.hibernate.annotations.Type;
 import org.osiam.resources.exception.InvalidConstraintException;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -47,8 +55,7 @@ public class ExtensionEntity {
     @GeneratedValue(generator = "sequence_scim_extension")
     private long internalId;
 
-    @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "text")
     @Column(nullable = false)
     private String urn;
 

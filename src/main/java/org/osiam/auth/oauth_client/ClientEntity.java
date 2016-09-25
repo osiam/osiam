@@ -39,7 +39,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.util.Collection;
@@ -78,8 +77,7 @@ public class ClientEntity implements ClientDetails {
     private int refreshTokenValiditySeconds;
 
     @JsonProperty
-    @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "text")
     @Column(nullable = false)
     private String redirectUri;
 
@@ -128,7 +126,7 @@ public class ClientEntity implements ClientDetails {
     @Override
     @JsonIgnore
     public Map<String, Object> getAdditionalInformation() {
-        return Collections.singletonMap("validityInSeconds", (Object) validityInSeconds);
+        return Collections.singletonMap("validityInSeconds", validityInSeconds);
     }
 
     @Override

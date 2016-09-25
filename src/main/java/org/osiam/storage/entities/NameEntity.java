@@ -23,14 +23,13 @@
  */
 package org.osiam.storage.entities;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Type;
 
 /**
  * Name Entity
@@ -50,8 +49,7 @@ public class NameEntity {
     @GeneratedValue(generator = "sequence_scim_name")
     private long id;
 
-    @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "text")
     private String formatted;
 
     private String familyName;

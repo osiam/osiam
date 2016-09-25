@@ -26,7 +26,7 @@ package org.osiam.auth.exception;
 import org.springframework.security.core.*;
 
 public class LdapAuthenticationProcessException extends AuthenticationException {
-    
+
     public LdapAuthenticationProcessException(String s) {
         super(s);
     }

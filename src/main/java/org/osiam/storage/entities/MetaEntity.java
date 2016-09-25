@@ -23,18 +23,16 @@
  */
 package org.osiam.storage.entities;
 
-import java.util.Calendar;
-import java.util.Date;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
-import javax.persistence.Lob;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Type;
+import java.util.Calendar;
+import java.util.Date;
 
 @Entity
 @Table(name = "scim_meta",
@@ -59,8 +57,7 @@ public class MetaEntity {
 
     private Date lastModified;
 
-    @Lob
-    @Type(type = "org.hibernate.type.StringClobType")
+    @Type(type = "text")
     private String location;
 
     private String version;

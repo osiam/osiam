@@ -23,18 +23,18 @@
  */
 package org.osiam.storage.entities;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-
+import com.google.common.collect.ImmutableSet;
 import org.hibernate.annotations.BatchSize;
 import org.osiam.resources.scim.MemberRef.Type;
 
-import com.google.common.collect.ImmutableSet;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Entity class for {@link org.osiam.resources.scim.Group} resources
@@ -46,6 +46,10 @@ public class GroupEntity extends ResourceEntity {
     private static final int BATCH_SIZE = 100;
 
     @ManyToMany
+    @JoinTable(
+            joinColumns = @JoinColumn(name = "groups", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "members", nullable = false)
+    )
     @BatchSize(size = BATCH_SIZE)
     private Set<ResourceEntity> members = new HashSet<>();
 
