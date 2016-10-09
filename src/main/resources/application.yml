@@ -37,6 +37,8 @@ spring.thymeleaf.prefix: file:${osiam.home}/templates/web/
 spring.jpa.hibernate.ddl-auto: none
 server.port: ${osiam.port:8080}
 
+management.context-path: /management
+
 flyway:
   locations: db/migration/${osiam.db.vendor}
   baseline-on-migrate: true

@@ -1,5 +1,18 @@
 # OSIAM
 
+## 3.1 - unreleased
+
+### Features
+
+- Add `/management` endpoint which provides monitoring information about the
+  running OSIAM app. Take a look at the
+  [Spring Boot documentation](http://docs.spring.io/spring-boot/docs/1.4.1.RELEASE/reference/html/production-ready-endpoints.html)
+  if you like to get more details.
+
+### Changes
+
+- Remove `/Metrics` endpoint
+
 ## 3.0 - 2016-08-09
 
 **Breaking changes!**

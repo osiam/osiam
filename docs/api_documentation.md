@@ -35,6 +35,7 @@
         - [Replace an existing Group](#replace-an-existing-group)
         - [Update a Group](#update-a-group)
         - [Delete a Group](#delete-a-group)
+- [Monitoring](#monitoring)
 
 ## Basics
 
@@ -787,3 +788,8 @@ e.g.:
 ```sh
 curl -i -H "Accept: application/json" -H "Content-type: application/json" -H "Authorization: Bearer $YOUR_ACCESS_TOKEN" -X DELETE http://localhost:8080/Groups/$ID
 ```
+## Monitoring
+
+To monitor the running OSIAM you can call
+[one of the endpoints](http://docs.spring.io/spring-boot/docs/1.4.1.RELEASE/reference/html/production-ready-endpoints.html)
+which are grouped under `/management`.
