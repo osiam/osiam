@@ -24,7 +24,6 @@
 package org.osiam;
 
 import com.google.common.collect.ImmutableMap;
-import com.ryantenney.metrics.spring.config.annotation.EnableMetrics;
 import org.osiam.cli.InitHome;
 import org.osiam.cli.MigrateDb;
 import org.springframework.boot.SpringApplication;
@@ -45,7 +44,6 @@ import java.util.Map;
 
 @SpringBootApplication
 @EnableWebSecurity
-@EnableMetrics
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 @ComponentScan(excludeFilters = {
         @ComponentScan.Filter(type = FilterType.REGEX, pattern = "org\\.osiam\\.cli.*")
