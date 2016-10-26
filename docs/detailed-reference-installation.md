@@ -320,7 +320,7 @@ OSIAM also creates an initial OAuth 2 client:
 
 <dl>
     <dt>Client ID</dt>
-    <dd>example client</dd>
+    <dd>example-client</dd>
     <dt>Client secret</dt>
     <dd>secret</dd>
     <dt>Client redirect URI</dt>
