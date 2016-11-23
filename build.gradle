@@ -18,6 +18,7 @@ plugins {
     id 'com.github.hierynomus.license' version '0.13.1'
     id 'com.github.kt3k.coveralls' version '2.7.1'
     id 'com.jfrog.bintray' version '1.7.3'
+    id 'com.github.ben-manes.versions' version '0.13.0'
 }
 
 apply plugin: 'spring-boot'
