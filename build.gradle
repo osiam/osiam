@@ -16,8 +16,9 @@ plugins {
     id 'maven'
     id 'maven-publish'
     id 'com.github.hierynomus.license' version '0.13.1'
-    id 'com.github.kt3k.coveralls' version '2.6.3'
-    id 'com.jfrog.bintray' version '1.7.2'
+    id 'com.github.kt3k.coveralls' version '2.7.1'
+    id 'com.jfrog.bintray' version '1.7.3'
+    id 'com.github.ben-manes.versions' version '0.13.0'
 }
 
 apply plugin: 'spring-boot'
@@ -123,8 +124,8 @@ dependencies {
     compile 'org.aspectj:aspectjrt'
     compile 'org.aspectj:aspectjweaver'
     compile 'org.hibernate:hibernate-validator'
-    compile 'org.apache.tika:tika-core:1.13'
-    compile 'com.google.guava:guava:19.0'
+    compile 'org.apache.tika:tika-core:1.14'
+    compile 'com.google.guava:guava:20.0'
     compile 'org.antlr:antlr4:4.5.3'
     testCompile 'org.codehaus.groovy:groovy-all'
     testCompile 'org.springframework.boot:spring-boot-starter-test'
