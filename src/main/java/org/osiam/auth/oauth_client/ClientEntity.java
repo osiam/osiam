@@ -53,7 +53,7 @@ import java.util.UUID;
 @Table(name = "osiam_client")
 public class ClientEntity implements ClientDetails {
 
-    private static final int ID_LENGTH = 32;
+    private static final int ID_LENGTH = 255;
     private static final int SEQUENCE_INITIAL_VALUE = 100;
     private static final int SEQUENCE_ALLOCATION_SIZE = 1;
 

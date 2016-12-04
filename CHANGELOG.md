@@ -12,6 +12,7 @@
 ### Changes
 
 - Remove `/Metrics` endpoint
+- Increase length of client ids to 255 characters
 
 ## 3.0 - 2016-08-09
 
