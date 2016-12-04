@@ -24,11 +24,14 @@
 package org.osiam.cli;
 
 import org.osiam.configuration.DatabaseConfiguration;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 @Configuration
-@Import({DatabaseConfiguration.class, PropertyPlaceholderAutoConfiguration.class})
+@Import({DatabaseConfiguration.class})
+@ImportAutoConfiguration({FlywayAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class})
 public class MigrateDb {
 }
