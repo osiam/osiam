@@ -26,7 +26,6 @@ package org.osiam.storage.query;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.antlr.v4.runtime.misc.NotNull;
 import org.osiam.storage.entities.ResourceEntity;
 import org.osiam.storage.parser.LogicalOperatorRulesBaseVisitor;
 import org.osiam.storage.parser.LogicalOperatorRulesParser;
@@ -45,7 +44,7 @@ public class EvalVisitor<T extends ResourceEntity> extends LogicalOperatorRulesB
     }
 
     @Override
-    public Predicate visitAndExp(@NotNull LogicalOperatorRulesParser.AndExpContext ctx) {
+    public Predicate visitAndExp(LogicalOperatorRulesParser.AndExpContext ctx) {
         Predicate left = this.visit(ctx.expression(0));
         Predicate right = this.visit(ctx.expression(1));
 
@@ -53,12 +52,12 @@ public class EvalVisitor<T extends ResourceEntity> extends LogicalOperatorRulesB
     }
 
     @Override
-    public Predicate visitBraceExp(@NotNull LogicalOperatorRulesParser.BraceExpContext ctx) {
+    public Predicate visitBraceExp(LogicalOperatorRulesParser.BraceExpContext ctx) {
         return this.visit(ctx.expression());
     }
 
     @Override
-    public Predicate visitSimpleExp(@NotNull LogicalOperatorRulesParser.SimpleExpContext ctx) {
+    public Predicate visitSimpleExp(LogicalOperatorRulesParser.SimpleExpContext ctx) {
         FilterExpression<T> filterExpression = getFilterExpressionFromContext(ctx);
         FilterChain<T> filterChain = filterParser.createFilterChain(filterExpression);
         return filterChain.createPredicateAndJoin(root);
@@ -74,7 +73,7 @@ public class EvalVisitor<T extends ResourceEntity> extends LogicalOperatorRulesB
     }
 
     @Override
-    public Predicate visitSimplePresentExp(@NotNull LogicalOperatorRulesParser.SimplePresentExpContext ctx) {
+    public Predicate visitSimplePresentExp(LogicalOperatorRulesParser.SimplePresentExpContext ctx) {
         String fieldName = ctx.FIELD().getText();
         FilterConstraint operator = FilterConstraint.fromString(ctx.PRESENT().getText());
         FilterExpression<T> filterExpression = filterParser.createFilterExpression(fieldName, operator, null);
@@ -84,14 +83,14 @@ public class EvalVisitor<T extends ResourceEntity> extends LogicalOperatorRulesB
     }
 
     @Override
-    public Predicate visitNotExp(@NotNull LogicalOperatorRulesParser.NotExpContext ctx) {
+    public Predicate visitNotExp(LogicalOperatorRulesParser.NotExpContext ctx) {
         Predicate term = this.visit(ctx.expression());
 
         return filterParser.entityManager.getCriteriaBuilder().not(term);
     }
 
     @Override
-    public Predicate visitOrExp(@NotNull LogicalOperatorRulesParser.OrExpContext ctx) {
+    public Predicate visitOrExp(LogicalOperatorRulesParser.OrExpContext ctx) {
         Predicate left = this.visit(ctx.expression(0));
         Predicate right = this.visit(ctx.expression(1));
 
