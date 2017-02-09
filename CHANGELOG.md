@@ -13,6 +13,9 @@
 
 - Remove `/Metrics` endpoint
 - Increase length of client ids to 255 characters
+- Snapshot builds have been removed from Bintray can now be downloaded from
+  [JFrog OSS](https://oss.jfrog.org/repo/org/osiam/osiam/latest-SNAPSHOT/). You
+  can find the latest WAR file on the bottom of the page.
 
 ## 3.0 - 2016-08-09
 
