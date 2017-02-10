@@ -7,9 +7,9 @@ plugins {
     id 'maven'
     id 'maven-publish'
     id 'com.github.hierynomus.license' version '0.13.1'
-    id 'com.github.kt3k.coveralls' version '2.7.1'
+    id 'com.github.kt3k.coveralls' version '2.8.1'
     id 'com.jfrog.bintray' version '1.7.3'
-    id 'com.github.ben-manes.versions' version '0.13.0'
+    id 'com.github.ben-manes.versions' version '0.14.0'
     id 'org.springframework.boot' version '1.5.1.RELEASE'
 }
 
@@ -96,6 +96,8 @@ configurations {
     jpaModelGen
 }
 
+ext['spock.version'] = '1.1-groovy-2.4-rc-3'
+
 dependencies {
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -115,8 +117,8 @@ dependencies {
     compile 'org.aspectj:aspectjweaver'
     compile 'org.hibernate:hibernate-validator'
     compile 'org.apache.tika:tika-core:1.14'
-    compile 'com.google.guava:guava:20.0'
-    compile 'org.antlr:antlr4:4.5.3'
+    compile 'com.google.guava:guava:21.0'
+    compile 'org.antlr:antlr4:4.6'
     testCompile 'org.codehaus.groovy:groovy-all'
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile 'org.spockframework:spock-core'
