@@ -72,9 +72,10 @@ with your application. Read the
 
 ## Snapshots
 
-To use the latest snapshot of OSIAM just download it from Bintray:
-https://dl.bintray.com/osiam/downloads/osiam/latest/osiam-latest.war
-([GPG Signature](https://dl.bintray.com/osiam/downloads/osiam/latest/osiam-latest.war.asc))
+To use the latest snapshot of OSIAM just download it from JFrog OSS:
+https://oss.jfrog.org/repo/org/osiam/osiam/latest-SNAPSHOT/
+
+Scroll down to the bottom of the page and select the latest WAR file.
 
 ## Issue Tracker
 
