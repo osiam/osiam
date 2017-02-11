@@ -29,7 +29,6 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.atn.ATNConfigSet;
 import org.antlr.v4.runtime.dfa.DFA;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.osiam.resources.exception.InvalidFilterException;
 
 import java.util.BitSet;
@@ -61,8 +60,8 @@ public class OsiamAntlrErrorListener implements ANTLRErrorListener {
      * This method is called by the parser when a full-context prediction results in an ambiguity.
      */
     @Override
-    public void reportAmbiguity(@NotNull Parser recognizer, @NotNull DFA dfa, int startIndex, int stopIndex,
-                                boolean exact, BitSet ambigAlts, @NotNull ATNConfigSet configs) {
+    public void reportAmbiguity(Parser recognizer, DFA dfa, int startIndex, int stopIndex,
+                                boolean exact, BitSet ambigAlts, ATNConfigSet configs) {
     }
 
     /**
@@ -74,8 +73,8 @@ public class OsiamAntlrErrorListener implements ANTLRErrorListener {
      * make an LL decision.
      */
     @Override
-    public void reportAttemptingFullContext(@NotNull Parser recognizer, @NotNull DFA dfa, int startIndex,
-                                            int stopIndex, BitSet conflictingAlts, @NotNull ATNConfigSet configs) {
+    public void reportAttemptingFullContext(Parser recognizer, DFA dfa, int startIndex,
+                                            int stopIndex, BitSet conflictingAlts, ATNConfigSet configs) {
     }
 
     /**
@@ -86,7 +85,7 @@ public class OsiamAntlrErrorListener implements ANTLRErrorListener {
      * This method is called by the parser when a full-context prediction has a unique result.
      */
     @Override
-    public void reportContextSensitivity(@NotNull Parser recognizer, @NotNull DFA dfa, int startIndex, int stopIndex,
-                                         int prediction, @NotNull ATNConfigSet configs) {
+    public void reportContextSensitivity(Parser recognizer, DFA dfa, int startIndex, int stopIndex,
+                                         int prediction, ATNConfigSet configs) {
     }
 }

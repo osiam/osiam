@@ -81,7 +81,7 @@ public class UserDeserializer extends StdDeserializer<User> {
 
         User user = MAPPER.readValue(rootNode.traverse(), User.class);
         if (user.getSchemas() == null) {
-            throw new JsonMappingException("Required field 'schemas' is missing");
+            throw new JsonMappingException(jp, "Required field 'schemas' is missing");
         }
         if (user.getSchemas().size() == 1) {
             return user;
@@ -96,21 +96,21 @@ public class UserDeserializer extends StdDeserializer<User> {
 
             JsonNode extensionNode = rootNode.get(urn);
             if (extensionNode == null) {
-                throw new JsonParseException("Registered extension not present: " + urn, JsonLocation.NA);
+                throw new JsonParseException(jp, "Registered extension not present: " + urn, JsonLocation.NA);
             }
 
-            builder.addExtension(deserializeExtension(extensionNode, urn));
+            builder.addExtension(deserializeExtension(jp, extensionNode, urn));
 
         }
         return builder.build();
     }
 
-    public Extension deserializeExtension(JsonNode rootNode, String urn) throws IOException {
+    private Extension deserializeExtension(JsonParser jp, JsonNode rootNode, String urn) throws IOException {
         if (urn == null || urn.isEmpty()) {
             throw new IllegalStateException("The URN cannot be null or empty");
         }
         if (rootNode.getNodeType() != JsonNodeType.OBJECT) {
-            throw new JsonMappingException("Extension is of wrong JSON type");
+            throw new JsonMappingException(jp, "Extension is of wrong JSON type");
         }
         Extension.Builder extensionBuilder = new Extension.Builder(urn);
         Iterator<Map.Entry<String, JsonNode>> fieldIterator = rootNode.fields();
