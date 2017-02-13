@@ -36,6 +36,7 @@ spring.main.banner-mode: 'off'
 spring.thymeleaf.prefix: file:${osiam.home}/templates/web/
 spring.jpa.hibernate.ddl-auto: none
 server.port: ${osiam.port:8080}
+security.oauth2.resource.filterOrder: 3
 
 management.context-path: /management
 
