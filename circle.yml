@@ -4,9 +4,7 @@ machine:
 
 dependencies:
   override:
-    - curl http://www.jpm4j.org/install/script > jpmInstall.sh
-    - sudo sh jpmInstall.sh
-    - sudo jpm install com.codacy:codacy-coverage-reporter:assembly
+    - curl -L https://github.com/codacy/codacy-coverage-reporter/releases/download/1.0.13/codacy-coverage-reporter-1.0.13-assembly.jar -o codacy-coverage-reporter.jar
     - ./gradlew dependencies
 
 test:
@@ -16,7 +14,7 @@ test:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
     - find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
     - cp -r build/reports/jacoco/ $CIRCLE_ARTIFACTS
-    - test -z $CODACY_PROJECT_TOKEN || codacy-coverage-reporter -l Java -r build/reports/jacoco/test/jacocoTestReport.xml --projectToken $CODACY_PROJECT_TOKEN
+    - test -z $CODACY_PROJECT_TOKEN || java -cp codacy-coverage-reporter.jar com.codacy.CodacyCoverageReporter -l Java -r build/reports/jacoco/test/jacocoTestReport.xml
     - test -z $COVERALLS_REPO_TOKEN || ./gradlew coveralls
 
 deployment:
