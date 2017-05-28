@@ -24,6 +24,7 @@
 package org.osiam;
 
 import com.google.common.collect.ImmutableMap;
+import org.osiam.cli.CliCommand;
 import org.osiam.cli.InitHome;
 import org.osiam.cli.MigrateDb;
 import org.springframework.boot.SpringApplication;
@@ -38,7 +39,6 @@ import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
@@ -56,7 +56,7 @@ public class Osiam extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication();
-        String command = extractCommand(args);
+        String command = new CliCommand(args).get();
         OsiamHome osiamHome = new OsiamHome();
         if ("initHome".equals(command)) {
             application.setSources(Collections.<Object>singleton(InitHome.class));
@@ -71,15 +71,6 @@ public class Osiam extends SpringBootServletInitializer {
         application.addListeners(osiamHome);
         application.setDefaultProperties(DEFAULT_PROPERTIES);
         application.run(args);
-    }
-
-    private static String extractCommand(String[] arguments) {
-        return Arrays.stream(arguments)
-                .map(String::trim)
-                .filter(argument -> !argument.startsWith("-"))
-                .filter(argument -> !argument.startsWith("--"))
-                .findFirst()
-                .orElse("server");
     }
 
     @Override
