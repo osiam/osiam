@@ -10,7 +10,7 @@ plugins {
     id 'com.github.kt3k.coveralls' version '2.8.1'
     id 'com.jfrog.bintray' version '1.7.3'
     id 'com.github.ben-manes.versions' version '0.15.0'
-    id 'org.springframework.boot' version '1.5.4.RELEASE'
+    id 'org.springframework.boot' version '1.5.6.RELEASE'
 }
 
 group = 'org.osiam'
