@@ -117,7 +117,7 @@ dependencies {
     compile 'org.aspectj:aspectjweaver'
     compile 'org.hibernate:hibernate-validator'
     compile 'org.apache.tika:tika-core:1.16'
-    compile 'com.google.guava:guava:22.0'
+    compile 'com.google.guava:guava:23.0'
     compile 'org.antlr:antlr4:4.6'
     testCompile 'org.codehaus.groovy:groovy-all'
     testCompile 'org.springframework.boot:spring-boot-starter-test'
