@@ -10,3 +10,5 @@ hs_err_pid*
 
 # OSIAM dev
 .osiam/
+
+out
