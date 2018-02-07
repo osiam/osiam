@@ -8,9 +8,9 @@ plugins {
     id 'maven-publish'
     id 'com.github.hierynomus.license' version '0.14.0'
     id 'com.github.kt3k.coveralls' version '2.8.2'
-    id 'com.jfrog.bintray' version '1.7.3'
+    id 'com.jfrog.bintray' version '1.8.0'
     id 'com.github.ben-manes.versions' version '0.17.0'
-    id 'org.springframework.boot' version '1.5.8.RELEASE'
+    id 'org.springframework.boot' version '1.5.10.RELEASE'
 }
 
 group = 'org.osiam'
@@ -116,13 +116,13 @@ dependencies {
     compile 'org.aspectj:aspectjrt'
     compile 'org.aspectj:aspectjweaver'
     compile 'org.hibernate:hibernate-validator'
-    compile 'org.apache.tika:tika-core:1.16'
-    compile 'com.google.guava:guava:23.3-jre'
-    compile 'org.antlr:antlr4:4.6'
+    compile 'org.apache.tika:tika-core:1.17'
+    compile 'com.google.guava:guava:24.0-jre'
+    compile 'org.antlr:antlr4:4.7.1'
     testCompile 'org.codehaus.groovy:groovy-all'
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile 'org.spockframework:spock-core'
-    testCompile 'cglib:cglib-nodep:3.2.5'
+    testCompile 'cglib:cglib-nodep:3.2.6'
     testCompile 'org.objenesis:objenesis:2.6'
     testCompile 'com.jayway.restassured:json-path:2.9.0'
     testCompile 'com.jayway.jsonpath:json-path:2.4.0'
@@ -130,7 +130,7 @@ dependencies {
 
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 
-    antlr 'org.antlr:antlr4:4.6'
+    antlr 'org.antlr:antlr4:4.7.1'
     jpaModelGen 'org.hibernate:hibernate-jpamodelgen'
 }
 
