@@ -118,7 +118,7 @@ dependencies {
     compile 'org.hibernate:hibernate-validator'
     compile 'org.apache.tika:tika-core:1.17'
     compile 'com.google.guava:guava:24.0-jre'
-    compile 'org.antlr:antlr4:4.7.1'
+    compile 'org.antlr:antlr4:4.6'
     testCompile 'org.codehaus.groovy:groovy-all'
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile 'org.spockframework:spock-core'
@@ -130,7 +130,7 @@ dependencies {
 
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 
-    antlr 'org.antlr:antlr4:4.7.1'
+    antlr 'org.antlr:antlr4:4.6'
     jpaModelGen 'org.hibernate:hibernate-jpamodelgen'
 }
 
