@@ -1,7 +1,6 @@
 # Overview of OSIAM
 
-This page contains some high level view on the OSIAM project. Visit
-https://osiam.org for additional information on OSIAM.
+This page contains some high level view on the OSIAM project.
 
 Chapters:
 - [Functional overview](#functional-overview)
@@ -139,11 +138,6 @@ list upon implementation.
 Beside this overview and the README you can retrieve additional information from
 various places.
 
-### The Backlog
-
-If you want to know more about the next steps OSIAM is taking you can take a
-look into our product backlog at https://jira.osiam.org.
-
 ### Public CI
 
 We are using CircleCI for continuous integration: https://circleci.org/gh/osiam
@@ -152,8 +146,7 @@ We are using CircleCI for continuous integration: https://circleci.org/gh/osiam
 
 Our Sonar is checking static parameters of our software quality and we have
 quite challenging targets for that in our Definition of Done, e.g. 0 violations
-policy, >90% test coverage. Have a look yourself if we meet our targets by
-visiting: https://sonar.osiam.org
+policy, >90% test coverage.
 
 ### Issue Tracker 
 

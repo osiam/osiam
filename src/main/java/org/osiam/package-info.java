@@ -33,8 +33,6 @@
  * <p>Currently (July 2013) we offer you the developer version of OSIAM. The next steps for 2013 are the implementation
  * and hardening of the security features and the enhancement of OSIAM's usability.</p>
  *
- * <p>For more information on the roadmap visit https://osiam.org</p>
- *
  * <p>OSIAM was developed having in mind the identity data leaks from websites and companies that are getting published
  * each week. OSIAM will provide a secure yet easy to handle identity store with additional handy features.
  * OSIAM adheres to open standards. Specifically OSIAM implements OAuth2 and SCIMv2 (still in IETF draft).</p>
